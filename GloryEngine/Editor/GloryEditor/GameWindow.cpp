@@ -39,6 +39,18 @@ namespace Glory::Editor
 				}
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::BeginMenu("Resolution"))
+			{
+				uint32_t width, height;
+				DisplayManager::GetDisplayRenderTexture(0)->GetDimensions(width, height);
+				glm::ivec2 res = { int(width), int(height) };
+				if (ImGui::InputInt2("##res", (int*)&res, ImGuiInputTextFlags_EnterReturnsTrue))
+				{
+					DisplayManager::ResizeAll((uint32_t)res.x, (uint32_t)res.y);
+				}
+				ImGui::EndMenu();
+			}
 			ImGui::EndMenuBar();
 		}
 	}
