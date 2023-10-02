@@ -1,4 +1,4 @@
-project "GloryASSIMPModelLoader"
+project "ASSIMPImporter"
 	kind "SharedLib"
 	language "C++"
 	cppdialect "C++17"
@@ -11,15 +11,9 @@ project "GloryASSIMPModelLoader"
 	{
 		"**.h",
 		"**.cpp",
-		"Module.yaml",
 		"premake5.lua",
 		"Assets/**.*",
 		"Resources/**.*",
-	}
-
-	vpaths
-	{
-		["Module"] = { "GloryASSIMPModelLoader.*", "GloryClusteredRenderer.*", "ASSIMPModule.h", "ASSIMPModule.cpp" }
 	}
 
 	includedirs
@@ -28,9 +22,11 @@ project "GloryASSIMPModelLoader"
 
 		"%{DepIncludesRootDir}",
 		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.editor}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.glm}",
 
+		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 	}
@@ -41,6 +37,7 @@ project "GloryASSIMPModelLoader"
 
 		"%{LibDirs.glory}",
 		"%{LibDirs.yaml_cpp}",
+		"%{LibDirs.ImGui}",
 	}
 
 	links
@@ -53,6 +50,7 @@ project "GloryASSIMPModelLoader"
 		--todo: When asset management is contained in its own lib these links are no more needed
 		"GloryJobs",
 		"GloryThreads",
+		"ImGui",
 	}
 
 	defines

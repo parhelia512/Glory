@@ -38,7 +38,6 @@ demosDir								= "%{rootDir}/Demos"
 editorBuildDir							= "%{buildDir}/Editor"
 
 GloryIncludeDir = {}
-GloryIncludeDir["assimp"]				= "%{modulesDir}/GloryASSIMPModelLoader"
 GloryIncludeDir["clusteredrenderer"]	= "%{modulesDir}/GloryClusteredRenderer"
 GloryIncludeDir["entityscenes"]			= "%{modulesDir}/GloryEntityScenes"
 GloryIncludeDir["opengl"]				= "%{modulesDir}/GloryOpenGLGraphics"
@@ -115,7 +114,6 @@ group "Engine"
 group ""
 
 group "Modules"
-	include "Modules/GloryASSIMPModelLoader"
 	include "Modules/GloryClusteredRenderer"
 	include "Modules/GloryEntityScenes"
 	include "Modules/GloryOpenGLGraphics"
@@ -148,6 +146,10 @@ group "Editor/Extensions"
 	include "Editor/Extensions/EntityScenesEditorExtension"
 	include "Editor/Extensions/MonoEditorExtension"
 	include "Editor/Extensions/JoltEditorExtension"
+group ""
+
+group "Editor/Extensions/Importers"
+	include "Editor/Extensions/Importers/ASSIMPImporter"
 group ""
 
 group "Scripting/Mono"

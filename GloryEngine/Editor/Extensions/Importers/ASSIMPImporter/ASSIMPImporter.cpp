@@ -1,68 +1,57 @@
-#include "ASSIMPModule.h"
-#include <assimp/postprocess.h>
-#include <Debug.h>
+#include "ASSIMPImporter.h"
 #include "VertexDefinitions.h"
+
+#include <Debug.h>
 #include <sstream>
+#include <ModelData.h>
 
-namespace Glory
+#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+
+constexpr size_t NumSupportedExtensions = 2;
+constexpr std::string_view SupportedExtensions[NumSupportedExtensions] = {
+    ".fbx",
+    ".obj",
+};
+
+namespace Glory::Editor
 {
-    GLORY_MODULE_VERSION_CPP(ASSIMPModule);
-
-	ASSIMPModule::ASSIMPModule()
+    ASSIMPImporter::ASSIMPImporter()
 	{
 	}
 
-	ASSIMPModule::~ASSIMPModule()
+    ASSIMPImporter::~ASSIMPImporter()
 	{
 	}
 
-	void ASSIMPModule::Initialize()
-	{
-	}
+    bool ASSIMPImporter::SupportsExtension(const std::filesystem::path& extension) const
+    {
+        for (size_t i = 0; i < NumSupportedExtensions; i++)
+        {
+            const std::string_view ext = SupportedExtensions[i];
+            if (extension.compare(ext) != 0) continue;
+            return true;
+        }
+        return false;
+    }
 
-	void ASSIMPModule::Cleanup()
-	{
-	}
+    ModelData* ASSIMPImporter::LoadResource(const std::filesystem::path& path) const
+    {
+        Assimp::Importer importer;
 
-	ModelData* ASSIMPModule::LoadModel(const std::string& path, const ModelImportSettings& importSettings)
-	{
-		Assimp::Importer importer;
-
-		const aiScene* pScene = importer.ReadFile(path, aiProcess_CalcTangentSpace |
-			aiProcess_Triangulate |
-			aiProcess_JoinIdenticalVertices |
-			aiProcess_SortByPType);
+        const std::string pathStr = path.string();
+        const aiScene* pScene = importer.ReadFile(pathStr, aiProcess_CalcTangentSpace |
+            aiProcess_Triangulate |
+            aiProcess_JoinIdenticalVertices |
+            aiProcess_SortByPType);
 
         //const aiScene* pScene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
         //const aiScene* pScene = importer.ReadFile(path, 0);
 
-		if (!pScene || pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !pScene->mRootNode)
-		{
-			Debug::LogError("ASSIMP: Could not import file: " + path + " Error: " + importer.GetErrorString());
-			return nullptr;
-		}
-        //directory = file.substr(0, file.find_last_of('/'));
-
-        ModelData* pModel = new ModelData();
-        ProcessNode(pScene->mRootNode, pScene, pModel);
-
-		importer.FreeScene();
-
-		return pModel;
-	}
-
-    ModelData* ASSIMPModule::LoadModel(const void* buffer, size_t length, const ModelImportSettings& importSettings)
-    {
-        Assimp::Importer importer;
-
-        const aiScene* pScene = importer.ReadFileFromMemory(buffer, length, aiProcess_CalcTangentSpace |
-            aiProcess_Triangulate |
-            aiProcess_JoinIdenticalVertices |
-            aiProcess_SortByPType, importSettings.m_Extension.c_str());
-
         if (!pScene || pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !pScene->mRootNode)
         {
-            Debug::LogError("ASSIMP: Could not import file from memeory Error: " + std::string(importer.GetErrorString()));
+            Debug::LogError("ASSIMP: Could not import file: " + pathStr + " Error: " + importer.GetErrorString());
             return nullptr;
         }
         //directory = file.substr(0, file.find_last_of('/'));
@@ -75,7 +64,12 @@ namespace Glory
         return pModel;
     }
 
-    void ASSIMPModule::ProcessNode(aiNode* node, const aiScene* scene, ModelData* pModel)
+    void ASSIMPImporter::SaveResource(const std::filesystem::path& path, ModelData* pResource) const
+    {
+        Debug::LogError("Exporting model files is not supported by the ASSIMPImporter extension");
+    }
+
+    void ASSIMPImporter::ProcessNode(aiNode* node, const aiScene* scene, ModelData* pModel) const
     {
         // process all the node's meshes (if any)
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
@@ -91,7 +85,7 @@ namespace Glory
         }
     }
 
-    MeshData* ASSIMPModule::ProcessMesh(aiMesh* mesh)
+    MeshData* ASSIMPImporter::ProcessMesh(aiMesh* mesh) const
     {
         float* vertices = nullptr;
         std::vector<AttributeType> attributes;

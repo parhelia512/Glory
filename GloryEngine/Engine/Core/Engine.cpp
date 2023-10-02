@@ -21,7 +21,6 @@
 
 #include "IModuleLoopHandler.h"
 #include "GraphicsThread.h"
-#include "ResourceLoaderModule.h"
 
 #include "TimerModule.h"
 #include "ProfilerModule.h"
@@ -154,27 +153,6 @@ namespace Glory
 		return *it;
 	}
 
-	LoaderModule* Engine::GetLoaderModule(const std::string& extension)
-	{
-		const ResourceType* pResourceType = ResourceType::GetResourceType(extension);
-		if (!pResourceType) return nullptr;
-		return GetLoaderModule(pResourceType->Hash());
-	}
-
-	LoaderModule* Engine::GetLoaderModule(const std::type_info& resourceType)
-	{
-		if (m_TypeToLoader.find(resourceType) == m_TypeToLoader.end()) return nullptr;
-		size_t loaderIndex = m_TypeToLoader[resourceType];
-		return m_pLoaderModules[loaderIndex];
-	}
-
-	LoaderModule* Engine::GetLoaderModule(uint32_t typeHash)
-	{
-		if (m_TypeHashToLoader.find(typeHash) == m_TypeHashToLoader.end()) return nullptr;
-		size_t loaderIndex = m_TypeHashToLoader[typeHash];
-		return m_pLoaderModules[loaderIndex];
-	}
-
 	GraphicsThread* Engine::GetGraphicsThread() const
 	{
 		return m_pGraphicsThread;
@@ -255,9 +233,6 @@ namespace Glory
 		m_pAllModules.clear();
 		m_pOptionalModules.clear();
 		m_pPriorityInitializationModules.clear();
-		m_TypeToLoader.clear();
-		m_TypeHashToLoader.clear();
-		m_pLoaderModules.clear();
 
 		delete m_pGraphicsThread;
 		m_pGraphicsThread = nullptr;
@@ -287,17 +262,6 @@ namespace Glory
 
 		for (size_t i = 0; i < m_pAllModules.size(); i++)
 		{
-			LoaderModule* pLoaderModule = dynamic_cast<LoaderModule*>(m_pAllModules[i]);
-			if (pLoaderModule)
-			{
-				size_t index = m_pLoaderModules.size();
-				m_pLoaderModules.push_back(pLoaderModule);
-				std::type_index type = pLoaderModule->GetResourceType();
-				m_TypeToLoader[type] = index;
-				uint32_t typeHash = ResourceType::GetHash(type);
-				m_TypeHashToLoader[typeHash] = index;
-			}
-
 			for (size_t j = 0; j < m_pAllModules[i]->m_pScriptingExtender.size(); j++)
 			{
 				IScriptExtender* pScriptExtender = m_pAllModules[i]->m_pScriptingExtender[j];

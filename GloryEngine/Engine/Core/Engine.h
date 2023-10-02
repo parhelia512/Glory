@@ -13,7 +13,6 @@ namespace Glory
 	class GraphicsThread;
 	class ThreadManager;
 	class ScriptingModule;
-	class LoaderModule;
 
 	namespace Jobs
 	{
@@ -106,18 +105,6 @@ namespace Glory
 			return nullptr;
 		}
 
-		template<class T>
-		LoaderModule* GetLoaderModule()
-		{
-			LoaderModule* pModule = GetLoaderModule(typeid(T));
-			return pModule;
-		}
-
-		LoaderModule* GetLoaderModule(const std::string& extension);
-
-		LoaderModule* GetLoaderModule(const std::type_info& resourceType);
-		LoaderModule* GetLoaderModule(uint32_t typeHash);
-
 		GraphicsThread* GetGraphicsThread() const;
 
 		void StartThreads();
@@ -175,10 +162,6 @@ namespace Glory
 
 		/* Internal modules */
 		std::vector<Module*> m_pInternalModules;
-
-		std::vector<LoaderModule*> m_pLoaderModules;
-		std::map<std::type_index, size_t> m_TypeToLoader;
-		std::map<uint32_t, size_t> m_TypeHashToLoader;
 
 		/* Threading */
 		ThreadManager* m_pThreadManager;

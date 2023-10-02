@@ -132,35 +132,37 @@ namespace Glory
 			return pSubResource;
 		}
 
-		LoaderModule* pModule = Game::GetGame().GetEngine()->GetLoaderModule(meta.Hash());
+		return nullptr;
 
-		if (pModule == nullptr) return nullptr;
-
-		//if (assetLocation.IsSubAsset)
+		//LoaderModule* pModule = Game::GetGame().GetEngine()->GetLoaderModule(meta.Hash());
+		//
+		//if (pModule == nullptr) return nullptr;
+		//
+		////if (assetLocation.IsSubAsset)
+		////{
+		////	throw new std::exception("Not implemented yet");
+		////}
+		//
+		//std::filesystem::path path = Game::GetAssetPath();
+		//path.append(assetLocation.Path);
+		//
+		//if (!std::filesystem::exists(path))
+		//	path = assetLocation.Path;
+		//
+		//Resource* pResource = pModule->Load(path.string());
+		//if (pResource == nullptr)
 		//{
-		//	throw new std::exception("Not implemented yet");
+		//	Debug::LogError("Failed to load asset: " + std::to_string(uuid) + " at path: " + path.string());
+		//	return nullptr;
 		//}
-
-		std::filesystem::path path = Game::GetAssetPath();
-		path.append(assetLocation.Path);
-
-		if (!std::filesystem::exists(path))
-			path = assetLocation.Path;
-
-		Resource* pResource = pModule->Load(path.string());
-		if (pResource == nullptr)
-		{
-			Debug::LogError("Failed to load asset: " + std::to_string(uuid) + " at path: " + path.string());
-			return nullptr;
-		}
-
-		std::filesystem::path namePath = assetLocation.Path;
-		if (!assetLocation.SubresourcePath.empty()) namePath.append(assetLocation.SubresourcePath);
-		pResource->m_ID = uuid;
-		pResource->m_Name = meta.Name().empty() ? namePath.string() : meta.Name();
-		ASSET_MANAGER->m_pLoadedAssets.Set(uuid, pResource);
-		ASSET_DATABASE->m_Callbacks.EnqueueCallback(CallbackType::CT_AssetLoaded, uuid, pResource);
-		return pResource;
+		//
+		//std::filesystem::path namePath = assetLocation.Path;
+		//if (!assetLocation.SubresourcePath.empty()) namePath.append(assetLocation.SubresourcePath);
+		//pResource->m_ID = uuid;
+		//pResource->m_Name = meta.Name().empty() ? namePath.string() : meta.Name();
+		//ASSET_MANAGER->m_pLoadedAssets.Set(uuid, pResource);
+		//ASSET_DATABASE->m_Callbacks.EnqueueCallback(CallbackType::CT_AssetLoaded, uuid, pResource);
+		//return pResource;
 	}
 
 	AssetManager::AssetManager() : m_pResourceLoadingPool(nullptr) {}
