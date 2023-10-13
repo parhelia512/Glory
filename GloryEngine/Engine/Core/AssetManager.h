@@ -12,6 +12,8 @@
 
 namespace Glory
 {
+	class AssetArchive;
+
 	struct CallbackData
 	{
 		CallbackData();
@@ -54,6 +56,9 @@ namespace Glory
 		static bool IsLoading(UUID uuid);
 		static void GetAllLoading(std::vector<UUID>& out);
 
+		static const AssetArchive* GetOrLoadArchive(const std::filesystem::path& path);
+		static void AddAssetArchive(uint32_t hash, AssetArchive&& archive);
+
 	private:
 		static bool LoadResourceJob(UUID uuid);
 		static Resource* LoadAsset(UUID uuid);
@@ -80,6 +85,7 @@ namespace Glory
 			UUID m_UUID;
 		};
 
+		ThreadedUMap<uint32_t, AssetArchive> m_LoadedArchives;
 		ThreadedUMap<UUID, Resource*> m_pLoadedAssets;
 		ThreadedVector<UUID> m_pLoadingAssets;
 		ThreadedUMap<std::string, size_t> m_PathToGroupIndex;

@@ -2,6 +2,10 @@
 #include "AssetDatabase.h"
 #include "GloryContext.h"
 #include "Engine.h"
+#include "BinaryStream.h"
+#include "AssetArchive.h"
+
+#include <Hash.h>
 
 namespace Glory
 {
@@ -100,6 +104,32 @@ namespace Glory
 		});
 	}
 
+	const AssetArchive* AssetManager::GetOrLoadArchive(const std::filesystem::path& path)
+	{
+		if (!std::filesystem::exists(path))
+		{
+			std::stringstream str;
+			str << "Failed to load asset archive at path " << path << " file not found!";
+			Debug::LogError(str.str());
+			return nullptr;
+		}
+
+		/* Load as archive */
+		BinaryFileStream stream{ path };
+		AssetArchive archive{ &stream };
+		archive.Deserialize();
+		const std::string& str = path.string();
+		const uint32_t hash = Hashing::Hash(str.data());
+		ASSET_MANAGER->m_LoadedArchives.Emplace(hash, std::move(archive));
+		stream.Close();
+		return &ASSET_MANAGER->m_LoadedArchives.at(hash);
+	}
+
+	void AssetManager::AddAssetArchive(uint32_t hash, AssetArchive&& archive)
+	{
+		ASSET_MANAGER->m_LoadedArchives.Emplace(hash, std::move(archive));
+	}
+
 	bool AssetManager::LoadResourceJob(UUID uuid)
 	{
 		Resource* pResource = LoadAsset(uuid);
@@ -138,22 +168,40 @@ namespace Glory
 			return pSubResource;
 		}
 
-		LoaderModule* pModule = Game::GetGame().GetEngine()->GetLoaderModule(meta.Hash());
-
-		if (pModule == nullptr) return nullptr;
-
-		//if (assetLocation.IsSubAsset)
-		//{
-		//	throw new std::exception("Not implemented yet");
-		//}
+		Resource* pResource = nullptr;
 
 		std::filesystem::path path = Game::GetAssetPath();
 		path.append(assetLocation.Path);
+		if (path.extension().compare(".gcag") == 0)
+		{
+			const AssetArchive* archive = GetOrLoadArchive(path);
+			if (archive)
+			{
+				for (size_t i = 0; i < archive->Size(); ++i)
+				{
+					Resource* pSubResource = archive->Get(i);
+					AddLoadedResource(pResource);
+				}
 
-		if (!std::filesystem::exists(path))
-			path = assetLocation.Path;
+				pResource = FindResource(uuid);
+			}
+		}
 
-		Resource* pResource = pModule->Load(path.string());
+		if (!pResource)
+		{
+			std::stringstream str;
+			str << "Using legacy loading for file: " << path;
+			Debug::LogWarning(str.str());
+			LoaderModule* pModule = Game::GetGame().GetEngine()->GetLoaderModule(meta.Hash());
+
+			if (pModule == nullptr) return nullptr;
+
+			if (!std::filesystem::exists(path))
+				path = assetLocation.Path;
+
+			pResource = pModule->Load(path.string());
+		}
+
 		if (pResource == nullptr)
 		{
 			Debug::LogError("Failed to load asset: " + std::to_string(uuid) + " at path: " + path.string());

@@ -1,5 +1,6 @@
 #include "ResourceType.h"
 #include "GloryContext.h"
+
 #include <sstream>
 
 #define RESOURCE_TYPES Glory::GloryContext::GetResourceTypes()
@@ -14,11 +15,11 @@ namespace Glory
 		return RESOURCE_TYPES->m_HashToType.find(typeHash) != RESOURCE_TYPES->m_HashToType.end();
 	}
 
-	ResourceType* ResourceType::RegisterResource(std::type_index type, const std::string& extensions)
+	ResourceType* ResourceType::RegisterResource(std::type_index type, const std::string& extensions, ResourceFactory* pFactory)
 	{
 		uint32_t typeHash = GetHash(type);
 		size_t index = RESOURCE_TYPES->m_ResourceTypes.size();
-		RESOURCE_TYPES->m_ResourceTypes.push_back(ResourceType(typeHash, extensions, type.name()));
+		RESOURCE_TYPES->m_ResourceTypes.emplace_back(ResourceType{ typeHash, extensions, type.name(), pFactory });
 		RESOURCE_TYPES->m_HashToType[typeHash] = index;
 		ReadExtensions(index, extensions);
 		return &RESOURCE_TYPES->m_ResourceTypes[index];
@@ -109,8 +110,8 @@ namespace Glory
 		return ext == ".gscene";
 	}
 
-	ResourceType::ResourceType(uint32_t typeHash, const std::string& extensions, const char* name)
-		: m_TypeHash(typeHash), m_Extensions(extensions), m_FullName(name)
+	ResourceType::ResourceType(uint32_t typeHash, const std::string& extensions, const char* name, ResourceFactory* pFactory)
+		: m_TypeHash(typeHash), m_Extensions(extensions), m_FullName(name), m_pFactory(pFactory)
 	{
 		static constexpr std::string_view classNamespaceName = "class Glory::";
 		const size_t classIndex = m_FullName.find(classNamespaceName);
@@ -119,7 +120,10 @@ namespace Glory
 		m_Name = m_Name.substr(0, dataIndex);
 	}
 
-	ResourceType::~ResourceType() {}
+	ResourceType::~ResourceType()
+	{
+		m_pFactory = nullptr;
+	}
 
 	uint32_t ResourceType::Hash() const
 	{
@@ -141,6 +145,11 @@ namespace Glory
 		return m_Name;
 	}
 
+	Resource* ResourceType::Create() const
+	{
+		return m_pFactory->Create();
+	}
+
 	void ResourceType::ReadExtensions(size_t index, const std::string& extensions)
 	{
 		if (extensions.empty()) return;
@@ -151,10 +160,23 @@ namespace Glory
 			RESOURCE_TYPES->m_ExtensionToType[next] = index;
 		}
 	}
+
 	ResourceTypes::ResourceTypes()
 	{
 	}
+
 	ResourceTypes::~ResourceTypes()
 	{
+		for (size_t i = 0; i < m_ResourceTypes.size(); ++i)
+		{
+			delete m_ResourceTypes[i].m_pFactory;
+		}
+
+		m_ResourceTypes.clear();
+		m_ExtensionToType.clear();
+		m_HashToType.clear();
+		m_BasicTypes.clear();
+		m_HashToBasicType.clear();
+		m_NameToBasicType.clear();
 	}
 }
