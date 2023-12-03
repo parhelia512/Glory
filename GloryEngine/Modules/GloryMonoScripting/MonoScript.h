@@ -28,7 +28,7 @@ namespace Glory
         virtual void GetPropertyValues(UUID objectID, UUID sceneID, YAML::Node& node) override;
 
         void Serialize(BinaryStream& container) const override;
-        void Deserialize(BinaryStream& container) const override;
+        void Deserialize(BinaryStream& container) override;
 
     private:
         virtual bool IsBehaviour() override;

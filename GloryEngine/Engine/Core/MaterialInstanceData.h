@@ -39,7 +39,7 @@ namespace Glory
 		virtual void EnableProperty(size_t index) override;
 
 		void Serialize(BinaryStream& container) const override;
-		void Deserialize(BinaryStream& container) const override;
+		void Deserialize(BinaryStream& container) override;
 
 	private:
 		virtual std::vector<char>& GetPropertyBuffer(size_t index) override;

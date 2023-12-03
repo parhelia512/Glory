@@ -43,7 +43,7 @@ namespace Glory
         void AddSubresource(Resource* pResource, const std::string& name);
 
         virtual void Serialize(BinaryStream& container) const {};
-        virtual void Deserialize(BinaryStream& container) const {};
+        virtual void Deserialize(BinaryStream& container) {};
 
     protected:
         std::vector<Resource*> m_pSubresources;

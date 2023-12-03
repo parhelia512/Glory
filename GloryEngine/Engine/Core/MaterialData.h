@@ -42,7 +42,7 @@ namespace Glory
         void ClearProperties();
 
         void Serialize(BinaryStream& container) const override;
-        void Deserialize(BinaryStream& container) const override;
+        void Deserialize(BinaryStream& container) override;
 
     public: // Properties
         // Setters

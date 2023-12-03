@@ -148,7 +148,7 @@ namespace Glory
 		container.Write(m_pShaderFiles.size());
 		for (size_t i = 0; i < m_pShaderFiles.size(); ++i)
 		{
-			container.Write(m_pShaderFiles[0]->GetUUID());
+			container.Write(m_pShaderFiles[i]->GetUUID());
 		}
 
 		/* Write property infos */
@@ -161,7 +161,6 @@ namespace Glory
 			container.Write(prop.DisplayName());
 			container.Write(prop.Size());
 			container.Write(prop.Offset());
-			container.Write(prop.EndOffset());
 			container.Write(prop.IsResource());
 			container.Write(prop.Flags());
 		}
@@ -178,8 +177,49 @@ namespace Glory
 		}
 	}
 
-	void MaterialData::Deserialize(BinaryStream& container) const
+	void MaterialData::Deserialize(BinaryStream& container)
 	{
+		/* Read shader IDs */
+		size_t numShaders;
+		container.Read(numShaders);
+		m_pShaderFiles.resize(numShaders);
+		for (size_t i = 0; i < m_pShaderFiles.size(); ++i)
+		{
+			UUID shaderID;
+			container.Read(shaderID);
+			m_pShaderFiles[i] = AssetManager::GetAssetImmediate<ShaderSourceData>(shaderID);
+		}
+
+		/* Read property infos */
+		size_t numProperties;
+		container.Read(numProperties);
+		m_PropertyInfos.resize(numProperties);
+		for (size_t i = 0; i < m_PropertyInfos.size(); ++i)
+		{
+			MaterialPropertyInfo& prop = m_PropertyInfos[i];
+			container.Read(prop.m_TypeHash);
+			container.Read(prop.m_PropertyShaderName);
+			container.Read(prop.m_PropertyDisplayName);
+			container.Read(prop.m_Size);
+			container.Read(prop.m_Offset);
+			container.Read(prop.m_IsResource);
+			container.Read(prop.m_Flags);
+		}
+
+		/* Read property buffer */
+		size_t propertyBufferSize;
+		container.Read(propertyBufferSize);
+		m_PropertyBuffer.resize(propertyBufferSize);
+		container.Read(m_PropertyBuffer.data(), propertyBufferSize);
+
+		/* Read resources */
+		size_t numResources;
+		container.Read(numResources);
+		m_Resources.resize(numResources);
+		for (size_t i = 0; i < m_Resources.size(); ++i)
+		{
+			container.Read(*m_Resources[i].AssetUUIDMember());
+		}
 	}
 
 	void MaterialData::SetTexture(const std::string& name, TextureData* value)

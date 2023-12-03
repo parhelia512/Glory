@@ -9,6 +9,7 @@ namespace Glory
 	struct MaterialPropertyInfo
 	{
 	public:
+		MaterialPropertyInfo();
 		MaterialPropertyInfo(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, size_t size, size_t offset, uint32_t flags);
 		MaterialPropertyInfo(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, size_t offset, uint32_t flags);
 
@@ -45,6 +46,7 @@ namespace Glory
 		void Reserve(std::vector<char>& buffer);
 
 	private:
+		friend class MaterialData;
 		friend class MaterialLoaderModule;
 		friend class MaterialInstanceLoaderModule;
 		std::string m_PropertyDisplayName;
