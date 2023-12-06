@@ -3,7 +3,7 @@
 #include "Engine.h"
 #include "RendererModule.h"
 #include "Debug.h"
-#include "AssetManager.h"
+#include "GScene.h"
 
 #include <EntityRegistry.h>
 

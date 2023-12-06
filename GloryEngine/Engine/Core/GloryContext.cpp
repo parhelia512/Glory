@@ -1,6 +1,5 @@
 #include "GloryContext.h"
 #include "SceneManager.h"
-#include "AssetManager.h"
 #include "AssetDatabase.h"
 #include "ResourceType.h"
 #include "Serializers.h"
@@ -73,11 +72,6 @@ namespace Glory
 		return m_pContext->m_pAssetDatabase;
 	}
 
-	AssetManager* GloryContext::GetAssetManager()
-	{
-		return m_pContext->m_pAssetManager;
-	}
-
 	ResourceTypes* GloryContext::GetResourceTypes()
 	{
 		return m_pContext->m_pResourceTypes;
@@ -125,7 +119,7 @@ namespace Glory
 	}
 
 	Glory::GloryContext::GloryContext()
-		: m_Game(nullptr), m_pAssetDatabase(new AssetDatabase()), m_pAssetManager(new AssetManager()), m_pResourceTypes(new ResourceTypes()),
+		: m_Game(nullptr), m_pAssetDatabase(new AssetDatabase()), m_pResourceTypes(new ResourceTypes()),
 		m_pSerializers(new Serializers()), m_pDisplayManager(new DisplayManager()), m_pConsole(new Console()),
 		m_pLayerManager(new LayerManager()), m_pShaderManager(new ShaderManager()), m_pReflection(Reflect::CreateReflectInstance()),
 		m_pDebug(new Debug()), m_pObjectManager(new ObjectManager()), m_UUIDRemapper(RandomDevice::Seed())
@@ -136,8 +130,6 @@ namespace Glory
 	{
 		delete m_pAssetDatabase;
 		m_pAssetDatabase = nullptr;
-		delete m_pAssetManager;
-		m_pAssetManager = nullptr;
 		delete m_pResourceTypes;
 		m_pResourceTypes = nullptr;
 		delete m_pSerializers;

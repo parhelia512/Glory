@@ -150,6 +150,11 @@ namespace Glory
 		return m_pFactory->Create();
 	}
 
+	Resource* ResourceType::Create(const UUID uuid, const std::string& name) const
+	{
+		return m_pFactory->Create(uuid, name);
+	}
+
 	void ResourceType::ReadExtensions(size_t index, const std::string& extensions)
 	{
 		if (extensions.empty()) return;

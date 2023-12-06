@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "Console.h"
-#include "AssetManager.h"
+#include "Resources.h"
+#include "AssetLoader.h"
 #include "PropertySerializer.h"
 #include "AssetReferencePropertySerializer.h"
 #include "ArrayPropertySerializer.h"
@@ -15,9 +16,9 @@
 #include "LayerRef.h"
 #include "SceneObjectRef.h"
 #include "ShapeProperty.h"
-#include "PrefabData.h"
 #include "SceneManager.h"
 #include "WindowModule.h"
+#include "InternalResource.h"
 
 #include "IModuleLoopHandler.h"
 #include "GraphicsThread.h"
@@ -202,8 +203,9 @@ namespace Glory
 
 	Engine::Engine(const EngineCreateInfo& createInfo)
 		: m_pSceneManager(new SceneManager(this)), m_pThreadManager(ThreadManager::GetInstance()),
-		m_pJobManager(Jobs::JobManager::GetInstance()), m_pGraphicsThread(nullptr),
-		m_pScriptingExtender(new ScriptingExtender()), m_CreateInfo(createInfo)
+		m_pJobManager(new Jobs::JobManager()), m_pGraphicsThread(nullptr),
+		m_pScriptingExtender(new ScriptingExtender()), m_CreateInfo(createInfo),
+		m_pResources(new Resources()), m_pAssetLoader(new AssetLoader(this))
 	{
 		/* Copy main modules */
 		m_pMainModules.resize(createInfo.MainModuleCount);
@@ -249,8 +251,6 @@ namespace Glory
 
 	Engine::~Engine()
 	{
-		AssetManager::Destroy();
-
 		m_pGraphicsThread->Stop();
 
 		m_pJobManager->Kill();
@@ -259,6 +259,12 @@ namespace Glory
 
 		delete m_pJobManager;
 		m_pJobManager = nullptr;
+
+		delete m_pResources;
+		m_pResources = nullptr;
+
+		delete m_pAssetLoader;
+		m_pAssetLoader = nullptr;
 
 		// We need to cleanup in reverse
 		// This makes sure things like graphics get cleaned up before we close the window
@@ -330,8 +336,6 @@ namespace Glory
 			m_pAllModules[i]->m_IsInitialized = true;
 		}
 
-		AssetManager::Initialize();
-
 		m_pScriptingExtender->Initialize(this);
 
 		/* Create graphics thread */
@@ -384,7 +388,6 @@ namespace Glory
 		ResourceType::RegisterType<LayerMask>();
 		ResourceType::RegisterType<SceneObjectRef>();
 		ResourceType::RegisterType<ShapeProperty>();
-		ResourceType::RegisterResource<PrefabData>("");
 
 		Reflect::RegisterBasicType<glm::vec2>("vec2");
 		Reflect::RegisterBasicType<glm::vec3>("vec3");
@@ -413,6 +416,14 @@ namespace Glory
 		Reflect::RegisterType<ShapeProperty>();
 
 		Reflect::RegisterTemplatedType("AssetReference,Glory::AssetReference,class Glory::AssetReference", ST_Asset, sizeof(UUID));
+
+		m_pResources->Register<ImageData>();
+		m_pResources->Register<TextureData>();
+		m_pResources->Register<MaterialData>();
+		m_pResources->Register<MaterialInstanceData>();
+		m_pResources->Register<ModelData>();
+		m_pResources->Register<MeshData>();
+		m_pResources->Register<PrefabData>();
 	}
 
 	void Engine::Update()
@@ -429,7 +440,7 @@ namespace Glory
 
 	void Engine::ModulesLoop(IModuleLoopHandler* pLoopHandler)
 	{
-		AssetManager::RunCallbacks();
+		m_pAssetLoader->DumpLoadedArchives();
 
 		for (size_t i = 0; i < m_pAllModules.size(); i++)
 		{
@@ -502,6 +513,21 @@ namespace Glory
 			settingsFilePath.append(moduleMetaData.Name() + ".yaml");
 			pModule->LoadSettings(settingsFilePath);
 		}
+	}
+
+	Resources& Engine::GetResources()
+	{
+		return *m_pResources;
+	}
+
+	AssetLoader& Engine::GetAssetLoader()
+	{
+		return *m_pAssetLoader;
+	}
+
+	Jobs::JobManager& Engine::Jobs()
+	{
+		return *m_pJobManager;
 	}
 
 	void Engine::GraphicsThreadFrameStart()

@@ -1,7 +1,6 @@
 #include "MaterialInstanceData.h"
 #include "ResourceType.h"
 #include "BinaryStream.h"
-#include "AssetManager.h"
 
 #include <algorithm>
 

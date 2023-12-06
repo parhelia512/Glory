@@ -8,6 +8,9 @@ namespace Glory
 	class ShaderData : public Resource
 	{
 	public:
+		ShaderData() = default;
+		ShaderData(UUID uuid, const std::string& name);
+
 		std::vector<uint32_t>::const_iterator Begin();
 		std::vector<uint32_t>::const_iterator End();
 

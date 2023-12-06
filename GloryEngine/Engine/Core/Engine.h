@@ -15,6 +15,9 @@ namespace Glory
 	class ScriptingModule;
 	class LoaderModule;
 	class SceneManager;
+	class Resources;
+	class JobManager;
+	class AssetLoader;
 
 	namespace Jobs
 	{
@@ -136,6 +139,11 @@ namespace Glory
 
 		void LoadModuleSettings(const std::filesystem::path& overrideRootPath = "");
 
+		Resources& GetResources();
+		AssetLoader& GetAssetLoader();
+
+		Jobs::JobManager& Jobs();
+
 	private:
 		Engine(const EngineCreateInfo& createInfo);
 		virtual ~Engine();
@@ -192,5 +200,9 @@ namespace Glory
 
 		/* Threads */
 		GraphicsThread* m_pGraphicsThread;
+
+		/* Resources */
+		Resources* m_pResources;
+		AssetLoader* m_pAssetLoader;
 	};
 }

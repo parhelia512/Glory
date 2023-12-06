@@ -27,7 +27,6 @@ namespace Glory
 		static Game* GetGame();
 		static CameraManager* GetCameraManager();
 		static AssetDatabase* GetAssetDatabase();
-		static AssetManager* GetAssetManager();
 		static ResourceTypes* GetResourceTypes();
 		static Serializers* GetSerializers();
 		static DisplayManager* GetDisplayManager();
@@ -71,7 +70,6 @@ namespace Glory
 		Game* m_Game;
 		CameraManager m_CameraManager;
 		AssetDatabase* m_pAssetDatabase;
-		AssetManager* m_pAssetManager;
 		ResourceTypes* m_pResourceTypes;
 		Serializers* m_pSerializers;
 		DisplayManager* m_pDisplayManager;

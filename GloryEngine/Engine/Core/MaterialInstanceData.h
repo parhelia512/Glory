@@ -45,7 +45,6 @@ namespace Glory
 		virtual std::vector<char>& GetPropertyBuffer(size_t index) override;
 
 	private:
-		friend class MaterialInstanceLoaderModule;
 		MaterialData* m_pBaseMaterial;
 		std::vector<bool> m_PropertyOverridesEnable;
 	};

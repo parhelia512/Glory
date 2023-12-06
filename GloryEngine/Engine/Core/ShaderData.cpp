@@ -2,6 +2,10 @@
 
 namespace Glory
 {
+	ShaderData::ShaderData(UUID uuid, const std::string& name): Resource(uuid, name)
+	{
+	}
+
 	std::vector<uint32_t>::const_iterator ShaderData::Begin()
 	{
 		return m_ShaderData.begin();

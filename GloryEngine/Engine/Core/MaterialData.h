@@ -72,8 +72,6 @@ namespace Glory
         virtual std::vector<char>& GetPropertyBuffer(size_t index);
 
     protected:
-        friend class MaterialLoaderModule;
-        friend class MaterialInstanceLoaderModule;
         friend class MaterialInstanceData;
 
         std::vector<ShaderSourceData*> m_pShaderFiles;

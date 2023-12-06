@@ -47,8 +47,6 @@ namespace Glory
 
 	private:
 		friend class MaterialData;
-		friend class MaterialLoaderModule;
-		friend class MaterialInstanceLoaderModule;
 		std::string m_PropertyDisplayName;
 		std::string m_PropertyShaderName;
 		uint32_t m_TypeHash;

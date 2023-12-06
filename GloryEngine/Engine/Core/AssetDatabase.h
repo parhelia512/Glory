@@ -50,7 +50,6 @@ namespace Glory
 		static void Initialize();
 		static void Destroy();
 
-
 	private:
 		friend class AssetManager;
 		friend class GloryContext;

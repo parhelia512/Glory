@@ -1,11 +1,13 @@
 #pragma once
+#include "Module.h"
+#include "Resource.h"
+#include "Resources.h"
+#include "Engine.h"
+
 #include <string>
 #include <yaml-cpp/yaml.h>
 #include <any>
 #include <filesystem>
-#include "Module.h"
-#include "Resource.h"
-#include "ResourceType.h"
 
 namespace Glory
 {
