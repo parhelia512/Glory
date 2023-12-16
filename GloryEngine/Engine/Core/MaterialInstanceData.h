@@ -7,13 +7,13 @@ namespace Glory
 	{
 	public:
 		MaterialInstanceData();
+		MaterialInstanceData(UUID uuid, const std::string& name);
 		MaterialInstanceData(MaterialData* pBaseMaterial);
 		virtual ~MaterialInstanceData();
 
 	public:
         virtual size_t ShaderCount() const override;
-        virtual ShaderSourceData* GetShaderAt(size_t index) const override;;
-        virtual const ShaderType& GetShaderTypeAt(size_t index) const override;
+        virtual UUID GetShaderAt(size_t index) const override;
 
 		MaterialData* GetBaseMaterial() const;
 		void SetBaseMaterial(MaterialData* pMaterial);
@@ -45,7 +45,7 @@ namespace Glory
 		virtual std::vector<char>& GetPropertyBuffer(size_t index) override;
 
 	private:
-		MaterialData* m_pBaseMaterial;
+		UUID m_BaseMaterialID;
 		std::vector<bool> m_PropertyOverridesEnable;
 	};
 }

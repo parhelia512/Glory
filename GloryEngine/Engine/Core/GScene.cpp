@@ -5,6 +5,7 @@
 #include "UUIDRemapper.h"
 #include "DistributedRandom.h"
 #include "PropertySerializer.h"
+#include "SceneManager.h"
 
 #include <NodeRef.h>
 
@@ -248,6 +249,11 @@ namespace Glory
 			data.ObjectToParent.SetParent(parent.GetEntityID());
 		});
 		m_DelayedParents.clear();
+	}
+
+	SceneManager* GScene::Manager()
+	{
+		return m_pManager;
 	}
 
 	void GScene::OnTick()

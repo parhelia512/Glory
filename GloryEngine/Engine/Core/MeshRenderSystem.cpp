@@ -4,15 +4,41 @@
 #include "RendererModule.h"
 #include "Debug.h"
 #include "GScene.h"
+#include "SceneManager.h"
+#include "AssetLoader.h"
+#include "Resources.h"
+#include "AssetDatabase.h"
+#include "MaterialInstanceData.h"
 
 #include <EntityRegistry.h>
 
 namespace Glory
 {
+    void MeshRenderSystem::OnValidate(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, MeshRenderer& pComponent)
+    {
+        REQUIRE_MODULE(Game::GetGame().GetEngine(), RendererModule, );
+
+        Engine* pEngine = pRegistry->GetUserData<GScene*>()->Manager()->GetEngine();
+        const UUID meshID = pComponent.m_Mesh.AssetUUID();
+        const UUID materialID = pComponent.m_Material.AssetUUID();
+        if (meshID && !pEngine->GetResources().Manager<MeshData>()->IsLoaded(meshID))
+            pEngine->GetAssetLoader().RequestLoad(meshID);
+        if (materialID && !pEngine->GetResources().Manager<MaterialData>()->IsLoaded(meshID))
+            pEngine->GetAssetLoader().RequestLoad(materialID);
+    }
+
     void MeshRenderSystem::OnDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, MeshRenderer& pComponent)
     {
+        //REQUIRE_MODULE(Game::GetGame().GetEngine(), RendererModule, );
+
         //ubo.proj = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 10.0f);
         //ubo.proj[1][1] *= -1; // In OpenGL the Y coordinate of the clip coordinates is inverted, so we must flip it for use in Vulkan
+
+        Engine* pEngine = pRegistry->GetUserData<GScene*>()->Manager()->GetEngine();
+        const UUID meshID = pComponent.m_Mesh.AssetUUID();
+        const UUID materialID = pComponent.m_Material.AssetUUID();
+
+        if (!meshID || !materialID) return;
 
         Transform& transform = pRegistry->GetComponent<Transform>(entity);
 
@@ -23,30 +49,31 @@ namespace Glory
             mask = layer.m_Layer.Layer() != nullptr ? layer.m_Layer.Layer()->m_Mask : 0;
         }
 
-        MeshData* pMeshData = AssetManager::GetOrLoadAsset<MeshData>(pComponent.m_Mesh.AssetUUID());
-        if (pMeshData == nullptr) return;
+        if (!pEngine->GetResources().Manager<MeshData>()->IsLoaded(meshID))
+            return;
 
-        if (!AssetDatabase::AssetExists(pComponent.m_Material.AssetUUID()))
+        if (!AssetDatabase::AssetExists(materialID))
         {
-            // TODO: Set some default material
+            // TODO: Use some default material
             std::string key = std::to_string(entity) + "_MISSING_MATERIAL";
             Debug::LogOnce(key, "MeshRenderer: Missing Materials on MeshRenderer!", Debug::LogLevel::Warning);
             return;
         }
 
-        const UUID materialUUID = pComponent.m_Material.AssetUUID();
-        MaterialData* pMaterial = AssetManager::GetOrLoadAsset<MaterialData>(materialUUID);
+        const bool materialLoaded = pEngine->GetResources().Manager<MaterialData>()->Get(materialID) ||
+            pEngine->GetResources().Manager<MaterialInstanceData>()->IsLoaded(materialID);
 
-        if (pMaterial == nullptr)
+        if (!materialLoaded)
         {
-            // TODO: Set some default material
+            // TODO: Use some default material
             return;
         }
 
         GScene* pScene = pRegistry->GetUserData<GScene*>();
+        /* @fixme Use IDs instead of assets directly */
         RenderData renderData;
-        renderData.m_pMesh = pMeshData;
-        renderData.m_pMaterial = pMaterial;
+        renderData.m_MeshID = meshID;
+        renderData.m_MaterialID = materialID;
         renderData.m_World = transform.MatTransform;
         renderData.m_LayerMask = mask;
         renderData.m_ObjectID = pScene->GetEntityUUID(entity);

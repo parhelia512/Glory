@@ -16,12 +16,12 @@ namespace Glory
     {
     public:
         MaterialData();
+        MaterialData(UUID uuid, const std::string& name);
         MaterialData(const std::vector<ShaderSourceData*>& shaderFiles);
         virtual ~MaterialData();
 
         [[nodiscard]]virtual size_t ShaderCount() const;
-        [[nodiscard]]virtual ShaderSourceData* GetShaderAt(size_t index) const;
-        [[nodiscard]]virtual const ShaderType& GetShaderTypeAt(size_t index) const;
+        [[nodiscard]]virtual UUID GetShaderAt(size_t index) const;
         void RemoveShaderAt(size_t index);
         bool AddShader(ShaderSourceData* pShaderSourceData);
 
@@ -74,7 +74,7 @@ namespace Glory
     protected:
         friend class MaterialInstanceData;
 
-        std::vector<ShaderSourceData*> m_pShaderFiles;
+        std::vector<UUID> m_ShaderIDs;
         std::vector<MaterialPropertyInfo> m_PropertyInfos;
         std::vector<char> m_PropertyBuffer;
 

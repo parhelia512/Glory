@@ -51,7 +51,6 @@ namespace Glory
         Resource* m_pParent;
 
     private:
-        friend class AssetManager;
         friend class AssetDatabase;
         friend class LoaderModule;
     };

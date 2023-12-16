@@ -11,42 +11,48 @@ namespace Glory
 		APPEND_TYPE(MaterialData);
 	}
 
-	MaterialData::MaterialData(const std::vector<ShaderSourceData*>& shaderFiles)
-		: m_pShaderFiles(shaderFiles), m_CurrentOffset(0)
+	MaterialData::MaterialData(UUID uuid, const std::string& name)
+		:Resource(uuid, name), m_CurrentOffset(0)
 	{
 		APPEND_TYPE(MaterialData);
 	}
 
+	MaterialData::MaterialData(const std::vector<ShaderSourceData*>& shaderFiles)
+		: m_ShaderIDs(shaderFiles.size()), m_CurrentOffset(0)
+	{
+		APPEND_TYPE(MaterialData);
+
+		for (size_t i = 0; i < shaderFiles.size(); ++i)
+		{
+			m_ShaderIDs[i] = shaderFiles[i]->GetUUID();
+		}
+	}
+
 	MaterialData::~MaterialData()
 	{
-		m_pShaderFiles.clear();
+		m_ShaderIDs.clear();
 	}
 
 	size_t MaterialData::ShaderCount() const
 	{
-		return m_pShaderFiles.size();
+		return m_ShaderIDs.size();
 	}
 
-	ShaderSourceData* MaterialData::GetShaderAt(size_t index) const
+	UUID MaterialData::GetShaderAt(size_t index) const
 	{
-		return m_pShaderFiles[index];
-	}
-
-	const ShaderType& MaterialData::GetShaderTypeAt(size_t index) const
-	{
-		return m_pShaderFiles[index]->GetShaderType();
+		return m_ShaderIDs[index];
 	}
 
 	void MaterialData::RemoveShaderAt(size_t index)
 	{
-		m_pShaderFiles.erase(m_pShaderFiles.begin() + index);
+		m_ShaderIDs.erase(m_ShaderIDs.begin() + index);
 	}
 
 	bool MaterialData::AddShader(ShaderSourceData* pShaderSourceData)
 	{
-		const auto it = std::find(m_pShaderFiles.begin(), m_pShaderFiles.end(), pShaderSourceData);
-		if (it != m_pShaderFiles.end()) return false;
-		m_pShaderFiles.push_back(pShaderSourceData);
+		const auto it = std::find(m_ShaderIDs.begin(), m_ShaderIDs.end(), pShaderSourceData);
+		if (it != m_ShaderIDs.end()) return false;
+		m_ShaderIDs.push_back(pShaderSourceData->GetUUID());
 		return true;
 	}
 
@@ -144,10 +150,10 @@ namespace Glory
 	void MaterialData::Serialize(BinaryStream& container) const
 	{
 		/* Write shader IDs */
-		container.Write(m_pShaderFiles.size());
-		for (size_t i = 0; i < m_pShaderFiles.size(); ++i)
+		container.Write(m_ShaderIDs.size());
+		for (size_t i = 0; i < m_ShaderIDs.size(); ++i)
 		{
-			container.Write(m_pShaderFiles[i]->GetUUID());
+			container.Write(m_ShaderIDs[i]);
 		}
 
 		/* Write property infos */
@@ -181,12 +187,11 @@ namespace Glory
 		/* Read shader IDs */
 		size_t numShaders;
 		container.Read(numShaders);
-		m_pShaderFiles.resize(numShaders);
-		for (size_t i = 0; i < m_pShaderFiles.size(); ++i)
+		m_ShaderIDs.resize(numShaders);
+		for (size_t i = 0; i < m_ShaderIDs.size(); ++i)
 		{
 			UUID shaderID;
-			container.Read(shaderID);
-			m_pShaderFiles[i] = AssetManager::GetAssetImmediate<ShaderSourceData>(shaderID);
+			container.Read(m_ShaderIDs[i]);
 		}
 
 		/* Read property infos */
@@ -239,7 +244,7 @@ namespace Glory
 		const MaterialPropertyInfo* pPropertyInfo = GetPropertyInfoAt(index);
 		if (!pPropertyInfo->IsResource()) return false;
 		const size_t resourceIndex = pPropertyInfo->Offset();
-		*value = m_Resources[resourceIndex].Get();
+		*value = m_Resources[resourceIndex].Get(Game::GetGame().GetEngine());
 		return *value;
 	}
 

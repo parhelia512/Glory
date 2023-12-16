@@ -38,6 +38,9 @@ namespace Glory
 		UUID GetHoveringEntityUUID() const;
 		void SetHoveringObject(UUID sceneID, UUID objectID);
 
+		/** @brief Get the engine that owns this manager */
+		Engine* GetEngine();
+
 	private:
 		friend class Engine;
 		SceneManager(Engine* pEngine);
@@ -52,7 +55,7 @@ namespace Glory
 		void OnSceneOpen(UUID uuid) {}
 		void OnSceneClose(UUID uuid) {}
 		
-	protected:
+	private:
 		Engine* m_pEngine;
 		std::vector<GScene*> m_pOpenScenes;
 		size_t m_ActiveSceneIndex;

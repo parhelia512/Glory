@@ -12,6 +12,9 @@ namespace Glory
 		virtual uint32_t Type() const = 0;
 		virtual void Add(Resource* pResource) = 0;
 
+		size_t Index(UUID uuid) const;
+		bool IsLoaded(UUID uuid) const;
+
 	protected:
 		std::vector<UUID> m_UUIDs;
 	};
@@ -41,11 +44,8 @@ namespace Glory
 
 		T* Get(UUID uuid)
 		{
-			const auto itor = std::find(m_UUIDs.begin(), m_UUIDs.end(), uuid);
-			if (itor == m_UUIDs.end())
-			{
-				return nullptr;
-			}
+			const size_t index = Index(uuid);
+			return index == UINT64_MAX ? nullptr : &m_Resources[index];
 		}
 
 	private:

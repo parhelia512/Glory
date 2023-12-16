@@ -28,6 +28,11 @@ namespace Glory
 		m_HoveringObjectID = objectID;
 	}
 
+	Engine* SceneManager::GetEngine()
+	{
+		return m_pEngine;
+	}
+
 	SceneManager::SceneManager(Engine* pEngine) : m_pEngine(pEngine), m_ActiveSceneIndex(0),
 		m_HoveringObjectSceneID(0), m_HoveringObjectID(0), m_pComponentTypesInstance(nullptr)
 	{
@@ -90,6 +95,7 @@ namespace Glory
 		if (uuid) pScene->SetUUID(uuid);
 		m_pOpenScenes.push_back(pScene);
 		OnSceneOpen(uuid);
+		pScene->m_pManager = this;
 	}
 
 	void SceneManager::CloseScene(UUID uuid)
@@ -134,7 +140,7 @@ namespace Glory
 		RegisterComponent<CameraComponent>();
 		RegisterComponent<MeshFilter>();
 		RegisterComponent<MeshRenderer>();
-		RegisterComponent<ModelRenderer>();
+		//RegisterComponent<ModelRenderer>();
 		RegisterComponent<LightComponent>();
 
 		/* Always register scripted component as last to preserve execution order */
@@ -169,6 +175,7 @@ namespace Glory
 		m_pComponentTypesInstance->RegisterInvokaction<LookAt>(Glory::Utils::ECS::InvocationType::Update, LookAtSystem::OnUpdate);
 
 		// MeshRenderer
+		m_pComponentTypesInstance->RegisterInvokaction<MeshRenderer>(Glory::Utils::ECS::InvocationType::OnValidate, MeshRenderSystem::OnValidate);
 		m_pComponentTypesInstance->RegisterInvokaction<MeshRenderer>(Glory::Utils::ECS::InvocationType::Draw, MeshRenderSystem::OnDraw);
 
 		// Spin

@@ -370,7 +370,7 @@ namespace Glory
 		object.Projection = camera.GetProjection();
 		object.ObjectID = 0;
 
-		pMaterial->SetProperties();
+		pMaterial->SetProperties(m_pEngine);
 		pMaterial->SetObjectData(object);
 
 		pGraphics->DrawMesh(m_pLineMesh, 0, m_LineVertexCount);

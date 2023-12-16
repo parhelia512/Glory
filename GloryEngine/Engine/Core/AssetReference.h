@@ -1,6 +1,8 @@
 #pragma once
 #include "UUID.h"
 #include "ResourceType.h"
+#include "Engine.h"
+#include "Resources.h"
 
 #include <Reflection.h>
 
@@ -18,8 +20,6 @@ namespace Glory
 		const UUID AssetUUID() const;
 		UUID* AssetUUIDMember();
 		void SetUUID(UUID uuid);
-		Resource* GetResource() const;
-		Resource* GetResourceImmediate() const;
 
 		virtual const uint32_t TypeHash() { return 0; };
 
@@ -49,15 +49,9 @@ namespace Glory
 			return new AssetReference<T>(m_AssetUUID);
 		}
 
-		T* Get() const
+		T* Get(Engine* pEngine) const
 		{
-			Resource* pResource = GetResource();
-			return pResource ? dynamic_cast<T*>(pResource) : nullptr;
-		}
-
-		T* GetImmediate() const
-		{
-			Resource* pResource = GetResourceImmediate();
+			T* pResource = pEngine->GetResources().Manager<T>()->Get(m_AssetUUID);
 			return pResource ? dynamic_cast<T*>(pResource) : nullptr;
 		}
 	};
