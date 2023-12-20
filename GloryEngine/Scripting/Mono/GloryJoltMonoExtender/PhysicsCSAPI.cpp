@@ -10,10 +10,11 @@
 #include <AssemblyDomain.h>
 #include <JoltPhysicsModule.h>
 #include <RendererModule.h>
+#include <Engine.h>
 
 #define PHYSICS Game::GetGame().GetEngine()->GetOptionalModule<JoltPhysicsModule>()
 #define RENDERER Game::GetGame().GetEngine()->GetMainModule<RendererModule>()
-#define SCRIPTING Game::GetGame().GetEngine()->GetScriptingModule<GloryMonoScipting>()
+#define SCRIPTING Game::GetGame().GetEngine()->GetOptionalModule<GloryMonoScipting>()
 #define ASSEMBLY SCRIPTING->GetMonoManager()->ActiveDomain()->GetAssembly("GloryEngine.Jolt.dll")
 
 namespace Glory

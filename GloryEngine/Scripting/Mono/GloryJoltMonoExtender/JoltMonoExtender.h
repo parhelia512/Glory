@@ -7,8 +7,9 @@
 namespace Glory
 {
 	class Engine;
+	class Module;
 
-	extern "C" GLORY_API IScriptExtender* OnLoadExtension(Glory::GloryContext* pContext);
+	extern "C" GLORY_API bool OnLoadExtra(Glory::GloryContext* pContext, const char* path, Module* pModule, Module* pRequiredModule);
 
 	class JoltLibManager : public IMonoLibManager
 	{
@@ -20,15 +21,15 @@ namespace Glory
 	class JoltMonoExtender : public IScriptExtender
 	{
 	public:
-		JoltMonoExtender();
+		JoltMonoExtender(const char* path);
 		virtual ~JoltMonoExtender();
 
 	public: /* Script extension implementation */
-		virtual std::string Language() override;
 		virtual void GetInternalCalls(std::vector<InternalCall>& internalCalls) override;
 		virtual void GetLibs(ScriptingExtender* pScriptingExtender) override;
 
 	private:
 		JoltLibManager* m_pLibManager;
+		std::string m_Path;
 	};
 }

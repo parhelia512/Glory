@@ -6,8 +6,6 @@
 #include "Systems.h"
 #include "Components.h"
 
-#include "ScriptedComponentSerializer.h"
-
 #include <Reflection.h>
 
 namespace Glory
@@ -137,9 +135,6 @@ namespace Glory
 		RegisterComponent<ModelRenderer>();
 		RegisterComponent<LightComponent>();
 
-		/* Always register scripted component as last to preserve execution order */
-		RegisterComponent<ScriptedComponent>();
-
 		const FieldData* pColorField = LightComponent::GetTypeData()->GetFieldData(0);
 		Reflect::SetFieldFlags(pColorField, Vec4Flags::Color);
 
@@ -148,7 +143,6 @@ namespace Glory
 		RegisterComponent<LookAt>();
 
 		/* Register serializers */
-		PropertySerializer::RegisterSerializer<ScriptedComponentSerailizer>();
 		ResourceType::RegisterResource<GScene>(".gscene");
 
 		// Register Invocations
@@ -173,14 +167,6 @@ namespace Glory
 
 		// Spin
 		m_pComponentTypesInstance->RegisterInvokaction<Spin>(Glory::Utils::ECS::InvocationType::Update, SpinSystem::OnUpdate);
-
-		// Scripted
-		m_pComponentTypesInstance->RegisterInvokaction<ScriptedComponent>(Glory::Utils::ECS::InvocationType::OnAdd, ScriptedSystem::OnAdd);
-		m_pComponentTypesInstance->RegisterInvokaction<ScriptedComponent>(Glory::Utils::ECS::InvocationType::Update, ScriptedSystem::OnUpdate);
-		m_pComponentTypesInstance->RegisterInvokaction<ScriptedComponent>(Glory::Utils::ECS::InvocationType::Draw, ScriptedSystem::OnDraw);
-		m_pComponentTypesInstance->RegisterInvokaction<ScriptedComponent>(Glory::Utils::ECS::InvocationType::Start, ScriptedSystem::OnStart);
-		m_pComponentTypesInstance->RegisterInvokaction<ScriptedComponent>(Glory::Utils::ECS::InvocationType::Stop, ScriptedSystem::OnStop);
-		m_pComponentTypesInstance->RegisterInvokaction<ScriptedComponent>(Glory::Utils::ECS::InvocationType::OnValidate, ScriptedSystem::OnValidate);
 	}
 
 	void SceneManager::Cleanup()

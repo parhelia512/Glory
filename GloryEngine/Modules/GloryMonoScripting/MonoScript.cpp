@@ -8,6 +8,7 @@
 #include "AssemblyDomain.h"
 #include "CoreLibManager.h"
 
+#include <Engine.h>
 #include <SceneManager.h>
 #include <BinaryStream.h>
 #include <AssetDatabase.h>
@@ -27,7 +28,7 @@ namespace Glory
 	}
 
 	MonoScript::MonoScript(FileData* pFileData, std::string_view ns, std::string_view className)
-		: Script(pFileData), m_NamespaceName(ns), m_ClassName(className)
+		: FileData(pFileData), m_NamespaceName(ns), m_ClassName(className)
 	{
 		APPEND_TYPE(MonoScript);
 	}
@@ -59,7 +60,7 @@ namespace Glory
 		if (pClass == nullptr) return;
 		MonoObject* pMonoObject = LoadObject(objectID, sceneID, pClass->m_pClass);
 		if (pMonoObject == nullptr) return;
-		Game::GetGame().GetEngine()->GetScriptingModule<GloryMonoScipting>()->GetMonoManager()->GetMethodsHelper()->InvokeScriptingMethod(pMonoObject, method, args);
+		Game::GetGame().GetEngine()->GetOptionalModule<GloryMonoScipting>()->GetMonoManager()->GetMethodsHelper()->InvokeScriptingMethod(pMonoObject, method, args);
 	}
 
 	void MonoScript::SetValue(UUID objectID, UUID sceneID, const std::string& name, void* value)

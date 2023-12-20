@@ -1,6 +1,8 @@
 #include "InputCSAPI.h"
 #include "GloryMonoScipting.h"
 #include "MonoManager.h"
+
+#include <Engine.h>
 #include <InputModule.h>
 
 #define INPUT_MODULE Game::GetGame().GetEngine()->GetMainModule<InputModule>();
@@ -113,7 +115,6 @@ namespace Glory
 	}
 
 #pragma endregion
-
 
 #pragma region Binding
 

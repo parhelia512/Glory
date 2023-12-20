@@ -1,9 +1,10 @@
 #include "ScriptedComponentSerializer.h"
 #include "PropertySerializer.h"
+#include "MonoComponents.h"
 
 namespace Glory
 {
-	ScriptedComponentSerailizer::ScriptedComponentSerailizer() : PropertySerializer(ResourceType::GetHash<ScriptedComponent>())
+	ScriptedComponentSerailizer::ScriptedComponentSerailizer() : PropertySerializer(ResourceType::GetHash<MonoScriptComponent>())
 	{
 	}
 
@@ -13,7 +14,7 @@ namespace Glory
 
 	void ScriptedComponentSerailizer::Serialize(const std::string& name, void* data, uint32_t typeHash, YAML::Emitter& out)
 	{
-		ScriptedComponent* pScriptedComponent = (ScriptedComponent*)data;
+		MonoScriptComponent* pScriptedComponent = (MonoScriptComponent*)data;
 		out << YAML::Key << "Properties";
 		out << YAML::BeginMap;
 		out << YAML::Key << "m_Script" << YAML::Value << pScriptedComponent->m_Script.AssetUUID();
@@ -25,7 +26,7 @@ namespace Glory
 	{
 		YAML::Node scriptNode = object["m_Script"];
 
-		ScriptedComponent* pScriptedComponent = (ScriptedComponent*)data;
+		MonoScriptComponent* pScriptedComponent = (MonoScriptComponent*)data;
 		pScriptedComponent->m_Script.SetUUID(scriptNode.as<uint64_t>());
 		pScriptedComponent->m_ScriptData = object["ScriptData"];
 	}

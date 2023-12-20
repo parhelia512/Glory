@@ -1,6 +1,5 @@
 #include "Module.h"
 #include "GloryContext.h"
-#include "IScriptExtender.h"
 
 namespace Glory
 {
@@ -45,11 +44,6 @@ namespace Glory
         path = m_ModulePath;
         path.append("Resources").append(resource);
         return std::filesystem::exists(path);
-    }
-
-    void Module::AddScriptingExtender(IScriptExtender* pScriptExtender)
-    {
-        m_pScriptingExtender.push_back(pScriptExtender);
     }
 
     const Version& Module::ModuleVersion() const

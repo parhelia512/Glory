@@ -1,6 +1,8 @@
 #include "MonoScriptObjectManager.h"
 #include "MonoManager.h"
 
+#include <Debug.h>
+
 namespace Glory
 {
     MonoObject* MonoScriptObjectManager::GetMonoScriptDummyObject(MonoClass* pClass)

@@ -6,6 +6,8 @@
 #include "ScriptingMethodsHelper.h"
 #include "AssemblyDomain.h"
 
+#include <Debug.h>
+
 #include <mono/jit/jit.h>
 #include <mono/utils/mono-counters.h>
 #include <mono/utils/mono-logger.h>
@@ -332,7 +334,7 @@ namespace Glory
 		if (mono_gc_pending_finalizers())
 		{
 			mono_gc_finalize_notify();
-			while (mono_gc_pending_finalizers());
+			while (mono_gc_pending_finalizers())
 			{
 				std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 			}

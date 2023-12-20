@@ -1,8 +1,11 @@
 #pragma once
-#include <ScriptingExtender.h>
+#include <cstdint>
+#include <vector>
 
 namespace Glory
 {
+	class InternalCall;
+
 	struct MonoEntityHandle
 	{
 		MonoEntityHandle();

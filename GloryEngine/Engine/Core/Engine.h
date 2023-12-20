@@ -9,10 +9,8 @@ namespace Glory
 {
 	class Module;
 	class IModuleLoopHandler;
-	class ScriptingExtender;
 	class GraphicsThread;
 	class ThreadManager;
-	class ScriptingModule;
 	class LoaderModule;
 	class SceneManager;
 
@@ -32,9 +30,6 @@ namespace Glory
 		 */
 		Module** pMainModules;
 
-		uint32_t ScriptingModulesCount;
-		ScriptingModule** pScriptingModules;
-
 		uint32_t OptionalModuleCount;
 		Module** pOptionalModules;
 	};
@@ -53,8 +48,6 @@ namespace Glory
 		void AddMainModule(Module* pModule, bool initialize = false);
 		void AddOptionalModule(Module* pModule, bool initialize = false);
 		void AddInternalModule(Module* pModule, bool initialize = false);
-
-		ScriptingExtender* GetScriptingExtender() const;
 
 		Module* GetMainModule(const std::type_info& type) const;
 		Module* GetMainModule(const std::string& name) const;
@@ -93,18 +86,6 @@ namespace Glory
 		{
 			Module* pModule = GetInternalModule(typeid(T));
 			return pModule ? (T*)pModule : nullptr;
-		}
-
-		template<class T>
-		T* GetScriptingModule()
-		{
-			for (size_t i = 0; i < m_pScriptingModules.size(); i++)
-			{
-				T* pScriptingModule = dynamic_cast<T*>(m_pScriptingModules[i]);
-				if (pScriptingModule) return pScriptingModule;
-			}
-
-			return nullptr;
 		}
 
 		template<class T>
@@ -155,17 +136,12 @@ namespace Glory
 		friend class Game;
 		friend class GameThread;
 		friend class GraphicsThread;
-		friend class ScriptingExtender;
 
 		/* Original create info*/
 		const EngineCreateInfo m_CreateInfo;
 
 		/* Scene Manager */
 		SceneManager* m_pSceneManager;
-
-		/* Scripting */
-		ScriptingExtender* m_pScriptingExtender;
-		std::vector<ScriptingModule*> m_pScriptingModules;
 
 		/* Main Modules */
 		std::vector<Module*> m_pMainModules;

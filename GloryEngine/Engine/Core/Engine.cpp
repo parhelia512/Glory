@@ -9,8 +9,6 @@
 #include "SceneObjectRefSerializer.h"
 #include "ShapePropertySerializer.h"
 #include "ShaderManager.h"
-#include "ScriptExtensions.h"
-#include "ScriptingExtender.h"
 #include "GloryContext.h"
 #include "LayerRef.h"
 #include "SceneObjectRef.h"
@@ -25,9 +23,6 @@
 
 #include "TimerModule.h"
 #include "ProfilerModule.h"
-
-#include "ScriptingModule.h"
-#include "IScriptExtender.h"
 
 #include <JobManager.h>
 #include <ThreadManager.h>
@@ -75,11 +70,6 @@ namespace Glory
 		pModule->Initialize();
 		pModule->PostInitialize();
 		pModule->m_IsInitialized = true;
-	}
-
-	ScriptingExtender* Engine::GetScriptingExtender() const
-	{
-		return m_pScriptingExtender;
 	}
 
 	Module* Engine::GetMainModule(const std::type_info& type) const
@@ -203,7 +193,7 @@ namespace Glory
 	Engine::Engine(const EngineCreateInfo& createInfo)
 		: m_pSceneManager(new SceneManager(this)), m_pThreadManager(ThreadManager::GetInstance()),
 		m_pJobManager(Jobs::JobManager::GetInstance()), m_pGraphicsThread(nullptr),
-		m_pScriptingExtender(new ScriptingExtender()), m_CreateInfo(createInfo)
+		m_CreateInfo(createInfo)
 	{
 		/* Copy main modules */
 		m_pMainModules.resize(createInfo.MainModuleCount);
@@ -229,18 +219,6 @@ namespace Glory
 		for (size_t i = 0; i < m_pOptionalModules.size(); i++)
 		{
 			m_pAllModules[currentSize + i] = m_pOptionalModules[i];
-		}
-
-		m_pScriptingModules.resize(createInfo.ScriptingModulesCount);
-		if (m_pScriptingModules.size() > 0) memcpy(&m_pScriptingModules[0], createInfo.pScriptingModules, createInfo.ScriptingModulesCount * sizeof(ScriptingModule*));
-
-		/* Add scripting modules */
-		currentSize = m_pAllModules.size();
-		m_pAllModules.resize(currentSize + m_pScriptingModules.size() * 2);
-		for (size_t i = 0; i < m_pScriptingModules.size(); ++i)
-		{
-			m_pAllModules[currentSize + i] = m_pScriptingModules[i];
-			m_pAllModules[currentSize + m_pScriptingModules.size() + i] = m_pScriptingModules[i]->CreateLoaderModule();
 		}
 
 		AddInternalModule(new TimerModule);
@@ -277,9 +255,6 @@ namespace Glory
 
 		delete m_pGraphicsThread;
 		m_pGraphicsThread = nullptr;
-
-		delete m_pScriptingExtender;
-		m_pScriptingExtender = nullptr;
 
 		m_pSceneManager->Cleanup();
 		delete m_pSceneManager;
@@ -318,12 +293,6 @@ namespace Glory
 				m_TypeHashToLoader[typeHash] = index;
 			}
 
-			for (size_t j = 0; j < m_pAllModules[i]->m_pScriptingExtender.size(); j++)
-			{
-				IScriptExtender* pScriptExtender = m_pAllModules[i]->m_pScriptingExtender[j];
-				m_pScriptingExtender->RegisterManagedExtender(m_pAllModules[i], pScriptExtender);
-			}
-
 			if (m_pAllModules[i]->m_IsInitialized) continue;			
 			m_pAllModules[i]->m_pEngine = this;
 			m_pAllModules[i]->Initialize();
@@ -331,8 +300,6 @@ namespace Glory
 		}
 
 		AssetManager::Initialize();
-
-		m_pScriptingExtender->Initialize(this);
 
 		/* Create graphics thread */
 		m_pGraphicsThread = new GraphicsThread(this);

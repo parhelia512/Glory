@@ -11,6 +11,7 @@
 #include <SceneManager.h>
 #include <MathCSAPI.h>
 #include <GloryMonoScipting.h>
+#include <Engine.h>
 
 namespace Glory
 {
