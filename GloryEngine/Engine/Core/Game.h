@@ -4,6 +4,8 @@
 #include "Window.h"
 #include "Glory.h"
 
+#include <filesystem>
+
 namespace Glory
 {
 	class Game
@@ -19,10 +21,10 @@ namespace Glory
 
 		static void Quit();
 
-		void OverrideAssetPathFunc(std::function<std::string()> func);
-		void OverrideSettingsPathFunc(std::function<std::string()> func);
-		static std::string GetAssetPath();
-		static std::string GetSettingsPath();
+		void SetAssetPath(const std::filesystem::path& path);
+		void SetSettingsPath(const std::filesystem::path& path);
+		static const std::string_view GetAssetPath();
+		static const std::string_view GetSettingsPath();
 
 		const ApplicationType& GetApplicationType() const;
 
@@ -39,8 +41,8 @@ namespace Glory
 
 		static Game m_Game;
 		static bool m_bGameCreated;
-		std::function<std::string()> m_AssetPathFunc;
-		std::function<std::string()> m_SettingsPathFunc;
+		std::string m_AssetPath;
+		std::string m_SettingsPath;
 		ApplicationType m_ApplicationType;
 	};
 }

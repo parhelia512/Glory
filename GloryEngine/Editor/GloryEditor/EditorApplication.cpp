@@ -59,9 +59,6 @@ namespace Glory::Editor
 	{
 		m_pEditorInstance = this;
 
-		game.OverrideAssetPathFunc(EditorApplication::AssetPathOverrider);
-		game.OverrideSettingsPathFunc(EditorApplication::SettingsPathOverrider);
-
 		m_pShaderProcessor = new EditorShaderProcessor();
 		EditorAssetDatabase::Initialize();
 
@@ -303,23 +300,6 @@ namespace Glory::Editor
 		m_pPlayer = new EditorPlayer();
 
 		Debug::LogInfo("Initialized editor platform");
-	}
-
-	std::string EditorApplication::AssetPathOverrider()
-	{
-		ProjectSpace* pProject = ProjectSpace::GetOpenProject();
-		if (pProject == nullptr) return std::string("./Assets");
-		std::filesystem::path path = pProject->RootPath();
-		path.append("Assets");
-		return path.string();
-	}
-
-	std::string EditorApplication::SettingsPathOverrider()
-	{
-		ProjectSpace* pProject = ProjectSpace::GetOpenProject();
-		if (pProject == nullptr) return std::string("./");
-		std::filesystem::path path = pProject->SettingsPath();
-		return path.string();
 	}
 
 	void EditorApplication::VersionCheck(const Glory::Version& latestVersion)

@@ -1,40 +1,50 @@
 #include "MonoEditorExtension.h"
 #include "MonoScriptTumbnail.h"
 #include "MonoScriptImporter.h"
+#include "MonoScriptComponentEditor.h"
 
-#include <GloryMonoScipting.h>
-#include <EditorAssetDatabase.h>
-#include <EditorPreferencesWindow.h>
-#include <EditorAssetCallbacks.h>
 #include <Game.h>
 #include <Engine.h>
-#include <ObjectMenuCallbacks.h>
-#include <FileBrowser.h>
-#include <fstream>
 #include <AssetDatabase.h>
-#include <MonoScript.h>
-#include <Tumbnail.h>
 #include <MonoManager.h>
 #include <MonoScriptObjectManager.h>
 #include <AssemblyDomain.h>
 #include <AssetManager.h>
+#include <MonoScript.h>
+#include <GloryMonoScipting.h>
 
-#include <string>
+#include <EditorAssetDatabase.h>
+#include <EditorPreferencesWindow.h>
+#include <EditorAssetCallbacks.h>
+#include <ObjectMenuCallbacks.h>
+#include <FileBrowser.h>
+#include <Tumbnail.h>
+#include <EntitySceneObjectEditor.h>
+#include <ScriptingExtender.h>
+#include <MainEditor.h>
+#include <CreateEntityObjectsCallbacks.h>
 #include <EditorApplication.h>
 #include <MenuBar.h>
+#include <CreateObjectAction.h>
+#include <EditableEntity.h>
+#include <EntityEditor.h>
 
+#include <fstream>
+#include <string>
 #include <tchar.h>
 #include <locale>
 #include <codecvt>
 #include <windows.h>
 #include <tinyfiledialogs.h>
 
-#include <GloryMonoScipting.h>
+#include <IconsFontAwesome6.h>
 
 EXTENSION_CPP(MonoEditorExtension)
 
 namespace Glory::Editor
 {
+	CREATE_OBJECT_CALLBACK_CPP(Scripted, MonoScriptComponent, ());
+
 	GloryMonoScipting* MonoEditorExtension::m_pMonoScriptingModule = nullptr;
 
 	MonoScriptImporter ScriptImporter;
@@ -84,7 +94,7 @@ namespace Glory::Editor
 
 	void MonoEditorExtension::Initialize()
 	{
-		m_pMonoScriptingModule = Game::GetGame().GetEngine()->GetScriptingModule<GloryMonoScipting>();
+		m_pMonoScriptingModule = Game::GetGame().GetEngine()->GetOptionalModule<GloryMonoScipting>();
 
 		EditorApplication* pEditorApp = EditorApplication::GetInstance();
 		EditorSettings& settings = pEditorApp->GetMainEditor()->Settings();
@@ -108,6 +118,11 @@ namespace Glory::Editor
 		EditorPlayer::RegisterLoopHandler(this);
 
 		Importer::Register(&ScriptImporter);
+
+		Editor::RegisterEditor<MonoScriptComponentEditor>();
+		EntitySceneObjectEditor::AddComponentIcon<MonoScriptComponent>(ICON_FA_FILE_CODE);
+
+		OBJECT_CREATE_MENU(Scripted, MonoScriptComponent);
 	}
 
 	void MonoEditorExtension::FindVisualStudioPath()
@@ -194,7 +209,7 @@ namespace Glory::Editor
 		path = path.parent_path().append("Library/Assembly");
 		/* TODO: Lib manager for user assemblies */
 
-		m_pMonoScriptingModule->GetMonoManager()->AddLib(ScriptingLib("csharp", name, path.string(), true, nullptr, true));
+		m_pMonoScriptingModule->GetMonoManager()->AddLib(ScriptingLib(name, path.string(), true, nullptr, true));
 	}
 
 	void MonoEditorExtension::OnCreateScript(Object* pObject, const ObjectMenuType& menuType)
@@ -220,7 +235,7 @@ namespace Glory::Editor
 		std::filesystem::path assembliesPath = pProject->LibraryPath();
 		assembliesPath.append("Assembly");
 
-		ScriptingExtender* pScriptingExtender = Game::GetGame().GetEngine()->GetScriptingExtender();
+		ScriptingExtender* pScriptingExtender = m_pMonoScriptingModule->GetScriptingExtender();
 		for (size_t i = 0; i < pScriptingExtender->InternalLibCount(); ++i)
 		{
 			const ScriptingLib& lib = pScriptingExtender->GetInternalLib(i);
@@ -234,11 +249,11 @@ namespace Glory::Editor
 
 	void MonoEditorExtension::GeneratePremakeFile(ProjectSpace* pProject)
 	{
-		ScriptingExtender* pScriptingExtender = Game::GetGame().GetEngine()->GetScriptingExtender();
+		ScriptingExtender* pScriptingExtender = m_pMonoScriptingModule->GetScriptingExtender();
 
-		std::string projectName = pProject->Name();
+		const std::string projectName = pProject->Name();
 		// TODO: Make this setable in engine settings later
-		std::string dotNetFramework = "4.7.1";
+		const std::string dotNetFramework = "4.7.1";
 
 		std::filesystem::path cachePath = pProject->CachePath();
 		std::filesystem::path luaPath = cachePath;
@@ -397,8 +412,8 @@ namespace Glory::Editor
 	{
 		ResourceMeta meta;
 		EditorAssetDatabase::GetAssetMetadata(callback.m_UUID, meta);
-		uint32_t typeHash = meta.Hash();
-		size_t scriptHash = ResourceType::GetHash<Script>();
+		const uint32_t typeHash = meta.Hash();
+		const size_t scriptHash = ResourceType::GetHash<MonoScript>();
 		ResourceType* pResourcerType = ResourceType::GetResourceType(typeHash);
 
 		size_t subTypesCount = ResourceType::SubTypeCount(pResourcerType);

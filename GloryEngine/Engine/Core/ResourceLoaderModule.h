@@ -42,6 +42,7 @@ namespace Glory
 		virtual void Cleanup() = 0;
 
 	private:
+		friend class Engine;
 		virtual bool HasPriority() override;
 	};
 

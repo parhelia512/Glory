@@ -145,27 +145,6 @@ namespace Glory::Editor
 		return change;
 	}
 
-	bool PropertyDrawer::DrawProperty(const ScriptProperty& scriptProperty, YAML::Node& node, uint32_t flags)
-	{
-		m_CurrentPropertyPath = scriptProperty.m_Name;
-		uint32_t typeHash = scriptProperty.m_TypeHash;
-		uint32_t elementTypeHash = scriptProperty.m_ElementTypeHash;
-
-		auto it = std::find_if(m_PropertyDrawers.begin(), m_PropertyDrawers.end(), [&](PropertyDrawer* propertyDrawer)
-		{
-			return propertyDrawer->GetPropertyTypeHash() == typeHash;
-		});
-
-		if (it != m_PropertyDrawers.end())
-		{
-			PropertyDrawer* drawer = *it;
-			return drawer->Draw(scriptProperty.m_Name, node[scriptProperty.m_Name], elementTypeHash, flags);
-		}
-
-		ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), scriptProperty.m_Name);
-		return false;
-	}
-
 	bool PropertyDrawer::DrawProperty(const std::string& label, YAML::Node& node, uint32_t typeHash, uint32_t elementTypeHash, uint32_t flags)
 	{
 		auto it = std::find_if(m_PropertyDrawers.begin(), m_PropertyDrawers.end(), [&](PropertyDrawer* propertyDrawer)
@@ -199,6 +178,16 @@ namespace Glory::Editor
 
 		if (it == m_PropertyDrawers.end()) return nullptr;
 		return *it;
+	}
+
+	void PropertyDrawer::SetCurrentPropertyPath(std::string_view path)
+	{
+		m_CurrentPropertyPath = path;
+	}
+
+	void PropertyDrawer::SetCurrentPropertyPath(std::filesystem::path& path)
+	{
+		m_CurrentPropertyPath = path;
 	}
 
 	const std::filesystem::path& PropertyDrawer::GetCurrentPropertyPath()

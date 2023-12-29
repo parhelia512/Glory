@@ -30,7 +30,6 @@ namespace Glory::Editor
 		{ ResourceType::GetHash<ModelRenderer>(), ICON_FA_CUBES },
 		{ ResourceType::GetHash<CameraComponent>(), ICON_FA_VIDEO },
 		{ ResourceType::GetHash<LayerComponent>(), ICON_FA_LAYER_GROUP },
-		{ ResourceType::GetHash<ScriptedComponent>(), ICON_FA_FILE_CODE },
 		{ ResourceType::GetHash<LightComponent>(), ICON_FA_LIGHTBULB },
 	};
 

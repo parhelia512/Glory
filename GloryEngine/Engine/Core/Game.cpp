@@ -88,24 +88,24 @@ namespace Glory
 		m_Game.m_bIsRunning = false;
 	}
 
-	void Game::OverrideAssetPathFunc(std::function<std::string()> func)
+	void Game::SetAssetPath(const std::filesystem::path& path)
 	{
-		m_AssetPathFunc = func;
+		m_AssetPath = path.string();
 	}
 
-	void Game::OverrideSettingsPathFunc(std::function<std::string()> func)
+	void Game::SetSettingsPath(const std::filesystem::path& path)
 	{
-		m_SettingsPathFunc = func;
+		m_SettingsPath = path.string();
 	}
 
-	std::string Game::GetAssetPath()
+	const std::string_view Game::GetAssetPath()
 	{
-		return GetGame().m_AssetPathFunc();
+		return GetGame().m_AssetPath;
 	}
 
-	std::string Game::GetSettingsPath()
+	const std::string_view Game::GetSettingsPath()
 	{
-		return GetGame().m_SettingsPathFunc();
+		return GetGame().m_SettingsPath;
 	}
 
 	const ApplicationType& Game::GetApplicationType() const
@@ -127,9 +127,6 @@ namespace Glory
 	void Game::Initialize()
 	{
 		if (m_bInitialized) return;
-		m_AssetPathFunc = []() { return "./Assets"; };
-		m_SettingsPathFunc = []() { return "./"; };
-
 		m_pEngine->Initialize();
 		m_bInitialized = true;
 		m_bIsRunning = true;

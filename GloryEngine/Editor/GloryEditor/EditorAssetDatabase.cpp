@@ -355,7 +355,7 @@ namespace Glory::Editor
 		}
 
 		// Generate a meta file
-		const std::string assetPath = Game::GetAssetPath();
+		const std::filesystem::path assetPath = Game::GetAssetPath();
 
 		std::filesystem::path namePath = fileName;
 		if (!subPath.empty()) namePath.append(subPath.string());
@@ -427,7 +427,6 @@ namespace Glory::Editor
 		// Generate a meta
 		const ResourceType* pType = ResourceType::GetResourceType<GScene>();
 
-		const std::string assetPath = Game::GetAssetPath();
 		ResourceMeta meta(extension.string(), fileName.string(), pScene->GetUUID(), pType->Hash());
 
 		AssetDatabase::SetIDAndName(pScene, meta.ID(), fileName.string());
@@ -458,7 +457,6 @@ namespace Glory::Editor
 		// Generate a meta
 		const ResourceType* pType = ResourceType::GetResourceType<GScene>();
 
-		const std::string assetPath = Game::GetAssetPath();
 		ResourceMeta meta(extension.string(), fileName.string(), UUID(), pType->Hash());
 
 		std::filesystem::path relativePath = filePath.lexically_relative(Game::GetGame().GetAssetPath());

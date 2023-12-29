@@ -79,9 +79,6 @@ namespace Glory::Editor
 		void InitializePlatform(Game& game);
 		void InitializeExtensions();
 
-		static std::string AssetPathOverrider();
-		static std::string SettingsPathOverrider();
-
 		static void VersionCheck(const Glory::Version& latestVersion);
 
 	private:

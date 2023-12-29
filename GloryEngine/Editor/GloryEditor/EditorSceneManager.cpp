@@ -38,7 +38,7 @@ namespace Glory::Editor
 		SceneManager* pScenes = Game::GetGame().GetEngine()->GetSceneManager();
 		AssetLocation location;
 		EditorAssetDatabase::GetAssetLocation(uuid, location);
-		std::string path = Game::GetGame().GetAssetPath() + "\\" + location.Path;
+		std::string path = std::string{ Game::GetGame().GetAssetPath() } + "\\" + location.Path;
 
 		YAML::Node node = YAML::LoadFile(path);
 		std::filesystem::path filePath = path;
@@ -73,7 +73,7 @@ namespace Glory::Editor
 			if (!EditorAssetDatabase::GetAssetLocation(uuid, location)) return; // new scene
 
 			if (location.Path == "") return;
-			Save(uuid, Game::GetGame().GetAssetPath() + "\\" + location.Path);
+			Save(uuid, std::string{ Game::GetGame().GetAssetPath() } + "\\" + location.Path);
 		});
 	}
 
@@ -139,7 +139,7 @@ namespace Glory::Editor
 		}
 
 		if (location.Path == "") return;
-		Save(uuid, Game::GetGame().GetAssetPath() + "\\" + location.Path);
+		Save(uuid, std::string{ Game::GetGame().GetAssetPath() } + "\\" + location.Path);
 	}
 
 	void EditorSceneManager::SaveSceneAs(UUID uuid)

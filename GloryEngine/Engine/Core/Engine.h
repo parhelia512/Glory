@@ -48,6 +48,7 @@ namespace Glory
 		void AddMainModule(Module* pModule, bool initialize = false);
 		void AddOptionalModule(Module* pModule, bool initialize = false);
 		void AddInternalModule(Module* pModule, bool initialize = false);
+		void AddLoaderModule(LoaderModule* pModule, bool initialize = false);
 
 		Module* GetMainModule(const std::type_info& type) const;
 		Module* GetMainModule(const std::string& name) const;
