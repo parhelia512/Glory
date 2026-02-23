@@ -2173,7 +2173,8 @@ namespace Glory
 		glBindFramebuffer(GL_FRAMEBUFFER, renderTexture.m_GLFramebufferID);
 		OpenGLGraphicsModule::LogGLError(glGetError());
 
-		const size_t numAttachments = renderTexture.m_Info.Attachments.size() + (renderTexture.m_Info.HasDepth ? 1 : 0) + (renderTexture.m_Info.HasStencil ? 1 : 0);
+		const size_t numAttachments = renderTexture.m_Info.Attachments.size() +
+			(renderTexture.m_Info.HasDepth ? 1 : 0) + (renderTexture.m_Info.HasStencil ? 1 : 0);
 		renderTexture.m_AttachmentNames.resize(numAttachments);
 		renderTexture.m_Textures.resize(numAttachments);
 
@@ -2187,7 +2188,9 @@ namespace Glory
 		{
 			const Attachment& attachment = renderTexture.m_Info.Attachments[i];
 			renderTexture.m_Textures[i] = attachment.Texture ? attachment.Texture :
-				CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, attachment.Format, attachment.InternalFormat, attachment.ImageType, attachment.m_Type, IF_None, attachment.ImageAspect, sampler });
+				CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height,
+					attachment.Format, attachment.InternalFormat, attachment.ImageType,
+					attachment.m_Type, attachment.Flags, attachment.ImageAspect, sampler });
 			renderTexture.m_AttachmentNames[i] = attachment.Name;
 			++textureCounter;
 		}
@@ -2196,7 +2199,9 @@ namespace Glory
 		if (renderTexture.m_Info.HasDepth)
 		{
 			depthIndex = textureCounter;
-			renderTexture.m_Textures[depthIndex] = CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, PixelFormat::PF_Depth, PixelFormat::PF_Depth32, ImageType::IT_2D, DataType::DT_UInt, IF_None, ImageAspect::IA_Depth, sampler });
+			renderTexture.m_Textures[depthIndex] =
+				CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, PixelFormat::PF_Depth,
+					PixelFormat::PF_Depth32, ImageType::IT_2D, DataType::DT_UInt, IF_None, ImageAspect::IA_Depth, sampler });
 			renderTexture.m_AttachmentNames[depthIndex] = "Depth";
 			++textureCounter;
 		}
@@ -2204,7 +2209,9 @@ namespace Glory
 		if (renderTexture.m_Info.HasStencil)
 		{
 			stencilIndex = textureCounter;
-			renderTexture.m_Textures[stencilIndex] = CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, PixelFormat::PF_Stencil, PixelFormat::PF_R8Uint, ImageType::IT_2D, DataType::DT_UByte, IF_None, ImageAspect::IA_Stencil, sampler });
+			renderTexture.m_Textures[stencilIndex] =
+				CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, PixelFormat::PF_Stencil,
+					PixelFormat::PF_R8Uint, ImageType::IT_2D, DataType::DT_UByte, IF_None, ImageAspect::IA_Stencil, sampler });
 			renderTexture.m_AttachmentNames[stencilIndex] = "Stencil";
 			++textureCounter;
 		}

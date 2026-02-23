@@ -140,6 +140,7 @@ namespace Glory
 		ImageAspect ImageAspect;
 		DataType m_Type;
 		bool m_AutoBind;
+		ImageFlags Flags = ImageFlags::IF_None;
 		bool m_SamplingEnabled = true;
 		TextureHandle Texture = 0;
 	};

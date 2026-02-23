@@ -326,6 +326,10 @@ namespace Glory
 				Attachment("Color", PixelFormat::PF_RGBA, PixelFormat::PF_R8G8B8A8Unorm,
 					Glory::ImageType::IT_2D, Glory::ImageAspect::IA_Color, DataType::DT_UByte)
 			);
+			/* If this is not the main renderer, we should expect that the render result will be copied somewhere */
+			if (!m_IsMainRenderer)
+				info.RenderTextureInfo.Attachments[0].Flags = ImageFlags::IF_CopySrc;
+
 			m_FinalFrameColorPasses[i] = pDevice->CreateRenderPass(std::move(info));
 	
 			RenderTextureHandle renderTexture = pDevice->GetRenderPassRenderTexture(m_FinalFrameColorPasses[i]);
@@ -614,6 +618,8 @@ namespace Glory
 		m_pModule->GetEngine()->GetConsole().RegisterCVarChangeHandler(std::string{ RendererCVARs::VisualizeLightComplexity }, [this](const CVar* cvar) {
 			SetDebugOverlayEnabled(NULL, DebugOverlayBitIndices::LightComplexity, cvar->m_Value != 0.0f);
 		});
+
+		m_IsMainRenderer = true;
 	}
 
 	//void GloryRenderer::Update()
