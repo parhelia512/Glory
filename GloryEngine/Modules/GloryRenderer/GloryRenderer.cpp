@@ -285,7 +285,7 @@ namespace Glory
 				{ BufferType::BT_Uniform }, { STF_Fragment }, { m_SamplePointsDomeSSBO },
 				{ {0, sizeof(glm::vec3)*m_SSAOKernelSize} }, RendererDSLayouts::m_GlobalSampleDomeSetLayout, m_GlobalSampleDomeSet);
 		}
-	
+
 		RendererDSLayouts::m_SSAOSamplersSetLayout = CreateSamplerDescriptorLayout(pDevice, 2, { 0, 1 }, { STF_Fragment }, { "Normal", "Depth" });
 		RendererDSLayouts::m_NoiseSamplerSetLayout = CreateSamplerDescriptorLayout(pDevice, 1, { 2 }, { STF_Fragment }, { "Noise" });
 		RendererDSLayouts::m_CameraSamplerSetLayout = CreateSamplerDescriptorLayout(pDevice, 6, { 0, 1, 2, 3, 4, 5 }, { STF_Fragment }, { "Color", "Normal", "Depth" });

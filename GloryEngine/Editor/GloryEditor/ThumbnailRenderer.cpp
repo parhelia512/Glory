@@ -105,26 +105,21 @@ namespace Glory::Editor
 
 		Entity lights = pScene->CreateEmptyObject("Lights");
 
-		Entity lightEntity = pScene->CreateEmptyObject("Light1");
-		pScene->SetParent(lightEntity.GetEntityID(), lights.GetEntityID());
-		LightComponent& light = lightEntity.AddComponent<LightComponent>();
-		light.m_Type = LightType::Point;
-		light.m_Shadows.m_Enable = false;
-		light.m_Intensity = 1.0f;
-		lightEntity.GetComponent<Transform>().Position = glm::vec3(-5.0f, 2.5f, 5.0f);
+		Entity sunEntity1 = pScene->CreateEmptyObject("Sun1");
+		pScene->SetParent(sunEntity1.GetEntityID(), lights.GetEntityID());
+		LightComponent& sun1 = sunEntity1.AddComponent<LightComponent>();
+		sun1.m_Type = LightType::Sun;
+		sun1.m_Shadows.m_Enable = false;
+		sun1.m_Intensity = 1.0f;
+		sunEntity1.GetComponent<Transform>().Rotation = glm::rotate(glm::identity<glm::quat>(), 45.0f, { -1.0f, 1.0f, 0.0f });
 
-		Entity lightEntity2 = pScene->CreateEmptyObject("Light2");
-		pScene->SetParent(lightEntity2.GetEntityID(), lights.GetEntityID());
-		LightComponent& light2 = lightEntity2.AddComponent<LightComponent>();
-		light2.m_Type = LightType::Point;
-		light2.m_Shadows.m_Enable = false;
-		light2.m_Intensity = 1.0f;
-		lightEntity2.GetComponent<Transform>().Position = glm::vec3(4.0f, 4.f, -5.0f);
-
-		Entity sunEntity = pScene->CreateEmptyObject("Light1");
-		pScene->SetParent(sunEntity.GetEntityID(), lights.GetEntityID());
-		LightComponent& sun = sunEntity.AddComponent<LightComponent>();
-		sun.m_Type = LightType::Sun;
+		Entity sunEntity2 = pScene->CreateEmptyObject("Sun2");
+		pScene->SetParent(sunEntity2.GetEntityID(), lights.GetEntityID());
+		LightComponent& sun2 = sunEntity2.AddComponent<LightComponent>();
+		sun2.m_Type = LightType::Sun;
+		sun2.m_Shadows.m_Enable = false;
+		sun2.m_Intensity = 1.0f;
+		sunEntity2.GetComponent<Transform>().Rotation = glm::rotate(glm::identity<glm::quat>(), 45.0f, { 1.0f, -1.0f, 0.0f });
 
 		pScene->GetRegistry().InvokeAll<CameraComponent>(Utils::ECS::InvocationType::OnEnableDraw);
 
