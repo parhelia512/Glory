@@ -3633,8 +3633,8 @@ namespace Glory
 		vk::CommandBuffer commandBuffer = BeginSingleTimeCommands();
 
 		TransitionImageLayout(commandBuffer, vkImage->m_VKImage, format, vkImage->m_VKFinalLayout,
-			vk::ImageLayout::eTransferDstOptimal, vkImage->m_VKAspect,
-			mipLevels, 1);
+			vk::ImageLayout::eTransferDstOptimal, vkImage->m_VKAspect, mipLevels, 1);
+
 		const vk::MemoryPropertyFlags memoryFlags = vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent;
 		BufferHandle stagingBuffer = CreateBuffer(memRequirements.size, BufferType::BT_TransferRead, BufferFlags::BF_Write);
 		VK_Buffer* vkStagingBuffer = m_Buffers.Find(stagingBuffer);
@@ -3676,11 +3676,14 @@ namespace Glory
 		{
 			const Attachment& attachment = renderTexture.m_Info.Attachments[i];
 			renderTexture.m_Textures[i] = attachment.Texture ? attachment.Texture :
-				CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, attachment.Format, attachment.InternalFormat, attachment.ImageType, attachment.m_Type, IF_None, attachment.ImageAspect, sampler, attachment.m_SamplingEnabled });
+				CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, attachment.Format,
+					attachment.InternalFormat, attachment.ImageType, attachment.m_Type, attachment.Flags,
+					attachment.ImageAspect, sampler, attachment.m_SamplingEnabled });
 			VK_Texture* vkTexture = m_Textures.Find(renderTexture.m_Textures[i]);
 			VK_Image* vkImage = m_Images.Find(vkTexture->m_Image);
 			if (!attachment.Texture)
-				vkImage->m_VKFinalLayout = attachment.m_SamplingEnabled ? vk::ImageLayout::eShaderReadOnlyOptimal : vk::ImageLayout::eColorAttachmentOptimal;
+				vkImage->m_VKFinalLayout = attachment.m_SamplingEnabled ?
+				vk::ImageLayout::eShaderReadOnlyOptimal : vk::ImageLayout::eColorAttachmentOptimal;
 			renderTexture.m_AttachmentNames[i] = attachment.Name;
 			renderTexture.m_BlendingSupportedBits.Set(i, vkImage->m_BlendingSupported);
 			++textureCounter;
@@ -3691,30 +3694,42 @@ namespace Glory
 		if (renderTexture.m_Info.HasDepth && renderTexture.m_Info.HasStencil)
 		{
 			depthStencilIndex = textureCounter;
-			renderTexture.m_Textures[depthStencilIndex] = CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, PixelFormat::PF_Depth, PixelFormat::PF_D32SfloatS8Uint, ImageType::IT_2D, DataType::DT_UInt, IF_None, ImageAspect::IA_Depth, sampler });
+			renderTexture.m_Textures[depthStencilIndex] =
+				CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, PixelFormat::PF_Depth,
+					PixelFormat::PF_D32SfloatS8Uint, ImageType::IT_2D, DataType::DT_UInt, IF_None,
+					ImageAspect::IA_Depth, sampler });
 			VK_Texture* vkTexture = m_Textures.Find(renderTexture.m_Textures[depthStencilIndex]);
 			VK_Image* vkImage = m_Images.Find(vkTexture->m_Image);
-			vkImage->m_VKFinalLayout = renderTexture.m_Info.EnableDepthStencilSampling ? vk::ImageLayout::eShaderReadOnlyOptimal : vk::ImageLayout::eStencilAttachmentOptimal;
+			vkImage->m_VKFinalLayout = renderTexture.m_Info.EnableDepthStencilSampling ?
+				vk::ImageLayout::eShaderReadOnlyOptimal : vk::ImageLayout::eStencilAttachmentOptimal;
 			renderTexture.m_AttachmentNames[depthStencilIndex] = "DepthStencil";
 			++textureCounter;
 		}
 		else if (renderTexture.m_Info.HasDepth)
 		{
 			depthStencilIndex = textureCounter;
-			renderTexture.m_Textures[depthStencilIndex] = CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, PixelFormat::PF_Depth, PixelFormat::PF_D32Sfloat, ImageType::IT_2D, DataType::DT_UInt, IF_None, ImageAspect::IA_Depth, sampler });
+			renderTexture.m_Textures[depthStencilIndex] =
+				CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, PixelFormat::PF_Depth,
+					PixelFormat::PF_D32Sfloat, ImageType::IT_2D, DataType::DT_UInt, IF_None,
+					ImageAspect::IA_Depth, sampler });
 			VK_Texture* vkTexture = m_Textures.Find(renderTexture.m_Textures[depthStencilIndex]);
 			VK_Image* vkImage = m_Images.Find(vkTexture->m_Image);
-			vkImage->m_VKFinalLayout = renderTexture.m_Info.EnableDepthStencilSampling ? vk::ImageLayout::eShaderReadOnlyOptimal : vk::ImageLayout::eDepthAttachmentOptimal;
+			vkImage->m_VKFinalLayout = renderTexture.m_Info.EnableDepthStencilSampling ?
+				vk::ImageLayout::eShaderReadOnlyOptimal : vk::ImageLayout::eDepthAttachmentOptimal;
 			renderTexture.m_AttachmentNames[depthStencilIndex] = "Depth";
 			++textureCounter;
 		}
 		else if (renderTexture.m_Info.HasStencil)
 		{
 			depthStencilIndex = textureCounter;
-			renderTexture.m_Textures[depthStencilIndex] = CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, PixelFormat::PF_Stencil, PixelFormat::PF_D16UnormS8Uint, ImageType::IT_2D, DataType::DT_UInt, IF_None, ImageAspect::IA_Stencil, sampler });
+			renderTexture.m_Textures[depthStencilIndex] =
+				CreateTexture({ renderTexture.m_Info.Width, renderTexture.m_Info.Height, PixelFormat::PF_Stencil,
+					PixelFormat::PF_D16UnormS8Uint, ImageType::IT_2D, DataType::DT_UInt, IF_None,
+					ImageAspect::IA_Stencil, sampler });
 			VK_Texture* vkTexture = m_Textures.Find(renderTexture.m_Textures[depthStencilIndex]);
 			VK_Image* vkImage = m_Images.Find(vkTexture->m_Image);
-			vkImage->m_VKFinalLayout = renderTexture.m_Info.EnableDepthStencilSampling ? vk::ImageLayout::eShaderReadOnlyOptimal : vk::ImageLayout::eDepthStencilAttachmentOptimal;
+			vkImage->m_VKFinalLayout = renderTexture.m_Info.EnableDepthStencilSampling ?
+				vk::ImageLayout::eShaderReadOnlyOptimal : vk::ImageLayout::eDepthStencilAttachmentOptimal;
 			renderTexture.m_AttachmentNames[depthStencilIndex] = "Stencil";
 			++textureCounter;
 		}
@@ -3765,7 +3780,8 @@ namespace Glory
 			vk::ColorSpaceKHR::eSrgbNonlinear);
 
 		/* Get shaw chain present mode */
-		const vk::PresentModeKHR swapchainPresentMode = SelectPresentMode(vsync ? VSyncPresentModes : InfiniteFPSPresentModes, surface);
+		const vk::PresentModeKHR swapchainPresentMode =
+			SelectPresentMode(vsync ? VSyncPresentModes : InfiniteFPSPresentModes, surface);
 		if (minImageCount == 0)
 			minImageCount = GetMinImageCountFromPresentMode(swapchainPresentMode);
 
@@ -3778,8 +3794,10 @@ namespace Glory
 				resolution.y
 			};
 
-			actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-			actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+			actualExtent.width = std::clamp(actualExtent.width,
+				capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+			actualExtent.height = std::clamp(actualExtent.height,
+				capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
 			swapchainExtent = actualExtent;
 		}

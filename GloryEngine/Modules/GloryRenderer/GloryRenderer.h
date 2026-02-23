@@ -231,5 +231,7 @@ namespace Glory
 		std::vector<MeshHandle> m_LineMeshes;
 
 		Utils::BitSet m_DebugOverlayBits;
+
+		bool m_IsMainRenderer = false;
 	};
 }
