@@ -3494,16 +3494,10 @@ namespace Glory
 		if (imageInfo.mipLevels > 1)
 			imageInfo.usage |= vk::ImageUsageFlagBits::eTransferSrc;
 
-		switch (format)
-		{
-		case vk::Format::eR32G32B32A32Sfloat:
-		case vk::Format::eR16G16B16A16Sfloat:
-		case vk::Format::eR8G8B8A8Srgb:
-		case vk::Format::eR8G8B8A8Snorm:
-		case vk::Format::eR8G8B8A8Unorm:
-			image.m_BlendingSupported = true;
-			break;
-		}
+		const vk::FormatProperties formatProperties = m_VKDevice.getFormatProperties(imageInfo.format);
+		image.m_BlendingSupported =
+			(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachmentBlend)
+			== vk::FormatFeatureFlagBits::eColorAttachmentBlend;
 
 		vk::ImageViewCreateInfo viewInfo = vk::ImageViewCreateInfo();
 		EnsureSupportedFormat(imageInfo.format, viewInfo);
@@ -3907,6 +3901,10 @@ namespace Glory
 			vkTexture->m_VKSampler = nullptr;
 			vkImage->m_VKFormat = swapchainFormat.format;
 			vkImage->m_IsSwapchainImage = true;
+			const vk::FormatProperties formatProperties = m_VKDevice.getFormatProperties(vkImage->m_VKFormat);
+			vkImage->m_BlendingSupported =
+				(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachmentBlend)
+				== vk::FormatFeatureFlagBits::eColorAttachmentBlend;
 		}
 
 		return true;
