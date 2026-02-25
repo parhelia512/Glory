@@ -7,6 +7,7 @@
 #include "Components.h"
 #include "Engine.h"
 #include "Serializers.h"
+#include "Renderer.h"
 
 #include <Reflection.h>
 
@@ -30,7 +31,9 @@ namespace Glory
 
 	void SceneManager::SetRenderer(Renderer* pRenderer)
 	{
+		if (m_pRenderer) m_pRenderer->SetSceneManager(nullptr);
 		m_pRenderer = pRenderer;
+		if (pRenderer) pRenderer->SetSceneManager(this);
 	}
 
 	Renderer* SceneManager::GetRenderer() const
