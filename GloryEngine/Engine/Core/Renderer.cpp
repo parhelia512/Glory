@@ -21,6 +21,11 @@ namespace Glory
 	{
 	}
 
+	void Renderer::SetSceneManager(SceneManager* pSceneManager)
+	{
+		m_pSceneManager = pSceneManager;
+	}
+
 	void Renderer::SubmitStatic(RenderData&& renderData)
 	{
 		ProfileSample sample{ &m_pModule->GetEngine()->Profiler(), "Renderer::SubmitStatic" };

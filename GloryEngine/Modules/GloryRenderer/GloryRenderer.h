@@ -4,6 +4,8 @@
 #include <Renderer.h>
 #include <GraphicsEnums.h>
 
+#include <BitSet.h>
+
 namespace Glory
 {
 	class Engine;
@@ -92,6 +94,18 @@ namespace Glory
 		virtual uint32_t NextFrameIndex() override;
 		virtual bool FrameBusy(uint32_t frameIndex) override;
 
+	public: /* Setting toggles */
+		bool IsMainRenderer() const;
+		void SetIsMainRenderer(bool enabled);
+		bool SkyboxEnabled() const;
+		void SetSkyboxEnabled(bool enabled);
+		bool LinesEnabled() const;
+		void SetLinesEnabled(bool enabled);
+		bool SSAOEnabled() const;
+		void SetSSAOEnabled(bool enabled);
+		bool ShadowsEnabled() const;
+		void SetShadowsEnabled(bool enabled);
+
 	private:
 		virtual size_t DefaultAttachmenmtIndex() const override;
 		virtual size_t CameraAttachmentPreviewCount() const override;
@@ -148,6 +162,8 @@ namespace Glory
 
 		virtual void SetPipelineOrder(std::vector<UUID>&& pipelineOrder) override;
 
+		bool SSAOEnabled_Internal() const;
+
 	private:
 		friend class GloryRendererModule;
 		GloryRendererModule* m_pModule;
@@ -186,15 +202,21 @@ namespace Glory
 		TextureHandle m_SampleNoiseTexture = 0;
 		TextureHandle m_SkyboxCubemap = 0;
 
-		bool m_SkyboxEnabled = true;
-		bool m_LinesEnabled = true;
+		enum SettingBitIndices : uint8_t
+		{
+			IsMainRendererBit = 0,
+			SkyboxEnabledBit = 1,
+			LinesEnabledBit = 2,
+			SSAOEnabledBit = 3,
+			ShadowsEnabledBit = 4,
+		};
+		Utils::BitSet m_SettingsToggles;
 
 		/* SSAO */
-		SSAOSettings m_GlobalSSAOSetting;
+		SSAOSettings m_SSAOSettings;
 		uint32_t m_SSAOKernelSize = 0;
 
 		/* Shadows */
-		bool m_ShadowsEnabled = true;
 		std::vector<RenderPassHandle> m_ShadowsPasses;
 		std::vector<size_t> m_ShadowAtlasses;
 
@@ -231,7 +253,5 @@ namespace Glory
 		std::vector<MeshHandle> m_LineMeshes;
 
 		Utils::BitSet m_DebugOverlayBits;
-
-		bool m_IsMainRenderer = false;
 	};
 }

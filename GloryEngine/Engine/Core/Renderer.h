@@ -20,6 +20,7 @@ namespace Glory
 	class MaterialData;
 	class GPUTextureAtlas;
 	class GraphicsDevice;
+	class SceneManager;
 	struct TextureCreateInfo;
 
 	struct PickResult
@@ -172,6 +173,8 @@ namespace Glory
 		virtual ~Renderer();
 
 	public:
+		void SetSceneManager(SceneManager* pSceneManager);
+
 		void SubmitStatic(RenderData&& renderData);
 		void UpdateStatic(UUID pipelineID, UUID meshID, UUID objectID, glm::mat4 world);
 		void UnsubmitStatic(UUID pipelineID, UUID meshID, UUID objectID);
@@ -288,6 +291,7 @@ namespace Glory
 		static const uint32_t MAX_CAMERAS = 100;
 
 	protected:
+		SceneManager* m_pSceneManager;
 		RenderFrame m_FrameData;
 		size_t m_LastSubmittedObjectCount;
 		size_t m_LastSubmittedCameraCount;
