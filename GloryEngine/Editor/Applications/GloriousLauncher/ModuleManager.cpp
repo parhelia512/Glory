@@ -33,21 +33,36 @@ namespace Glory::EditorLauncher
 		m_ModulesByTypes.clear();
 	}
 
-	void ModuleManager::GetModulesOfType(const ModuleType& moduleType, std::vector<ModuleMetaData*>& result)
+	void ModuleManager::GetModulesOfType(ModuleType moduleType, std::vector<ModuleMetaData*>& result)
 	{
 		if (m_ModulesByTypes.find(moduleType) == m_ModulesByTypes.end()) return;
 		for (size_t i = 0; i < m_ModulesByTypes[moduleType].size(); i++)
 		{
 			size_t index = m_ModulesByTypes[moduleType][i];
-			result.push_back(&m_InstalledModules[index]);
+			result.emplace_back(&m_InstalledModules[index]);
 		}
+	}
+
+	bool ModuleManager::FindModuleIndex(std::string_view name, ModuleType moduleType, int& index)
+	{
+		auto modulesIter = m_ModulesByTypes.find(moduleType);
+		if (modulesIter == m_ModulesByTypes.end()) return false;
+
+		auto iter = std::find_if(modulesIter->second.begin(), modulesIter->second.end(),
+		[name](size_t index) {
+			const ModuleMetaData& meta = m_InstalledModules[index];
+			return meta.Name() == name;
+		});
+
+		index = int(iter - modulesIter->second.begin());
+		return iter != modulesIter->second.end();
 	}
 
 	void ModuleManager::AddModuleMeta(const ModuleMetaData& metaData)
 	{
 		size_t index = m_InstalledModules.size();
-		m_InstalledModules.push_back(metaData);
-		m_ModulesByTypes[metaData.Type()].push_back(index);
+		m_InstalledModules.emplace_back(metaData);
+		m_ModulesByTypes[metaData.Type()].emplace_back(index);
 	}
 
 	ModuleManager::ModuleManager()

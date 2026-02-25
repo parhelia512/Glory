@@ -9,6 +9,17 @@
 #include <imgui.h>
 #include <ShlObj_core.h>
 
+#define LOAD_MAIN_MODULE(type, result) do\
+{\
+	const std::string_view name = DEFAULT_MODULES.at(ModuleType::type);\
+	if (!ModuleManager::FindModuleIndex(name, ModuleType::type, result))\
+	{\
+		std::cerr << "Missing installed default main module: " << name;\
+		result = -1;\
+		continue;\
+	}\
+} while (false);
+
 namespace Glory::EditorLauncher
 {
 	const std::map<NewProjectMenu, const char*> NEWPROJECTMENUTOSTRING = {
@@ -19,6 +30,24 @@ namespace Glory::EditorLauncher
 	const std::map<std::string, const char*> TEMPLATE_ICONS = {
 		{ "Empty", ICON_FA_HANDS_HOLDING_CIRCLE },
 		{ "Default", ICON_FA_CUBES },
+	};
+
+	const std::map<ModuleType, std::string_view> DEFAULT_MODULES = {
+		{ ModuleType::MT_Window, "SDL Window" },
+		{ ModuleType::MT_Input, "SDL Input" },
+		{ ModuleType::MT_Renderer, "Glory Renderer" },
+		{ ModuleType::MT_Graphics, "Vulkan Graphics" },
+	};
+
+	const std::vector<std::string_view> DEFAULT_OPTIONAL_MODULES = {
+		"Mono Scripting",
+		"Jolt Physics",
+		"SDL Audio",
+		"Steam Audio",
+		"UI Renderer",
+		"Overlay Console",
+		"Localize",
+		"Finite State Machines",
 	};
 
 	const char* UNKNOWN_TEMPLATE_ICON = ICON_FA_WAND_MAGIC_SPARKLES;
@@ -158,7 +187,7 @@ namespace Glory::EditorLauncher
 		ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();
 		float size = LauncherHub::BoldLargeFont->FontSize;
 		float cursorPosY = ImGui::GetCursorPosY();
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - (size / 2.0f) + (contentRegionAvail.y / 2.0f));
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - (size/2.0f) + (contentRegionAvail.y/2.0f));
 		ImGui::TextUnformatted("New Project");
 
 		ImGui::EndChild();
@@ -247,13 +276,22 @@ namespace Glory::EditorLauncher
 			const EditorInfo& selectedEditor = EditorManager::GetEditorInfo(m_SelectedEditorIndex);
 			ModuleManager::LoadModules(selectedEditor.RootPath);
 
-			// TODO: Load default engine settings?
 			m_EngineSettings = {};
-			m_EngineSettings.OptionalModules.push_back(1);
-			m_EngineSettings.OptionalModules.push_back(0);
-			m_EngineSettings.OptionalModules.push_back(2);
-			m_EngineSettings.OptionalModules.push_back(3);
-			m_EngineSettings.OptionalModules.push_back(4);
+			LOAD_MAIN_MODULE(MT_Window, m_EngineSettings.WindowModule);
+			LOAD_MAIN_MODULE(MT_Input, m_EngineSettings.InputModule);
+			LOAD_MAIN_MODULE(MT_Graphics, m_EngineSettings.GraphicsModule);
+			LOAD_MAIN_MODULE(MT_Renderer, m_EngineSettings.RenderModule);
+
+			for (std::string_view moduleName : DEFAULT_OPTIONAL_MODULES)
+			{
+				int index = 0;
+				if (!ModuleManager::FindModuleIndex(moduleName, ModuleType::MT_Other, index))
+				{
+					std::cerr << "Missing installed default optional module: " << moduleName;
+					continue;
+				}
+				m_EngineSettings.OptionalModules.emplace_back(index);
+			}
 		}
 
 #pragma endregion
@@ -313,7 +351,7 @@ namespace Glory::EditorLauncher
 		const float templateSize = 128.0f;
 		const float textHeight = ImGui::CalcTextSize("LABEL").y;
 		const float windowMargin = ImGui::GetStyle().WindowPadding.y;
-		ImGui::BeginChild("Templates", { 0.0f, templateSize + windowMargin * 2.0f });
+		ImGui::BeginChild("Templates", { 0.0f, templateSize + windowMargin*2.0f });
 		for (size_t i = 0; i < TemplateManager::TemplateCount(); i++)
 		{
 			ImGui::PushID((int)i);
@@ -332,13 +370,13 @@ namespace Glory::EditorLauncher
 
 			const char* icon = TEMPLATE_ICONS.find(pTemplate->m_Name) != TEMPLATE_ICONS.end() ? TEMPLATE_ICONS.at(pTemplate->m_Name) : UNKNOWN_TEMPLATE_ICON;
 			const ImVec2 iconSize = ImGui::CalcTextSize(icon);
-			ImGui::SetCursorPos({ cursorPos.x + templateSize / 2.0f - iconSize.x / 2.0f, cursorPos.y + 20.0f });
+			ImGui::SetCursorPos({ cursorPos.x + templateSize/2.0f - iconSize.x/2.0f, cursorPos.y + 20.0f });
 			ImGui::TextUnformatted(icon);
 			ImGui::PopFont();
 
 			const ImVec2 textSize = ImGui::CalcTextSize(pTemplate->m_Name.data());
 
-			ImGui::SetCursorPos({ cursorPos.x + templateSize / 2.0f - textSize.x / 2.0f, cursorPos.y + templateSize - textSize.y - 10.0f });
+			ImGui::SetCursorPos({ cursorPos.x + templateSize/2.0f - textSize.x/2.0f, cursorPos.y + templateSize - textSize.y - 10.0f });
 			ImGui::TextUnformatted(pTemplate->m_Name.data());
 			ImGui::EndChild();
 
@@ -381,13 +419,19 @@ namespace Glory::EditorLauncher
 		if (ProjectExists(m_PathText, m_ProjectNameText)) return ProjectValidationResult::EVR_InvalidName;
 		if (strlen(m_ProjectNameText) < MINPROJECTNAMELENGTH) return ProjectValidationResult::EVR_AlreadyExists;
 
-		if (!ValidateModule(ModuleType::MT_Window, m_EngineSettings.WindowModule)) return ProjectValidationResult::EVR_MissingModules;
-		if (!ValidateModule(ModuleType::MT_Graphics, m_EngineSettings.GraphicsModule)) return ProjectValidationResult::EVR_MissingModules;
-		if (!ValidateModule(ModuleType::MT_Renderer, m_EngineSettings.RenderModule)) return ProjectValidationResult::EVR_MissingModules;
+		if (!ValidateModule(ModuleType::MT_Window, m_EngineSettings.WindowModule))
+			return ProjectValidationResult::EVR_MissingModules;
+		if (!ValidateModule(ModuleType::MT_Graphics, m_EngineSettings.GraphicsModule))
+			return ProjectValidationResult::EVR_MissingModules;
+		if (!ValidateModule(ModuleType::MT_Renderer, m_EngineSettings.RenderModule))
+			return ProjectValidationResult::EVR_MissingModules;
+		if (!ValidateModule(ModuleType::MT_Input, m_EngineSettings.InputModule))
+			return ProjectValidationResult::EVR_MissingModules;
 
 		for (size_t i = 0; i < m_EngineSettings.OptionalModules.size(); i++)
 		{
-			if (!ValidateModule(ModuleType::MT_Other, m_EngineSettings.OptionalModules[i])) return ProjectValidationResult::EVR_MissingModules;
+			if (!ValidateModule(ModuleType::MT_Other, m_EngineSettings.OptionalModules[i]))
+				return ProjectValidationResult::EVR_MissingModules;
 		}
 
 		std::vector<int> sorted = m_EngineSettings.OptionalModules;
@@ -457,7 +501,7 @@ namespace Glory::EditorLauncher
 		ImGui::SameLine(regionAvail.x - 25.0f);
 		if (ImGui::Button("+##AddOptionalModule", ImVec2(25.0f, 25.0f)))
 		{
-			m_EngineSettings.OptionalModules.push_back(0);
+			m_EngineSettings.OptionalModules.emplace_back(0);
 		}
 
 		int toRemoveIndex = -1;

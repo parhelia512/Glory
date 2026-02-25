@@ -39,7 +39,7 @@ namespace Glory::EditorLauncher
         project.Path = createSettings.Path;
         project.Version = createSettings.EditorVersion;
         project.SelectedVersion = createSettings.EditorVersion;
-        m_Projects.push_back(project);
+        m_Projects.emplace_back(project);
 
         TemplateManager::InstantiateTemplate(std::filesystem::path(project.Path).parent_path(), project.Name, createSettings.TemplateIndex);
 
@@ -80,7 +80,7 @@ namespace Glory::EditorLauncher
         long long timestamp = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
         project.LastEdit = timestamp;
 
-        m_Projects.push_back(project);
+        m_Projects.emplace_back(project);
         if (open) OpenProject(m_Projects.size() - 1);
         Save();
     }
@@ -127,7 +127,7 @@ namespace Glory::EditorLauncher
                 long long timestamp = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
                 project.LastEdit = timestamp;
             }
-            m_Projects.push_back(project);
+            m_Projects.emplace_back(project);
         }
 	}
 
