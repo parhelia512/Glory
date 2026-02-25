@@ -19,7 +19,7 @@ namespace Glory::EditorLauncher
             editorPath.append("GloryEditor.dll");
             if (!std::filesystem::exists(editorPath)) continue;
             if (!GetEditorInfo(editorPath, info)) continue;
-            m_InstalledEditors.push_back(info);
+            m_InstalledEditors.emplace_back(info);
         }
     }
 

@@ -10,7 +10,8 @@ namespace Glory::EditorLauncher
 		static void LoadModules(const std::filesystem::path& editorPath);
 		static void Clear();
 
-		static void GetModulesOfType(const ModuleType& moduleType, std::vector<ModuleMetaData*>& result);
+		static void GetModulesOfType(ModuleType moduleType, std::vector<ModuleMetaData*>& result);
+		static bool FindModuleIndex(std::string_view name, ModuleType moduleType, int& index);
 
 	private:
 		static void AddModuleMeta(const ModuleMetaData& metaData);

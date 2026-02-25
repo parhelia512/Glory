@@ -32,7 +32,7 @@ namespace Glory::EditorLauncher
 				if (filePath.extension() != ".gproj") continue;
 
 				/* TODO: Load icon file */
-				m_Templates.push_back({ filePath.filename().replace_extension("").string(), "", templatePath});
+				m_Templates.emplace_back(filePath.filename().replace_extension("").string(), "", templatePath);
 				break;
 			}
 		}
