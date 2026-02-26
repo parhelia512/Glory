@@ -58,7 +58,6 @@ namespace Glory
 		std::vector<DescriptorSetHandle> m_ObjectIDSamplerSets;
 		std::vector<DescriptorSetHandle> m_ColorSamplerSets;
 		std::vector<DescriptorSetHandle> m_NormalSamplerSets;
-		std::vector<DescriptorSetHandle> m_AOSamplerSets;
 		std::vector<DescriptorSetHandle> m_DepthSamplerSets;
 
 		std::vector<DescriptorSetHandle> m_LightGridSets;

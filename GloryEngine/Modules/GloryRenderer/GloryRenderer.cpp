@@ -90,7 +90,6 @@ namespace Glory
 			const DescriptorSetHandle& pickingSamplersSet = uniqueCameraData.m_PickingSamplersSets[i];
 			const DescriptorSetHandle& objectIDSamplerSet = uniqueCameraData.m_ObjectIDSamplerSets[i];
 			const DescriptorSetHandle& normalSamplerSet = uniqueCameraData.m_NormalSamplerSets[i];
-			const DescriptorSetHandle& aoSamplerSet = uniqueCameraData.m_AOSamplerSets[i];
 			const DescriptorSetHandle& depthSamplerSet = uniqueCameraData.m_DepthSamplerSets[i];
 			TextureHandle objectID = pDevice->GetRenderTextureAttachment(renderTexture, 0);
 			TextureHandle color = pDevice->GetRenderTextureAttachment(renderTexture, 1);
@@ -160,15 +159,6 @@ namespace Glory
 			updateInfo.m_Samplers[0].m_TextureHandle = normals;
 			updateInfo.m_Samplers[0].m_DescriptorIndex = 0;
 			pDevice->UpdateDescriptorSet(normalSamplerSet, updateInfo);
-
-			if (SSAOEnabled())
-			{
-				updateInfo = DescriptorSetUpdateInfo();
-				updateInfo.m_Samplers.resize(1);
-				updateInfo.m_Samplers[0].m_TextureHandle = aoBlur;
-				updateInfo.m_Samplers[0].m_DescriptorIndex = 0;
-				pDevice->UpdateDescriptorSet(aoSamplerSet, updateInfo);
-			}
 
 			updateInfo = DescriptorSetUpdateInfo();
 			updateInfo.m_Samplers.resize(1);
@@ -468,9 +458,13 @@ namespace Glory
 					previewPipeline = RendererPipelines::m_DisplayCopyPipeline;
 					previewSamplerSet = uniqueCameraData.m_NormalSamplerSets[m_CurrentFrameIndex];
 					break;
-				case CameraAttachment::AO:
+				case CameraAttachment::AONoisy:
 					previewPipeline = RendererPipelines::m_VisualizeSSAOPipeline;
-					previewSamplerSet = uniqueCameraData.m_AOSamplerSets[m_CurrentFrameIndex];
+					previewSamplerSet = uniqueCameraData.m_SSAOBlurSamplersSets[m_CurrentFrameIndex];
+					break;
+				case CameraAttachment::AOFinal:
+					previewPipeline = RendererPipelines::m_VisualizeSSAOPipeline;
+					previewSamplerSet = uniqueCameraData.m_SSAOPostSamplersSets[m_CurrentFrameIndex];
 					break;
 				case CameraAttachment::Depth:
 					previewPipeline = RendererPipelines::m_VisualizeDepthPipeline;
@@ -1191,7 +1185,7 @@ namespace Glory
 
 	size_t GloryRenderer::DefaultAttachmenmtIndex() const
 	{
-		return 5;
+		return 6;
 	}
 
 	size_t GloryRenderer::CameraAttachmentPreviewCount() const
@@ -1209,22 +1203,39 @@ namespace Glory
 		GraphicsDevice* pDevice = m_pModule->GetEngine()->ActiveGraphicsDevice();
 		const UniqueCameraData& uniqueCameraData = m_UniqueCameraDatas.at(camera.GetUUID());
 		RenderPassHandle renderPass = uniqueCameraData.m_RenderPasses[m_CurrentFrameIndex];
-		RenderPassHandle ssaoRenderPass = uniqueCameraData.m_SSAORenderPasses[m_CurrentFrameIndex];
+		RenderPassHandle ssaoRenderPass = SSAOEnabled_Internal() ? uniqueCameraData.m_SSAORenderPasses[m_CurrentFrameIndex] : NULL;
+		RenderPassHandle ssaoBlurRenderPass = SSAOEnabled_Internal() ? uniqueCameraData.m_SSAORenderPasses[m_CurrentFrameIndex] : NULL;
 		const PostProcessPass& pp = uniqueCameraData.m_PostProcessPasses[m_CurrentFrameIndex];
-		if (!renderPass || !ssaoRenderPass) return NULL;
-		if (index == 5)
+		if (!renderPass) return NULL;
+		switch (CameraAttachment(index))
+		{
+		case CameraAttachment::AONoisy:
+		{
+			if (!SSAOEnabled_Internal()) return NULL;
+			RenderTextureHandle renderTexture = pDevice->GetRenderPassRenderTexture(ssaoRenderPass);
+			return pDevice->GetRenderTextureAttachment(renderTexture, 0);
+		}
+		case CameraAttachment::AOFinal:
+		{
+			if (!SSAOEnabled_Internal()) return NULL;
+			RenderTextureHandle renderTexture = pDevice->GetRenderPassRenderTexture(ssaoBlurRenderPass);
+			return pDevice->GetRenderTextureAttachment(renderTexture, 0);
+		}
+		case CameraAttachment::Depth:
+		{
+			RenderTextureHandle renderTexture = pDevice->GetRenderPassRenderTexture(renderPass);
+			return pDevice->GetRenderTextureAttachment(renderTexture, 4);
+		}
+		case CameraAttachment::Final:
 		{
 			RenderTextureHandle renderTexture = pDevice->GetRenderPassRenderTexture(pp.m_FrontBufferPass);
 			return pDevice->GetRenderTextureAttachment(renderTexture, 0);
 		}
-		if (index >= 4)
-		{
-			RenderTextureHandle renderTexture = pDevice->GetRenderPassRenderTexture(ssaoRenderPass);
-			return pDevice->GetRenderTextureAttachment(renderTexture, index - 4);
-		}
 
-		RenderTextureHandle renderTexture = pDevice->GetRenderPassRenderTexture(renderPass);
-		return pDevice->GetRenderTextureAttachment(renderTexture, index);
+		default:
+			RenderTextureHandle renderTexture = pDevice->GetRenderPassRenderTexture(renderPass);
+			return pDevice->GetRenderTextureAttachment(renderTexture, index);
+		}
 	}
 
 	TextureHandle GloryRenderer::FinalColor() const
@@ -2372,7 +2383,6 @@ namespace Glory
 
 		cameraData.m_ObjectIDSamplerSets.resize(m_ImageCount, 0ull);
 		cameraData.m_NormalSamplerSets.resize(m_ImageCount, 0ull);
-		cameraData.m_AOSamplerSets.resize(m_ImageCount, 0ull);
 		cameraData.m_DepthSamplerSets.resize(m_ImageCount, 0ull);
 		cameraData.m_LightGridSets.resize(m_ImageCount, 0ull);
 
@@ -2480,7 +2490,6 @@ namespace Glory
 
 			DescriptorSetHandle& objectIDSamplerSet = cameraData.m_ObjectIDSamplerSets[i];
 			DescriptorSetHandle& normalSamplerSet = cameraData.m_NormalSamplerSets[i];
-			DescriptorSetHandle& aoSamplerSet = cameraData.m_AOSamplerSets[i];
 			DescriptorSetHandle& depthSamplerSet = cameraData.m_DepthSamplerSets[i];
 			DescriptorSetHandle& lightGridSet = cameraData.m_LightGridSets[i];
 
@@ -2586,18 +2595,6 @@ namespace Glory
 				setInfo.m_Samplers.resize(1);
 				setInfo.m_Samplers[0].m_TextureHandle = normals;
 				normalSamplerSet = pDevice->CreateDescriptorSet(std::move(setInfo));
-			}
-
-			if (!aoSamplerSet && SSAOEnabled())
-			{
-				RenderTextureHandle ssaoBlurRenderTexture = pDevice->GetRenderPassRenderTexture(ssaoBlurRenderPass);
-				TextureHandle aoBlur = pDevice->GetRenderTextureAttachment(ssaoBlurRenderTexture, 0);
-
-				DescriptorSetInfo setInfo = DescriptorSetInfo();
-				setInfo.m_Layout = RendererDSLayouts::m_DisplayCopySamplerSetLayout;
-				setInfo.m_Samplers.resize(1);
-				setInfo.m_Samplers[0].m_TextureHandle = aoBlur;
-				aoSamplerSet = pDevice->CreateDescriptorSet(std::move(setInfo));
 			}
 
 			if (!depthSamplerSet)

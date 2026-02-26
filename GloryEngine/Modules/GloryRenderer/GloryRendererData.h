@@ -159,18 +159,6 @@ namespace Glory
 		DescriptorSetHandle m_BackDescriptor = 0;
 	};
 
-	enum CameraAttachment
-	{
-		ObjectID,
-		Color,
-		Normal,
-		AO,
-		Depth,
-		Final,
-
-		Count
-	};
-
 	struct RendererCVARs
 	{
 		static constexpr std::string_view ScreenSpaceAOCVarName = "r_screenSpaceAO";
@@ -254,12 +242,26 @@ namespace Glory
 
 	static uint32_t* ResetLightDistances;
 
-	constexpr size_t AttachmentNameCount = 6;
+	enum CameraAttachment
+	{
+		ObjectID,
+		Color,
+		Normal,
+		AONoisy,
+		AOFinal,
+		Depth,
+		Final,
+
+		Count
+	};
+
+	constexpr size_t AttachmentNameCount = 7;
 	constexpr std::string_view AttachmentNames[AttachmentNameCount] = {
 		"ObjectID",
 		"Color",
 		"Normal",
-		"AO",
+		"AONoisy",
+		"AOFinal",
 		"Depth",
 		"Final",
 	};
