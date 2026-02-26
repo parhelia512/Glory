@@ -3,8 +3,8 @@ Shaders: [13, 15]
 Settings:
   CullFace: Back
   PrimitiveType: Triangles
-  DepthTestEnabled: true
-  DepthWriteEnabled: true
+  DepthTestEnabled: false
+  DepthWriteEnabled: false
   DepthCompareOp: OP_Less
   ColorWriteMask: 15
   StencilTestEnabled: false

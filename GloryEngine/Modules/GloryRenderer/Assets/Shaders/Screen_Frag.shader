@@ -39,8 +39,8 @@ void main()
 
 #ifdef WITH_LINEARDEPTH
 	float depth = texture(Color, Coord).r;
-	float linearDepth = LinearDepth(depth, Constants.zNear, Constants.zFar)/(Constants.zFar - Constants.zNear);
-	out_Color = vec4(vec3(linearDepth), 1.0);
+	float linearDepth = LinearDepth(depth, Constants.zNear, Constants.zFar);
+	out_Color = vec4(vec3(linearDepth*5/Constants.zFar), 1.0);
 #else
 #ifdef WITH_USAMPLER
 	uvec4 ucolor = texture(Color, Coord);

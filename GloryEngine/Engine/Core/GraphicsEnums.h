@@ -983,6 +983,7 @@ namespace Glory
         int m_BinsSize = 10;
         float m_Magnitude = 1.0f;
         float m_Contrast = 1.0f;
+        float m_ResolutionScale = 1.0f;
     };
 
     constexpr SSAOSettings DefaultSSAO;

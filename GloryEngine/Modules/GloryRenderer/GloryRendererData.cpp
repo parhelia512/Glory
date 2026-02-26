@@ -9,6 +9,7 @@ namespace Glory
 
 	/* Effects pipelines */
 	PipelineHandle RendererPipelines::m_SSAOPipeline = NULL;
+	PipelineHandle RendererPipelines::m_SSAOBlurPipeline = NULL;
 	PipelineHandle RendererPipelines::m_SkyboxPipeline = NULL;
 
 	/* Shadow rendering */
@@ -31,6 +32,7 @@ namespace Glory
 	/* Descriptor set layouts */
 	/* Global */
 	DescriptorSetLayoutHandle RendererDSLayouts::m_GlobalRenderSetLayout = NULL;
+	DescriptorSetLayoutHandle RendererDSLayouts::m_GlobalBlurSetLayout = NULL;
 	DescriptorSetLayoutHandle RendererDSLayouts::m_GlobalShadowRenderSetLayout = NULL;
 	DescriptorSetLayoutHandle RendererDSLayouts::m_GlobalPickingSetLayout = NULL;
 	DescriptorSetLayoutHandle RendererDSLayouts::m_GlobalSkyboxRenderSetLayout = NULL;

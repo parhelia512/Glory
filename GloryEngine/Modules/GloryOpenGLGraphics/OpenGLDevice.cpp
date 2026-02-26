@@ -1479,13 +1479,13 @@ namespace Glory
 		GL_RenderTexture* glRenderTexture = m_RenderTextures.Find(renderTexture);
 		if (!glRenderTexture)
 		{
-			Debug().LogError("VulkanDevice::GetRenderTextureAttatchment: Invalid render texture handle");
+			Debug().LogError("OpenGLDevice::GetRenderTextureAttatchment: Invalid render texture handle");
 			return NULL;
 		}
 
 		if (index >= glRenderTexture->m_Textures.size())
 		{
-			Debug().LogError("VulkanDevice::GetRenderTextureAttatchment: Invalid attachment index");
+			Debug().LogError("OpenGLDevice::GetRenderTextureAttatchment: Invalid attachment index");
 			return NULL;
 		}
 		return glRenderTexture->m_Textures[index];

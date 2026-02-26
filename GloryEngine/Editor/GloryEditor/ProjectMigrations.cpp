@@ -692,7 +692,7 @@ namespace Glory::Editor
 
     void Migrate_0_6_0_RemoveShaderAndPipelineAssets(ProjectSpace* pProject)
     {
-        static constexpr size_t removeAssetsCount = 8;
+        static constexpr size_t removeAssetsCount = 10;
         constexpr std::string_view toRemoveAssets[removeAssetsCount] = {
             /* Phong textured fragment shader */
             "3",
@@ -710,6 +710,10 @@ namespace Glory::Editor
             "34",
             /* Irradiance generator pipeline */
             "35",
+            /* SSAO Blur shader */
+            "16",
+            /* SSAO Blur pipeline */
+            "22",
         };
 
         EditorApplication* pApplication = EditorApplication::GetInstance();

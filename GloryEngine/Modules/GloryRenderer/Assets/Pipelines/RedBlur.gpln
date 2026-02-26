@@ -1,5 +1,7 @@
 Type: "Screen"
-Shaders: [13, 16]
+Shaders: [13, 3]
+Features:
+  FEATURE_ONLY_RED: true
 Settings:
   CullFace: Back
   PrimitiveType: Triangles
