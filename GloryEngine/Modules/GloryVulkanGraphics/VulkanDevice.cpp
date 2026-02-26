@@ -2351,7 +2351,7 @@ namespace Glory
 		vkPipeline->m_Shaders.clear();
 
 		if (!CreatePipeline(*vkPipeline, pPipeline))
-			Debug().LogError("OpenGLDevice::RecreatePipeline: Failed to create pipeline.");
+			Debug().LogError("VulkanDevice::RecreatePipeline: Failed to create pipeline.");
 	}
 
 	PipelineHandle VulkanDevice::CreateComputePipeline(PipelineData* pPipeline, std::vector<DescriptorSetLayoutHandle>&& descriptorSetLayouts)

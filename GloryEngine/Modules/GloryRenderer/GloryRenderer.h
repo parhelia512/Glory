@@ -42,6 +42,7 @@ namespace Glory
 		std::vector<RenderPassHandle> m_RenderPasses;
 		std::vector<RenderPassHandle> m_LateRenderPasses;
 		std::vector<RenderPassHandle> m_SSAORenderPasses;
+		std::vector<RenderPassHandle> m_SSAOBlurRenderPasses;
 		std::vector<PostProcessPass> m_PostProcessPasses;
 		std::vector<BufferHandle> m_LightIndexSSBOs;
 		std::vector<BufferHandle> m_LightGridSSBOs;
@@ -49,6 +50,7 @@ namespace Glory
 
 		std::vector<DescriptorSetHandle> m_LightSets;
 		std::vector<DescriptorSetHandle> m_SSAOSamplersSets;
+		std::vector<DescriptorSetHandle> m_SSAOBlurSamplersSets;
 		std::vector<DescriptorSetHandle> m_SSAOPostSamplersSets;
 		std::vector<DescriptorSetHandle> m_PickingResultSets;
 		std::vector<DescriptorSetHandle> m_PickingSamplersSets;

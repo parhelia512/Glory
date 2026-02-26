@@ -35,6 +35,15 @@ namespace Glory
 		int32_t KernelSize;
 		float SampleRadius;
 		float SampleBias;
+		float ResolutionScale;
+	};
+
+	struct SSAOBlurConstants
+	{
+		uint32_t BlurType;
+		int BlurSize;
+		float Separation;
+		int BinsSize;
 	};
 
 	struct RenderConstants
@@ -185,6 +194,7 @@ namespace Glory
 
 		/* Effects pipelines */
 		static PipelineHandle m_SSAOPipeline;
+		static PipelineHandle m_SSAOBlurPipeline;
 		static PipelineHandle m_SkyboxPipeline;
 
 		/* Shadow rendering */
@@ -210,6 +220,7 @@ namespace Glory
 		/* Descriptor set layouts */
 		/* Global */
 		static DescriptorSetLayoutHandle m_GlobalRenderSetLayout;
+		static DescriptorSetLayoutHandle m_GlobalBlurSetLayout;
 		static DescriptorSetLayoutHandle m_GlobalShadowRenderSetLayout;
 		static DescriptorSetLayoutHandle m_GlobalPickingSetLayout;
 		static DescriptorSetLayoutHandle m_GlobalSkyboxRenderSetLayout;

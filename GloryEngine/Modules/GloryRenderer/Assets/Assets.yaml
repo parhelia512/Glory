@@ -12,8 +12,8 @@
   ID: 29
 - Path: "Shaders\\SSAO_Frag.shader"
   ID: 15
-- Path: "Shaders\\SSAOBlur_Frag.shader"
-  ID: 16
+- Path: "Shaders\\Blur_Frag.shader"
+  ID: 3
 - Path: "Shaders\\Text_Vert.shader"
   ID: 17
 - Path: "Shaders\\Text_Frag.shader"
@@ -28,8 +28,8 @@
   ID: 19
 - Path: "Pipelines\\SSAO_Prepass.gpln"
   ID: 21
-- Path: "Pipelines\\SSAO_Blur.gpln"
-  ID: 22
+- Path: "Pipelines\\RedBlur.gpln"
+  ID: 4
 - Path: "Pipelines\\Text.gpln"
   ID: 23
 - Path: "Pipelines\\PBR.gpln"

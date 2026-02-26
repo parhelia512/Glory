@@ -1,64 +1,71 @@
-#type frag
-#version 450
-#extension GL_ARB_separate_shader_objects : enable
-
-layout(std430, binding = 6) buffer ssaoSettings
-{
-    int AOEnabled;
-    int Dirty;
-    float SampleRadius;
-    float SampleBias;
-    int KernelSize;
-    int BlurType;
-    int BlurSize;
-    float Separation;
-    int BinsSize;
-    float Magnitude;
-    float Contrast;
-};
-
-/* @todo: Move these to a helper file */
 #define MAX_SIZE        4
 #define MAX_KERNEL_SIZE ((MAX_SIZE * 2 + 1) * (MAX_SIZE * 2 + 1))
 #define MAX_BINS_SIZE   100
 
-vec4 BoxBlur(sampler2D tex, int blurSize, float seperation)
+const uint BlurType_Box = 0;
+const uint BlurType_Median = 1;
+
+#ifdef WITH_ONLY_RED
+float BoxBlur(sampler2D inColor, int blurSize, float separation)
+#else
+vec4 BoxBlur(sampler2D inColor, int blurSize, float separation)
+#endif
 {
-    vec2 texSize = textureSize(tex, 0).xy;
+    vec2 texSize = textureSize(inColor, 0).xy;
 	vec2 texCoord = gl_FragCoord.xy / texSize;
 
     if (blurSize <= 0)
-    {
-        return texture(tex, texCoord);
-    }
-    seperation = max(seperation, 1.0);
+#ifdef WITH_ONLY_RED
+        return texture(inColor, texCoord).r;
+#else
+        return texture(inColor, texCoord);
+#endif
 
+    separation = max(separation, 1.0);
+
+#ifdef WITH_ONLY_RED
+    float color = 0.0;
+#else
     vec3 color = vec3(0.0);
+#endif
 	for(int x = -blurSize; x <= blurSize; ++x)
 	{
 	    for(int y = -blurSize; y <= blurSize; ++y)
 	    {
-	        color += texture(tex, (gl_FragCoord.xy + vec2(x, y)*seperation)/texSize).xyz;
+#ifdef WITH_ONLY_RED
+	        color += texture(inColor, (gl_FragCoord.xy + vec2(x, y)*separation)/texSize).r;
+#else
+	        color += texture(inColor, (gl_FragCoord.xy + vec2(x, y)*separation)/texSize).xyz;
+#endif
 	    }
 	}
 	color /= pow(blurSize*2.0 + 1.0, 2.0);
+#ifdef WITH_ONLY_RED
+	return color;
+#else
 	return vec4(vec3(color), 1.0);
+#endif
 }
 
-vec4 MedianBlur(sampler2D tex, int blurSize, int binsSize)
+#ifdef WITH_ONLY_RED
+float MedianBlur(sampler2D inColor, int blurSize, int binsSize)
+#else
+vec4 MedianBlur(sampler2D inColor, int blurSize, int binsSize)
+#endif
 {
-    vec2 texSize = textureSize(tex, 0).xy;
+    vec2 texSize = textureSize(inColor, 0).xy;
     vec2 texCoord = gl_FragCoord.xy / texSize;
 
     if (blurSize <= 0)
-    {
-        return texture(tex, texCoord);
-    }
+#ifdef WITH_ONLY_RED
+        return texture(inColor, texCoord).r;
+#else
+        return texture(inColor, texCoord);
+#endif
 	
     if (blurSize > MAX_SIZE)
-    {
         blurSize = MAX_SIZE;
-    }
+
     int kernelSize = int(pow(blurSize * 2 + 1, 2));
     binsSize = clamp(binsSize, 1, MAX_BINS_SIZE);
 
@@ -66,8 +73,8 @@ vec4 MedianBlur(sampler2D tex, int blurSize, int binsSize)
     int j = 0;
     int count = 0;
     int binIndex = 0;
-
     vec4 colors[MAX_KERNEL_SIZE];
+
     float bins[MAX_BINS_SIZE];
     int binIndexes[colors.length()];
 
@@ -82,17 +89,17 @@ vec4 MedianBlur(sampler2D tex, int blurSize, int binsSize)
         for (j = -blurSize; j <= blurSize; ++j)
         {
             colors[count] =
-
-            texture(tex, ( gl_FragCoord.
-            xy + vec2(i, j)) / texSize);
+#ifdef WITH_ONLY_RED
+                texture(inColor, (gl_FragCoord.xy + vec2(i, j))/texSize);
+#else
+                vec4(texture(inColor, (gl_FragCoord.xy + vec2(i, j))/texSize).r);
+#endif
             count += 1;
         }
     }
 
     for (i = 0; i < binsSize; ++i)
-    {
         bins[i] = 0;
-    }
 
     for (i = 0; i < kernelSize; ++i)
     {
@@ -125,24 +132,9 @@ vec4 MedianBlur(sampler2D tex, int blurSize, int binsSize)
             break;
         }
     }
+#ifdef WITH_ONLY_RED
+    return color.r;
+#else
     return color;
-}
-
-layout(location = 0) in vec2 Coord;
-layout(location = 4) out vec4 out_Color;
-layout (binding = 0) uniform sampler2D AO;
-
-void main()
-{
-	int blurSize = 4;
-	int binsSize = 5;
-
-    if(BlurType == 0)
-    {
-        out_Color = BoxBlur(AO, BlurSize, Separation);
-    }
-    else if(BlurType == 1)
-    {
-	    out_Color = MedianBlur(AO, BlurSize, BinsSize);
-    }
+#endif
 }
