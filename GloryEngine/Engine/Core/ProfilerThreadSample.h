@@ -29,7 +29,7 @@ namespace Glory
 		void Clear();
 
 	private:
-		friend class ProfilerModule;
+		friend class EngineProfiler;
 		std::string m_Name;
 		std::vector<ProfilerSample> m_Samples;
 		std::chrono::time_point<std::chrono::steady_clock> m_Start;
