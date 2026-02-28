@@ -1,7 +1,7 @@
 #include "ProfilerWindow.h"
 #include "EditorApplication.h"
 
-#include <ProfilerModule.h>
+#include <EngineProfiler.h>
 #include <Engine.h>
 #include <imgui.h>
 #include <implot.h>
@@ -352,16 +352,16 @@ namespace Glory::Editor
 
 	void ProfilerWindow::OnOpen()
 	{
-		ProfilerModule* pProfiler = EditorApplication::GetInstance()->GetEngine()->GetInternalModule<ProfilerModule>();
-		pProfiler->RegisterRecordCallback(ProfilerWindow::StoreSampleRecord);
-		pProfiler->EnableSampleCollecting(true);
+		EngineProfiler& profiler = EditorApplication::GetInstance()->GetEngine()->Profiler();
+		profiler.RegisterRecordCallback(ProfilerWindow::StoreSampleRecord);
+		profiler.EnableSampleCollecting(true);
 	}
 
 	void ProfilerWindow::OnClose()
 	{
-		ProfilerModule* pProfiler = EditorApplication::GetInstance()->GetEngine()->GetInternalModule<ProfilerModule>();
-		pProfiler->RegisterRecordCallback(NULL);
-		pProfiler->EnableSampleCollecting(false);
+		EngineProfiler& profiler = EditorApplication::GetInstance()->GetEngine()->Profiler();
+		profiler.RegisterRecordCallback(NULL);
+		profiler.EnableSampleCollecting(false);
 	}
 
 	void ProfilerWindow::StoreSampleRecord(const ProfilerThreadSample& sample)

@@ -1,26 +1,32 @@
 #pragma once
+#include "ProfilerThreadSample.h"
+
 #include <string>
+#include <thread>
+#include <functional>
 
 namespace Glory
 {
-	class ProfilerModule;
-
 	class EngineProfiler
 	{
 	public:
+		EngineProfiler();
 		virtual ~EngineProfiler();
+
+		void RegisterRecordCallback(std::function<void(const ProfilerThreadSample&)> callback);
 
 		void BeginThread(const std::string& name);
 		void EndThread();
 		void BeginSample(const std::string& name);
 		void EndSample();
 
-	private:
-		EngineProfiler();
+		void EnableSampleCollecting(bool enabled);
 
 	private:
-		friend class Engine;
-		ProfilerModule* m_pProfiler;
+		std::unordered_map<std::string, ProfilerThreadSample> m_CurrentThreadSamples;
+		std::unordered_map<std::thread::id, std::string> m_ThreadIDToProfile;
+		std::function<void(const ProfilerThreadSample&)> m_RecordCallback;
+		bool m_SampleCollectingEnabled;
 	};
 
 	struct ProfileSample

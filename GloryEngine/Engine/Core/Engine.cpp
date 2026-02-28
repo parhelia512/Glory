@@ -26,9 +26,7 @@
 #include "TextFileData.h"
 
 #include "Debug.h"
-#include "Console.h"
 #include "AssetDatabase.h"
-#include "AssetManager.h"
 #include "Serializers.h"
 #include "LayerManager.h"
 #include "ObjectManager.h"
@@ -41,8 +39,6 @@
 
 #include "IModuleLoopHandler.h"
 #include "ResourceLoaderModule.h"
-
-#include "ProfilerModule.h"
 
 #include <JobManager.h>
 #include <ThreadManager.h>
@@ -240,10 +236,6 @@ namespace Glory
 		{
 			m_pAllModules[currentSize + i] = m_pOptionalModules[i];
 		}
-
-		ProfilerModule* pProfiler = new ProfilerModule();
-		m_Profiler->m_pProfiler = pProfiler;
-		AddInternalModule(pProfiler);
 	}
 
 	Engine::~Engine()
@@ -783,6 +775,7 @@ namespace Glory
 
 	void Engine::BeginFrame()
 	{
+		m_Profiler->BeginThread("Main");
 		m_Time->BeginFrame();
 
 		GraphicsDevice* pDevice = ActiveGraphicsDevice();
@@ -817,6 +810,7 @@ namespace Glory
 		if (pDevice) pDevice->EndFrame();
 
 		m_Time->EndFrame();
+		m_Profiler->EndThread();
 	}
 
 	void Engine::CallModuleUpdate(Module* pModule)
