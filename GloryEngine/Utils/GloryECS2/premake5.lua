@@ -1,7 +1,7 @@
-project "GloryUtils"
+project "GloryECS2"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++20"
+	cppdialect "C++latest"
 	staticruntime "Off"
 
 	targetdir ("%{engineOutDir}")
@@ -11,18 +11,23 @@ project "GloryUtils"
 	{
 		"*.h",
 		"*.cpp",
-		"*.natvis",
 		"premake5.lua"
 	}
 
 	vpaths
 	{
-		
 	}
 
 	includedirs
 	{
-		"%{IncludeDir.yaml_cpp}",
+		--"%{GloryIncludeDir.enginecore}",
+
+		"%{IncludeDir.Utils}",
+	}
+
+	links
+	{
+		"GloryUtils"
 	}
 
 	filter "system:windows"
