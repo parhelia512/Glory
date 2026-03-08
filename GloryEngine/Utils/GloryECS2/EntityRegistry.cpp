@@ -5,7 +5,7 @@
 namespace Glory::Utils::ECS
 {
 	EntityRegistry::EntityRegistry(size_t reserveComponentManagers, size_t reserveEntities):
-		m_ComponentManagers(), m_ComponentOrderDirty(reserveComponentManagers), m_NextEntityID(1ull)
+		m_ComponentManagers(), m_ComponentOrderDirty(reserveComponentManagers), m_NextEntityID(1ull), m_EnabledCalls(32, true)
 	{
 		m_ComponentManagers.reserve(reserveComponentManagers);
 		m_EntityTrees.resize(reserveEntities);
@@ -140,6 +140,8 @@ namespace Glory::Utils::ECS
 
 	void EntityRegistry::Start()
 	{
+		Sort();
+
 		for (auto& manager : m_ComponentManagers)
 			manager->Start();
 	}
@@ -172,13 +174,36 @@ namespace Glory::Utils::ECS
 			manager->PostDraw();
 	}
 
+	void EntityRegistry::EnableCall(EntityCallType callType, bool enable)
+	{
+		m_EnabledCalls.Set(size_t(callType), enable);
+	}
+
+	bool EntityRegistry::IsCallEnabled(EntityCallType callType) const
+	{
+		return m_EnabledCalls.IsSet(size_t(callType));
+	}
+
 	void EntityRegistry::SetHierarchyActiveStateChildren(EntityID entity, bool active)
 	{
 		/* Component managers for components on this entity will need to be resorted */
+		/* We also need to call OnActivate or OnDeactivate on the entity */
 		for (size_t i = 0; i < m_ComponentManagers.size(); ++i)
 		{
 			if (!m_HasComponent[entity].IsSet(i)) continue;
 			m_ComponentOrderDirty.Set(i, true);
+			/* If the component was not active we don't need to call anything */
+			if (!m_ComponentManagers[i]->IsActive(entity)) continue;
+			if (active)
+			{
+				m_ComponentManagers[i]->CallOnActivate(entity);
+				m_ComponentManagers[i]->CallOnEnableDraw(entity);
+			}
+			else
+			{
+				m_ComponentManagers[i]->CallOnDeactivate(entity);
+				m_ComponentManagers[i]->CallOnDisableDraw(entity);
+			}
 		}
 
 		for (size_t i = 0; i < m_EntityTrees[entity].size(); ++i)

@@ -2,6 +2,7 @@
 #include "EntityID.h"
 #include "IComponentManager.h"
 #include "ECSTypeTraits.h"
+#include "EntityCallType.h"
 
 #include <SparseSet.h>
 #include <Hash.h>
@@ -15,14 +16,20 @@ namespace Glory::Utils::ECS
 	class ComponentManager : public SparseSet<EntityID, Component>, public IComponentManager
 	{
 	public:
-		ComponentManager(EntityRegistry* pRegistry, size_t capacity=32):
+		ComponentManager(EntityRegistry* pRegistry, size_t capacity = 32) :
 			m_pRegistry(pRegistry), SparseSet<EntityID, Component>{ 1000, capacity },
-			m_ComponentActive(capacity), m_ActiveSize(0) {}
+			m_ComponentActive(capacity), m_ActiveSize(0) {
+		}
 		virtual ~ComponentManager() = default;
 
 		static uint32_t GetComponentHash()
 		{
 			return Hashing::Hash(typeid(Component).name());
+		}
+
+		virtual void Initialize()
+		{
+			OnInitialize();
 		}
 
 		virtual uint32_t ComponentHash() const override
@@ -52,12 +59,40 @@ namespace Glory::Utils::ECS
 			m_ActiveSize = currentIndex;
 		}
 
-		virtual void Initialize()
+		virtual bool IsActive(EntityID entity) override
 		{
-			OnInitialize();
+			const size_t index = SparseSet<EntityID, Component>::Index(entity);
+			if (index != SparseSet<EntityID, Component>::InvalidIndex) return false;
+			return m_ComponentActive.IsSet(index);
 		}
 
-	protected:
+		virtual void Activate(EntityID entity) override
+		{
+			const size_t index = SparseSet<EntityID, Component>::Index(entity);
+			if (index != SparseSet<EntityID, Component>::InvalidIndex) return;
+			const bool wasActive = m_ComponentActive.IsSet(index);
+			if (wasActive) return;
+			m_ComponentActive.Set(index);
+			const bool entityActive = m_pRegistry->EntityActiveHierarchy(entity);
+			if (!entityActive) return;
+			CallOnActivate(entity);
+			CallOnEnableDraw(entity);
+		}
+
+		virtual void Deactivate(EntityID entity) override
+		{
+			const size_t index = SparseSet<EntityID, Component>::Index(entity);
+			if (index != SparseSet<EntityID, Component>::InvalidIndex) return;
+			const bool wasActive = m_ComponentActive.IsSet(index);
+			if (!wasActive) return;
+			m_ComponentActive.UnSet(index);
+			const bool entityActive = m_pRegistry->EntityActiveHierarchy(entity);
+			if (!entityActive) return;
+			CallOnDeactivate(entity);
+			CallOnDisableDraw(entity);
+		}
+
+	protected: /* Custom implementations, these are always called */
 		virtual void OnInitialize() {}
 		virtual void OnAddComponent(EntityID, Component&) {}
 		virtual void OnRemoveComponent(EntityID, size_t) {}
@@ -65,8 +100,16 @@ namespace Glory::Utils::ECS
 		virtual void OnReserveIDs() {}
 		virtual void OnSwapComponents(size_t index1, size_t index2) {}
 
-		typedef void (ComponentManager<Component>::* Function)(EntityID, Component&);
-		typedef void (ComponentManager<Component>::* UpdateFunction)(EntityID, Component&, float);
+	protected: /* Component callbacks */
+		typedef void (ComponentManager<Component>::*Function)(EntityID, Component&);
+		typedef void (ComponentManager<Component>::*UpdateFunction)(EntityID, Component&, float);
+		Function DoValidate = nullptr;
+		Function DoOnAdd = nullptr;
+		Function DoOnRemove = nullptr;
+		Function DoOnActivate = nullptr;
+		Function DoOnDeactivate = nullptr;
+		Function DoOnEnableDraw = nullptr;
+		Function DoOnDisableDraw = nullptr;
 		Function DoStart = nullptr;
 		Function DoStop = nullptr;
 		UpdateFunction DoPreUpdate = nullptr;
@@ -94,6 +137,7 @@ namespace Glory::Utils::ECS
 			m_ComponentActive.Set(denseIndex);
 			++m_ActiveSize;
 			OnAddComponent(entity, component);
+			CallOnAdd(entity);
 		}
 
 		virtual void OnRemove(EntityID entity, size_t index) override final
@@ -101,6 +145,7 @@ namespace Glory::Utils::ECS
 			m_ComponentActive.Set(index, false);
 			--m_ActiveSize;
 			OnRemoveComponent(entity, index);
+			CallOnRemove(entity);
 		}
 
 		virtual void OnReserveDense() override final
@@ -123,9 +168,11 @@ namespace Glory::Utils::ECS
 			OnSwapComponents(index1, index2);
 		}
 
+	private: /* Global component callbacks */
 		virtual void Start() override final
 		{
 			if (!DoStart) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::Start)) return;
 
 			const size_t numComponents = SparseSet<EntityID, Component>::Size();
 			for (size_t i = 0; i < numComponents; ++i)
@@ -138,6 +185,7 @@ namespace Glory::Utils::ECS
 		virtual void Stop() override final
 		{
 			if (!DoStop) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::Stop)) return;
 
 			const size_t numComponents = SparseSet<EntityID, Component>::Size();
 			for (size_t i = 0; i < numComponents; ++i)
@@ -150,6 +198,7 @@ namespace Glory::Utils::ECS
 		virtual void PreUpdate(float dt) override final
 		{
 			if (!DoPreUpdate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::PreUpdate)) return;
 
 			for (size_t i = 0; i < m_ActiveSize; ++i)
 			{
@@ -161,6 +210,7 @@ namespace Glory::Utils::ECS
 		virtual void Update(float dt) override final
 		{
 			if (!DoUpdate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::Update)) return;
 
 			for (size_t i = 0; i < m_ActiveSize; ++i)
 			{
@@ -172,6 +222,7 @@ namespace Glory::Utils::ECS
 		virtual void PostUpdate(float dt) override final
 		{
 			if (!DoPostUpdate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::PostUpdate)) return;
 
 			for (size_t i = 0; i < m_ActiveSize; ++i)
 			{
@@ -183,6 +234,7 @@ namespace Glory::Utils::ECS
 		virtual void PreDraw() override final
 		{
 			if (!DoPreDraw) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::PreDraw)) return;
 
 			for (size_t i = 0; i < m_ActiveSize; ++i)
 			{
@@ -194,6 +246,7 @@ namespace Glory::Utils::ECS
 		virtual void Draw() override final
 		{
 			if (!DoDraw) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::Draw)) return;
 
 			for (size_t i = 0; i < m_ActiveSize; ++i)
 			{
@@ -205,6 +258,7 @@ namespace Glory::Utils::ECS
 		virtual void PostDraw() override final
 		{
 			if (!DoPostDraw) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::PostDraw)) return;
 
 			for (size_t i = 0; i < m_ActiveSize; ++i)
 			{
@@ -225,6 +279,56 @@ namespace Glory::Utils::ECS
 				++currentIndex;
 				SortRecursive(entityTrees, currentIndex, child);
 			}
+		}
+
+	private: /* Manual calls */
+		virtual void CallValidate(EntityID entity) override
+		{
+			if (!DoValidate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnValidate)) return;
+			(this->*DoValidate)(entity, SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual void CallOnAdd(EntityID entity) override
+		{
+			if (!DoOnAdd) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnAdd)) return;
+			(this->*DoOnAdd)(entity, SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual void CallOnRemove(EntityID entity) override
+		{
+			if (!DoOnRemove) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnRemove)) return;
+			(this->*DoOnRemove)(entity, SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual void CallOnActivate(EntityID entity) override
+		{
+			if (!DoOnActivate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnActivate)) return;
+			(this->*DoOnActivate)(entity, SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual void CallOnDeactivate(EntityID entity) override
+		{
+			if (!DoOnDeactivate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnDeactivate)) return;
+			(this->*DoOnDeactivate)(entity, SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual void CallOnEnableDraw(EntityID entity) override
+		{
+			if (!DoOnEnableDraw) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnEnableDraw)) return;
+			(this->*DoOnEnableDraw)(entity, SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual void CallOnDisableDraw(EntityID entity) override
+		{
+			if (!DoOnDisableDraw) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnDisableDraw)) return;
+			(this->*DoOnDisableDraw)(entity, SparseSet<EntityID, Component>::Get(entity));
 		}
 
 	protected:

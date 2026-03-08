@@ -1,5 +1,5 @@
 project "GloryECS2"
-	kind "ConsoleApp"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++latest"
 	staticruntime "Off"
@@ -36,7 +36,7 @@ project "GloryECS2"
 
 		defines
 		{
-			--"_LIB"
+			"_LIB"
 		}
 
 	filter "platforms:Win32"

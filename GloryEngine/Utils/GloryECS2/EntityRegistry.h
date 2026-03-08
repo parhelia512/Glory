@@ -2,6 +2,7 @@
 #include "EntityID.h"
 #include "IComponentManager.h"
 #include "ECSTypeTraits.h"
+#include "EntityCallType.h"
 
 #include <Hash.h>
 #include <BitSet.h>
@@ -83,11 +84,15 @@ namespace Glory::Utils::ECS
 
 		void SetActive(EntityID entity, bool active);
 
-	public:
+	public: /* Global calls */
 		void Start();
 		void Stop();
 		void Update(float dt);
 		void Draw();
+
+	public:
+		void EnableCall(EntityCallType callType, bool enable=true);
+		bool IsCallEnabled(EntityCallType callType) const;
 
 	private:
 		void SetHierarchyActiveStateChildren(EntityID entity, bool active);
@@ -106,5 +111,13 @@ namespace Glory::Utils::ECS
 		std::vector<BitSet> m_HasComponent;
 
 		EntityID m_NextEntityID;
+
+		BitSet m_EnabledCalls;
+
+		/* TODO */
+		/*
+		 * - OnActivate, OnDeactivate and Validate
+		 * - Keep track of component order per entity
+		 */
 	};
 }

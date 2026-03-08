@@ -7,6 +7,8 @@
 #include "RegistryFactory.h"
 #include "ComponentManager.h"
 
+#ifdef _CONSOLE
+
 #define NO_COPY(c) c(c&) = delete;\
 c(const c&) = delete;\
 c& operator=(c&) = delete;\
@@ -142,3 +144,5 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+
+#endif
