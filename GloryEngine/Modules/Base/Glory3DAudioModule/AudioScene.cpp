@@ -34,7 +34,7 @@ namespace Glory
 		const size_t materialIndex = m_Materials.size();
 		m_Materials.push_back(std::move(material));
 		const size_t index = m_Meshes.size();
-		m_Meshes.push_back({ meshID, materialIndex });
+		m_Meshes.emplace_back(meshID, materialIndex);
 		m_IsAssetBits.Reserve(m_Meshes.size());
 		m_IsAssetBits.Set(index);
 	}
@@ -45,12 +45,12 @@ namespace Glory
 		m_Materials.push_back(std::move(material));
 		const size_t index = m_Meshes.size();
 		m_MeshDatas.push_back(std::move(meshData));
-		m_Meshes.push_back({ index, materialIndex });
+		m_Meshes.emplace_back(index, materialIndex);
 		m_IsAssetBits.Reserve(m_Meshes.size());
 		m_IsAssetBits.UnSet(index);
 	}
 
-	void AudioScene::Serialize(BinaryStream& stream) const
+	void AudioScene::Serialize(Utils::BinaryStream& stream) const
 	{
 		stream.Write(m_SceneID);
 		stream.Write(m_MeshDatas.size());
@@ -64,7 +64,7 @@ namespace Glory
 		stream.Write(m_IsAssetBits.Data(), m_IsAssetBits.DataSize());
 	}
 
-	void AudioScene::Deserialize(BinaryStream& stream)
+	void AudioScene::Deserialize(Utils::BinaryStream& stream)
 	{
 		stream.Read(m_SceneID);
 		size_t size;
@@ -131,12 +131,12 @@ namespace Glory
 		APPEND_TYPE(AudioSceneData);
 	}
 
-	void AudioSceneData::Serialize(BinaryStream& container) const
+	void AudioSceneData::Serialize(Utils::BinaryStream& container) const
 	{
 		m_AudioScene.Serialize(container);
 	}
 
-	void AudioSceneData::Deserialize(BinaryStream& container)
+	void AudioSceneData::Deserialize(Utils::BinaryStream& container)
 	{
 		m_AudioScene.Deserialize(container);
 	}

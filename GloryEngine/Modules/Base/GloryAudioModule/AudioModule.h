@@ -1,16 +1,22 @@
 #pragma once
 #include <Module.h>
 
+#include <EntityID.h>
+
 #include <functional>
 #include <glm/glm.hpp>
 
-#include <memory>
+namespace Glory::Utils::ECS
+{
+	class EntityRegistry;
+}
 
 namespace Glory
 {
 	class AudioData;
-	class AudioSourceSystem;
-	class AudioListenerSystem;
+
+	struct AudioSource;
+	struct AudioListener;
 
 	/** @brief User data types */
 	enum class AudioChannelUDataType
@@ -154,11 +160,6 @@ namespace Glory
 		/** @brief The current listener matrix this module is running at */
 		virtual glm::mat4& ListenerTransform() = 0;
 
-		/** @brief @ref AudioSourceSystem instance */
-		AudioSourceSystem& SourceSystem();
-		/** @brief @ref AudioListenerSystem instance */
-		AudioListenerSystem& ListenerSystem();
-
 		/** @brief Callback that is called when effect processing is needed */
 		std::function<void(AudioChannel&, void*, int)> OnEffectCallback;
 		/** @brief Callback that is called when the number of mixing channels changes */
@@ -167,18 +168,23 @@ namespace Glory
 		/** @brief Setting names for AudioModule */
 		struct SettingNames
 		{
-			static constexpr char* MixingChannels = "Mixing MixChannels";
-			static constexpr char* SamplingRate = "Sampling Rate";
-			static constexpr char* Framesize = "Framesize";
+			static constexpr std::string_view MixingChannels = "Mixing MixChannels";
+			static constexpr std::string_view SamplingRate = "Sampling Rate";
+			static constexpr std::string_view Framesize = "Framesize";
 		};
+
+		std::function<void(Utils::ECS::EntityRegistry*, Utils::ECS::EntityID, AudioSource&)> OnPlaybackFinished;
+		std::function<void(Utils::ECS::EntityRegistry*, Utils::ECS::EntityID, AudioSource&)> OnSourceStart;
+		std::function<void(Utils::ECS::EntityRegistry*, Utils::ECS::EntityID, AudioSource&)> OnSourceStop;
+		std::function<void(Utils::ECS::EntityRegistry*, Utils::ECS::EntityID, AudioSource&)> OnSourceUpdate;
+
+		std::function<void(Utils::ECS::EntityRegistry*, Utils::ECS::EntityID, AudioListener&)> OnListenerStart;
+		std::function<void(Utils::ECS::EntityRegistry*, Utils::ECS::EntityID, AudioListener&)> OnListenerStop;
+		std::function<void(Utils::ECS::EntityRegistry*, Utils::ECS::EntityID, AudioListener&)> OnListenerUpdate;
 
 	protected:
 		virtual void Initialize() override;
 		virtual void Cleanup() = 0;
 		virtual void LoadSettings(ModuleSettings& settings) override;
-
-	private:
-		std::unique_ptr<AudioSourceSystem> m_AudioSourceSystem;
-		std::unique_ptr<AudioListenerSystem> m_AudioListenerSystem;
     };
 }
