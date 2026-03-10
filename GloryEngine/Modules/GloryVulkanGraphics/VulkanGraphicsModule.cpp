@@ -282,7 +282,7 @@ namespace Glory
 
     vk::Sampler& VulkanGraphicsModule::GetSampler(const SamplerSettings& settings)
     {
-        auto& iter = m_Samplers.find(settings);
+        auto iter = m_Samplers.find(settings);
         if (iter != m_Samplers.end())
         {
             auto sampler = *iter;

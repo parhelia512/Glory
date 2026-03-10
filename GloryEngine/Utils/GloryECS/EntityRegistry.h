@@ -87,7 +87,7 @@ namespace Glory::Utils::ECS
 			return m_HasComponent[entity].IsSet(index);
 		}
 
-		template<typename Component>
+		template<ComponentCompatible Component>
 		ComponentManager<Component>* GetComponentManager(size_t* outIndex=nullptr)
 		{
 			const uint32_t hash = Hashing::Hash(typeid(Component).name());
@@ -158,6 +158,13 @@ namespace Glory::Utils::ECS
 		void Stop();
 		void Update(float dt);
 		void Draw();
+
+		template<ComponentCompatible Component>
+		void CallStart()
+		{
+			IComponentManager* manager = GetComponentManager<Component>();
+			manager->Start();
+		}
 
 	public: /* Individual calls */
 		void CallOnValidate(EntityID entity);

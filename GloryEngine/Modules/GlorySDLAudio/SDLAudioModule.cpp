@@ -283,9 +283,9 @@ namespace Glory
 			return;
 		}
 
-		const uint32_t channels = Settings().Value<unsigned int>(SettingNames::MixingChannels);
-		const uint32_t frequency = Settings().Value<unsigned int>(SettingNames::SamplingRate);
-		const uint32_t chunksize = Settings().Value<unsigned int>(SettingNames::Framesize);
+		const uint32_t channels = Settings().Value<unsigned int>(SettingNames::MixingChannels.data());
+		const uint32_t frequency = Settings().Value<unsigned int>(SettingNames::SamplingRate.data());
+		const uint32_t chunksize = Settings().Value<unsigned int>(SettingNames::Framesize.data());
 
 		if (Mix_OpenAudio(frequency, AUDIO_F32SYS, 2, chunksize) != 0)
 		{

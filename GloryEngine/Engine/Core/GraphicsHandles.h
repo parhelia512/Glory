@@ -63,7 +63,7 @@ namespace Glory
 		/** @overload Copy assignment */
 		GraphicsHandle& operator=(const GraphicsHandle& other) { m_ID = other.m_ID; return *this; }
 		/** @overload Move assignment */
-		GraphicsHandle& operator=(GraphicsHandle&& other) { m_ID = other.m_ID; return *this; }
+		GraphicsHandle& operator=(GraphicsHandle&& other) noexcept { m_ID = other.m_ID; return *this; }
 		/** @overload Comparator */
 		bool operator==(const GraphicsHandle& other) const { return m_ID == other.m_ID; }
 		/** @overload Comparator */

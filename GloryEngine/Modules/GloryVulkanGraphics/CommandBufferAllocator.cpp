@@ -16,7 +16,7 @@ namespace Glory
 
 	void CommandBufferAllocator::Allocate(vk::CommandPoolCreateFlags poolflags, size_t count, vk::CommandBuffer* commandBuffers)
 	{
-		auto& iter = m_CommandPools.find(poolflags);
+		auto iter = m_CommandPools.find(poolflags);
 		CommandPools* commandPools = iter == m_CommandPools.end() ? CreateCommandPools(poolflags) : &iter->second;
 		CommandBufferAllocator::CommandPool* pool = &commandPools->m_Pools[commandPools->m_CurrentPool];
 

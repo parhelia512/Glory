@@ -26,8 +26,8 @@ namespace Glory
 		/** @brief Get a vector containing other resources referenced by this resource */
 		virtual void References(IEngine*, std::vector<UUID>&) const override;
 
-		virtual void Serialize(BinaryStream& container) const override;
-		virtual void Deserialize(BinaryStream& container) override;
+		virtual void Serialize(Utils::BinaryStream& container) const override;
+		virtual void Deserialize(Utils::BinaryStream& container) override;
 
 	private:
 		UUID m_BaseTableID;

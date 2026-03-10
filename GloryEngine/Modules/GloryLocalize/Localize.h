@@ -45,6 +45,4 @@ namespace Glory
 			(std::string) (m_Term)
 		);
 	};
-
-
 }

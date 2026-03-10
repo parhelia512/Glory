@@ -242,7 +242,7 @@ namespace Glory
 
 	void FSMData::References(IEngine*, std::vector<UUID>&) const {}
 
-	void FSMData::Serialize(BinaryStream& container) const
+	void FSMData::Serialize(Utils::BinaryStream& container) const
 	{
 		container.Write(m_StartNodeIndex);
 		container.Write(m_Nodes.size());
@@ -267,7 +267,7 @@ namespace Glory
 		}
 	}
 
-	void FSMData::Deserialize(BinaryStream& container)
+	void FSMData::Deserialize(Utils::BinaryStream& container)
 	{
 		container.Read(m_StartNodeIndex);
 		size_t size;

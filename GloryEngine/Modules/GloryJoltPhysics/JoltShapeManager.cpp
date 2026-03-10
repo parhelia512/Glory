@@ -26,7 +26,7 @@ namespace Glory
 
 	const ShapeData* JoltShapeManager::GetShape(const UUID shapeId) const
 	{
-		auto& itor = m_pShapes.find(shapeId);
+		auto itor = m_pShapes.find(shapeId);
 		if (itor == m_pShapes.end()) return nullptr;
 		return &itor->second;
 	}

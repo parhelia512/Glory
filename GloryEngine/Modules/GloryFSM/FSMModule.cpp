@@ -66,7 +66,7 @@ namespace Glory
 
 	const FSMState* FSMModule::FSMInstance(UUID instanceID) const
 	{
-		auto& iter = std::find_if(m_States.begin(), m_States.end(),
+		auto iter = std::find_if(m_States.begin(), m_States.end(),
 			[instanceID](const FSMState& state) { return state.ID() == instanceID; });
 		if (iter == m_States.end()) return nullptr;
 		return &*iter;

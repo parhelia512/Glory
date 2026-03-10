@@ -45,13 +45,13 @@ namespace Glory
 		references.push_back(m_BaseTableID);
 	}
 
-	void StringsOverrideTable::Serialize(BinaryStream& container) const
+	void StringsOverrideTable::Serialize(Utils::BinaryStream& container) const
 	{
 		container.Write(m_BaseTableID).Write(m_OverrideLanguage);
 		StringTable::Serialize(container);
 	}
 
-	void StringsOverrideTable::Deserialize(BinaryStream& container)
+	void StringsOverrideTable::Deserialize(Utils::BinaryStream& container)
 	{
 		container.Read(m_BaseTableID).Read(m_OverrideLanguage);
 		StringTable::Deserialize(container);

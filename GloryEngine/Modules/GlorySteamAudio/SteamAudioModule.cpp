@@ -12,7 +12,7 @@
 #include <Components.h>
 
 #include <AudioModule.h>
-#include <AudioSourceSystem.h>
+#include <AudioComponentManager.h>
 #include <AudioComponents.h>
 #include <AudioScene.h>
 #include <SoundMaterialData.h>
@@ -206,7 +206,7 @@ namespace Glory
 		m_pEngine->GetResourceTypes().RegisterResource<SoundMaterialData>(".gsmat");
 		m_pEngine->GetResourceTypes().RegisterResource<AudioSceneData>("");
 
-		m_pEngine->GetSceneManager()->RegisterComponent<SoundOccluder>();
+		m_pEngine->GetSceneManager()->RegisterComponentManager<Utils::ECS::ComponentManager<SoundOccluder>, SoundOccluder>();
 
 		m_pAudioModule = m_pEngine->GetOptionalModule<AudioModule>();
 		if (!m_pAudioModule)
@@ -234,7 +234,7 @@ namespace Glory
 			return;
 		}
 
-		const unsigned int farmeSize = audioModuleSettings.Value<unsigned int>(AudioModule::SettingNames::Framesize);
+		const unsigned int farmeSize = audioModuleSettings.Value<unsigned int>(AudioModule::SettingNames::Framesize.data());
 
 		IPLAudioSettings audioSettings{};
 		audioSettings.samplingRate = samplingRate;
@@ -263,19 +263,19 @@ namespace Glory
 		iplSimulatorSetScene(m_Simulator, m_Scene);
 		iplSimulatorCommit(m_Simulator);
 
-		m_pAudioModule->SourceSystem().OnSourceStart = [this](Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioSource& pComponent) {
+		m_pAudioModule->OnSourceStart = [this](Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioSource& pComponent) {
 			AddSource(pRegistry, entity, pComponent);
 		};
 
-		m_pAudioModule->SourceSystem().OnSourceStop = [this](Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioSource& pComponent) {
+		m_pAudioModule->OnSourceStop = [this](Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioSource& pComponent) {
 			RemoveSource(pRegistry, entity, pComponent);
 		};
 
-		m_pAudioModule->SourceSystem().OnSourceUpdate = [this](Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioSource& pComponent) {
+		m_pAudioModule->OnSourceUpdate = [this](Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioSource& pComponent) {
 			UpdateSource(pRegistry, entity, pComponent);
 		};
 
-		m_pAudioModule->ListenerSystem().OnListenerUpdate = [this](Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioListener& pComponent) {
+		m_pAudioModule->OnListenerUpdate = [this](Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioListener& pComponent) {
 			if (!pComponent.m_Enable) return;
 
 			Transform& transform = pRegistry->GetComponent<Transform>(entity);
@@ -364,7 +364,7 @@ namespace Glory
 	void SteamAudioModule::SpatializeAmbisonics(AudioChannel& channel, const glm::vec3& listenPos, const glm::vec3& dir, int order, void* stream)
 	{
 		ModuleSettings& audioSettings = m_pAudioModule->Settings();
-		const unsigned int frameSize = audioSettings.Value<unsigned int>(AudioModule::SettingNames::Framesize);
+		const unsigned int frameSize = audioSettings.Value<unsigned int>(AudioModule::SettingNames::Framesize.data());
 		const unsigned int channels = m_pAudioModule->Channels();
 
 		if (m_AmbiSonicsOrders[channel.m_Index] != order)
@@ -409,7 +409,7 @@ namespace Glory
 	void SteamAudioModule::ProcessEffects(AudioChannel& channel, void* stream, int len)
 	{
 		ModuleSettings& audioModuleSettings = m_pAudioModule->Settings();
-		const unsigned int frameSize = audioModuleSettings.Value<unsigned int>(AudioModule::SettingNames::Framesize);
+		const unsigned int frameSize = audioModuleSettings.Value<unsigned int>(AudioModule::SettingNames::Framesize.data());
 		const unsigned int channels = m_pAudioModule->Channels();
 
 		/* Copy to a temprary buffer to ensure frame size */
@@ -544,7 +544,7 @@ namespace Glory
 	void SteamAudioModule::AllocateChannels(size_t mixingChannels)
 	{
 		ModuleSettings& audioModuleSettings = m_pAudioModule->Settings();
-		const unsigned int frameSize = audioModuleSettings.Value<unsigned int>(AudioModule::SettingNames::Framesize);
+		const unsigned int frameSize = audioModuleSettings.Value<unsigned int>(AudioModule::SettingNames::Framesize.data());
 		const unsigned int samplingRate = m_pAudioModule->SamplingRate();
 		const unsigned int channels = m_pAudioModule->Channels();
 
@@ -618,7 +618,7 @@ namespace Glory
 
 	void SteamAudioModule::AddSource(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioSource& audioSource)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
+		GScene* pScene = pRegistry->GetUserData<GScene>();
 		const UUID id = pScene->GetEntityUUID(entity);
 
 		auto iter = std::find(m_SourceEntities.begin(), m_SourceEntities.end(), 0);
@@ -654,7 +654,7 @@ namespace Glory
 
 	void SteamAudioModule::UpdateSource(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioSource& audioSource)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
+		GScene* pScene = pRegistry->GetUserData<GScene>();
 		const UUID id = pScene->GetEntityUUID(entity);
 
 		auto iter = std::find(m_SourceEntities.begin(), m_SourceEntities.end(), id);
@@ -744,7 +744,7 @@ namespace Glory
 
 	void SteamAudioModule::RemoveSource(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, AudioSource& audioSource)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
+		GScene* pScene = pRegistry->GetUserData<GScene>();
 		const UUID id = pScene->GetEntityUUID(entity);
 
 		auto iter = std::find(m_SourceEntities.begin(), m_SourceEntities.end(), id);

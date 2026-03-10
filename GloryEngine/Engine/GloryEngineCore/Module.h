@@ -15,16 +15,16 @@ Glory::Module* OnLoadModule()																				\
 	return new Glory::moduleName();																			\
 }																											\
 																											\
-const char* ModuleVersion()																					\
+const char* ModuleVersion()																		\
 {																											\
-	return Glory::moduleName::VersionStr;																	\
+	return Glory::moduleName::VersionStr.data();																	\
 }
 
 #define GLORY_MODULE_VERSION_CPP(moduleName)																\
 const Glory::Version Glory::moduleName::Version = Version::Parse(VersionStr);
 
 #define GLORY_MODULE_VERSION_H(major, minor, subMinor)														\
-static constexpr char* VersionStr = TOSTRING(major.minor.subMinor);											\
+static constexpr std::string_view VersionStr = TOSTRING(major.minor.subMinor);								\
 static const Glory::Version Version;																		\
 virtual const Glory::Version& ModuleVersion() const override { return Version; };
 

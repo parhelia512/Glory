@@ -1,8 +1,8 @@
 #include "JoltPhysicsModule.h"
 #include "Helpers.h"
 
-#include "PhysicsSystem.h"
-#include "CharacterControllerSystem.h"
+#include "PhysicsBodyManager.h"
+#include "CharacterControllerManager.h"
 
 #include "LayerCollisionFilter.h"
 #include "JoltCharacterManager.h"
@@ -25,6 +25,7 @@
 #include <Jolt/Physics/Collision/CollisionCollectorImpl.h>
 
 #include <Debug.h>
+#include <GScene.h>
 #include <cstdarg>
 
 #include <LayerManager.h>
@@ -657,6 +658,17 @@ namespace Glory
 	{
 		PhysicsModule::Initialize();
 
+		m_pEngine->GetSceneManager()->RegisterComponentManager<PhysicsBodyManager, PhysicsBody>(
+			[this](Utils::ECS::EntityRegistry*, PhysicsBodyManager* manager) {
+				manager->m_pPhysicsModule = this;
+				manager->m_pDebug = &m_pEngine->GetDebug();
+			});
+		m_pEngine->GetSceneManager()->RegisterComponentManager<CharacterControllerManager, CharacterController>(
+			[this](Utils::ECS::EntityRegistry*, CharacterControllerManager* manager) {
+				manager->m_pPhysicsModule = this;
+				manager->m_pDebug = &m_pEngine->GetDebug();
+			});
+
 		m_ObjectVSBroadPhase.m_pLayers = &m_pEngine->GetLayerManager();
 
 		Reflect::SetReflectInstance(&m_pEngine->Reflection());
@@ -710,29 +722,12 @@ namespace Glory
 		// Instead insert all new objects in batches instead of 1 at a time to keep the broad phase efficient.
 		//m_pJPHPhysicsSystem->OptimizeBroadPhase();
 
-		SceneManager* pScenes = m_pEngine->GetSceneManager();
-		Glory::Utils::ECS::ComponentTypes* pComponentTypes = pScenes->ComponentTypesInstance();
+		RegisterActivationCallback(ActivationCallback::Activated, OnBodyActivated);
+		RegisterActivationCallback(ActivationCallback::Deactivated, OnBodyDeactivated);
 
-		/* Physics Bodies */
-		pComponentTypes->RegisterInvokaction<PhysicsBody>(Glory::Utils::ECS::InvocationType::Start, PhysicsSystem::OnStart);
-		pComponentTypes->RegisterInvokaction<PhysicsBody>(Glory::Utils::ECS::InvocationType::Stop, PhysicsSystem::OnStop);
-		pComponentTypes->RegisterInvokaction<PhysicsBody>(Glory::Utils::ECS::InvocationType::OnRemove, PhysicsSystem::OnStop);
-		pComponentTypes->RegisterInvokaction<PhysicsBody>(Glory::Utils::ECS::InvocationType::OnValidate, PhysicsSystem::OnValidate);
-		pComponentTypes->RegisterInvokaction<PhysicsBody>(Glory::Utils::ECS::InvocationType::Update, PhysicsSystem::OnUpdate);
-
-		/* Character controllers */
-		pComponentTypes->RegisterInvokaction<CharacterController>(Glory::Utils::ECS::InvocationType::Start, CharacterControllerSystem::OnStart);
-		pComponentTypes->RegisterInvokaction<CharacterController>(Glory::Utils::ECS::InvocationType::Stop, CharacterControllerSystem::OnStop);
-		pComponentTypes->RegisterInvokaction<CharacterController>(Glory::Utils::ECS::InvocationType::OnRemove, CharacterControllerSystem::OnStop);
-		pComponentTypes->RegisterInvokaction<CharacterController>(Glory::Utils::ECS::InvocationType::OnValidate, CharacterControllerSystem::OnValidate);
-		pComponentTypes->RegisterInvokaction<CharacterController>(Glory::Utils::ECS::InvocationType::Update, CharacterControllerSystem::OnUpdate);
-
-		RegisterActivationCallback(ActivationCallback::Activated, PhysicsSystem::OnBodyActivated);
-		RegisterActivationCallback(ActivationCallback::Deactivated, PhysicsSystem::OnBodyDeactivated);
-
-		RegisterContactCallback(ContactCallback::Added, PhysicsSystem::OnContactAdded);
-		RegisterContactCallback(ContactCallback::Persisted, PhysicsSystem::OnContactPersisted);
-		RegisterContactCallback(ContactCallback::Removed, PhysicsSystem::OnContactRemoved);
+		RegisterContactCallback(ContactCallback::Added, OnContactAdded);
+		RegisterContactCallback(ContactCallback::Persisted, OnContactPersisted);
+		RegisterContactCallback(ContactCallback::Removed, OnContactRemoved);
 	}
 
 	void JoltPhysicsModule::PostInitialize()
@@ -824,8 +819,8 @@ namespace Glory
 		if (!m_pEngine->HasData("Physics")) return;
 		std::vector<char>& buffer = m_pEngine->GetData("Physics");
 
-		BinaryMemoryStream memoryStream{ buffer };
-		BinaryStream* stream = &memoryStream;
+		Utils::BinaryMemoryStream memoryStream{ buffer };
+		Utils::BinaryStream* stream = &memoryStream;
 		glm::vec3 gravity;
 		stream->Read(gravity);
 		SetGravity(gravity);
@@ -851,5 +846,82 @@ namespace Glory
 	const std::type_info& JoltPhysicsModule::GetModuleType()
 	{
 		return typeid(JoltPhysicsModule);
+	}
+
+	void JoltPhysicsModule::OnBodyActivated(JoltPhysicsModule* pPhysics, uint32_t bodyID)
+	{
+		const UUID entityUUID = pPhysics->GetBodyUserData(bodyID);
+		auto iter = pPhysics->m_CachedSceneIDs.find(entityUUID);
+		if (iter == pPhysics->m_CachedSceneIDs.end()) return;
+		GScene* pScene = pPhysics->GetEngine()->GetSceneManager()->GetOpenScene(iter->second);
+		if (!pScene) return;
+		if (!pPhysics->OnBodyActivated_Callback) return;
+		pPhysics->OnBodyActivated_Callback(pPhysics->GetEngine(), pScene->GetUUID(), entityUUID);
+	}
+
+	void JoltPhysicsModule::OnBodyDeactivated(JoltPhysicsModule* pPhysics, uint32_t bodyID)
+	{
+		const UUID entityUUID = pPhysics->GetBodyUserData(bodyID);
+		auto iter = pPhysics->m_CachedSceneIDs.find(entityUUID);
+		if (iter == pPhysics->m_CachedSceneIDs.end()) return;
+		GScene* pScene = pPhysics->GetEngine()->GetSceneManager()->GetOpenScene(iter->second);
+		if (!pScene) return;
+		if (!pPhysics->OnBodyDeactivated_Callback) return;
+		pPhysics->OnBodyDeactivated_Callback(pPhysics->GetEngine(), pScene->GetUUID(), entityUUID);
+	}
+
+	void JoltPhysicsModule::OnContactAdded(JoltPhysicsModule* pPhysics, uint32_t body1ID, uint32_t body2ID)
+	{
+		const UUID entity1UUID = pPhysics->GetBodyUserData(body1ID);
+		const UUID entity2UUID = pPhysics->GetBodyUserData(body2ID);
+		auto iter1 = pPhysics->m_CachedSceneIDs.find(entity1UUID);
+		auto iter2 = pPhysics->m_CachedSceneIDs.find(entity2UUID);
+		if (iter1 == pPhysics->m_CachedSceneIDs.end()) return;
+		if (iter2 == pPhysics->m_CachedSceneIDs.end()) return;
+		GScene* pScene1 = pPhysics->GetEngine()->GetSceneManager()->GetOpenScene(iter1->second);
+		GScene* pScene2 = pPhysics->GetEngine()->GetSceneManager()->GetOpenScene(iter2->second);
+		if (!pScene1 || !pScene2) return;
+		if (!pPhysics->OnContactAdded_Callback) return;
+		pPhysics->OnContactAdded_Callback(pPhysics->GetEngine(), pScene1->GetUUID(), entity1UUID, pScene2->GetUUID(), entity2UUID);
+	}
+
+	void JoltPhysicsModule::OnContactPersisted(JoltPhysicsModule* pPhysics, uint32_t body1ID, uint32_t body2ID)
+	{
+		const UUID entity1UUID = pPhysics->GetBodyUserData(body1ID);
+		const UUID entity2UUID = pPhysics->GetBodyUserData(body2ID);
+		auto iter1 = pPhysics->m_CachedSceneIDs.find(entity1UUID);
+		auto iter2 = pPhysics->m_CachedSceneIDs.find(entity2UUID);
+		if (iter1 == pPhysics->m_CachedSceneIDs.end()) return;
+		if (iter2 == pPhysics->m_CachedSceneIDs.end()) return;
+		GScene* pScene1 = pPhysics->GetEngine()->GetSceneManager()->GetOpenScene(iter1->second);
+		GScene* pScene2 = pPhysics->GetEngine()->GetSceneManager()->GetOpenScene(iter2->second);
+		if (!pScene1 || !pScene2) return;
+		if (!pPhysics->OnContactPersisted_Callback) return;
+		pPhysics->OnContactPersisted_Callback(pPhysics->GetEngine(), pScene1->GetUUID(), entity1UUID, pScene2->GetUUID(), entity2UUID);
+	}
+
+	void JoltPhysicsModule::OnContactRemoved(JoltPhysicsModule* pPhysics, uint32_t body1ID, uint32_t body2ID)
+	{
+		const UUID entity1UUID = pPhysics->GetBodyUserData(body1ID);
+		const UUID entity2UUID = pPhysics->GetBodyUserData(body2ID);
+		auto iter1 = pPhysics->m_CachedSceneIDs.find(entity1UUID);
+		auto iter2 = pPhysics->m_CachedSceneIDs.find(entity2UUID);
+		if (iter1 == pPhysics->m_CachedSceneIDs.end()) return;
+		if (iter2 == pPhysics->m_CachedSceneIDs.end()) return;
+		GScene* pScene1 = pPhysics->GetEngine()->GetSceneManager()->GetOpenScene(iter1->second);
+		GScene* pScene2 = pPhysics->GetEngine()->GetSceneManager()->GetOpenScene(iter2->second);
+		if (!pScene1 || !pScene2) return;
+		if (!pPhysics->OnContactRemoved_Callback) return;
+		pPhysics->OnContactRemoved_Callback(pPhysics->GetEngine(), pScene1->GetUUID(), entity1UUID, pScene2->GetUUID(), entity2UUID);
+	}
+
+	void JoltPhysicsModule::AddToSceneIDsCache(UUID entityUUID, UUID sceneID)
+	{
+		m_CachedSceneIDs.emplace(entityUUID, sceneID);
+	}
+
+	void JoltPhysicsModule::RemoveFromSceneIDsCache(UUID entityUUID)
+	{
+		m_CachedSceneIDs.erase(entityUUID);
 	}
 }

@@ -98,10 +98,10 @@ namespace Glory
 			TextureHandle ppBack = pDevice->GetRenderTextureAttachment(finalColorBackBuffer, 0);
 			TextureHandle ppFront = pDevice->GetRenderTextureAttachment(finalColorFrontBuffer, 0);
 
-			RenderTextureHandle ssaoRenderTexture = SSAOEnabled() ? pDevice->GetRenderPassRenderTexture(ssaoRenderPass) : NULL;
-			TextureHandle ao = SSAOEnabled() ? pDevice->GetRenderTextureAttachment(ssaoRenderTexture, 0) : NULL;
-			RenderTextureHandle ssaoBlurRenderTexture = SSAOEnabled() ? pDevice->GetRenderPassRenderTexture(ssaoBlurRenderPass) : NULL;
-			TextureHandle aoBlur = SSAOEnabled() ? pDevice->GetRenderTextureAttachment(ssaoBlurRenderTexture, 0) : NULL;
+			RenderTextureHandle ssaoRenderTexture = SSAOEnabled() ? pDevice->GetRenderPassRenderTexture(ssaoRenderPass) : nullptr;
+			TextureHandle ao = SSAOEnabled() ? pDevice->GetRenderTextureAttachment(ssaoRenderTexture, 0) : nullptr;
+			RenderTextureHandle ssaoBlurRenderTexture = SSAOEnabled() ? pDevice->GetRenderPassRenderTexture(ssaoBlurRenderPass) : nullptr;
+			TextureHandle aoBlur = SSAOEnabled() ? pDevice->GetRenderTextureAttachment(ssaoBlurRenderTexture, 0) : nullptr;
 
 			DescriptorSetUpdateInfo updateInfo;
 			if (SSAOEnabled())
@@ -1203,8 +1203,8 @@ namespace Glory
 		GraphicsDevice* pDevice = m_pModule->GetEngine()->ActiveGraphicsDevice();
 		const UniqueCameraData& uniqueCameraData = m_UniqueCameraDatas.at(camera.GetUUID());
 		RenderPassHandle renderPass = uniqueCameraData.m_RenderPasses[m_CurrentFrameIndex];
-		RenderPassHandle ssaoRenderPass = SSAOEnabled_Internal() ? uniqueCameraData.m_SSAORenderPasses[m_CurrentFrameIndex] : NULL;
-		RenderPassHandle ssaoBlurRenderPass = SSAOEnabled_Internal() ? uniqueCameraData.m_SSAORenderPasses[m_CurrentFrameIndex] : NULL;
+		RenderPassHandle ssaoRenderPass = SSAOEnabled_Internal() ? uniqueCameraData.m_SSAORenderPasses[m_CurrentFrameIndex] : nullptr;
+		RenderPassHandle ssaoBlurRenderPass = SSAOEnabled_Internal() ? uniqueCameraData.m_SSAORenderPasses[m_CurrentFrameIndex] : nullptr;
 		const PostProcessPass& pp = uniqueCameraData.m_PostProcessPasses[m_CurrentFrameIndex];
 		if (!renderPass) return NULL;
 		switch (CameraAttachment(index))
@@ -1438,7 +1438,7 @@ namespace Glory
 
 	RenderPassHandle GloryRenderer::GetSwapchainPass() const
 	{
-		return !m_SwapchainPasses.empty() ? m_SwapchainPasses[0] : NULL;
+		return !m_SwapchainPasses.empty() ? m_SwapchainPasses[0] : nullptr;
 	}
 
 	RenderPassHandle GloryRenderer::GetDummyPostProcessPass() const
