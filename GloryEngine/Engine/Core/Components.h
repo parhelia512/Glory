@@ -67,7 +67,7 @@ namespace Glory
 	struct MeshRenderer
 	{
 		MeshRenderer(MeshData* pMesh, MaterialData* pMaterial)
-			: m_Mesh(pMesh != nullptr ? pMesh->GetUUID() : 0), m_Material(pMaterial != nullptr ? pMaterial->GetUUID() : 0),
+			: m_Mesh(pMesh != nullptr ? pMesh->GetUUID() : UUID(0ull)), m_Material(pMaterial != nullptr ? pMaterial->GetUUID() : UUID(0ull)),
 			m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
 		MeshRenderer()
 			: m_Mesh(0), m_Material(0), m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
@@ -79,17 +79,6 @@ namespace Glory
 		);
 
 		bool m_WasSubmittedForStatic;
-	};
-
-	struct ModelRenderer
-	{
-		ModelRenderer(ModelData* pModel, MaterialData* pMaterial) : m_Model(pModel != nullptr ? pModel->GetUUID() : 0), m_Materials({ pMaterial != nullptr ? pMaterial->GetUUID() : 0 }) {}
-		ModelRenderer() : m_Model(0), m_Materials(std::vector<MeshMaterial>()) {}
-
-		REFLECTABLE(ModelRenderer,
-			(AssetReference<ModelData>)	(m_Model),
-			(std::vector<MeshMaterial>)	(m_Materials)
-		)
 	};
 
 	struct CameraComponent

@@ -1,5 +1,6 @@
 #include "AudioData.h"
-#include "BinaryStream.h"
+
+#include <BinaryStream.h>
 
 namespace Glory
 {
@@ -23,12 +24,12 @@ namespace Glory
 		return m_Data.size();
 	}
 
-	void AudioData::Serialize(BinaryStream& container) const
+	void AudioData::Serialize(Utils::BinaryStream& container) const
 	{
 		container.Write(m_Data.size()).Write(m_Data.data(), m_Data.size());
 	}
 
-	void AudioData::Deserialize(BinaryStream& container)
+	void AudioData::Deserialize(Utils::BinaryStream& container)
 	{
 		size_t size;
 		container.Read(size);

@@ -18,7 +18,7 @@ namespace Glory
 			size_t index = m_UnusedCameraIndices[0];
 			m_UnusedCameraIndices.erase(m_UnusedCameraIndices.begin());
 			Camera& pCamera = m_Cameras[index];
-			pCamera.SetBaseResolution(float(width), float(height));
+			pCamera.SetBaseResolution(uint32_t(width), uint32_t(height));
 			pCamera.m_IsInUse = true;
 			return CameraRef(this, pCamera.GetUUID());
 		}

@@ -1,10 +1,11 @@
 #include "MaterialData.h"
 #include "AssetManager.h"
-#include "BinaryStream.h"
 #include "PipelineData.h"
 #include "TextureData.h"
 #include "PipelineManager.h"
 #include "IEngine.h"
+
+#include <BinaryStream.h>
 
 #include <algorithm>
 
@@ -192,7 +193,7 @@ namespace Glory
 		return m_TextureTypeIndices[size_t(textureType)].size();
 	}
 
-	void MaterialData::Serialize(BinaryStream& container) const
+	void MaterialData::Serialize(Utils::BinaryStream& container) const
 	{
 		/* Write pipeline ID */
 		container.Write(m_Pipeline);
@@ -224,7 +225,7 @@ namespace Glory
 		container.Write(m_TextureSetBits);
 	}
 
-	void MaterialData::Deserialize(BinaryStream& container)
+	void MaterialData::Deserialize(Utils::BinaryStream& container)
 	{
 		/* Read pipeline ID */
 		container.Read(m_Pipeline);
@@ -319,7 +320,7 @@ namespace Glory
 
 	void MaterialData::SetTexture(const std::string& name, TextureData* value)
 	{
-		const UUID uuid = value ? value->GetUUID() : 0;
+		const UUID uuid = value ? value->GetUUID() : UUID(0ull);
 		SetTexture(name, uuid);
 	}
 

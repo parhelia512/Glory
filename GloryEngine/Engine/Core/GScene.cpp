@@ -7,21 +7,24 @@
 #include "SceneManager.h"
 #include "IEngine.h"
 #include "Debug.h"
-#include "BinaryStream.h"
-#include "BinarySerialization.h"
 #include "ComponentHelpers.h"
 #include "AssetManager.h"
 
+#include "TransformManager.h"
+
+#include <BinaryStream.h>
 #include <NodeRef.h>
 
 namespace Glory
 {
-	GScene::GScene(const std::string& sceneName) : Resource(sceneName), m_Registry(this)
+	GScene::GScene(const std::string& sceneName):
+		Resource(sceneName), m_Registry(this)
 	{
 		APPEND_TYPE(GScene);
 	}
 		
-	GScene::GScene(const std::string& sceneName, UUID uuid) : Resource(uuid, sceneName), m_Registry(this)
+	GScene::GScene(const std::string& sceneName, UUID uuid):
+		Resource(uuid, sceneName), m_Registry(this)
 	{
 		APPEND_TYPE(GScene);
 	}
@@ -46,7 +49,7 @@ namespace Glory
 		
 	size_t GScene::SceneObjectsCount() const
 	{
-		return m_Registry.Alive();
+		return m_Registry.AliveCount();
 	}
 
 	Entity GScene::GetEntityByUUID(UUID uuid)
@@ -90,34 +93,18 @@ namespace Glory
 	void GScene::Start()
 	{
 		m_Starting = true;
-		m_Registry.InvokeAll(Utils::ECS::InvocationType::OnValidate, NULL);
-		m_Registry.InvokeAll(Utils::ECS::InvocationType::Start, NULL);
-		m_Registry.InvokeAll(Utils::ECS::InvocationType::OnEnable,
-		[](Utils::ECS::BaseTypeView* pTypeView, Utils::ECS::EntityView* pEntity, size_t componentIndex) {
-			const bool isActive = pEntity->IsActive() && pTypeView->IsActiveByIndex(componentIndex);
-			return isActive;
-		});
-		m_Registry.InvokeAll(Utils::ECS::InvocationType::OnEnableDraw,
-		[](Utils::ECS::BaseTypeView* pTypeView, Utils::ECS::EntityView* pEntity, size_t componentIndex) {
-			const bool isActive = pEntity->IsActive() && pTypeView->IsActiveByIndex(componentIndex);
-			return isActive;
-		});
+		m_Registry.Validate();
+		m_Registry.Start();
+		m_Registry.Activate();
+		m_Registry.EnableDraw();
 		m_Starting = false;
 	}
 		
 	void GScene::Stop()
 	{
-		m_Registry.InvokeAll(Utils::ECS::InvocationType::OnDisable,
-		[](Utils::ECS::BaseTypeView* pTypeView, Utils::ECS::EntityView* pEntity, size_t componentIndex) {
-			const bool isActive = pEntity->IsActive() && pTypeView->IsActiveByIndex(componentIndex);
-			return isActive;
-		});
-		m_Registry.InvokeAll(Utils::ECS::InvocationType::OnDisableDraw,
-		[](Utils::ECS::BaseTypeView* pTypeView, Utils::ECS::EntityView* pEntity, size_t componentIndex) {
-			const bool isActive = pEntity->IsActive() && pTypeView->IsActiveByIndex(componentIndex);
-			return isActive;
-		});
-		m_Registry.InvokeAll(Utils::ECS::InvocationType::Stop, NULL);
+		m_Registry.Deactivate();
+		m_Registry.DisableDraw();
+		m_Registry.Stop();
 	}
 
 	void GScene::SetPrefab(Utils::ECS::EntityID entity, UUID prefabID)
@@ -127,11 +114,9 @@ namespace Glory
 		const UUID uuid = itor->second;
 
 		m_ActivePrefabs.emplace(uuid, prefabID);
-
-		Utils::ECS::EntityView* pEntityView = m_Registry.GetEntityView(entity);
-		for (size_t i = 0; i < pEntityView->ChildCount(); ++i)
+		for (size_t i = 0; i < m_Registry.ChildCount(entity); ++i)
 		{
-			SetChildrenPrefab(pEntityView->Child(i), prefabID);
+			SetChildrenPrefab(m_Registry.Child(entity, i), prefabID);
 		}
 	}
 
@@ -142,24 +127,22 @@ namespace Glory
 		const UUID uuid = itor->second;
 
 		m_ActivePrefabs.erase(uuid);
-
-		Utils::ECS::EntityView* pEntityView = m_Registry.GetEntityView(entity);
-		for (size_t i = 0; i < pEntityView->ChildCount(); ++i)
+		for (size_t i = 0; i < m_Registry.ChildCount(entity); ++i)
 		{
-			UnsetChildrenPrefab(pEntityView->Child(i));
+			UnsetChildrenPrefab(m_Registry.Child(entity, i));
 		}
 	}
 
 	const UUID GScene::Prefab(UUID objectID) const
 	{
 		const auto itor = m_ActivePrefabs.find(objectID);
-		return itor != m_ActivePrefabs.end() ? itor->second : 0;
+		return itor != m_ActivePrefabs.end() ? itor->second : UUID(0ull);
 	}
 
 	const UUID GScene::PrefabChild(UUID objectID) const
 	{
 		const auto itor = m_ActivePrefabChildren.find(objectID);
-		return itor != m_ActivePrefabChildren.end() ? itor->second : 0;
+		return itor != m_ActivePrefabChildren.end() ? itor->second : UUID(0ull);
 	}
 
 	Utils::ECS::EntityRegistry& GScene::GetRegistry()
@@ -188,8 +171,7 @@ namespace Glory
 
 	void GScene::SetParent(Utils::ECS::EntityID entity, Utils::ECS::EntityID parent)
 	{
-		if (!m_Registry.SetParent(entity, parent)) return;
-		//m_Registry.GetComponent<Transform>(entity).Parent = { entity, this };
+		m_Registry.SetParent(entity, parent);
 	}
 
 	size_t GScene::ChildCount(Utils::ECS::EntityID entity) const
@@ -296,16 +278,16 @@ namespace Glory
 		return m_Starting;
 	}
 
-	void GScene::OnTick()
+	void GScene::OnTick(float dt)
 	{
 		if (m_MarkedForDestruct) return;
-		m_Registry.InvokeAll(Glory::Utils::ECS::InvocationType::Update, NULL);
+		m_Registry.Update(dt);
 	}
 
 	void GScene::OnPaint()
 	{
 		if (m_MarkedForDestruct) return;
-		m_Registry.InvokeAll(Glory::Utils::ECS::InvocationType::Draw, NULL);
+		m_Registry.Draw();
 	}
 
 	void GScene::SetUUID(UUID uuid)
@@ -315,7 +297,8 @@ namespace Glory
 
 	Entity GScene::CreateEntity(UUID transUUID)
 	{
-		Utils::ECS::EntityID entityID = m_Registry.CreateEntity<Transform>(transUUID);
+		Utils::ECS::EntityID entityID = m_Registry.CreateEntity();
+		m_Registry.AddComponent<Transform>(entityID, transUUID);
 		return { entityID, this };
 	}
 
@@ -325,11 +308,9 @@ namespace Glory
 		if (itor == m_UUIds.end()) return;
 		const UUID uuid = itor->second;
 		m_ActivePrefabChildren.emplace(uuid, prefabID);
-
-		Utils::ECS::EntityView* pEntityView = m_Registry.GetEntityView(entity);
-		for (size_t i = 0; i < pEntityView->ChildCount(); ++i)
+		for (size_t i = 0; i < m_Registry.ChildCount(entity); ++i)
 		{
-			SetChildrenPrefab(pEntityView->Child(i), prefabID);
+			SetChildrenPrefab(m_Registry.Child(entity, i), prefabID);
 		}
 	}
 	
@@ -339,11 +320,9 @@ namespace Glory
 		if (itor == m_UUIds.end()) return;
 		const UUID uuid = itor->second;
 		m_ActivePrefabChildren.erase(uuid);
-
-		Utils::ECS::EntityView* pEntityView = m_Registry.GetEntityView(entity);
-		for (size_t i = 0; i < pEntityView->ChildCount(); ++i)
+		for (size_t i = 0; i < m_Registry.ChildCount(entity); ++i)
 		{
-			UnsetChildrenPrefab(pEntityView->Child(i));
+			UnsetChildrenPrefab(m_Registry.Child(entity, i));
 		}
 	}
 
@@ -352,7 +331,6 @@ namespace Glory
 	{
 		const Utils::ECS::EntityID newEntity = m_Registry.CreateEntity();
 		newEntities.push_back(newEntity);
-		Utils::ECS::EntityView* pNewEntityView = m_Registry.GetEntityView(newEntity);
 
 		const UUID entityID = pOther->GetEntityUUID(entity);
 		const UUID remappedEntityID = IDRemapper(entityID);
@@ -377,15 +355,14 @@ namespace Glory
 		m_UUIds.emplace(newEntity, remappedEntityID);
 		m_Names.emplace(newEntity, pOther->EntityName(entity));
 
+		m_Registry.SetActive(newEntity, pOther->m_Registry.EntityActiveSelf(entity));
 		if (parent) m_Registry.SetParent(newEntity, parent);
-		Utils::ECS::EntityView* pEntityView = pOther->m_Registry.GetEntityView(entity);
-		pNewEntityView->Active() = pEntityView->Active();
-		for (size_t i = 0; i < pEntityView->ComponentCount(); ++i)
+		for (size_t i = 0; i < pOther->m_Registry.EntityComponentCount(entity); ++i)
 		{
-			const uint32_t type = pEntityView->ComponentTypeAt(i);
-			const UUID uuid = pEntityView->ComponentUUIDAt(i);
+			const uint32_t type = pOther->m_Registry.EntityComponentType(entity, i);
+			const UUID uuid = pOther->m_Registry.EntityComponentID(entity, i);
 			const UUID remappedID = IDRemapper(uuid);
-			void* data = pOther->m_Registry.GetComponentAddress(entity, uuid);
+			void* data = pOther->m_Registry.GetComponentAddress(entity, type);
 			void* newComponent = m_Registry.CopyComponent(newEntity, type, remappedID, data);
 			m_pManager->TriggerOnCopy(type, this, newComponent, remappedID, IDRemapper);
 		}
@@ -413,13 +390,7 @@ namespace Glory
 			Resource* pResource = pEngine->GetAssetManager().GetAssetImmediate(m_Settings.m_LightingSettings.m_IrradianceMap);
 			if (pResource) pResource->References(pEngine, references);
 		}
-
-		const size_t typeViewCount = m_Registry.TypeViewCount();
-		for (size_t i = 0; i < typeViewCount; ++i)
-		{
-			Utils::ECS::BaseTypeView* pTypeView = m_Registry.TypeViewAt(i);
-			pTypeView->GetReferences(references);
-		}
+		m_Registry.GetReferences(references);
 	}
 
 	void GScene::MarkForDestruction()
@@ -437,7 +408,6 @@ namespace Glory
 		{
 			const Utils::ECS::EntityID child = pOther->Child(0, i);
 			Entity nextEntity = InstantiateEntity(pOther, IDRemapper, child, newEntities, parent);
-			nextEntity.UpdateHierarchyActive();
 			if (i == 0)
 				firstEntity = nextEntity;
 		}
@@ -450,12 +420,15 @@ namespace Glory
 			transform.Scale = scale;
 		}
 
-		m_Registry.InvokeAll(Utils::ECS::InvocationType::OnValidate, newEntities);
-		m_Registry.InvokeAll(Utils::ECS::InvocationType::Start, newEntities);
-		for (const Utils::ECS::EntityID entity: newEntities)
+		for (Utils::ECS::EntityID entity : newEntities)
 		{
-			Entity entityHandle{ entity, this };
-			Components::CallOnEnable(entityHandle);
+			m_Registry.CallOnValidate(entity);
+			m_Registry.CallStart(entity);
+		}
+
+		for (Utils::ECS::EntityID entity : newEntities)
+		{
+			m_Registry.CallOnActivate(entity);
 		}
 
 		return firstEntity;
@@ -471,52 +444,9 @@ namespace Glory
 		m_pManager = pManager;
 	}
 
-	void GScene::Serialize(BinaryStream& container) const
+	void GScene::Serialize(Utils::BinaryStream& container) const
 	{
-		const size_t entityCount = m_Registry.Alive();
-		const size_t typeViewCount = m_Registry.TypeViewCount();
-		container.Write(entityCount).Write(typeViewCount);
-
-		/* Serialize component datas */
-		for (size_t i = 0; i < typeViewCount; ++i)
-		{
-			Utils::ECS::BaseTypeView* pTypeView = m_Registry.TypeViewAt(i);
-			const uint32_t hash = pTypeView->ComponentTypeHash();
-			container.Write(hash);
-			container.Write(pTypeView->Size());
-
-			const Utils::Reflect::TypeData* pTypeData =
-				Utils::Reflect::Reflect::GetTyeData(hash);
-
-			const int bufferOffset = pTypeData->DataBufferOffset();
-			const size_t bufferSize = pTypeData->DataBufferSize();
-			for (size_t j = 0; j < pTypeView->Size(); ++j)
-			{
-				Utils::ECS::EntityID entity = pTypeView->EntityAt(j);
-				container.Write(entity);
-				void* data = pTypeView->GetComponentAddress(entity);
-				for (size_t k = 0; k < pTypeData->FieldCount(); ++k)
-				{
-					const Utils::Reflect::FieldData* pField = pTypeData->GetFieldData(k);
-					void* pAddress = pField->GetAddress(data);
-					SerializeData(container, pField, pAddress);
-				}
-				if (bufferOffset != -1)
-				{
-					const char* pBuffer = (const char*)data + bufferOffset;
-					container.Write(pBuffer, bufferSize);
-				}
-			}
-			container.Write(pTypeView->ActiveStates());
-		}
-
-		/* Serialize the hierarchy */
-		SerializeTree(container, m_Registry, 0);
-		for (auto itor = m_Registry.EntityViewBegin(); itor != m_Registry.EntityViewEnd(); ++itor)
-		{
-			const Utils::ECS::EntityID entity = itor->first;
-			SerializeTree(container, m_Registry, entity);
-		}
+		m_Registry.Serialize(container);
 
 		/* Serialize scene IDs and names */
 		container.Write(m_Ids.size());
@@ -529,56 +459,9 @@ namespace Glory
 		container.Write(m_Settings);
 	}
 
-	void GScene::Deserialize(BinaryStream& container)
+	void GScene::Deserialize(Utils::BinaryStream& container)
 	{
-		size_t typeViewCount, entityCount;
-		container.Read(entityCount).Read(typeViewCount);
-
-		for (size_t i = 0; i < entityCount; ++i)
-			m_Registry.CreateEntity();
-
-		/* Deserialize component datas */
-		for (size_t i = 0; i < typeViewCount; ++i)
-		{
-			uint32_t hash;
-			container.Read(hash);
-			Utils::ECS::BaseTypeView* pTypeView = m_Registry.GetTypeView(hash);
-
-			size_t size;
-			container.Read(size);
-
-			const Utils::Reflect::TypeData* pTypeData =
-				Utils::Reflect::Reflect::GetTyeData(hash);
-
-			const int bufferOffset = pTypeData->DataBufferOffset();
-			const size_t bufferSize = pTypeData->DataBufferSize();
-
-			for (size_t j = 0; j < size; ++j)
-			{
-				Utils::ECS::EntityID entity;
-				container.Read(entity);
-				void* data = pTypeView->Create(entity);
-				for (size_t k = 0; k < pTypeData->FieldCount(); ++k)
-				{
-					const Utils::Reflect::FieldData* pField = pTypeData->GetFieldData(k);
-					void* pAddress = pField->GetAddress(data);
-					DeserializeData(container, pField, pAddress);
-				}
-
-				if (bufferOffset != -1)
-				{
-					char* pBuffer = (char*)data + bufferOffset;
-					container.Read(pBuffer, bufferSize);
-				}
-			}
-			container.Read(pTypeView->ActiveStates());
-		}
-
-		/* Deserialize the hierarchy */
-		for (size_t i = 0; i < entityCount + 1; ++i)
-		{
-			DeserializeTree(container, m_Registry);
-		}
+		m_Registry.Deserialize(container);
 
 		/* Deserialize scene IDs and names */
 		size_t idSize;

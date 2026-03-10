@@ -123,6 +123,7 @@ namespace Glory::Utils::ECS
 		void* GetComponentAddress(EntityID entity, uint32_t type);
 		void* GetComponentAddress(EntityID entity, uint32_t type) const;
 		void* CopyComponent(EntityID entity, uint32_t type, UUID componentID, void* data);
+		EntityID CopyEntityToOtherRegistry(EntityID entity, EntityID parent, EntityRegistry* pRegistry) const;
 
 		template<typename T>
 		T* GetUserData()
@@ -144,6 +145,8 @@ namespace Glory::Utils::ECS
 		void Deserialize(BinaryStream& container);
 
 		bool operator==(const EntityRegistry& other) const;
+
+		const std::type_index GetComponentType(uint32_t typeHash) const;
 
 	public: /* Global calls */
 		void Validate();

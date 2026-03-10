@@ -45,7 +45,7 @@ namespace Glory
 		/* Can't render anything without a pipeline */
 		if (!pipelineID) return;
 
-		auto& iter = std::find_if(m_StaticPipelineRenderDatas.begin(), m_StaticPipelineRenderDatas.end(),
+		auto iter = std::find_if(m_StaticPipelineRenderDatas.begin(), m_StaticPipelineRenderDatas.end(),
 			[pipelineID](const PipelineBatch& data) { return data.m_PipelineID == pipelineID; });
 		PipelineBatch& pipelineRenderData = iter == m_StaticPipelineRenderDatas.end() ?
 			m_StaticPipelineRenderDatas.emplace_back(pipelineID) : *iter;
@@ -77,11 +77,11 @@ namespace Glory
 	{
 		ProfileSample sample{ &m_pModule->GetEngine()->Profiler(), "Renderer::UpdateStatic" };
 
-		auto& pipelineIter = std::find_if(m_StaticPipelineRenderDatas.begin(), m_StaticPipelineRenderDatas.end(),
+		auto pipelineIter = std::find_if(m_StaticPipelineRenderDatas.begin(), m_StaticPipelineRenderDatas.end(),
 			[pipelineID](const PipelineBatch& otherPipeline) { return otherPipeline.m_PipelineID == pipelineID; });
 		if (pipelineIter == m_StaticPipelineRenderDatas.end()) return;
 
-		auto& meshIter = pipelineIter->m_Meshes.find(meshID);
+		auto meshIter = pipelineIter->m_Meshes.find(meshID);
 		if (meshIter == pipelineIter->m_Meshes.end()) return;
 
 		PipelineMeshBatch& meshRenderData = meshIter->second;
@@ -101,7 +101,7 @@ namespace Glory
 			[pipelineID](const PipelineBatch& otherPipeline) { return otherPipeline.m_PipelineID == pipelineID; });
 		if (pipelineIter == m_StaticPipelineRenderDatas.end()) return;
 
-		auto& meshIter = pipelineIter->m_Meshes.find(meshID);
+		auto meshIter = pipelineIter->m_Meshes.find(meshID);
 		if (meshIter == pipelineIter->m_Meshes.end()) return;
 
 		PipelineMeshBatch& meshRenderData = meshIter->second;
@@ -129,7 +129,7 @@ namespace Glory
 		/* Can't render anything without a pipeline */
 		if (!pipelineID) return;
 
-		auto& iter = std::find_if(m_DynamicPipelineRenderDatas.begin(), m_DynamicPipelineRenderDatas.end(),
+		auto iter = std::find_if(m_DynamicPipelineRenderDatas.begin(), m_DynamicPipelineRenderDatas.end(),
 			[pipelineID](const PipelineBatch& data) { return data.m_PipelineID == pipelineID; });
 		PipelineBatch& pipelineRenderData = iter == m_DynamicPipelineRenderDatas.end() ?
 			m_DynamicPipelineRenderDatas.emplace_back(pipelineID) : *iter;
@@ -172,7 +172,7 @@ namespace Glory
 		/* Can't render anything without a pipeline */
 		if (!pipelineID) return;
 
-		auto& iter = std::find_if(m_DynamicLatePipelineRenderDatas.begin(), m_DynamicLatePipelineRenderDatas.end(),
+		auto iter = std::find_if(m_DynamicLatePipelineRenderDatas.begin(), m_DynamicLatePipelineRenderDatas.end(),
 			[pipelineID](const PipelineBatch& data) { return data.m_PipelineID == pipelineID; });
 		PipelineBatch& pipelineRenderData = iter == m_DynamicLatePipelineRenderDatas.end() ?
 			m_DynamicLatePipelineRenderDatas.emplace_back(pipelineID) : *iter;

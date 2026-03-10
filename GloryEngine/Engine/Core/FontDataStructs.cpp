@@ -23,7 +23,7 @@ namespace Glory::Utils
 			pMesh->ClearIndices();
 		}
 
-		const size_t indexOffset = pMesh->VertexCount();
+		const uint32_t indexOffset = pMesh->VertexCount();
 
 		/* Get words */
 		std::vector<std::pair<size_t, size_t>> wordPositions;
@@ -49,7 +49,7 @@ namespace Glory::Utils
 		float writeX = 0.0f;
 		float writeY = 0.0f;
 		float textHeight = 0.0f;
-		size_t letterCount = 0;
+		uint32_t letterCount = 0;
 		/* For generating the mesh one line at a time */
 		std::function<void(const std::string_view, float)> drawLine = [&](const std::string_view line, float lineWidth) {
 			switch (alignment)

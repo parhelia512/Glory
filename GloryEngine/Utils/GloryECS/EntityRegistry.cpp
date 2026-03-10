@@ -314,6 +314,23 @@ namespace Glory::Utils::ECS
 		return pAddress;
 	}
 
+	EntityID EntityRegistry::CopyEntityToOtherRegistry(EntityID entity, EntityID parent, EntityRegistry* pRegistry) const
+	{
+		const EntityID newEntity = pRegistry->CreateEntity();
+
+		if (parent) pRegistry->SetParent(newEntity, parent);
+		pRegistry->SetActive(newEntity, EntityActiveSelf(entity));
+		for (size_t i = 0; i < EntityComponentCount(entity); ++i)
+		{
+			const uint32_t type = EntityComponentType(entity, i);
+			const UUID uuid = EntityComponentID(entity, i);
+			void* data = GetComponentAddress(entity, uuid);
+			pRegistry->CopyComponent(newEntity, type, uuid, data);
+		}
+
+		return newEntity;
+	}
+
 	void EntityRegistry::SetUserData(void* data)
 	{
 		m_pUserData = data;
@@ -410,6 +427,12 @@ namespace Glory::Utils::ECS
 			if (!m_ComponentManagers[i]->Compare(other.m_ComponentManagers[i].get())) return false;
 
 		return true;
+	}
+
+	const std::type_index EntityRegistry::GetComponentType(uint32_t typeHash) const
+	{
+		const IComponentManager* manager = GetComponentManager(typeHash);
+		return manager->ComponentType();
 	}
 
 	void EntityRegistry::Validate()

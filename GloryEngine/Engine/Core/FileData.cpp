@@ -1,5 +1,6 @@
 #include "FileData.h"
-#include "BinaryStream.h"
+
+#include <BinaryStream.h>
 
 namespace Glory
 {
@@ -66,13 +67,13 @@ namespace Glory
 		return m_Data.cend();
 	}
 
-	void FileData::Serialize(BinaryStream& container) const
+	void FileData::Serialize(Utils::BinaryStream& container) const
 	{
 		container.Write(m_Data.size()).
 			Write(m_Data.data(), m_Data.size()).Write(m_MetaData);
 	}
 
-	void FileData::Deserialize(BinaryStream& container)
+	void FileData::Deserialize(Utils::BinaryStream& container)
 	{
 		size_t size;
 		container.Read(size);

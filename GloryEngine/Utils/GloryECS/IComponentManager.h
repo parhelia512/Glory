@@ -4,6 +4,7 @@
 #include <UUID.h>
 
 #include <vector>
+#include <typeindex>
 
 namespace Glory::Utils
 {
@@ -33,6 +34,7 @@ namespace Glory::Utils::ECS
 		virtual void Serialize(BinaryStream& stream) const = 0;
 		virtual void Deserialize(BinaryStream& stream) = 0;
 		virtual bool Compare(const IComponentManager* other) const = 0;
+		virtual std::type_index ComponentType() const = 0;
 
 		/* Global calls */
 		virtual void Validate() = 0;

@@ -95,7 +95,7 @@ namespace Glory
 		const AssetLocation& location = m_AssetLocations[uuid];
 
 		if (location.SubresourcePath.empty()) m_PathToUUID.erase(location.Path);
-		std::remove(m_AssetsByType[meta.m_TypeHash].begin(), m_AssetsByType[meta.m_TypeHash].end(), uuid);
+		std::erase(m_AssetsByType[meta.m_TypeHash], uuid);
 		m_AssetLocations.erase(uuid);
 		m_Metas.erase(uuid);
 	}

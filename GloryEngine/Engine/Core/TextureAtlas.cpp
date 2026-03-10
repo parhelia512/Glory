@@ -76,7 +76,7 @@ namespace Glory
 
 	glm::vec4 TextureAtlas::GetChunkCoords(UUID id) const
 	{
-		auto& iter = std::find_if(m_ReservedChunks.begin(), m_ReservedChunks.end(), [id](const ReservedChunk& chunk) {
+		auto iter = std::find_if(m_ReservedChunks.begin(), m_ReservedChunks.end(), [id](const ReservedChunk& chunk) {
 			return chunk.ID == id;
 		});
 
@@ -97,7 +97,7 @@ namespace Glory
 
 	glm::vec4 TextureAtlas::GetChunkPositionAndSize(UUID id) const
 	{
-		auto& iter = std::find_if(m_ReservedChunks.begin(), m_ReservedChunks.end(), [id](const ReservedChunk& chunk) {
+		auto iter = std::find_if(m_ReservedChunks.begin(), m_ReservedChunks.end(), [id](const ReservedChunk& chunk) {
 			return chunk.ID == id;
 		});
 

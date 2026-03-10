@@ -1,4 +1,6 @@
 #pragma once
+#include "Object.h"
+
 #include <string>
 #include <string_view>
 #include <typeindex>

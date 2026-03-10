@@ -145,6 +145,11 @@ namespace Glory::Utils::ECS
 			return SparseSet<EntityID, Component>::SparseData() == otherManager->SparseSet<EntityID, Component>::SparseData();
 		}
 
+		virtual std::type_index ComponentType() const override
+		{
+			return typeid(Component);
+		}
+
 	protected: /* Custom implementations, these are always called */
 		virtual void OnInitialize() {}
 		virtual void OnAddComponent(EntityID, Component&) {}
@@ -190,7 +195,7 @@ namespace Glory::Utils::ECS
 		}
 
 		template<typename Manager>
-		void Bind(ReferencesFunction& target, void(Manager::*func)(std::vector<UUID>&))
+		void Bind(ReferencesFunction& target, void(Manager::*func)(std::vector<UUID>&) const)
 		{
 			target = static_cast<ReferencesFunction>(func);
 		}

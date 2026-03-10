@@ -101,7 +101,7 @@ namespace Utils::Reflect
 		LoaderModule* GetLoaderModule(const std::type_info& resourceType) override;
 		LoaderModule* GetLoaderModule(uint32_t typeHash) override;
 
-		void UpdateSceneManager() override;
+		void UpdateSceneManager(float dt) override;
 		void DrawSceneManager() override;
 		void ModulesLoop(IModuleLoopHandler* pLoopHandler = nullptr) override;
 		void BeginFrame() override;

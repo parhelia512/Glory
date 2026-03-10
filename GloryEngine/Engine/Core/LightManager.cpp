@@ -1,22 +1,28 @@
-#include "LightSystem.h"
+#include "LightManager.h"
 
-#include "IEngine.h"
 #include "GScene.h"
 #include "SceneManager.h"
 #include "Renderer.h"
-#include "PropertyFlags.h"
 
 #include <EntityRegistry.h>
 
 namespace Glory
 {
-	void LightSystem::OnDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, LightComponent& pComponent)
+	LightManager::LightManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity), m_pSceneManager(nullptr)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		Renderer* pRenderer = pScene->Manager()->GetRenderer();
+	}
+
+	LightManager::~LightManager()
+	{
+	}
+
+	void LightManager::OnDrawImpl(Utils::ECS::EntityID entity, LightComponent& pComponent)
+	{
+		Renderer* pRenderer = m_pSceneManager->GetRenderer();
 		if (!pRenderer) return;
 
-		Transform& transform = pRegistry->GetComponent<Transform>(entity);
+		Transform& transform = m_pRegistry->GetComponent<Transform>(entity);
 		LightData light;
 		light.position = transform.MatTransform[3];
 		light.type = pComponent.m_Type;
@@ -38,7 +44,7 @@ namespace Glory
 		{
 		case LightType::Spot:
 		{
-			const float outerRadius = pComponent.m_Range * std::tan(glm::radians(pComponent.m_Outer / 2.0f));
+			const float outerRadius = pComponent.m_Range*std::tan(glm::radians(pComponent.m_Outer/2.0f));
 			lightProjection = glm::perspective(glm::radians(pComponent.m_Outer), 1.0f, 0.001f, pComponent.m_Range + outerRadius*2.0f + 1.0f);
 			break;
 		}
@@ -51,15 +57,14 @@ namespace Glory
 		default:
 			break;
 		}
+
+		GScene* pScene = m_pRegistry->GetUserData<GScene>();
 		pRenderer->Submit(std::move(light), std::move(lightView),
 			std::move(lightProjection), pScene->GetEntityUUID(entity));
 	}
 
-	LightSystem::LightSystem()
+	void LightManager::OnInitialize()
 	{
-	}
-
-	LightSystem::~LightSystem()
-	{
+		Bind(DoDraw, &LightManager::OnDrawImpl);
 	}
 }

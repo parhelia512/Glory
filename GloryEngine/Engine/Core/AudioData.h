@@ -13,8 +13,8 @@ namespace Glory
 		const char* Data() const;
 		const size_t Size() const;
 
-		void Serialize(BinaryStream& container) const override;
-		void Deserialize(BinaryStream& container) override;
+		void Serialize(Utils::BinaryStream& container) const override;
+		void Deserialize(Utils::BinaryStream& container) override;
 
 	private:
 		virtual void References(IEngine*, std::vector<UUID>&) const override {}

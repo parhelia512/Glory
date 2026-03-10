@@ -1,30 +1,25 @@
-#include "CameraSystem.h"
+#include "CameraComponentManager.h"
 
-#include "IEngine.h"
-#include "WindowModule.h"
 #include "Renderer.h"
-#include "Window.h"
 #include "CameraManager.h"
 #include "SceneManager.h"
-#include "GScene.h"
 
 #include <EntityRegistry.h>
 
 namespace Glory
 {
-	CameraSystem::CameraSystem()
+	CameraComponentManager::CameraComponentManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity), m_pSceneManager(nullptr), m_pCameraManager(nullptr)
 	{
 	}
 
-	CameraSystem::~CameraSystem()
+	CameraComponentManager::~CameraComponentManager()
 	{
 	}
 
-	void CameraSystem::OnValidate(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, CameraComponent& pComponent)
+	void CameraComponentManager::OnValidateImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		IEngine* pEngine = pScene->Manager()->GetEngine();
-		Renderer* pRenderer = pScene->Manager()->GetRenderer();
+		Renderer* pRenderer = m_pSceneManager->GetRenderer();
 		if (!pRenderer) return;
 
 		const glm::uvec2& resolution = pRenderer->Resolution();
@@ -53,53 +48,43 @@ namespace Glory
 		pRenderer->UpdateCamera(pComponent.m_Camera);
 	}
 
-	void CameraSystem::OnComponentAdded(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, CameraComponent& pComponent)
+	void CameraComponentManager::OnComponentAddedImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		IEngine* pEngine = pScene->Manager()->GetEngine();
-		Window* pWindow = pEngine->GetMainModule<WindowModule>()->GetMainWindow();
-		pComponent.m_Camera = pEngine->GetCameraManager().GetNewOrUnusedCamera();
-		OnValidate(pRegistry, entity, pComponent);
+		pComponent.m_Camera = m_pCameraManager->GetNewOrUnusedCamera();
+		OnValidateImpl(entity, pComponent);
 	}
 
-	void CameraSystem::OnComponentRemoved(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, CameraComponent& pComponent)
+	void CameraComponentManager::OnComponentRemovedImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent)
 	{
 		pComponent.m_Camera.Free();
 		pComponent.m_Camera = NULL;
 	}
 
-	void CameraSystem::OnUpdate(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, CameraComponent& pComponent)
+	void CameraComponentManager::OnUpdateImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent, float)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		IEngine* pEngine = pScene->Manager()->GetEngine();
-
-		Transform& transform = pRegistry->GetComponent<Transform>(entity);
+		Transform& transform = m_pRegistry->GetComponent<Transform>(entity);
 		pComponent.m_Camera.SetView(glm::inverse(transform.MatTransform));
 
-		Renderer* pRenderer = pScene->Manager()->GetRenderer();
+		Renderer* pRenderer = m_pSceneManager->GetRenderer();
 		if (!pRenderer || !pRenderer->ResolutionChanged()) return;
-		OnValidate(pRegistry, entity, pComponent);
+		OnValidateImpl(entity, pComponent);
 	}
 
-	void CameraSystem::OnEnableDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, CameraComponent& pComponent)
+	void CameraComponentManager::OnEnableDrawImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		IEngine* pEngine = pScene->Manager()->GetEngine();
-		Renderer* pRenderer = pScene->Manager()->GetRenderer();
+		Renderer* pRenderer = m_pSceneManager->GetRenderer();
 		if (!pRenderer) return;
 		pRenderer->SubmitCamera(pComponent.m_Camera);
 	}
 
-	void CameraSystem::OnDisableDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, CameraComponent& pComponent)
+	void CameraComponentManager::OnDisableDrawImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		IEngine* pEngine = pScene->Manager()->GetEngine();
-		Renderer* pRenderer = pScene->Manager()->GetRenderer();
+		Renderer* pRenderer = m_pSceneManager->GetRenderer();
 		if (!pRenderer) return;
 		pRenderer->UnsubmitCamera(pComponent.m_Camera);
 	}
 
-	void CameraSystem::Focus(Transform& transform, CameraComponent& pComponent, const BoundingSphere& boundingSphere)
+	void CameraComponentManager::Focus(Transform& transform, CameraComponent& pComponent, const BoundingSphere& boundingSphere)
 	{
 		const glm::uvec2& resolution = pComponent.m_Camera.GetResolution();
 		const float aspect = float(resolution.x)/float(resolution.y);
@@ -111,8 +96,18 @@ namespace Glory
 		transform.Position = boundingSphere.m_Center + forward*desiredDistance;
 	}
 
-	std::string CameraSystem::Name()
+	std::string CameraComponentManager::Name()
 	{
 		return "Camera";
+	}
+
+	void CameraComponentManager::OnInitialize()
+	{
+		Bind(DoValidate, &CameraComponentManager::OnValidateImpl);
+		Bind(DoOnAdd, &CameraComponentManager::OnComponentAddedImpl);
+		Bind(DoOnRemove, &CameraComponentManager::OnComponentRemovedImpl);
+		Bind(DoUpdate, &CameraComponentManager::OnUpdateImpl);
+		Bind(DoOnEnableDraw, &CameraComponentManager::OnEnableDrawImpl);
+		Bind(DoOnDisableDraw, &CameraComponentManager::OnDisableDrawImpl);
 	}
 }

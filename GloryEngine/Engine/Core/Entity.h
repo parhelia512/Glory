@@ -1,8 +1,10 @@
 #pragma once
+#include <UUID.h>
+#include <EntityRegistry.h>
+
 #include <cstdint>
 #include <functional>
-#include <EntityID.h>
-#include <EntityRegistry.h>
+#include <string_view>
 
 namespace Glory
 {
@@ -43,8 +45,6 @@ namespace Glory
 		Utils::ECS::EntityID Parent() const;
 		void SetParent(Utils::ECS::EntityID parent);
 
-		Utils::ECS::EntityView* GetEntityView() const;
-
 		void Clear();
 		bool IsValid() const;
 		bool IsDirty() const;
@@ -67,11 +67,8 @@ namespace Glory
 		bool IsActive() const;
 		bool IsHierarchyActive() const;
 		void SetActive(bool active);
-		void SetActiveSelf(bool active);
-		void SetActiveHierarchy(bool active);
 
 		std::string_view Name() const;
-		void UpdateHierarchyActive();
 
 	private:
 		Utils::ECS::EntityID m_EntityID;

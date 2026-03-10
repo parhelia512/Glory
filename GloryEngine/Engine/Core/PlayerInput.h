@@ -18,29 +18,6 @@ namespace Glory
 	{
 		PlayerInputData(InputMap* pInputMap);
 
-		template<typename T>
-		void WriteData(std::string_view name, T value)
-		{
-			if (sizeof(T) > 4)
-				throw new std::exception("PlayerInputData.WriteData: Data type cannot be more than 4 bytes!");
-
-			if (m_InputData.find(name) == m_InputData.end())
-				m_InputData.emplace(name, "\0");
-			memcpy(&m_InputData.at(name), &value, sizeof(T));
-		}
-
-		template<typename T>
-		void ReadData(std::string_view name, T& value)
-		{
-			if (sizeof(T) > 4)
-				throw new std::exception("PlayerInputData.WriteData: Data type cannot be more than 4 bytes!");
-
-			if (m_InputData.find(name) == m_InputData.end())
-				return;
-
-			memcpy(&value, &m_InputData.at(name), sizeof(T));
-		}
-
 		InputMap* m_InputMap;
 		/* The current values of all axes */
 		std::map<std::string, float> m_AxisValueLeft;
@@ -83,6 +60,29 @@ namespace Glory
 		void Unbind();
 
 		void Update();
+
+		/*template<typename T>
+		void WriteData(std::string_view name, T value)
+		{
+			if (sizeof(T) > 4)
+				throw new std::exception("PlayerInput.WriteData: Data type cannot be more than 4 bytes!");
+
+			if (m_InputData.find(name) == m_InputData.end())
+				m_InputData.emplace(name, "\0");
+			memcpy(&m_InputData.at(name), &value, sizeof(T));
+		}
+
+		template<typename T>
+		void ReadData(std::string_view name, T& value)
+		{
+			if (sizeof(T) > 4)
+				throw new std::exception("PlayerInput.ReadData: Data type cannot be more than 4 bytes!");
+
+			if (m_InputData.find(name) == m_InputData.end())
+				return;
+
+			memcpy(&value, &m_InputData.at(name), sizeof(T));
+		}*/
 
 	private:
 		void TriggerAction(PlayerInputData& inputData, InputAction& inputAction, InputBinding& inputBinding, InputEvent& e);

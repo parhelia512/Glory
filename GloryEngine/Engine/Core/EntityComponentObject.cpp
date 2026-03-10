@@ -11,8 +11,7 @@ namespace Glory
 		: m_EntityID(entityID), m_ComponentType(componentType), m_pRegistry(pRegistry), Object(componentID)
 	{
 		APPEND_TYPE(EntityComponentObject);
-		Glory::Utils::ECS::BaseTypeView* pTypeView = m_pRegistry->GetTypeView(componentType);
-		PushInheritence(pTypeView->ComponentType());
+		PushInheritence(m_pRegistry->GetComponentType(componentType));
 	}
 
 	EntityComponentObject::~EntityComponentObject()
@@ -39,6 +38,6 @@ namespace Glory
 
 	void* EntityComponentObject::GetRootDataAddress()
 	{
-		return m_pRegistry->GetComponentAddress(m_EntityID, GetUUID());
+		return m_pRegistry->GetComponentAddress(m_EntityID, m_ComponentType);
 	}
 }

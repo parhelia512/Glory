@@ -1,10 +1,12 @@
 #pragma once
 #include <UUID.h>
+#include <Reflection.h>
 
 #include <string>
 #include <vector>
 #include <map>
-#include <ComponentTypes.h>
+#include <IComponentManager.h>
+#include <RegistryFactory.h>
 #include <glm/vec3.hpp>
 
 namespace Glory
@@ -33,14 +35,13 @@ namespace Glory
 		virtual void OnUnloadScene(GScene* pScene) = 0;
 		virtual void OnUnloadAllScenes() = 0;
 
-		Utils::ECS::ComponentTypes* ComponentTypesInstance() const;
+		Utils::ECS::RegistryFactory& GetRegistryFactory();
 
-		template<typename T>
-		void RegisterComponent(bool allowMultiple = false, const uint64_t customFlags = 0)
+		template<Utils::ECS::IsComponentManager Manager, typename Component>
+		void RegisterComponentManager(std::function<void(Utils::ECS::EntityRegistry*, Manager*)> createCallback=NULL)
 		{
-			Utils::ECS::ComponentTypes::SetInstance(m_pComponentTypesInstance);
-		    Utils::ECS::ComponentTypes::RegisterComponent<T>(allowMultiple, customFlags);
-		    Reflect::RegisterType<T>();
+			m_RegistryFactory.RegisterComponentManager<Manager>(createCallback);
+		    Reflect::RegisterType<Component>();
 		}
 
 		/** @brief Get the engine that owns this manager */
@@ -55,7 +56,7 @@ namespace Glory
 		size_t ExternalSceneCount();
 		GScene* GetExternalScene(size_t index);
 
-		void UpdateScene(GScene* pScene) const;
+		void UpdateScene(GScene* pScene, float dt) const;
 		void DrawScene(GScene* pScene) const;
 
 		void Start();
@@ -85,13 +86,15 @@ namespace Glory
 
 		void Initialize();
 		void Cleanup();
-		void Update();
+		void Update(float dt);
 		void Draw();
 
 	protected:
 		virtual void OnInitialize() = 0;
 		virtual void OnCleanup() = 0;
 		virtual void OnSetActiveScene(GScene* pActiveScene) = 0;
+
+		GScene* CreateNewScene_Internal(const std::string& name, UUID uuid=UUID());
 		
 	protected:
 		IEngine* m_pEngine;
@@ -108,7 +111,7 @@ namespace Glory
 		std::vector<UUID> m_ToLoadNextFrame;
 		bool m_NextFrameLoadIsAdditive;
 
-		Glory::Utils::ECS::ComponentTypes* m_pComponentTypesInstance;
+		Glory::Utils::ECS::RegistryFactory m_RegistryFactory;
 
 		struct SceneCallback
 		{

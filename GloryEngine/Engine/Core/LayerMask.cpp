@@ -25,6 +25,12 @@ namespace Glory
 		return mask;
 	}
 
+	LayerMask& LayerMask::operator=(uint64_t mask)
+	{
+		m_Mask = mask;
+		return *this;
+	}
+
 	LayerMask LayerMask::FromString(IEngine* pEngine, const std::string& names)
 	{
 		size_t currentIndex = 0;

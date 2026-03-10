@@ -22,8 +22,8 @@ namespace Glory
         std::vector<char>::iterator End();
         const std::vector<char>::const_iterator End() const;
 
-        void Serialize(BinaryStream& container) const override;
-        void Deserialize(BinaryStream& container) override;
+        void Serialize(Utils::BinaryStream& container) const override;
+        void Deserialize(Utils::BinaryStream& container) override;
 
         void SetMetaData(const void* data, size_t size);
 

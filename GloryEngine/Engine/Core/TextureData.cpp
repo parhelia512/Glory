@@ -1,5 +1,6 @@
 #include "TextureData.h"
-#include "BinaryStream.h"
+
+#include <BinaryStream.h>
 
 namespace Glory
 {
@@ -32,13 +33,13 @@ namespace Glory
 		return m_SamplerSettings;
 	}
 
-	void TextureData::Serialize(BinaryStream& container) const
+	void TextureData::Serialize(Utils::BinaryStream& container) const
 	{
 		/* Write image ID */
 		container.Write(m_Image.AssetUUID()).Write(m_SamplerSettings);
 	}
 
-	void TextureData::Deserialize(BinaryStream& container)
+	void TextureData::Deserialize(Utils::BinaryStream& container)
 	{
 		container.Read(*m_Image.AssetUUIDMember()).Read(m_SamplerSettings);
 	}

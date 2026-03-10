@@ -1,6 +1,5 @@
-#include "TextSystem.h"
+#include "TextManager.h"
 
-#include "Components.h"
 #include "GScene.h"
 #include "Renderer.h"
 #include "SceneManager.h"
@@ -9,40 +8,38 @@
 #include "RenderData.h"
 #include "AssetManager.h"
 
-#include <TypeView.h>
 #include <EntityRegistry.h>
 
 namespace Glory
 {
-	void TextSystem::OnDisableDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, TextComponent& pComponent)
+	TextManager::TextManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity), m_pSceneManager(nullptr),
+		m_pAssetManager(nullptr), m_pLayerManager(nullptr)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		IEngine* pEngine = pScene->Manager()->GetEngine();
-		const UUID meshID = pScene->GetEntityUUID(entity);
-		pEngine->GetAssetManager().UnloadAsset(meshID);
 	}
 
-	void TextSystem::OnDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, TextComponent& pComponent)
+	TextManager::~TextManager()
+	{
+	}
+
+	void TextManager::OnDrawImpl(Utils::ECS::EntityID entity, TextComponent& pComponent)
 	{
 		if (!pComponent.m_Font || pComponent.m_Text.empty()) return;
 
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		Renderer* pRenderer = pScene->Manager()->GetRenderer();
+		GScene* pScene = m_pRegistry->GetUserData<GScene>();
+		Renderer* pRenderer = m_pSceneManager->GetRenderer();
 		if (!pRenderer) return;
 
-		IEngine* pEngine = pScene->Manager()->GetEngine();
-		LayerManager* pLayers = &pEngine->GetLayerManager();
-
-		FontData* pFont = pComponent.m_Font.Get(&pEngine->GetAssetManager());
+		FontData* pFont = pComponent.m_Font.Get(m_pAssetManager);
 		if (!pFont) return;
 
-		Transform& transform = pRegistry->GetComponent<Transform>(entity);
+		Transform& transform = m_pRegistry->GetComponent<Transform>(entity);
 
 		LayerMask mask;
-		if (pRegistry->HasComponent<LayerComponent>(entity))
+		if (m_pRegistry->HasComponent<LayerComponent>(entity))
 		{
-			LayerComponent& layer = pRegistry->GetComponent<LayerComponent>(entity);
-			mask = layer.m_Layer.Layer(pLayers) != nullptr ? layer.m_Layer.Layer(pLayers)->m_Mask : 0;
+			LayerComponent& layer = m_pRegistry->GetComponent<LayerComponent>(entity);
+			mask = layer.m_Layer.Layer(m_pLayerManager) != nullptr ? layer.m_Layer.Layer(m_pLayerManager)->m_Mask : LayerMask(0ull);
 		}
 
 		const UUID fontID = pComponent.m_Font.AssetUUID();
@@ -64,13 +61,13 @@ namespace Glory
 		renderData.m_MeshID = renderData.m_ObjectID;
 		renderData.m_MaterialID = pFont->Material();
 
-		Resource* pMeshResource = pEngine->GetAssetManager().FindResource(renderData.m_MeshID);
+		Resource* pMeshResource = m_pAssetManager->FindResource(renderData.m_MeshID);
 		if (!pMeshResource)
 		{
 			pMeshResource = new MeshData(textData.m_Text.size()*4, sizeof(VertexPosColorTex),
 				{ AttributeType::Float2, AttributeType::Float3, AttributeType::Float2 });
 			pMeshResource->SetResourceUUID(renderData.m_MeshID);
-			pEngine->GetAssetManager().AddLoadedResource(pMeshResource);
+			m_pAssetManager->AddLoadedResource(pMeshResource);
 			textData.m_TextDirty = true;
 		}
 
@@ -84,13 +81,19 @@ namespace Glory
 		pRenderer->SubmitDynamic(std::move(renderData));
 	}
 
-	void TextSystem::GetReferences(const Utils::ECS::BaseTypeView* pTypeView, std::vector<UUID>& references)
+	void TextManager::GetReferencesImpl(std::vector<UUID>& references) const
 	{
-		for (size_t i = 0; i < pTypeView->Size(); ++i)
+		for (size_t i = 0; i < Size(); ++i)
 		{
-			const TextComponent* pText = static_cast<const TextComponent*>(pTypeView->GetComponentAddressFromIndex(i));
-			const UUID font = pText->m_Font.AssetUUID();
+			const TextComponent& text = GetAt(i);
+			const UUID font = text.m_Font.AssetUUID();
 			if (font) references.push_back(font);
 		}
+	}
+
+	void TextManager::OnInitialize()
+	{
+		Bind(DoDraw, &TextManager::OnDrawImpl);
+		Bind(DoGetReferences, &TextManager::GetReferencesImpl);
 	}
 }

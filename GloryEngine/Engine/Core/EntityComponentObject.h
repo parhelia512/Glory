@@ -17,8 +17,7 @@ namespace Glory
 		template<typename T>
 		T& GetData()
 		{
-			Glory::Utils::ECS::TypeView<T>* pTypeView = m_pRegistry->GetTypeView<T>();
-			return pTypeView->Get(m_EntityID);
+			return m_pRegistry->GetComponent<T>(m_EntityID);
 		}
 
 		Utils::ECS::EntityRegistry* GetRegistry() const;

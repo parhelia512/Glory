@@ -1,7 +1,8 @@
 #include "PipelineData.h"
 #include "MaterialData.h"
 #include "PipelineManager.h"
-#include "BinaryStream.h"
+
+#include <BinaryStream.h>
 
 namespace Glory
 {
@@ -183,7 +184,7 @@ namespace Glory
 		m_Shaders.clear();
 	}
 
-	void PipelineData::Serialize(BinaryStream& container) const
+	void PipelineData::Serialize(Utils::BinaryStream& container) const
 	{
 		/* Write pipeline type */
 		container.Write(m_Type);
@@ -229,7 +230,7 @@ namespace Glory
 			.Write(m_StencilFailOp).Write(m_StencilDepthFailOp).Write(m_StencilPassOp);
 	}
 
-	void PipelineData::Deserialize(BinaryStream& container)
+	void PipelineData::Deserialize(Utils::BinaryStream& container)
 	{
 		/* Read pipeline type */
 		container.Read(m_Type);

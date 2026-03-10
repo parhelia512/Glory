@@ -1,7 +1,8 @@
 #include "InputModule.h"
 #include "IEngine.h"
 #include "Debug.h"
-#include "BinaryStream.h"
+
+#include <BinaryStream.h>
 
 namespace Glory
 {
@@ -83,8 +84,10 @@ namespace Glory
 
 	void InputModule::ReadInputData(YAML::Node& node)
 	{
-		ReadInputModes(node[Key_InputModes]);
-		ReadInputMaps(node[Key_InputMaps]);
+		auto inputModes = node[Key_InputModes];
+		auto inputMaps = node[Key_InputMaps];
+		ReadInputModes(inputModes);
+		ReadInputMaps(inputMaps);
 	}
 
 	void InputModule::ClearInputData()
@@ -103,7 +106,7 @@ namespace Glory
 
 	void InputModule::SetPlayerInputMode(const size_t playerIndex, const std::string& inputMode)
 	{
-		auto& iter = m_InputModes.find(inputMode);
+		auto iter = m_InputModes.find(inputMode);
 		if (iter == m_InputModes.end())
 		{
 			m_pEngine->GetDebug().LogError("SetPlayerInputMode: InputMode " + inputMode + " does not exist!");
@@ -262,8 +265,8 @@ namespace Glory
 
 		std::vector<char> buffer = m_pEngine->GetData("Input");
 
-		BinaryMemoryStream memoryStream{ buffer };
-		BinaryStream* stream = &memoryStream;
+		Utils::BinaryMemoryStream memoryStream{ buffer };
+		Utils::BinaryStream* stream = &memoryStream;
 		
 		size_t inputModesCount;
 		stream->Read(inputModesCount);

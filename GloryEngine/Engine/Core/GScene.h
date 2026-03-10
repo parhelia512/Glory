@@ -192,8 +192,8 @@ namespace Glory
 		 */
 		void SetManager(SceneManager* pManager);
 
-		virtual void Serialize(BinaryStream& container) const;
-		virtual void Deserialize(BinaryStream& container);
+		virtual void Serialize(Utils::BinaryStream & container) const;
+		virtual void Deserialize(Utils::BinaryStream& container);
 
 		/** @brief Mark this scene for destruction to prevent further update() and draw() calls */
 		void MarkForDestruction();
@@ -212,7 +212,7 @@ namespace Glory
 
 	protected:
 		/** @brief Invoke an update on all active entities and components */
-		void OnTick();
+		void OnTick(float dt);
 		/** @brief Invoke a draw on all active entities and components */
 		void OnPaint();
 

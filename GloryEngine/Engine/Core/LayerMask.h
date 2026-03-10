@@ -16,6 +16,7 @@ namespace Glory
 		LayerMask& operator |=(const LayerMask& other);
 		LayerMask& operator ^=(const LayerMask& other);
 		LayerMask operator &(const LayerMask& other) const;
+		LayerMask& operator =(uint64_t mask);
 
 		static LayerMask FromString(IEngine* pEngine, const std::string& names);
 

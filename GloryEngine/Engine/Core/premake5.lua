@@ -1,7 +1,7 @@
 project "GloryCore"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "Off"
 
 	targetdir ("%{engineOutDir}")
@@ -33,11 +33,11 @@ project "GloryCore"
 		["Modules/Input"] = { "InputModule.*", "Input.*", "KeyEnums.*", "PlayerInput.*" },
 		["Modules/Physics"] = { "ShapeManager.*", "CharacterManager.*", "PhysicsModule.*", "Shapes.*", "Physics.*", "ShapeProperty.*" },
 		["Analysis"] = { "EngineProfiler.*", "ProfilerSample.*", "ProfilerThreadSample.*" },
-		["Helpers"] = { "GLORY_YAML.*", "YAML_GLM.*", "ComponentTypes.*" },
+		["Helpers"] = { "GLORY_YAML.*", "YAML_GLM.*" },
 		["References"] = { "AssetReference.*", "SceneObjectRef.*", "LayerRef.*", "PropertyFlags.*" },
 		["Scripting"] = { "ScriptExtensions.*", "ScriptingExtender.*", "ScriptProperty.*" },
 		["SceneManagement"] = { "UUIDRemapper.*", "SceneManager.*", "SceneObject.*", "GScene.*", "Components.*", "Entity.*", "EntityComponentObject.*" },
-		["EntitySystems"] = { "CharacterControllerSystem.*", "ModelRenderSystem.*", "ScriptedSystem.*", "MeshRenderSystem.*", "Systems.*", "TransformSystem.*", "CameraSystem.*", "LookAtSystem.*", "SpinSystem.*", "LightSystem.*", "MeshFilterSystem.*" },
+		["ComponentManagers"] = { "MeshRenderManager.*", "TransformManager.*", "CameraComponentManager.*", "LightManager.*", "TextManager.*" },
 	}
 
 	includedirs
