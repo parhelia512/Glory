@@ -1,8 +1,7 @@
 #include "BinaryStream.h"
+#include "BitSet.h"
 
-#include <BitSet.h>
-
-namespace Glory
+namespace Glory::Utils
 {
 	BinaryFileStream::BinaryFileStream(const std::filesystem::path& path, bool read, bool trunc):
 		m_File(), m_Size(0), m_Tell(0)
@@ -25,13 +24,13 @@ namespace Glory
 	{
 		switch (relative)
 		{
-		case Glory::BinaryStream::Relative::Start:
+		case BinaryStream::Relative::Start:
 			m_File.seekg(offset, std::ios_base::beg);
 			break;
-		case Glory::BinaryStream::Relative::Current:
+		case BinaryStream::Relative::Current:
 			m_File.seekg(offset, std::ios_base::cur);
 			break;
-		case Glory::BinaryStream::Relative::End:
+		case BinaryStream::Relative::End:
 			m_File.seekg(offset, std::ios_base::end);
 			break;
 		default:
@@ -87,7 +86,7 @@ namespace Glory
 		return Write(value.DataSize()).Write(value.Data(), value.DataSize());
 	}
 
-	BinaryStream& BinaryStream::Write(const std::vector<std::string>& value)
+	BinaryStream& BinaryStream::Write(const std::vector<Utils::BitSet>& value)
 	{
 		Write(value.size());
 		for (size_t i = 0; i < value.size(); ++i)
@@ -128,6 +127,16 @@ namespace Glory
 		return Read(value.Data(), size);
 	}
 
+	BinaryStream& BinaryStream::Read(std::vector<Utils::BitSet>& out)
+	{
+		size_t size;
+		Read(size);
+		out.resize(size);
+		for (size_t i = 0; i < size; ++i)
+			Read(out[i]);
+		return *this;
+	}
+
 	BinaryStream& BinaryStream::Read(void* out, size_t size)
 	{
 		return Read(reinterpret_cast<char*>(out), size);
@@ -156,13 +165,13 @@ namespace Glory
 	{
 		switch (relative)
 		{
-		case Glory::BinaryStream::Relative::Start:
+		case BinaryStream::Relative::Start:
 			m_Tell = offset;
 			break;
-		case Glory::BinaryStream::Relative::Current:
+		case BinaryStream::Relative::Current:
 			m_Tell = m_Tell + offset;
 			break;
-		case Glory::BinaryStream::Relative::End:
+		case BinaryStream::Relative::End:
 			m_Tell = m_Size - offset;
 			break;
 		default:

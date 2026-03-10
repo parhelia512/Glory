@@ -1,7 +1,7 @@
 project "GloryECS"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++latest"
 	staticruntime "Off"
 
 	targetdir ("%{engineOutDir}")
@@ -24,6 +24,12 @@ project "GloryECS"
 		"%{IncludeDir.Utils}",
 	}
 
+	links
+	{
+		--"GloryEngineCore",
+		--"GloryUtils"
+	}
+
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
@@ -31,6 +37,7 @@ project "GloryECS"
 		defines
 		{
 			"_LIB"
+			--"_CONSOLE"
 		}
 
 	filter "platforms:Win32"

@@ -14,6 +14,8 @@ namespace Glory::Utils
 		~BitSet();
 		void operator=(BitSet&& other) noexcept;
 		void operator=(const BitSet& other) noexcept;
+		bool operator==(const BitSet& other) const;
+		bool operator!=(const BitSet& other) const;
 
 	public:
 		void Set(size_t index);

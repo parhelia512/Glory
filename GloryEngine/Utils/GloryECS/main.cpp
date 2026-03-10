@@ -1,11 +1,13 @@
+#include "EntityRegistry.h"
+#include "RegistryFactory.h"
+#include "ComponentManager.h"
+
+#include <BinaryStream.h>
+
 #include <crtdbg.h>
 
 #include <chrono>
 #include <print>
-
-#include "EntityRegistry.h"
-#include "RegistryFactory.h"
-#include "ComponentManager.h"
 
 #ifdef _CONSOLE
 
@@ -92,6 +94,8 @@ int main(int argc, char* argv[])
 
 	EntityRegistry registry;
 	factory.PopulateRegisry(registry);
+	EntityRegistry registry2;
+	factory.PopulateRegisry(registry2);
 
 	const size_t entityCount = 10000;
 	for (size_t i = 0; i < entityCount; ++i)
@@ -115,7 +119,34 @@ int main(int argc, char* argv[])
 		const float time = TimeSinceSeconds(startTime);
 		double sortTime = time - lastTime;
 		std::println("Sorting took {} seconds", sortTime);
+		lastTime = time;
 	}
+
+	{
+		Glory::Utils::BinaryFileStream file{ "./test.entities" };
+		registry.Serialize(file);
+		file.Close();
+
+		const float time = TimeSinceSeconds(startTime);
+		double sortTime = time - lastTime;
+		std::println("Serializing took {} seconds", sortTime);
+		lastTime = time;
+	}
+
+	{
+		Glory::Utils::BinaryFileStream file{ "./test.entities", true };
+		registry2.Deserialize(file);
+		file.Close();
+
+		const float time = TimeSinceSeconds(startTime);
+		double sortTime = time - lastTime;
+		std::println("Deserializing took {} seconds", sortTime);
+		lastTime = time;
+	}
+
+	const bool areTheSame = registry == registry2;
+
+	return areTheSame ? 0 : 1;
 
 	double averageDeltaTime = 0.0f;
 	double longestDeltaTime = 0.0f;

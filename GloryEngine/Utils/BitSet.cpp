@@ -4,6 +4,8 @@
 
 namespace Glory::Utils
 {
+	static constexpr uint32_t RoundingBitMask = 0x1F;
+
 	BitSet::BitSet(size_t capacity, bool defaultOn) : m_pMemory(new Element[capacity + (32 - capacity % 32)]), m_Capacity(capacity) {
 		for (size_t i = 0; i < capacity; ++i)
 		{
@@ -53,6 +55,18 @@ namespace Glory::Utils
 		std::memcpy(m_pMemory, other.m_pMemory, other.DataSize());
 	}
 
+	bool BitSet::operator==(const BitSet& other) const
+	{
+		return m_Capacity == other.m_Capacity ?
+			std::memcmp(m_pMemory, other.m_pMemory, DataSize()) == 0 : false;
+	}
+
+	bool BitSet::operator!=(const BitSet& other) const
+	{
+		return m_Capacity == other.m_Capacity ?
+			std::memcmp(m_pMemory, other.m_pMemory, DataSize()) != 0 : true;
+	}
+
 	void BitSet::Set(size_t index)
 	{
 		const size_t elementIndex = index/(sizeof(Element)*8);
@@ -100,7 +114,7 @@ namespace Glory::Utils
 	void BitSet::Reserve(size_t capacity)
 	{
 		if (m_Capacity >= capacity) return;
-		const size_t newCapacity = capacity + (32 - capacity % 32);
+		const size_t newCapacity = (capacity & ~RoundingBitMask) + (capacity & RoundingBitMask ? 32 : 0);
 		Element* pNewMemory = new Element[newCapacity];
 		std::memcpy(pNewMemory, m_pMemory, m_Capacity);
 		m_Capacity = newCapacity;

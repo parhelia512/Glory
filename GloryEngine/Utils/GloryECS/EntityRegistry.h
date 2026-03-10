@@ -1,223 +1,200 @@
 #pragma once
 #include "EntityID.h"
-#include "TypeView.h"
-#include "EntityView.h"
-#include "ComponentTypes.h"
+#include "IComponentManager.h"
+#include "ECSTypeTraits.h"
+#include "EntityCallType.h"
 
-#include <map>
-#include <unordered_map>
-#include <functional>
+#include <Hash.h>
+#include <UUID.h>
 #include <BitSet.h>
+
+#include <vector>
+#include <memory>
+#include <unordered_map>
+#include <cassert>
+
+namespace Glory::Utils
+{
+	class BinaryStream;
+}
 
 namespace Glory::Utils::ECS
 {
+	template<ComponentCompatible Component>
+	class ComponentManager;
+
 	class EntityRegistry
 	{
 	public:
-		EntityRegistry();
-		EntityRegistry(void* pUserData);
+		EntityRegistry(void* userData=nullptr, size_t reserveComponentManagers=1, size_t reserveEntities=100);
 		virtual ~EntityRegistry();
 
 		EntityID CreateEntity();
-		void DestroyEntity(EntityID entity);
 
-		template<typename Component, typename... Args>
-		EntityID CreateEntity(Args&&... args)
+		template<IsComponentManager Manager>
+		Manager& AddManager()
 		{
-			EntityID entityID = CreateEntity();
-			AddComponent<Component>(entityID, std::forward<Args>(args)...);
-			return entityID;
+			const uint32_t hash = Manager::GetComponentHash();
+			const uint32_t index = uint32_t(m_ComponentManagers.size());
+			auto& newManager = m_ComponentManagers.emplace_back(new Manager());
+			m_HashToComponentManagerIndex.emplace(hash, index);
+			m_ComponentOrderDirty.Reserve(index + 1ull);
+			m_ComponentOrderDirty.Set(index, false);
+			newManager->Initialize();
+			return static_cast<Manager&>(*newManager);
 		}
 
-		template<typename Component, typename... Args>
-		EntityID CreateEntity(Glory::UUID uuid, Args&&... args)
+		void AddManager(IComponentManager* manager);
+
+		template<ComponentCompatible Component>
+		Component& AddComponent(EntityID entity, UUID componentID=UUID())
 		{
-			EntityID entityID = CreateEntity();
-			AddComponent<Component>(entityID, uuid, std::forward<Args>(args)...);
-			return entityID;
+			size_t index = 0;
+			ComponentManager<Component>* manager = GetComponentManager<Component>(&index);
+			m_ComponentOrderDirty.Set(index);
+			m_HasComponent[entity].Set(index);
+			m_EntityComponentOrder[entity].emplace_back(manager->ComponentHash(), componentID);
+			return *static_cast<Component*>(manager->Add(entity));
 		}
 
-		template<typename Component, typename... Args>
-		Component& AddComponent(EntityID entity, Args&&... args)
-		{
-			TypeView<Component>* pTypeView = GetTypeView<Component>();
-			const ComponentType* componentType = ComponentTypes::GetComponentType(pTypeView->m_TypeHash);
-			if (!componentType->m_AllowMultiple && pTypeView->Contains(entity))
-			{
-				throw new std::exception(("Duplicate component of type " + componentType->m_Name + " not allowed!").c_str());
-			}
-
-			Component& component = pTypeView->Add(entity, std::forward<Args>(args)...);
-			EntityView* pEntityView = GetEntityView(entity);
-			Glory::UUID uuid;
-			pEntityView->Add(pTypeView->m_TypeHash, uuid);
-			pTypeView->m_Callbacks->Invoke(InvocationType::OnAdd, this, entity, component);
-			SetEntityDirty(entity);
-			return component;
-		}
-
-		template<typename Component, typename... Args>
-		Component& AddComponent(EntityID entity, Glory::UUID uuid, Args&&... args)
-		{
-			TypeView<Component>* pTypeView = GetTypeView<Component>();
-			const ComponentType* componentType = ComponentTypes::GetComponentType(pTypeView->m_TypeHash);
-			if (!componentType->m_AllowMultiple && pTypeView->Contains(entity))
-			{
-				throw new std::exception(("Duplicate component of type " + componentType->m_Name + " not allowed!").c_str());
-			}
-			Component& component = pTypeView->Add(entity, std::forward<Args>(args)...);
-			EntityView* pEntityView = GetEntityView(entity);
-			pEntityView->Add(pTypeView->m_TypeHash, uuid);
-			pTypeView->m_Callbacks->Invoke(InvocationType::OnAdd, this, entity, component);
-			SetEntityDirty(entity);
-			return component;
-		}
-
-		void* CreateComponent(EntityID entityID, uint32_t typeHash, Glory::UUID uuid);
-		void* CopyComponent(EntityID entityID, uint32_t typeHash, Glory::UUID uuid, void* data);
-
-		template<typename Component>
-		TypeView<Component>* GetTypeView(bool createIfNotExixsts=true)
-		{
-			const uint32_t hash = Hashing::Hash(typeid(Component).name());
-			if (m_ViewIndices.find(hash) == m_ViewIndices.end())
-			{
-				if (!createIfNotExixsts) return nullptr;
-				const size_t index = m_pViews.size();
-				TypeView<Component>* pTypeView = ComponentTypes::CreateTypeView<Component>(this);
-				m_ViewIndices.emplace(hash, index);
-			}
-
-			const size_t index = m_ViewIndices.at(hash);
-			TypeView<Component>* pTypeView = static_cast<TypeView<Component>*>(m_pViews[index]);
-			return pTypeView;
-		}
-
-		BaseTypeView* GetTypeView(uint32_t typeHash);
-		EntityView* GetEntityView(EntityID entity);
-		EntityView* GetEntityView(EntityID entity) const;
-		std::map<EntityID, EntityView*>::const_iterator EntityViewBegin() const;
-		std::map<EntityID, EntityView*>::const_iterator EntityViewEnd() const;
-
-		void* GetComponentAddress(EntityID entityID, Glory::UUID componentID);
-
-		template<typename Component>
-		bool HasComponent(EntityID entity)
-		{
-			TypeView<Component>* pTypeView = GetTypeView<Component>(false);
-			return pTypeView ? pTypeView->Contains(entity) : false;
-		}
-
-		bool HasComponent(EntityID entity, uint32_t type);
-
-		template<typename Component>
-		Component& GetComponent(EntityID entity)
-		{
-			TypeView<Component>* pTypeView = GetTypeView<Component>();
-			if (!pTypeView->Contains(entity))
-				throw new std::exception("Entity does not have component!");
-
-			return pTypeView->Get(entity);
-		}
-
-		template<typename Component>
+		template<ComponentCompatible Component>
 		void RemoveComponent(EntityID entity)
 		{
-			EntityView* pEntityView = GetEntityView(entity);
-
-			TypeView<Component>* pTypeView = GetTypeView<Component>();
-			if (!pTypeView->Contains(entity))
-				throw new std::exception("Entity does not have component!");
-
-			pTypeView->Remove(entity);
-			pEntityView->Remove(pTypeView->m_TypeHash);
+			size_t index = 0;
+			ComponentManager<Component>* manager = GetComponentManager<Component>(&index);
+			assert(m_HasComponent[entity].IsSet(index));
+			m_HasComponent[entity].UnSet(index);
+			auto iter = std::find_if(m_EntityComponentOrder[entity].begin(), m_EntityComponentOrder[entity].end(),
+				[](const std::pair<uint32_t, UUID>& pair) {
+					return pair.first == manager->ComponentHash();
+				});
+			m_EntityComponentOrder[entity].erase(iter);
+			return *static_cast<Component*>(manager->Remove(entity));
 		}
 
-		UUID RemoveComponent(EntityID entity, uint32_t typeHash);
-		void RemoveComponentAt(EntityID entity, size_t index);
-		size_t ComponentCount(EntityID entity);
+		template<ComponentCompatible Component>
+		Component& GetComponent(EntityID entity)
+		{
+			ComponentManager<Component>* manager = GetComponentManager<Component>();
+			return manager->Get(entity);
+		}
+
+		template<ComponentCompatible Component>
+		bool HasComponent(EntityID entity)
+		{
+			size_t index = 0;
+			ComponentManager<Component>* manager = GetComponentManager<Component>(&index);
+			return m_HasComponent[entity].IsSet(index);
+		}
+
+		template<typename Component>
+		ComponentManager<Component>* GetComponentManager(size_t* outIndex=nullptr)
+		{
+			const uint32_t hash = Hashing::Hash(typeid(Component).name());
+			return static_cast<ComponentManager<Component>*>(GetComponentManager(hash, outIndex));
+		}
+
+		IComponentManager* GetComponentManager(uint32_t componentHash, size_t* outIndex=nullptr);
+		IComponentManager* GetComponentManager(uint32_t componentHash, size_t* outIndex=nullptr) const;
+
+		bool EntityValid(EntityID entity) const;
+		bool EntityActiveHierarchy(EntityID entity) const;
+		bool EntityActiveSelf(EntityID entity) const;
+
+		EntityID GetParent(EntityID entity) const;
+		void SetParent(EntityID entity, EntityID parent);
+
+		void SetActive(EntityID entity, bool active);
+
+		void DestroyEntity(EntityID entity);
 		void Clear(EntityID entity);
-		const size_t Alive() const;
-		const bool IsValid(EntityID entity) const;
-		const size_t TypeViewCount() const;
-		BaseTypeView* TypeViewAt(size_t index) const;
-
-		template<typename T>
-		void InvokeAll(InvocationType invocationType)
-		{
-			if (!m_CallbacksEnabled || !CallbackEnabled(invocationType)) return;
-			TypeView<T>* pTypeView = GetTypeView<T>();
-			pTypeView->InvokeAll(invocationType, this, NULL);
-		}
-
-		void InvokeAll(uint32_t typeHash, InvocationType invocationType);
-		void InvokeAll(InvocationType invocationType, std::function<bool(BaseTypeView*, EntityView*, size_t)> canCallCallback);
-
-		void InvokeAll(InvocationType invocationType, const std::vector<EntityID>& entities);
-
-		template<typename T>
-		T GetUserData()
-		{
-			if (!m_pUserData) return nullptr;
-			return static_cast<T>(m_pUserData);
-		}
-		void SetUserData(void* data);
-
-		void ForEach(std::function<void(EntityRegistry*, EntityID)> func);
-
-		EntityID GetParent(Utils::ECS::EntityID entity) const;
-		bool SetParent(Utils::ECS::EntityID entity, Utils::ECS::EntityID parent);
-		size_t ChildCount(Utils::ECS::EntityID entity) const;
-		EntityID Child(Utils::ECS::EntityID entity, size_t index) const;
-		size_t SiblingIndex(Utils::ECS::EntityID entity) const;
-		void SetSiblingIndex(Utils::ECS::EntityID entity, size_t index);
-
-		void ResizeRootOrder(size_t size);
-		std::vector<EntityID>& RootOrder();
-		const std::vector<EntityID>& RootOrder() const;
-
-		EntityID CopyEntityToOtherRegistry(EntityID entity, EntityID parent, EntityRegistry* pRegistry);
 
 		bool IsEntityDirty(EntityID entity) const;
-		void SetEntityDirty(EntityID entity, bool dirty=true, bool setChildrenDirty=true);
+		void SetEntityDirty(EntityID entity, bool dirty=true);
 
-		/** @brief Disable any execution of component callbacks */
-		void DisableCallbacks();
+		size_t ChildCount(EntityID entity) const;
+		EntityID Child(EntityID entity, size_t index) const;
+		size_t SiblingIndex(EntityID entity) const;
+		void SetSiblingIndex(EntityID entity, size_t index);
 
-		/** @brief Check whether callbacks are allowed in general */
-		bool CallbacksEnabled() const;
-		/** @brief Check whether a specific callback is allowed */
-		bool CallbackEnabled(InvocationType type) const;
+		size_t EntityComponentCount(EntityID entity) const;
+		uint32_t EntityComponentType(EntityID entity, size_t index) const;
+		UUID EntityComponentID(EntityID entity, size_t index) const;
+		void* GetComponentAddress(EntityID entity, uint32_t type);
+		void* GetComponentAddress(EntityID entity, uint32_t type) const;
+		void* CopyComponent(EntityID entity, uint32_t type, UUID componentID, void* data);
 
-		/**
-		 * @brief Set all callback bits to allow their execution
-		 * Note: If callbacks are disabled on this registry they still won't run
-		 */
-		void EnableAllIndividualCallbacks();
+		template<typename T>
+		T* GetUserData()
+		{
+			return reinterpret_cast<T*>(m_pUserData);
+		}
 
-		/** @brief Enable/disable an individual callback on all type views */
-		void SetCallbackEnabled(InvocationType type, bool enabled);
+		void Sort();
 
-		void Reset();
+		void SetUserData(void* data);
 
-		EntityID MaxEntityID() const;
+		void DisableCalls();
+
+		size_t AliveCount() const;
+
+		void GetReferences(std::vector<UUID>& references) const;
+
+		void Serialize(BinaryStream& container) const;
+		void Deserialize(BinaryStream& container);
+
+		bool operator==(const EntityRegistry& other) const;
+
+	public: /* Global calls */
+		void Validate();
+		void Activate();
+		void Deactivate();
+		void EnableDraw();
+		void DisableDraw();
+		void Start();
+		void Stop();
+		void Update(float dt);
+		void Draw();
+
+	public: /* Individual calls */
+		void CallOnValidate(EntityID entity);
+		void CallStart(EntityID entity);
+		void CallOnActivate(EntityID entity);
+
+	public:
+		void EnableCall(EntityCallType callType, bool enable=true);
+		bool IsCallEnabled(EntityCallType callType) const;
 
 	private:
-		friend class ComponentTypes;
+		void SetHierarchyActiveStateChildren(EntityID entity, bool active);
 
-		// Entity data
-		std::map<EntityID, EntityView*> m_pEntityViews;
-		std::vector<EntityID> m_RootOrder;
-		Utils::BitSet m_EntityDirty;
-		Utils::BitSet m_EnabledCallbacks;
+	private:
+		std::vector<std::unique_ptr<IComponentManager>> m_ComponentManagers;
+		std::unordered_map<uint32_t, uint32_t> m_HashToComponentManagerIndex;
+		BitSet m_ComponentOrderDirty;
+
+		BitSet m_EntityAlive;
+		BitSet m_EntityActiveSelf;
+		BitSet m_EntityActiveHierarchy;
+		BitSet m_EntityDirty;
+
+		std::vector<std::vector<EntityID>> m_EntityTrees;
+		std::vector<EntityID> m_Parents;
+		std::vector<BitSet> m_HasComponent;
+		std::vector<std::vector<std::pair<uint32_t, UUID>>> m_EntityComponentOrder;
+
 		EntityID m_NextEntityID;
+		size_t m_AliveCount;
 
-		// Basic type views
-		std::vector<BaseTypeView*> m_pViews;
-		std::map<size_t, size_t> m_ViewIndices;
+		BitSet m_EnabledCalls;
 
 		void* m_pUserData;
 
-		bool m_CallbacksEnabled = true;
+		bool m_CallsEnabled = true;
+
+		/* TODO */
+		/*
+		 * - Keep track of component order per entity
+		 */
 	};
 }

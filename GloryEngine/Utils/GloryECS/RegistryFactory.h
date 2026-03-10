@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 
 namespace Glory::Utils::ECS
 {
@@ -19,19 +20,28 @@ namespace Glory::Utils::ECS
 	class ComponentManagerFactory : public ComponentManagerFactoryBase
 	{
 	public:
+		ComponentManagerFactory(std::function<void(EntityRegistry*, Manager*)> createCallback):
+			m_CreateCallback(createCallback) {}
+		virtual ~ComponentManagerFactory() = default;
+
 		IComponentManager* Create(EntityRegistry* pRegistry) const override
 		{
-			return new Manager(pRegistry);
+			Manager* pManager = new Manager(pRegistry);
+			if (m_CreateCallback) m_CreateCallback(pRegistry, pManager);
+			return pManager;
 		}
+
+	private:
+		std::function<void(EntityRegistry*, Manager*)> m_CreateCallback;
 	};
 
 	class RegistryFactory
 	{
 	public:
 		template<IsComponentManager Manager>
-		void RegisterComponentManager()
+		void RegisterComponentManager(std::function<void(EntityRegistry*, Manager*)> createCallback=NULL)
 		{
-			m_ComponentManagerFactories.emplace_back(new ComponentManagerFactory<Manager>());
+			m_ComponentManagerFactories.emplace_back(new ComponentManagerFactory<Manager>(createCallback));
 		}
 
 		void PopulateRegisry(EntityRegistry& registry) const

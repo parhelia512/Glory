@@ -5,8 +5,10 @@
 #include "EntityCallType.h"
 
 #include <SparseSet.h>
+#include <BinaryStream.h>
 #include <Hash.h>
 #include <BitSet.h>
+#include <UUID.h>
 
 namespace Glory::Utils::ECS
 {
@@ -16,10 +18,9 @@ namespace Glory::Utils::ECS
 	class ComponentManager : public SparseSet<EntityID, Component>, public IComponentManager
 	{
 	public:
-		ComponentManager(EntityRegistry* pRegistry, size_t capacity = 32) :
+		ComponentManager(EntityRegistry* pRegistry, size_t capacity=32) :
 			m_pRegistry(pRegistry), SparseSet<EntityID, Component>{ 1000, capacity },
-			m_ComponentActive(capacity), m_ActiveSize(0) {
-		}
+			m_ComponentActive(capacity), m_ActiveSize(0) {}
 		virtual ~ComponentManager() = default;
 
 		static uint32_t GetComponentHash()
@@ -42,9 +43,27 @@ namespace Glory::Utils::ECS
 			return &SparseSet<EntityID, Component>::Add(entity, Component());
 		}
 
+		virtual void* Add(EntityID entity, void* data) override
+		{
+			Component& other = *static_cast<Component*>(data);
+			Component newComponent = Component();
+			std::memcpy(&newComponent, &other, sizeof(Component));
+			return &SparseSet<EntityID, Component>::Add(entity, std::move(newComponent));
+		}
+
 		virtual void Remove(EntityID entity) override
 		{
 			SparseSet<EntityID, Component>::Remove(entity);
+		}
+
+		virtual void* GetAddress(EntityID entity) override
+		{
+			return &SparseSet<EntityID, Component>::Get(entity);
+		}
+
+		virtual const void* GetAddress(EntityID entity) const override
+		{
+			return static_cast<const void*>(&SparseSet<EntityID, Component>::Get(entity));
 		}
 
 		Component& Get(EntityID entity)
@@ -92,6 +111,40 @@ namespace Glory::Utils::ECS
 			CallOnDisableDraw(entity);
 		}
 
+		virtual void GetReferences(std::vector<UUID>& references) const override
+		{
+			if (!DoGetReferences) return;
+			(this->*DoGetReferences)(references);
+		}
+
+		virtual void Serialize(BinaryStream& stream) const override
+		{
+			stream.Write(static_cast<const SparseSet<EntityID, Component>&>(*this));
+			stream.Write(m_ComponentActive).Write(m_ActiveSize);
+			OnSerialize(stream);
+		}
+
+		virtual void Deserialize(BinaryStream& stream) override
+		{
+			stream.Read(static_cast<SparseSet<EntityID, Component>&>(*this));
+			stream.Read(m_ComponentActive).Read(m_ActiveSize);
+			OnDeserialize(stream);
+		}
+
+		virtual bool Compare(const IComponentManager* other) const override
+		{
+			if (ComponentTypeHash != other->ComponentHash()) return false;
+			const ComponentManager<Component>* otherManager = static_cast<const ComponentManager<Component>*>(other);
+			if (m_ComponentActive != otherManager->m_ComponentActive) return false;
+			if (m_ActiveSize != otherManager->m_ActiveSize) return false;
+			if (SparseSet<EntityID, Component>::Size() != otherManager->SparseSet<EntityID, Component>::Size()) return false;
+			if (std::memcmp(SparseSet<EntityID, Component>::DenseData(), otherManager->SparseSet<EntityID, Component>::DenseData(),
+				SparseSet<EntityID, Component>::Size()*sizeof(Component)) != 0) return false;
+			if (std::memcmp(SparseSet<EntityID, Component>::DenseIDData(), otherManager->SparseSet<EntityID, Component>::DenseIDData(),
+				SparseSet<EntityID, Component>::Size()*sizeof(EntityID)) != 0) return false;
+			return SparseSet<EntityID, Component>::SparseData() == otherManager->SparseSet<EntityID, Component>::SparseData();
+		}
+
 	protected: /* Custom implementations, these are always called */
 		virtual void OnInitialize() {}
 		virtual void OnAddComponent(EntityID, Component&) {}
@@ -99,10 +152,13 @@ namespace Glory::Utils::ECS
 		virtual void OnReserveComponents() {}
 		virtual void OnReserveIDs() {}
 		virtual void OnSwapComponents(size_t index1, size_t index2) {}
+		virtual void OnSerialize(BinaryStream&) const {}
+		virtual void OnDeserialize(BinaryStream&) {}
 
 	protected: /* Component callbacks */
 		typedef void (ComponentManager<Component>::*Function)(EntityID, Component&);
 		typedef void (ComponentManager<Component>::*UpdateFunction)(EntityID, Component&, float);
+		typedef void (ComponentManager<Component>::*ReferencesFunction)(std::vector<UUID>&) const;
 		Function DoValidate = nullptr;
 		Function DoOnAdd = nullptr;
 		Function DoOnRemove = nullptr;
@@ -112,12 +168,14 @@ namespace Glory::Utils::ECS
 		Function DoOnDisableDraw = nullptr;
 		Function DoStart = nullptr;
 		Function DoStop = nullptr;
+		Function DoOnDirty = nullptr;
 		UpdateFunction DoPreUpdate = nullptr;
 		UpdateFunction DoUpdate = nullptr;
 		UpdateFunction DoPostUpdate = nullptr;
 		Function DoPreDraw = nullptr;
 		Function DoDraw = nullptr;
 		Function DoPostDraw = nullptr;
+		ReferencesFunction DoGetReferences = nullptr;
 
 		template<typename Manager>
 		void Bind(Function& target, void(Manager::*func)(EntityID, Component&))
@@ -131,6 +189,12 @@ namespace Glory::Utils::ECS
 			target = static_cast<UpdateFunction>(func);
 		}
 
+		template<typename Manager>
+		void Bind(ReferencesFunction& target, void(Manager::*func)(std::vector<UUID>&))
+		{
+			target = static_cast<ReferencesFunction>(func);
+		}
+
 	private:
 		virtual void OnAdd(size_t denseIndex, EntityID entity, Component& component) override final
 		{
@@ -142,8 +206,9 @@ namespace Glory::Utils::ECS
 
 		virtual void OnRemove(EntityID entity, size_t index) override final
 		{
+			const bool wasActive = m_ComponentActive.IsSet(index);
 			m_ComponentActive.Set(index, false);
-			--m_ActiveSize;
+			if (wasActive) --m_ActiveSize;
 			OnRemoveComponent(entity, index);
 			CallOnRemove(entity);
 		}
@@ -169,6 +234,67 @@ namespace Glory::Utils::ECS
 		}
 
 	private: /* Global component callbacks */
+		virtual void Validate() override final
+		{
+			if (!DoValidate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnValidate)) return;
+
+			const size_t numComponents = SparseSet<EntityID, Component>::Size();
+			for (size_t i = 0; i < numComponents; ++i)
+			{
+				const EntityID entity = SparseSet<EntityID, Component>::DenseID(i);
+				(this->*DoValidate)(entity, SparseSet<EntityID, Component>::GetAt(i));
+			}
+		}
+
+		virtual void Activate() override final
+		{
+			if (!DoOnActivate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnActivate)) return;
+
+			for (size_t i = 0; i < m_ActiveSize; ++i)
+			{
+				const EntityID entity = SparseSet<EntityID, Component>::DenseID(i);
+				(this->*DoOnActivate)(entity, SparseSet<EntityID, Component>::GetAt(i));
+			}
+		}
+
+		virtual void Deactivate() override final
+		{
+			if (!DoOnDeactivate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnActivate)) return;
+
+			for (size_t i = 0; i < m_ActiveSize; ++i)
+			{
+				const EntityID entity = SparseSet<EntityID, Component>::DenseID(i);
+				(this->*DoOnDeactivate)(entity, SparseSet<EntityID, Component>::GetAt(i));
+			}
+		}
+
+		virtual void EnableDraw() override final
+		{
+			if (!DoOnEnableDraw) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnEnableDraw)) return;
+
+			for (size_t i = 0; i < m_ActiveSize; ++i)
+			{
+				const EntityID entity = SparseSet<EntityID, Component>::DenseID(i);
+				(this->*DoOnEnableDraw)(entity, SparseSet<EntityID, Component>::GetAt(i));
+			}
+		}
+
+		virtual void DisableDraw() override final
+		{
+			if (!DoOnDisableDraw) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnDisableDraw)) return;
+
+			for (size_t i = 0; i < m_ActiveSize; ++i)
+			{
+				const EntityID entity = SparseSet<EntityID, Component>::DenseID(i);
+				(this->*DoOnDisableDraw)(entity, SparseSet<EntityID, Component>::GetAt(i));
+			}
+		}
+
 		virtual void Start() override final
 		{
 			if (!DoStart) return;
@@ -329,6 +455,27 @@ namespace Glory::Utils::ECS
 			if (!DoOnDisableDraw) return;
 			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnDisableDraw)) return;
 			(this->*DoOnDisableDraw)(entity, SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual void CallStart(EntityID entity) override
+		{
+			if (!DoStart) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::Start)) return;
+			(this->*DoStart)(entity, SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual void CallStop(EntityID entity) override
+		{
+			if (!DoStop) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::Stop)) return;
+			(this->*DoStop)(entity, SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual void CallOnDirty(EntityID entity) override
+		{
+			if (!DoOnDirty) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnDirty)) return;
+			(this->*DoOnDirty)(entity, SparseSet<EntityID, Component>::Get(entity));
 		}
 
 	protected:
