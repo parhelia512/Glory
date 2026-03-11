@@ -53,6 +53,16 @@ namespace Glory::Utils::ECS
 		return newEntity;
 	}
 
+	void* EntityRegistry::CreateComponent(EntityID entity, uint32_t componentHash, UUID componentID)
+	{
+		size_t index = 0;
+		IComponentManager* manager = GetComponentManager(componentHash, &index);
+		m_ComponentOrderDirty.Set(index);
+		m_HasComponent[entity].Set(index);
+		m_EntityComponentOrder[entity].emplace_back(manager->ComponentHash(), componentID);
+		return manager->Add(entity);
+	}
+
 	void EntityRegistry::AddManager(IComponentManager* manager)
 	{
 		const uint32_t hash = manager->ComponentHash();
@@ -64,6 +74,31 @@ namespace Glory::Utils::ECS
 		manager->Initialize();
 	}
 
+	UUID EntityRegistry::RemoveComponent(EntityID entity, uint32_t typeHash)
+	{
+		size_t index = 0;
+		IComponentManager* manager = GetComponentManager(typeHash, &index);
+		assert(m_HasComponent[entity].IsSet(index));
+		auto iter = std::find_if(m_EntityComponentOrder[entity].begin(), m_EntityComponentOrder[entity].end(),
+			[manager](const std::pair<uint32_t, UUID>& pair) {
+				return pair.first == manager->ComponentHash();
+			});
+
+		manager->Remove(entity);
+		const UUID id = iter->second;
+		m_EntityComponentOrder[entity].erase(iter);
+		m_HasComponent[entity].UnSet(index);
+		return id;
+	}
+
+
+	bool EntityRegistry::HasComponent(EntityID entity, uint32_t typeHash) const
+	{
+		size_t index = 0;
+		GetComponentManager(typeHash, &index);
+		return m_HasComponent[entity].IsSet(index);
+	}
+
 	IComponentManager* EntityRegistry::GetComponentManager(uint32_t componentHash, size_t* outIndex)
 	{
 		auto iter = m_HashToComponentManagerIndex.find(componentHash);
@@ -72,7 +107,7 @@ namespace Glory::Utils::ECS
 		return m_ComponentManagers[iter->second].get();
 	}
 
-	IComponentManager* EntityRegistry::GetComponentManager(uint32_t componentHash, size_t* outIndex) const
+	const IComponentManager* EntityRegistry::GetComponentManager(uint32_t componentHash, size_t* outIndex) const
 	{
 		auto iter = m_HashToComponentManagerIndex.find(componentHash);
 		assert(iter != m_HashToComponentManagerIndex.end());
@@ -223,7 +258,7 @@ namespace Glory::Utils::ECS
 		return m_EntityDirty.IsSet(entity);
 	}
 
-	void EntityRegistry::SetEntityDirty(EntityID entity, bool dirty)
+	void EntityRegistry::SetEntityDirty(EntityID entity, bool dirty, bool setChildrenDirty)
 	{
 		const bool wasDirty = m_EntityDirty.IsSet(entity);
 		m_EntityDirty.Set(entity, dirty);
@@ -232,6 +267,11 @@ namespace Glory::Utils::ECS
 		{
 			if (!m_HasComponent[entity].IsSet(i)) continue;
 			m_ComponentManagers[i]->CallOnDirty(entity);
+		}
+		if (!dirty || !setChildrenDirty) return;
+		for (size_t i = 0; i < m_EntityTrees[entity].size(); ++i)
+		{
+			SetEntityDirty(m_EntityTrees[entity][i]);
 		}
 	}
 
@@ -289,19 +329,35 @@ namespace Glory::Utils::ECS
 		return m_EntityComponentOrder[entity][index].second;
 	}
 
+	uint32_t EntityRegistry::EntityComponentIDToHash(EntityID entity, UUID id) const
+	{
+		auto iter = std::find_if(m_EntityComponentOrder[entity].begin(), m_EntityComponentOrder[entity].end(),
+			[this, id](auto& pair) { return pair.second == id; });
+		if (iter == m_EntityComponentOrder[entity].end()) return 0;
+		return iter->first;
+	}
+
+	uint32_t EntityRegistry::EntityComponentHashToID(EntityID entity, uint32_t typeHash) const
+	{
+		auto iter = std::find_if(m_EntityComponentOrder[entity].begin(), m_EntityComponentOrder[entity].end(),
+			[this, typeHash](auto& pair) { return pair.first == typeHash; });
+		if (iter == m_EntityComponentOrder[entity].end()) return 0;
+		return iter->second;
+	}
+
 	void* EntityRegistry::GetComponentAddress(EntityID entity, uint32_t type)
 	{
 		IComponentManager* manager = GetComponentManager(type);
 		return manager->GetAddress(entity);
 	}
 
-	void* EntityRegistry::GetComponentAddress(EntityID entity, uint32_t type) const
+	const void* EntityRegistry::GetComponentAddress(EntityID entity, uint32_t type) const
 	{
-		IComponentManager* manager = GetComponentManager(type);
+		const IComponentManager* manager = GetComponentManager(type);
 		return manager->GetAddress(entity);
 	}
 
-	void* EntityRegistry::CopyComponent(EntityID entity, uint32_t type, UUID componentID, void* data)
+	void* EntityRegistry::CopyComponent(EntityID entity, uint32_t type, UUID componentID, const void* data)
 	{
 		size_t index;
 		IComponentManager* manager = GetComponentManager(type, &index);
@@ -324,7 +380,7 @@ namespace Glory::Utils::ECS
 		{
 			const uint32_t type = EntityComponentType(entity, i);
 			const UUID uuid = EntityComponentID(entity, i);
-			void* data = GetComponentAddress(entity, uuid);
+			const void* data = GetComponentAddress(entity, uuid);
 			pRegistry->CopyComponent(newEntity, type, uuid, data);
 		}
 
@@ -358,7 +414,7 @@ namespace Glory::Utils::ECS
 			manager->Serialize(container);
 
 		container.Write(m_NextEntityID).Write(m_AliveCount).Write(m_EntityAlive).
-			Write(m_EntityActiveSelf).Write(m_EntityActiveHierarchy).Write(m_EntityDirty);
+			Write(m_EntityActiveSelf).Write(m_EntityActiveHierarchy);
 
 		for (size_t i = 0; i < m_EntityTrees.size(); ++i)
 		{
@@ -379,7 +435,7 @@ namespace Glory::Utils::ECS
 			manager->Deserialize(container);
 
 		container.Read(m_NextEntityID).Read(m_AliveCount).Read(m_EntityAlive).
-			Read(m_EntityActiveSelf).Read(m_EntityActiveHierarchy).Read(m_EntityDirty);
+			Read(m_EntityActiveSelf).Read(m_EntityActiveHierarchy);
 
 		m_EntityTrees.resize(m_NextEntityID);
 		m_Parents.resize(m_NextEntityID);
@@ -396,6 +452,9 @@ namespace Glory::Utils::ECS
 		{
 			container.Read(m_EntityComponentOrder[i]);
 		}
+
+		m_EntityDirty.Reserve(m_NextEntityID);
+		m_EntityDirty.SetAll();
 	}
 
 	bool EntityRegistry::operator==(const EntityRegistry& other) const
@@ -433,6 +492,30 @@ namespace Glory::Utils::ECS
 	{
 		const IComponentManager* manager = GetComponentManager(typeHash);
 		return manager->ComponentType();
+	}
+
+	void EntityRegistry::Reset()
+	{
+		for (auto& manager : m_ComponentManagers)
+			manager->Clear();
+
+		for (size_t i = 0; i < m_EntityTrees.size(); ++i)
+		{
+			m_EntityTrees[i].clear();
+			m_Parents[i] = 0ull;
+			m_HasComponent[i].Clear();
+			m_EntityComponentOrder[i].clear();
+		}
+
+		m_ComponentOrderDirty.Clear();
+		m_EntityAlive.Clear();
+		m_EntityActiveSelf.Clear();
+		m_EntityActiveHierarchy.Clear();
+		m_EntityDirty.Clear();
+
+		m_NextEntityID = 1ull;
+		m_AliveCount = 0ull;
+		m_pUserData = nullptr;
 	}
 
 	void EntityRegistry::Validate()
@@ -560,6 +643,9 @@ namespace Glory::Utils::ECS
 				m_ComponentManagers[i]->CallOnDisableDraw(entity);
 			}
 		}
+
+		/* We should assume that the entity is dirty */
+		SetEntityDirty(entity);
 
 		for (size_t i = 0; i < m_EntityTrees[entity].size(); ++i)
 		{

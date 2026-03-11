@@ -38,16 +38,21 @@ namespace Glory::Utils::ECS
 			return ComponentTypeHash;
 		}
 
+		template<typename... Args>
+		void* Add(EntityID entity, Args&&... args)
+		{
+			return &SparseSet<EntityID, Component>::Add(entity, Component(args...));
+		}
+
 		virtual void* Add(EntityID entity) override
 		{
 			return &SparseSet<EntityID, Component>::Add(entity, Component());
 		}
 
-		virtual void* Add(EntityID entity, void* data) override
+		virtual void* Add(EntityID entity, const void* data) override
 		{
-			Component& other = *static_cast<Component*>(data);
 			Component newComponent = Component();
-			std::memcpy(&newComponent, &other, sizeof(Component));
+			std::memcpy(&newComponent, data, sizeof(Component));
 			return &SparseSet<EntityID, Component>::Add(entity, std::move(newComponent));
 		}
 
@@ -69,6 +74,11 @@ namespace Glory::Utils::ECS
 		Component& Get(EntityID entity)
 		{
 			return SparseSet<EntityID, Component>::Get(entity);
+		}
+
+		virtual void Clear() override
+		{
+			SparseSet<EntityID, Component>::Clear();
 		}
 
 		void Sort(const std::vector<std::vector<EntityID>>& entityTrees) override
@@ -145,9 +155,38 @@ namespace Glory::Utils::ECS
 			return SparseSet<EntityID, Component>::SparseData() == otherManager->SparseSet<EntityID, Component>::SparseData();
 		}
 
+		virtual size_t IndexOf(EntityID entity) const override
+		{
+			return SparseSet<EntityID, Component>::Index(entity);
+		}
+
 		virtual std::type_index ComponentType() const override
 		{
 			return typeid(Component);
+		}
+
+		virtual void ActivateComponent(EntityID entity) override
+		{
+			/* Don't do anything if component is already active */
+			if (m_ComponentActive.IsSet(entity)) return;
+			m_ComponentActive.Set(entity);
+
+			/* Only call callbacks if the entity is also active in the hierarchy */
+			if (!m_pRegistry->EntityActiveHierarchy(entity)) return;
+			CallOnActivate(entity);
+			CallOnEnableDraw(entity);
+		}
+
+		virtual void DeactivateComponent(EntityID entity) override
+		{
+			/* Don't do anything if component is already inactive */
+			if (!m_ComponentActive.IsSet(entity)) return;
+			m_ComponentActive.UnSet(entity);
+
+			/* Only call callbacks if the entity is active in the hierarchy */
+			if (!m_pRegistry->EntityActiveHierarchy(entity)) return;
+			CallOnDeactivate(entity);
+			CallOnDisableDraw(entity);
 		}
 
 	protected: /* Custom implementations, these are always called */
@@ -236,6 +275,12 @@ namespace Glory::Utils::ECS
 			m_ComponentActive.Set(index1, enabled2);
 			m_ComponentActive.Set(index2, enabled1);
 			OnSwapComponents(index1, index2);
+		}
+
+		virtual void OnClear() override final
+		{
+			m_ComponentActive.Clear();
+			m_ActiveSize = 0;
 		}
 
 	private: /* Global component callbacks */

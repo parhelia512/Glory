@@ -1,4 +1,4 @@
-#include "UISystems.h"
+#include "UIComponentManagers.h"
 #include "UIComponents.h"
 #include "UIDocument.h"
 #include "UIRendererModule.h"
@@ -17,27 +17,35 @@
 
 namespace Glory
 {
-	void UITransformSystem::OnPostUpdate(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UITransform& pComponent)
+	UITransformManager::UITransformManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity)
 	{
-        if (!pRegistry->IsEntityDirty(entity)) return;
-        CalculateMatrix(pRegistry, entity, pComponent);
 	}
 
-	bool UITransformSystem::ProcessConstraints(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UITransform& pComponent)
+	UITransformManager::~UITransformManager()
+	{
+	}
+
+	void UITransformManager::OnPostUpdateImpl(Utils::ECS::EntityID entity, UITransform& pComponent, float)
+	{
+        if (!m_pRegistry->IsEntityDirty(entity)) return;
+        CalculateMatrix(m_pRegistry, entity, pComponent);
+	}
+
+	bool UITransformManager::ProcessConstraints(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UITransform& pComponent)
 	{
 		bool change = false;
 
-		UIDocument* pDocument = pRegistry->GetUserData<UIDocument*>();
+		UIDocument* pDocument = pRegistry->GetUserData<UIDocument>();
 		uint32_t width, height;
 		pDocument->GetResolution(width, height);
 		const glm::vec2 screenSize{ float(width), float(height) };
 
 		pComponent.m_ParentSize = screenSize;
 
-		Utils::ECS::EntityView* pEntityView = pRegistry->GetEntityView(entity);
-		const Utils::ECS::EntityID parent = pEntityView->Parent();
+		const Utils::ECS::EntityID parent = pRegistry->GetParent(entity);
 
-		if (pRegistry->IsValid(parent))
+		if (pRegistry->EntityValid(parent))
 		{
 			UITransform& parentTransform = pRegistry->GetComponent<UITransform>(parent);
 			pComponent.m_ParentSize = { parentTransform.m_Width, parentTransform.m_Height };
@@ -52,16 +60,20 @@ namespace Glory
 		return change;
 	}
 
-    void UITransformSystem::CalculateMatrix(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UITransform& pComponent, bool calculateParentIfDirty)
+	void UITransformManager::OnInitialize()
+	{
+		Bind(DoPostUpdate, &UITransformManager::OnPostUpdateImpl);
+	}
+
+    void UITransformManager::CalculateMatrix(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UITransform& pComponent, bool calculateParentIfDirty)
     {
-		UIDocument* pDocument = pRegistry->GetUserData<UIDocument*>();
+		UIDocument* pDocument = pRegistry->GetUserData<UIDocument>();
 		glm::mat4 startTransform = glm::identity<glm::mat4>();
 		glm::mat4 startInteractionTransform = glm::identity<glm::mat4>();
 
-        Utils::ECS::EntityView* pEntityView = pRegistry->GetEntityView(entity);
-        const Utils::ECS::EntityID parent = pEntityView->Parent();
+        const Utils::ECS::EntityID parent = pRegistry->GetParent(entity);
 
-        if (pRegistry->IsValid(parent))
+        if (pRegistry->EntityValid(parent))
         {
 			if (pRegistry->IsEntityDirty(parent) && calculateParentIfDirty)
 				CalculateMatrix(pRegistry, parent, pRegistry->GetComponent<UITransform>(parent));
@@ -95,57 +107,76 @@ namespace Glory
 		pDocument->SetDrawDirty();
     }
 
-	void UIImageSystem::OnDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIImage& pComponent)
+	UIImageManager::UIImageManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity)
 	{
-		UIDocument* pDocument = pRegistry->GetUserData<UIDocument*>();
-		const UITransform& transform = pRegistry->GetComponent<UITransform>(entity);
+	}
+
+	UIImageManager::~UIImageManager()
+	{
+	}
+
+	void UIImageManager::OnDrawImpl(Utils::ECS::EntityID entity, UIImage& pComponent)
+	{
+		UIDocument* pDocument = m_pRegistry->GetUserData<UIDocument>();
+		const UITransform& transform = m_pRegistry->GetComponent<UITransform>(entity);
 		glm::mat4 world = transform.m_Transform;
 		pDocument->AddRender(0ull, pComponent.m_Image.AssetUUID(), std::move(world), pComponent.m_Color);
 	}
 
-	void UIImageSystem::GetReferences(const Utils::ECS::BaseTypeView* pTypeView, std::vector<UUID>& references)
+	void UIImageManager::GetReferencesImpl(std::vector<UUID>& references) const
 	{
-		for (size_t i = 0; i < pTypeView->Size(); ++i)
+		for (size_t i = 0; i < Size(); ++i)
 		{
-			const UIImage* pImage = static_cast<const UIImage*>(pTypeView->GetComponentAddressFromIndex(i));
-			const UUID image = pImage->m_Image.AssetUUID();
+			const UIImage& uiImage = GetAt(i);
+			const UUID image = uiImage.m_Image.AssetUUID();
 			if (image) references.push_back(image);
 		}
 	}
 
-	void UITextSystem::OnStart(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIText& pComponent)
+	void UIImageManager::OnInitialize()
+	{
+		Bind(DoDraw, &UIImageManager::OnDrawImpl);
+		Bind(DoGetReferences, &UIImageManager::GetReferencesImpl);
+	}
+
+	UITextManager::UITextManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity), m_pRenderer(nullptr),
+		m_pLocalizeModule(nullptr), m_pAssetManager(nullptr)
+	{
+	}
+
+	UITextManager::~UITextManager()
+	{
+	}
+
+	void UITextManager::OnStartImpl(Utils::ECS::EntityID entity, UIText& pComponent)
 	{
 		if (pComponent.m_LocalizeTerm.empty()) return;
 
-		UIDocument* pDocument = pRegistry->GetUserData<UIDocument*>();
-		UIRendererModule* pUIRenderer = pDocument->Renderer();
-		IEngine* pEngine = pUIRenderer->GetEngine();
-		LocalizeModuleBase* pLocalize = pEngine->GetOptionalModule<LocalizeModuleBase>();
-		if (!pLocalize) return;
+		UIDocument* pDocument = m_pRegistry->GetUserData<UIDocument>();
+		if (!m_pLocalizeModule) return;
 
 		const std::string_view fullTerm = pComponent.m_LocalizeTerm;
 		const size_t firstDot = fullTerm.find('.');
 		if (firstDot == std::string::npos) return;
 		const std::string_view tableName = fullTerm.substr(0, firstDot);
 		const std::string_view term = fullTerm.substr(firstDot + 1);
-		if (pLocalize->FindString(tableName, term, pComponent.m_Text))
+		if (m_pLocalizeModule->FindString(tableName, term, pComponent.m_Text))
 		{
 			pComponent.m_Dirty = true;
 			pDocument->SetDrawDirty();
 		}
 	}
 
-	void UITextSystem::OnDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIText& pComponent)
+	void UITextManager::OnDrawImpl(Utils::ECS::EntityID entity, UIText& pComponent)
     {
 		/* No need to do anything if there is no text */
 		if (pComponent.m_Text.empty()) return;
-        UIDocument* pDocument = pRegistry->GetUserData<UIDocument*>();
-        UIRendererModule* pUIRenderer = pDocument->Renderer();
-		IEngine* pEngine = pUIRenderer->GetEngine();
-		AssetManager& assets = pEngine->GetAssetManager();
+        UIDocument* pDocument = m_pRegistry->GetUserData<UIDocument>();
 		const UUID objectID = pDocument->EntityUUID(entity);
 
-		const UITransform& transform = pRegistry->GetComponent<UITransform>(entity);
+		const UITransform& transform = m_pRegistry->GetComponent<UITransform>(entity);
 		const glm::vec2 size{ transform.m_Width, transform.m_Height };
 
 		uint32_t screenWidth, screenHeight;
@@ -163,7 +194,7 @@ namespace Glory
 		textData.m_Color = pComponent.m_Color;
 		pComponent.m_Dirty = false;
 
-		FontData* pFont = pComponent.m_Font.Get(&assets);
+		FontData* pFont = pComponent.m_Font.Get(m_pAssetManager);
 		if (!pFont) return;
 		const UUID meshID = pDocument->GetTextMesh(objectID, textData, pFont);
 
@@ -188,41 +219,69 @@ namespace Glory
 		pDocument->AddRender(meshID, pFont->Texture(), std::move(world), textData.m_Color);
     }
 
-	void UITextSystem::OnDirty(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIText& pComponent)
+	void UITextManager::OnDirtyImpl(Utils::ECS::EntityID entity, UIText& pComponent)
 	{
 		pComponent.m_Dirty = true;
 	}
 
-	void UITextSystem::GetReferences(const Utils::ECS::BaseTypeView* pTypeView, std::vector<UUID>& references)
+	void UITextManager::GetReferencesImpl(std::vector<UUID>& references) const
 	{
-		for (size_t i = 0; i < pTypeView->Size(); ++i)
+		for (size_t i = 0; i < Size(); ++i)
 		{
-			const UIText* pText = static_cast<const UIText*>(pTypeView->GetComponentAddressFromIndex(i));
-			const UUID font = pText->m_Font.AssetUUID();
+			const UIText& uiText = GetAt(i);
+			const UUID font = uiText.m_Font.AssetUUID();
 			if (font) references.push_back(font);
 		}
 	}
 
-	void UIBoxSystem::OnDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIBox& pComponent)
+	void UITextManager::OnInitialize()
 	{
-		UIDocument* pDocument = pRegistry->GetUserData<UIDocument*>();
+		Bind(DoStart, &UITextManager::OnStartImpl);
+		Bind(DoDraw, &UITextManager::OnDrawImpl);
+		Bind(DoOnDirty, &UITextManager::OnDirtyImpl);
+		Bind(DoGetReferences, &UITextManager::GetReferencesImpl);
+	}
 
-		const UITransform& transform = pRegistry->GetComponent<UITransform>(entity);
+	UIBoxManager::UIBoxManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity) :
+		ComponentManager(pRegistry, capacity)
+	{
+	}
+
+	UIBoxManager::~UIBoxManager()
+	{
+	}
+
+	void UIBoxManager::OnDrawImpl(Utils::ECS::EntityID entity, UIBox& pComponent)
+	{
+		UIDocument* pDocument = m_pRegistry->GetUserData<UIDocument>();
+		const UITransform& transform = m_pRegistry->GetComponent<UITransform>(entity);
 		glm::mat4 world = transform.m_Transform;
 		pDocument->AddRender(0, 0ull, std::move(world), pComponent.m_Color);
 	}
 
-	void UIInteractionSystem::OnUpdate(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIInteraction& pComponent)
+	void UIBoxManager::OnInitialize()
+	{
+		Bind(DoDraw, &UIBoxManager::OnDrawImpl);
+	}
+
+	UIInteractionManager::UIInteractionManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity), m_pRenderer(nullptr)
+	{
+	}
+
+	UIInteractionManager::~UIInteractionManager()
+	{
+	}
+
+	void UIInteractionManager::OnUpdateImpl(Utils::ECS::EntityID entity, UIInteraction& pComponent, float)
 	{
 		if (!pComponent.m_Enabled) return;
 
-		UIDocument* pDocument = pRegistry->GetUserData<UIDocument*>();
+		UIDocument* pDocument = m_pRegistry->GetUserData<UIDocument>();
 		const bool inputAllowed = pDocument->IsEnputEnabled();
 		if (!inputAllowed) return;
 
-		UIRendererModule* pUIRenderer = pDocument->Renderer();
-		IEngine* pEngine = pUIRenderer->GetEngine();
-		const UITransform& transform = pRegistry->GetComponent<UITransform>(entity);
+		const UITransform& transform = m_pRegistry->GetComponent<UITransform>(entity);
 
 		const glm::vec4 cursor{ pDocument->GetCursorPos(), 0.0f, 1.0f };
 		const glm::mat4 inverse = glm::inverse(transform.m_InteractionTransform);
@@ -232,149 +291,183 @@ namespace Glory
 		const bool isMouseInRect = transformedCursor.x > 0.0f && transformedCursor.x < float(transform.m_Width) &&
 			transformedCursor.y > 0.0f && transformedCursor.y < float(transform.m_Height);
 
-		Utils::ECS::EntityView* pEntity = pRegistry->GetEntityView(entity);
 		const UUID entityUUID = pDocument->EntityUUID(entity);
-		const UUID componentID = pEntity->ComponentUUID(UIInteraction::GetTypeData()->TypeHash());
+		const UUID componentID = m_pRegistry->EntityComponentHashToID(entity, UIInteraction::GetTypeData()->TypeHash());
 		const UUID sceneID = pDocument->SceneID();
 		const UUID objectID = pDocument->ObjectID();
 
 		const bool wasDown = pDocument->WasCursorDown();
 		const bool isCursorDown = pDocument->IsCursorDown();
 
+		IEngine* pEngine = m_pRenderer->GetEngine();
 		if (isMouseInRect && !pComponent.m_Hovered)
 		{
 			pComponent.m_Hovered = true;
-			if (!Instance()->OnElementHover_Callback) return;
-			Instance()->OnElementHover_Callback(pEngine, sceneID, objectID, entityUUID, componentID);
+			if (!m_pRenderer->OnElementHover_Callback) return;
+			m_pRenderer->OnElementHover_Callback(pEngine, sceneID, objectID, entityUUID, componentID);
 		}
 		else if (!isMouseInRect && pComponent.m_Hovered)
 		{
 			pComponent.m_Hovered = false;
-			if (!Instance()->OnElementUnHover_Callback) return;
-			Instance()->OnElementUnHover_Callback(pEngine, sceneID, objectID, entityUUID, componentID);
+			if (!m_pRenderer->OnElementUnHover_Callback) return;
+			m_pRenderer->OnElementUnHover_Callback(pEngine, sceneID, objectID, entityUUID, componentID);
 		}
 
 		if (!wasDown && isCursorDown && pComponent.m_Hovered && !pComponent.m_Down)
 		{
 			pComponent.m_Down = true;
-			if (!Instance()->OnElementDown_Callback) return;
-			Instance()->OnElementDown_Callback(pEngine, sceneID, objectID, entityUUID, componentID);
+			if (!m_pRenderer->OnElementDown_Callback) return;
+			m_pRenderer->OnElementDown_Callback(pEngine, sceneID, objectID, entityUUID, componentID);
 		}
 		else if (!isCursorDown && pComponent.m_Down || pComponent.m_Down && !pComponent.m_Hovered)
 		{
 			pComponent.m_Down = false;
-			if (!Instance()->OnElementUp_Callback) return;
-			Instance()->OnElementUp_Callback(pEngine, sceneID, objectID, entityUUID, componentID);
+			if (!m_pRenderer->OnElementUp_Callback) return;
+			m_pRenderer->OnElementUp_Callback(pEngine, sceneID, objectID, entityUUID, componentID);
 		}
 	}
 
-	UIInteractionSystem* UIInteractionSystem::Instance()
+	void UIInteractionManager::OnInitialize()
 	{
-		static UIInteractionSystem Inst;
-		return &Inst;
+		Bind(DoUpdate, &UIInteractionManager::OnUpdateImpl);
 	}
 
-	void UIPanelSystem::OnDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIPanel& pComponent)
+	UIPanelManager::UIPanelManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity)
+	{
+	}
+
+	UIPanelManager::~UIPanelManager()
+	{
+	}
+
+	void UIPanelManager::OnDrawImpl(Utils::ECS::EntityID entity, UIPanel& pComponent)
 	{
 		if (!pComponent.m_Crop) return;
-		UIDocument* pDocument = pRegistry->GetUserData<UIDocument*>();
-
-		const UITransform& transform = pRegistry->GetComponent<UITransform>(entity);
+		UIDocument* pDocument = m_pRegistry->GetUserData<UIDocument>();
+		const UITransform& transform = m_pRegistry->GetComponent<UITransform>(entity);
 		glm::mat4 world = transform.m_Transform;
-
 		pDocument->BeginMask(std::move(world));
 	}
 
-	void UIPanelSystem::OnPostDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIPanel& pComponent)
+	void UIPanelManager::OnPostDrawImpl(Utils::ECS::EntityID entity, UIPanel& pComponent)
 	{
 		if (!pComponent.m_Crop) return;
-		UIDocument* pDocument = pRegistry->GetUserData<UIDocument*>();
+		UIDocument* pDocument = m_pRegistry->GetUserData<UIDocument>();
 		pDocument->EndMask();
 	}
 
-	template<typename Comp>
-	static void UpdateEntity(Utils::ECS::EntityID entity, Utils::ECS::EntityRegistry& registry, Utils::ECS::InvocationType invocation)
+	void UIPanelManager::OnInitialize()
 	{
-		Utils::ECS::TypeView<Comp>* pTypeView = registry.GetTypeView<Comp>();
-		pTypeView->InvokeAll(invocation, &registry, { entity });
-		for (size_t i = 0; i < registry.ChildCount(entity); ++i)
-		{
-			const Utils::ECS::EntityID child = registry.Child(entity, i);
-			UpdateEntity<Comp>(child, registry, invocation);
-		}
+		Bind(DoDraw, &UIPanelManager::OnDrawImpl);
+		Bind(DoPostDraw, &UIPanelManager::OnPostDrawImpl);
 	}
 
-	static void UpdateEntity(Utils::ECS::EntityID entity, Utils::ECS::EntityRegistry& registry, Utils::ECS::InvocationType invocation)
+	//template<typename Comp>
+	//static void UpdateEntity(Utils::ECS::EntityID entity, Utils::ECS::EntityRegistry& registry, Utils::ECS::InvocationType invocation)
+	//{
+	//	Utils::ECS::TypeView<Comp>* pTypeView = registry.GetTypeView<Comp>();
+	//	pTypeView->InvokeAll(invocation, &registry, { entity });
+	//	for (size_t i = 0; i < registry.ChildCount(entity); ++i)
+	//	{
+	//		const Utils::ECS::EntityID child = registry.Child(entity, i);
+	//		UpdateEntity<Comp>(child, registry, invocation);
+	//	}
+	//}
+
+	//static void UpdateEntity(Utils::ECS::EntityID entity, Utils::ECS::EntityRegistry& registry, Utils::ECS::InvocationType invocation)
+	//{
+	//	registry.InvokeAll(invocation, { entity });
+	//	for (size_t i = 0; i < registry.ChildCount(entity); ++i)
+	//	{
+	//		const Utils::ECS::EntityID child = registry.Child(entity, i);
+	//		UpdateEntity(child, registry, invocation);
+	//	}
+	//}
+
+	UIVerticalContainerManager::UIVerticalContainerManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity)
 	{
-		registry.InvokeAll(invocation, { entity });
-		for (size_t i = 0; i < registry.ChildCount(entity); ++i)
-		{
-			const Utils::ECS::EntityID child = registry.Child(entity, i);
-			UpdateEntity(child, registry, invocation);
-		}
 	}
 
-	void UIVerticalContainerSystem::OnPreUpdate(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIVerticalContainer& pComponent)
+	UIVerticalContainerManager::~UIVerticalContainerManager()
+	{
+	}
+
+	void UIVerticalContainerManager::OnPreUpdateImpl(Utils::ECS::EntityID entity, UIVerticalContainer& pComponent, float)
 	{
 		if (!pComponent.m_Dirty) return;
-		Utils::ECS::EntityView* pEntity = pRegistry->GetEntityView(entity);
 		float height = 0.0f;
 
 		/* Make sure all children were processed first in case they will be resized */
-		for (size_t i = 0; i < pEntity->ChildCount(); ++i)
-		{
-			const Utils::ECS::EntityID child = pEntity->Child(i);
-			UpdateEntity(child, *pRegistry, Utils::ECS::InvocationType::PreUpdate);
-		}
+		//for (size_t i = 0; i < pEntity->ChildCount(); ++i)
+		//{
+		//	const Utils::ECS::EntityID child = pEntity->Child(i);
+		//	UpdateEntity(child, *pRegistry, Utils::ECS::InvocationType::PreUpdate);
+		//}
 
 		/* Update child sizes */
-		for (size_t i = 0; i < pEntity->ChildCount(); ++i)
+		for (size_t i = 0; i < m_pRegistry->ChildCount(entity); ++i)
 		{
-			const Utils::ECS::EntityID child = pEntity->Child(i);
-			UITransform& transform = pRegistry->GetComponent<UITransform>(child);
+			const Utils::ECS::EntityID child = m_pRegistry->Child(entity, i);
+			UITransform& transform = m_pRegistry->GetComponent<UITransform>(child);
 			const float elementHeight = transform.m_Height.m_FinalValue;
 			transform.m_Y.m_Constraint = 0;
 			transform.m_Y.m_Value = height;
 			height += elementHeight + pComponent.m_Seperation;
-			if (UITransformSystem::ProcessConstraints(pRegistry, child, transform))
-				pRegistry->SetEntityDirty(child);
+			if (UITransformManager::ProcessConstraints(m_pRegistry, child, transform))
+				m_pRegistry->SetEntityDirty(child);
 		}
 
 		/* Resize self */
-		UITransform& transform = pRegistry->GetComponent<UITransform>(entity);
+		UITransform& transform = m_pRegistry->GetComponent<UITransform>(entity);
 		if (pComponent.m_AutoResizeHeight && transform.m_Height.m_FinalValue != height)
 		{
 			transform.m_Height.m_Constraint = 0;
 			transform.m_Height = height;
-			if (UITransformSystem::ProcessConstraints(pRegistry, entity, transform))
-				pRegistry->SetEntityDirty(entity);
+			if (UITransformManager::ProcessConstraints(m_pRegistry, entity, transform))
+				m_pRegistry->SetEntityDirty(entity);
 		}
 		pComponent.m_Dirty = false;
 	}
 
-	void UIVerticalContainerSystem::OnDirty(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIVerticalContainer& pComponent)
+	void UIVerticalContainerManager::OnDirtyImpl(Utils::ECS::EntityID entity, UIVerticalContainer& pComponent)
 	{
 		pComponent.m_Dirty = true;
 	}
 
-	void UIScrollViewSystem::OnStart(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIScrollView& pComponent)
+	void UIVerticalContainerManager::OnInitialize()
+	{
+		Bind(DoPreUpdate, &UIVerticalContainerManager::OnPreUpdateImpl);
+		Bind(DoOnDirty, &UIVerticalContainerManager::OnDirtyImpl);
+	}
+
+	UIScrollViewManager::UIScrollViewManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity)
+	{
+	}
+
+	UIScrollViewManager::~UIScrollViewManager()
+	{
+	}
+
+	void UIScrollViewManager::OnStartImpl(Utils::ECS::EntityID entity, UIScrollView& pComponent)
 	{
 		pComponent.m_ScrollPosition = pComponent.m_StartScrollPosition;
 		pComponent.m_Dirty = true;
 	}
 
-	void UIScrollViewSystem::OnValidate(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIScrollView& pComponent)
+	void UIScrollViewManager::OnValidateImpl(Utils::ECS::EntityID entity, UIScrollView& pComponent)
 	{
 		pComponent.m_ScrollPosition = pComponent.m_StartScrollPosition;
 		pComponent.m_Dirty = true;
 	}
 
-	void UIScrollViewSystem::OnPreUpdate(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIScrollView& pComponent)
+	void UIScrollViewManager::OnPreUpdateImpl(Utils::ECS::EntityID entity, UIScrollView& pComponent, float dt)
 	{
-		if (!pRegistry->HasComponent<UIInteraction>(entity)) return;
-		UIInteraction& interaction = pRegistry->GetComponent<UIInteraction>(entity);
-		UIDocument* pDocument = pRegistry->GetUserData<UIDocument*>();
-		IEngine* pEngine = pDocument->Renderer()->GetEngine();
+		if (!m_pRegistry->HasComponent<UIInteraction>(entity)) return;
+		UIInteraction& interaction = m_pRegistry->GetComponent<UIInteraction>(entity);
+		UIDocument* pDocument = m_pRegistry->GetUserData<UIDocument>();
 
 		const glm::vec2& cursorScrollDelta = pDocument->GetCursorScrollDelta();
 		const float length = glm::length(cursorScrollDelta);
@@ -396,7 +489,7 @@ namespace Glory
 		{
 			const glm::vec2 target = glm::clamp(pComponent.m_DesiredScrollPosition, glm::vec2{ 0.0f, 0.0f }, pComponent.m_MaxScroll);
 			pComponent.m_DesiredScrollPosition = glm::mix(pComponent.m_DesiredScrollPosition, target,
-				pComponent.m_Innertia*pEngine->Time().GetDeltaTime());
+				pComponent.m_Innertia*dt);
 			break;
 		}
 		default:
@@ -413,7 +506,7 @@ namespace Glory
 				break;
 			case ScrollMode::Lerp:
 				pComponent.m_ScrollPosition = glm::mix(pComponent.m_ScrollPosition, pComponent.m_DesiredScrollPosition,
-					pComponent.m_LerpSpeed*pEngine->Time().GetDeltaTime());
+					pComponent.m_LerpSpeed*dt);
 				pComponent.m_Dirty = true;
 				break;
 			default:
@@ -422,22 +515,22 @@ namespace Glory
 		}
 	}
 
-	void UIScrollViewSystem::OnUpdate(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIScrollView& pComponent)
+	void UIScrollViewManager::OnUpdateImpl(Utils::ECS::EntityID entity, UIScrollView& pComponent, float)
 	{
 		if (!pComponent.m_Dirty) return;
 
 		/* Calculate content size */
 		glm::vec2 contentSize{ 0.0f };
 		glm::vec2 startPos{ 0.0f };
-		for (size_t i = 0; i < pRegistry->ChildCount(entity); ++i)
+		for (size_t i = 0; i < m_pRegistry->ChildCount(entity); ++i)
 		{
-			const Utils::ECS::EntityID child = pRegistry->Child(entity, i);
-			UITransform& childTransform = pRegistry->GetComponent<UITransform>(child);
+			const Utils::ECS::EntityID child = m_pRegistry->Child(entity, i);
+			UITransform& childTransform = m_pRegistry->GetComponent<UITransform>(child);
 			if (i == 0) startPos = glm::vec2{ childTransform.m_X.m_FinalValue, childTransform.m_Y.m_FinalValue };
 			contentSize.x = glm::max(contentSize.x, childTransform.m_X.m_FinalValue - startPos.x + childTransform.m_Width.m_FinalValue);
 			contentSize.y = glm::max(contentSize.y, childTransform.m_Y.m_FinalValue - startPos.y + childTransform.m_Height.m_FinalValue);
 		}
-		UITransform& transform = pRegistry->GetComponent<UITransform>(entity);
+		UITransform& transform = m_pRegistry->GetComponent<UITransform>(entity);
 
 		const glm::vec2 tempMaxScroll = pComponent.m_MaxScroll;
 		pComponent.m_MaxScroll = { glm::max(glm::vec2{0.0f}, contentSize - glm::vec2{ transform.m_Width.m_FinalValue, transform.m_Height.m_FinalValue }) };
@@ -445,23 +538,32 @@ namespace Glory
 			pComponent.m_DesiredScrollPosition = pComponent.m_MaxScroll;
 
 		/* Position children */
-		for (size_t i = 0; i < pRegistry->ChildCount(entity); ++i)
+		for (size_t i = 0; i < m_pRegistry->ChildCount(entity); ++i)
 		{
-			const Utils::ECS::EntityID child = pRegistry->Child(entity, i);
-			UITransform& transform = pRegistry->GetComponent<UITransform>(child);
+			const Utils::ECS::EntityID child = m_pRegistry->Child(entity, i);
+			UITransform& transform = m_pRegistry->GetComponent<UITransform>(child);
 			transform.m_X.m_Constraint = 0;
 			transform.m_X.m_Value = -pComponent.m_ScrollPosition.x;
 			transform.m_Y.m_Constraint = 0;
 			transform.m_Y.m_Value = -pComponent.m_ScrollPosition.y;
-			if (UITransformSystem::ProcessConstraints(pRegistry, child, transform))
-				pRegistry->SetEntityDirty(child);
+			if (UITransformManager::ProcessConstraints(m_pRegistry, child, transform))
+				m_pRegistry->SetEntityDirty(child);
 		}
 
 		pComponent.m_Dirty = false;
 	}
 
-	void UIScrollViewSystem::OnDirty(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIScrollView& pComponent)
+	void UIScrollViewManager::OnDirtyImpl(Utils::ECS::EntityID entity, UIScrollView& pComponent)
 	{
 		pComponent.m_Dirty = true;
+	}
+
+	void UIScrollViewManager::OnInitialize()
+	{
+		Bind(DoStart, &UIScrollViewManager::OnStartImpl);
+		Bind(DoValidate, &UIScrollViewManager::OnValidateImpl);
+		Bind(DoPreUpdate, &UIScrollViewManager::OnPreUpdateImpl);
+		Bind(DoUpdate, &UIScrollViewManager::OnUpdateImpl);
+		Bind(DoOnDirty, &UIScrollViewManager::OnDirtyImpl);
 	}
 }

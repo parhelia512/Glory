@@ -27,7 +27,7 @@ namespace Glory
 
 	void AssemblyDomain::Reload(const std::string& name)
 	{
-		auto& itor = m_Assemblies.find(name);
+		auto itor = m_Assemblies.find(name);
 		if (itor == m_Assemblies.end()) return;
 		Assembly& assembly = itor->second;
 		assembly.Unload();

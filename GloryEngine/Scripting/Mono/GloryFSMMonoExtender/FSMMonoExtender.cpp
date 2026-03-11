@@ -85,9 +85,10 @@ namespace Glory
 
 		pFSMModule->EntryCallback =
 		[pDomain, pEntryMethod](const FSMState& state, const FSMNode& node) {
+			UUID stateID = state.ID();
 			UUID nodeId = node.m_ID;
 			void* args[] = {
-				&state.ID(),
+				&stateID,
 				&nodeId,
 			};
 
@@ -96,9 +97,10 @@ namespace Glory
 
 		pFSMModule->ExitCallback =
 		[pDomain, pExitMethod](const FSMState& state, const FSMNode& node) {
+			UUID stateID = state.ID();
 			UUID nodeId = node.m_ID;
 			void* args[] = {
-				&state.ID(),
+				&stateID,
 				&nodeId,
 			};
 

@@ -6,9 +6,10 @@
 #include "AudioCSAPI.h"
 #include "MonoManager.h"
 #include "MonoComponents.h"
-#include "MonoScriptedSystem.h"
+#include "MonoScriptedManager.h"
 #include "ScriptingExtender.h"
 #include "MonoScriptLoader.h"
+#include "CoreLibManager.h"
 
 #include <Console.h>
 #include <SceneManager.h>
@@ -76,20 +77,12 @@ namespace Glory
 		EntityCSAPI::SetEngine(m_pEngine);
 		AudioCSAPI::SetEngine(m_pEngine);
 
-		m_pEngine->GetSceneManager()->RegisterComponent<MonoScriptComponent>();
+		m_pEngine->GetSceneManager()->RegisterComponentManager<MonoScriptedManager, MonoScriptComponent>(
+			[this](Utils::ECS::EntityRegistry*, MonoScriptedManager* manager) {
+				manager->m_pCoreLibManager = m_pMonoManager->m_pCoreLibManager;
+				manager->m_pScriptManager = &m_pMonoManager->m_pCoreLibManager->ScriptManager();
+			});
 		m_pEngine->GetResourceTypes().RegisterResource<MonoScript>(".cs");
-
-		// Scripted
-		Utils::ECS::ComponentTypes* pComponentTypes = m_pEngine->GetSceneManager()->ComponentTypesInstance();
-		pComponentTypes->RegisterInvokaction<MonoScriptComponent>(Glory::Utils::ECS::InvocationType::Update, MonoScriptedSystem::OnUpdate);
-		pComponentTypes->RegisterInvokaction<MonoScriptComponent>(Glory::Utils::ECS::InvocationType::Draw, MonoScriptedSystem::OnDraw);
-		pComponentTypes->RegisterInvokaction<MonoScriptComponent>(Glory::Utils::ECS::InvocationType::Start, MonoScriptedSystem::OnStart);
-		pComponentTypes->RegisterInvokaction<MonoScriptComponent>(Glory::Utils::ECS::InvocationType::Stop, MonoScriptedSystem::OnStop);
-		pComponentTypes->RegisterInvokaction<MonoScriptComponent>(Glory::Utils::ECS::InvocationType::OnValidate, MonoScriptedSystem::OnValidate);
-		pComponentTypes->RegisterInvokaction<MonoScriptComponent>(Glory::Utils::ECS::InvocationType::OnEnable, MonoScriptedSystem::OnEnable);
-		pComponentTypes->RegisterInvokaction<MonoScriptComponent>(Glory::Utils::ECS::InvocationType::OnDisable, MonoScriptedSystem::OnDisable);
-		pComponentTypes->RegisterReferencesCallback<MonoScriptComponent>(MonoScriptedSystem::GetReferences);
-		m_pEngine->GetSceneManager()->SubscribeOnCopy<MonoScriptComponent>(MonoScriptedSystem::OnCopy);
 
 		m_pEngine->AddLoaderModule(new MonoScriptLoader());
 
@@ -114,8 +107,8 @@ namespace Glory
 	{
 		if (!m_pEngine->HasData("Assemblies")) return;
 		std::vector<char>& data = m_pEngine->GetData("Assemblies");
-		BinaryMemoryStream memoryStream{ data };
-		BinaryStream& stream = memoryStream;
+		Utils::BinaryMemoryStream memoryStream{ data };
+		Utils::BinaryStream& stream = memoryStream;
 		stream.Read(m_AssembliesToLoad);
 
 		const std::filesystem::path& rootPath = m_pEngine->RootPath();

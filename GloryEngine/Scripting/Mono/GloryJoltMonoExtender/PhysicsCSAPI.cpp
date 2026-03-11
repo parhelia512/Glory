@@ -20,7 +20,7 @@
 
 namespace Glory
 {
-	IEngine* Physics_EngineInstance;
+	static IEngine* Physics_EngineInstance;
 
 #pragma region Ray Casting
 

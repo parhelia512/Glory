@@ -7,7 +7,6 @@
 
 #include <EntityRegistry.h>
 #include <EntityID.h>
-#include <ComponentTypes.h>
 
 namespace Glory
 {

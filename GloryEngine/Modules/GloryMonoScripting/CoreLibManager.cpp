@@ -49,8 +49,6 @@ namespace Glory
 				OnSceneObjectDestroy(objectID, sceneID);
 			});
 		}
-
-		Utils::ECS::ComponentTypes::SetInstance(pEngine->GetSceneManager()->ComponentTypesInstance());
 	}
 
 	void CoreLibManager::Cleanup(IEngine* pEngine)

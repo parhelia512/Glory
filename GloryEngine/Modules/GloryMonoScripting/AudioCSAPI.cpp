@@ -8,7 +8,7 @@
 
 namespace Glory
 {
-	IEngine* AudioManager_EngineInstance = nullptr;
+	static IEngine* AudioManager_EngineInstance = nullptr;
 
 	float AudioManager_GetMasterVolume()
 	{

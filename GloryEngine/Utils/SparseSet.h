@@ -207,6 +207,15 @@ namespace Glory::Utils
 			return true;
 		}
 
+		void Clear()
+		{
+			for (size_t i = 0; i < m_PageCount; ++i)
+			{
+				m_Pages[i].m_Elements.release();
+				m_Pages[i].m_Size = 0;
+			}
+		}
+
 	private:
 		std::unique_ptr<Page[]> m_Pages;
 		uint32_t m_PageCount;
@@ -311,6 +320,12 @@ namespace Glory::Utils
 			for (size_t i = *index; i < oldSize; ++i)
 				Swap(i, i + 1);
 			OnRemove(sparseID, *index);
+		}
+
+		void Clear()
+		{
+			m_DenseSize = 0;
+			m_Sparse.Clear();
 		}
 
 		Dense& Get(Sparse sparse)
@@ -445,6 +460,7 @@ namespace Glory::Utils
 		virtual void OnReserveDense() {};
 		virtual void OnReserveSparse() {};
 		virtual void OnSwap(size_t index1, size_t index2) {};
+		virtual void OnClear() {};
 
 	private:
 		PaginatedArray<size_t, pageSize> m_Sparse;

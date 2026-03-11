@@ -7,7 +7,6 @@
 #include "SceneManager.h"
 #include "IEngine.h"
 #include "Debug.h"
-#include "ComponentHelpers.h"
 #include "AssetManager.h"
 
 #include "TransformManager.h"

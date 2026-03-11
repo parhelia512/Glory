@@ -21,6 +21,8 @@
 
 namespace Glory
 {
+	static char DomainName[] = "GloryScriptRuntime";
+
 	struct GMonoProfiler
 	{
 		static constexpr unsigned long long MaxGCAllocations = 250000;
@@ -180,7 +182,7 @@ namespace Glory
 
 	void MonoManager::InitialLoad()
 	{
-		const auto pMonoDomain = mono_domain_create_appdomain("GloryScriptRuntime", nullptr);
+		const auto pMonoDomain = mono_domain_create_appdomain(DomainName, nullptr);
 		m_pAppDomain = new AssemblyDomain("app", pMonoDomain);
 		if (!m_pAppDomain->SetCurrentDomain())
 		{
@@ -241,7 +243,7 @@ namespace Glory
 		delete m_pAppDomain;
 		m_pAppDomain = nullptr;
 
-		const auto pMonoDomain = mono_domain_create_appdomain("GloryScriptRuntime", nullptr);
+		const auto pMonoDomain = mono_domain_create_appdomain(DomainName, nullptr);
 		m_pAppDomain = new AssemblyDomain("app", pMonoDomain);
 		if (!m_pAppDomain->SetCurrentDomain())
 		{

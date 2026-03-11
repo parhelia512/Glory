@@ -1,6 +1,6 @@
 #include "UIDocument.h"
 #include "UIDocumentData.h"
-#include "UIComponents.h"
+#include "UIComponentManagers.h"
 #include "UIRendererModule.h"
 
 #include <FontData.h>
@@ -16,10 +16,9 @@ namespace Glory
 	void UIDocument::CopyEntity(Utils::ECS::EntityRegistry& registry, Utils::ECS::EntityID entity, Utils::ECS::EntityID parent)
 	{
 		const Utils::ECS::EntityID newEntity = registry.CopyEntityToOtherRegistry(entity, parent, &m_Registry);
-		Utils::ECS::EntityView* pEntityView = registry.GetEntityView(entity);
-		for (size_t i = 0; i < pEntityView->ChildCount(); ++i)
+		for (size_t i = 0; i < registry.ChildCount(entity); ++i)
 		{
-			const Utils::ECS::EntityID child = pEntityView->Child(i);
+			const Utils::ECS::EntityID child = registry.Child(entity, i);
 			CopyEntity(registry, child, newEntity);
 		}
 	}
@@ -32,37 +31,17 @@ namespace Glory
 		m_Ids.emplace(uuid, newEntity);
 		m_UUIds.emplace(newEntity, uuid);
 		m_Names.emplace(newEntity, pOtherDocument->Name(entity));
-
-		Utils::ECS::EntityView* pEntityView = registry.GetEntityView(entity);
-		for (size_t i = 0; i < pEntityView->ChildCount(); ++i)
+		for (size_t i = 0; i < registry.ChildCount(entity); ++i)
 		{
-			const Utils::ECS::EntityID child = pEntityView->Child(i);
+			const Utils::ECS::EntityID child = registry.Child(entity, i);
 			CopyEntity(pOtherDocument, child, newEntity);
 		}
 		return uuid;
 	}
 
-	void UIDocument::UpdateEntityActiveHierarchy(Utils::ECS::EntityID entity)
-	{
-		const Utils::ECS::EntityID parent = m_Registry.GetParent(entity);
-		Utils::ECS::EntityView* pEntity = m_Registry.GetEntityView(entity);
-		Utils::ECS::EntityView* pParent = parent ? m_Registry.GetEntityView(parent) : nullptr;
-
-		const bool activeSelf = pEntity->Active();
-		const bool activeHierarchy = activeSelf && (pParent ? pParent->HierarchyActive() : true);
-		pEntity->HierarchyActive() = activeSelf && activeHierarchy;
-		m_Registry.SetEntityDirty(entity);
-
-		for (size_t i = 0; i < m_Registry.ChildCount(entity); ++i)
-		{
-			const Utils::ECS::EntityID child = m_Registry.Child(entity, i);
-			UpdateEntityActiveHierarchy(child);
-		}
-	}
-
 	UIDocument::UIDocument(UIDocumentData* pDocument):
-		m_OriginalDocumentID(pDocument->GetUUID()), m_Resolution(1, 1), m_SceneID(0), m_ObjectID(0),
-		m_pRenderer(nullptr), m_Projection(glm::identity<glm::mat4>()),
+		m_OriginalDocumentID(pDocument->GetUUID()), m_Registry(this), m_Resolution(1, 1),
+		m_SceneID(0), m_ObjectID(0), m_pRenderer(nullptr), m_Projection(glm::identity<glm::mat4>()),
 		m_CursorPos(0.0f, 0.0f), m_CursorScrollDelta(0.0f, 0.0f), m_CursorDown(false),
 		m_WasCursorDown(false), m_InputEnabled(true), m_PanelCounter(0), m_Name(pDocument->m_Name),
 		m_Ids(pDocument->m_Ids), m_UUIds(pDocument->m_UUIds), m_Names(pDocument->m_Names), m_DrawIsDirty(32, true)
@@ -75,49 +54,11 @@ namespace Glory
 		}
 	}
 
-	static void UpdateEntity(Utils::ECS::EntityID entity, Utils::ECS::EntityRegistry& registry, Utils::ECS::InvocationType invocation)
-	{
-		registry.InvokeAll(invocation, { entity });
-		for (size_t i = 0; i < registry.ChildCount(entity); ++i)
-		{
-			const Utils::ECS::EntityID child = registry.Child(entity, i);
-			UpdateEntity(child, registry, invocation);
-		}
-	}
-
-	void UIDocument::Update()
+	void UIDocument::Update(float dt)
 	{
 		m_Registry.SetUserData(this);
-
-		/* Update all transforms first so we have a base for other components */
-		m_Registry.GetTypeView<UITransform>()->InvokeAll(Utils::ECS::InvocationType::PostUpdate, &m_Registry, NULL);
-		for (size_t i = 0; i < m_Registry.ChildCount(0); ++i)
-		{
-			const Utils::ECS::EntityID child = m_Registry.Child(0, i);
-			UpdateEntity(child, m_Registry, Utils::ECS::InvocationType::PreUpdate);
-		}
-		for (size_t i = 0; i < m_Registry.ChildCount(0); ++i)
-		{
-			const Utils::ECS::EntityID child = m_Registry.Child(0, i);
-			UpdateEntity(child, m_Registry, Utils::ECS::InvocationType::Update);
-		}
-		for (size_t i = 0; i < m_Registry.ChildCount(0); ++i)
-		{
-			const Utils::ECS::EntityID child = m_Registry.Child(0, i);
-			UpdateEntity(child, m_Registry, Utils::ECS::InvocationType::PostUpdate);
-		}
+		m_Registry.Update(dt);
 		m_WasCursorDown = m_CursorDown;
-	}
-
-	void DrawEntity(Utils::ECS::EntityID entity, Utils::ECS::EntityRegistry& registry)
-	{
-		registry.InvokeAll(Utils::ECS::InvocationType::Draw, { entity });
-		for (size_t i = 0; i < registry.ChildCount(entity); ++i)
-		{
-			const Utils::ECS::EntityID child = registry.Child(entity, i);
-			DrawEntity(child, registry);
-		}
-		registry.InvokeAll(Utils::ECS::InvocationType::PostDraw, { entity });
 	}
 
 	void UIDocument::Draw()
@@ -129,12 +70,7 @@ namespace Glory
 		m_Registry.SetUserData(this);
 
 		m_UIBatch.Reset();
-
-		for (size_t i = 0; i < m_Registry.ChildCount(0); ++i)
-		{
-			const Utils::ECS::EntityID child = m_Registry.Child(0, i);
-			DrawEntity(child, m_Registry);
-		}
+		m_Registry.Draw();
 	}
 
 	UUID UIDocument::OriginalDocumentID() const
@@ -211,7 +147,7 @@ namespace Glory
 
 	void UIDocument::SetName(Utils::ECS::EntityID entity, std::string_view name)
 	{
-		auto& iter = m_Names.find(entity);
+		auto iter = m_Names.find(entity);
 		if (iter == m_Names.end()) return;
 		iter->second = name;
 	}
@@ -237,7 +173,8 @@ namespace Glory
 
 	Utils::ECS::EntityID UIDocument::CreateEntity(std::string_view name, UUID uuid)
 	{
-		Utils::ECS::EntityID entity = m_Registry.CreateEntity<UITransform>();
+		Utils::ECS::EntityID entity = m_Registry.CreateEntity();
+		m_Registry.AddComponent<UITransform>(entity);
 		m_UUIds.emplace(entity, uuid);
 		m_Ids.emplace(uuid, entity);
 		m_Names.emplace(entity, name);
@@ -349,15 +286,14 @@ namespace Glory
 
 	void UIDocument::SetEntityActive(Utils::ECS::EntityID entity, bool active)
 	{
-		m_Registry.GetEntityView(entity)->Active() = active;
-		UpdateEntityActiveHierarchy(entity);
+		m_Registry.SetActive(entity, active);
 		m_DrawIsDirty.SetAll();
 	}
 
 	void UIDocument::Start()
 	{
 		m_Registry.SetUserData(this);
-		m_Registry.InvokeAll(Utils::ECS::InvocationType::Start, NULL);
+		m_Registry.Start();
 	}
 
 	void UIDocument::SetEntityDirty(Utils::ECS::EntityID entity, bool setChildrenDirty, bool setParentsDirty)

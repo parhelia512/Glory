@@ -9,6 +9,7 @@ namespace Glory
 	class IEngine;
 	class GScene;
 
+	GLORY_API uint32_t GetComponentHash(const std::string& name);
 	GLORY_API GScene* GetEntityScene(uint64_t sceneID);
 
 	class EntityCSAPI

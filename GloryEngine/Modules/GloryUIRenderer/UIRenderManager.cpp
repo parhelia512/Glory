@@ -1,38 +1,39 @@
-#include "UIRenderSystem.h"
+#include "UIRenderManager.h"
 #include "UIRendererModule.h"
 #include "UIComponents.h"
 #include "UIDocument.h"
 
-#include <EntityRegistry.h>
-#include <SceneManager.h>
 #include <GScene.h>
-#include <IEngine.h>
 #include <InputModule.h>
 #include <Components.h>
 
 namespace Glory
 {
-	void UIRenderSystem::OnStart(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIRenderer& pComponent)
+	UIRenderManager::UIRenderManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity), m_pModule(nullptr), m_pAssetManager(nullptr),
+		m_pDebug(nullptr), m_pInput(nullptr), m_pLayers(nullptr)
+	{
+	}
+
+	UIRenderManager::~UIRenderManager()
+	{
+	}
+
+	void UIRenderManager::OnStartImpl(Utils::ECS::EntityID entity, UIRenderer& pComponent)
 	{
 		if (!pComponent.m_RenderDocumentID) return;
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		IEngine* pEngine = pScene->Manager()->GetEngine();
-		UIRendererModule* pModule = pEngine->GetOptionalModule<UIRendererModule>();
-		UIDocument* pDocument = pModule->FindDocument(pComponent.m_RenderDocumentID);
+		UIDocument* pDocument = m_pModule->FindDocument(pComponent.m_RenderDocumentID);
 		if (!pDocument) return;
 		pDocument->Start();
 	}
 
-	void UIRenderSystem::OnValidate(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIRenderer& pComponent)
+	void UIRenderManager::OnValidateImpl(Utils::ECS::EntityID entity, UIRenderer& pComponent)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		IEngine* pEngine = pScene->Manager()->GetEngine();
-		UIRendererModule* pModule = pEngine->GetOptionalModule<UIRendererModule>();
-
-		UIDocumentData* pDocument = pComponent.m_Document.Get(&pEngine->GetAssetManager());
+		GScene* pScene = m_pRegistry->GetUserData<GScene>();
+		UIDocumentData* pDocument = pComponent.m_Document.Get(m_pAssetManager);
 		if (!pDocument) return;
 
-		Transform& transform = pRegistry->GetComponent<Transform>(entity);
+		Transform& transform = m_pRegistry->GetComponent<Transform>(entity);
 		UIRenderData data;
 		data.m_DocumentID = pComponent.m_Document.AssetUUID();
 		data.m_ObjectID = pScene->GetEntityUUID(entity);
@@ -52,12 +53,12 @@ namespace Glory
 		{
 		case UITarget::CameraOverlay:
 		{
-			if (!pRegistry->HasComponent<CameraComponent>(entity))
+			if (!m_pRegistry->HasComponent<CameraComponent>(entity))
 			{
-				pEngine->GetDebug().LogError("Can't overlay UI on camera, entity has no camera component");
+				m_pDebug->LogError("Can't overlay UI on camera, entity has no camera component");
 				return;
 			}
-			CameraComponent& camera = pRegistry->GetComponent<CameraComponent>(entity);
+			CameraComponent& camera = m_pRegistry->GetComponent<CameraComponent>(entity);
 			data.m_TargetCamera = camera.m_Camera.GetUUID();
 			resolution = camera.m_Camera.GetResolution();
 			break;
@@ -71,7 +72,7 @@ namespace Glory
 		case ResolutionMode::CameraScale:
 			if (pComponent.m_Target != UITarget::CameraOverlay)
 			{
-				pEngine->GetDebug().LogError("Target not set to CameraOverlay, can't base resolution on camera");
+				m_pDebug->LogError("Target not set to CameraOverlay, can't base resolution on camera");
 				return;
 			}
 			data.m_Resolution = glm::uvec2(resolution.x*pComponent.m_Resolution.x, resolution.y*pComponent.m_Resolution.y);
@@ -83,16 +84,13 @@ namespace Glory
 			break;
 		}
 
-		pModule->Create(data, pDocument);
+		m_pModule->Create(data, pDocument);
 	}
 
-	void UIRenderSystem::OnDraw(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entity, UIRenderer& pComponent)
+	void UIRenderManager::OnDrawImpl(Utils::ECS::EntityID entity, UIRenderer& pComponent)
 	{
-		GScene* pScene = pRegistry->GetUserData<GScene*>();
-		IEngine* pEngine = pScene->Manager()->GetEngine();
-		UIRendererModule* pModule = pEngine->GetOptionalModule<UIRendererModule>();
-
-		Transform& transform = pRegistry->GetComponent<Transform>(entity);
+		GScene* pScene = m_pRegistry->GetUserData<GScene>();
+		Transform& transform = m_pRegistry->GetComponent<Transform>(entity);
 		UIRenderData data;
 		data.m_DocumentID = pComponent.m_Document.AssetUUID();
 		data.m_ObjectID = pScene->GetEntityUUID(entity);
@@ -113,30 +111,28 @@ namespace Glory
 		{
 		case UITarget::CameraOverlay:
 		{
-			if (!pRegistry->HasComponent<CameraComponent>(entity))
+			if (!m_pRegistry->HasComponent<CameraComponent>(entity))
 				return;
-			CameraComponent& camera = pRegistry->GetComponent<CameraComponent>(entity);
+			CameraComponent& camera = m_pRegistry->GetComponent<CameraComponent>(entity);
 			data.m_TargetCamera = camera.m_Camera.GetUUID();
 			resolution = camera.m_Camera.GetResolution();
 
-			InputModule* pInput = pEngine->GetMainModule<InputModule>();
-			if (pInput)
+			if (m_pInput)
 			{
-				const glm::vec2 screenScale = 1.0f / pInput->GetScreenScale();
-				pComponent.m_CursorPos = pInput->GetCursorPos(0)*screenScale;
-				pComponent.m_CursorScrollDelta = pInput->GetCursorScrollDelta(0);
-				pComponent.m_CursorDown = pInput->IsCursorDown(0);
+				const glm::vec2 screenScale = 1.0f / m_pInput->GetScreenScale();
+				pComponent.m_CursorPos = m_pInput->GetCursorPos(0)*screenScale;
+				pComponent.m_CursorScrollDelta = m_pInput->GetCursorScrollDelta(0);
+				pComponent.m_CursorDown = m_pInput->IsCursorDown(0);
 			}
 			break;
 		}
 		case UITarget::WorldSpaceQuad:
 		{
-			LayerManager* pLayers = &pEngine->GetLayerManager();
 			LayerMask mask;
-			if (pRegistry->HasComponent<LayerComponent>(entity))
+			if (m_pRegistry->HasComponent<LayerComponent>(entity))
 			{
-				LayerComponent& layer = pRegistry->GetComponent<LayerComponent>(entity);
-				mask = layer.m_Layer.Layer(pLayers) != nullptr ? layer.m_Layer.Layer(pLayers)->m_Mask : 0;
+				LayerComponent& layer = m_pRegistry->GetComponent<LayerComponent>(entity);
+				mask = layer.m_Layer.Layer(m_pLayers) != nullptr ? layer.m_Layer.Layer(m_pLayers)->m_Mask : UUID(0ull);
 			}
 			data.m_LayerMask = mask;
 			break;
@@ -163,18 +159,26 @@ namespace Glory
 		data.m_CursorScrollDelta = pComponent.m_CursorScrollDelta;
 		data.m_CursorDown = pComponent.m_CursorDown;
 
-		pModule->Submit(std::move(data));
+		m_pModule->Submit(std::move(data));
 	}
 
-	void UIRenderSystem::GetReferences(const Utils::ECS::BaseTypeView* pTypeView, std::vector<UUID>& references)
+	void UIRenderManager::GetReferencesImpl(std::vector<UUID>& references) const
 	{
-		for (size_t i = 0; i < pTypeView->Size(); ++i)
+		for (size_t i = 0; i < Size(); ++i)
 		{
-			const UIRenderer* pMeshRenderer = static_cast<const UIRenderer*>(pTypeView->GetComponentAddressFromIndex(i));
-			const UUID document = pMeshRenderer->m_Document.AssetUUID();
-			const UUID material = pMeshRenderer->m_WorldMaterial.AssetUUID();
+			const UIRenderer& meshRenderer = GetAt(i);
+			const UUID document = meshRenderer.m_Document.AssetUUID();
+			const UUID material = meshRenderer.m_WorldMaterial.AssetUUID();
 			if (document) references.push_back(document);
 			if (material) references.push_back(material);
 		}
+	}
+
+	void UIRenderManager::OnInitialize()
+	{
+		Bind(DoStart, &UIRenderManager::OnStartImpl);
+		Bind(DoValidate, &UIRenderManager::OnValidateImpl);
+		Bind(DoDraw, &UIRenderManager::OnDrawImpl);
+		Bind(DoGetReferences, &UIRenderManager::GetReferencesImpl);
 	}
 }

@@ -70,6 +70,10 @@ namespace Glory
 
 		std::string_view Name() const;
 
+		size_t ComponentCount() const;
+		uint32_t ComponentType(size_t index) const;
+		size_t ComponentID(size_t index) const;
+
 	private:
 		Utils::ECS::EntityID m_EntityID;
 		Utils::ECS::EntityRegistry* m_pRegistry;

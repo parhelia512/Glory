@@ -145,33 +145,6 @@ namespace Glory
         bool m_Down;
     };
 
-    /** @brief UI Document renderer component */
-    struct UIRenderer
-    {
-        UIRenderer(): m_Target(UITarget::CameraOverlay),
-            m_ResolutionMode(ResolutionMode::CameraScale), m_Resolution(1.0f, 1.0f),
-            m_RenderDocumentID(0), m_WorldMaterial(0), m_WorldSize(1.0f, 1.0f),
-            m_InputEnabled(true), m_CursorPos(0.0f, 0.0f), m_CursorScrollDelta(0.0f, 0.0f),
-            m_CursorDown(false), m_IsDirty(false)
-        {}
-
-        REFLECTABLE(UIRenderer,
-            (AssetReference<UIDocumentData>)(m_Document),
-            (UITarget)(m_Target),
-            (ResolutionMode)(m_ResolutionMode),
-            (glm::vec2)(m_Resolution),
-            (AssetReference<MaterialData>)(m_WorldMaterial),
-            (glm::vec2)(m_WorldSize),
-            (bool)(m_InputEnabled)
-        );
-
-        UUID m_RenderDocumentID;
-        glm::vec2 m_CursorPos;
-        glm::vec2 m_CursorScrollDelta;
-        bool m_CursorDown;
-        bool m_IsDirty;
-    };
-
     /** @brief Vertical container automatically moves child elements down */
     struct UIVerticalContainer
     {
@@ -212,5 +185,32 @@ namespace Glory
         glm::vec2 m_DesiredScrollPosition;
         glm::vec2 m_MaxScroll;
         bool m_Dirty;
+    };
+
+    /** @brief UI Document renderer component */
+    struct UIRenderer
+    {
+        UIRenderer(): m_Target(UITarget::CameraOverlay),
+            m_ResolutionMode(ResolutionMode::CameraScale), m_Resolution(1.0f, 1.0f),
+            m_RenderDocumentID(0), m_WorldMaterial(0), m_WorldSize(1.0f, 1.0f),
+            m_InputEnabled(true), m_CursorPos(0.0f, 0.0f), m_CursorScrollDelta(0.0f, 0.0f),
+            m_CursorDown(false), m_IsDirty(false)
+        {}
+
+        REFLECTABLE(UIRenderer,
+            (AssetReference<UIDocumentData>)(m_Document),
+            (UITarget)(m_Target),
+            (ResolutionMode)(m_ResolutionMode),
+            (glm::vec2)(m_Resolution),
+            (AssetReference<MaterialData>)(m_WorldMaterial),
+            (glm::vec2)(m_WorldSize),
+            (bool)(m_InputEnabled)
+        );
+
+        UUID m_RenderDocumentID;
+        glm::vec2 m_CursorPos;
+        glm::vec2 m_CursorScrollDelta;
+        bool m_CursorDown;
+        bool m_IsDirty;
     };
 }

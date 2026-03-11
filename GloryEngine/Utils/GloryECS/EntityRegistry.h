@@ -44,33 +44,40 @@ namespace Glory::Utils::ECS
 			return static_cast<Manager&>(*newManager);
 		}
 
+		void* CreateComponent(EntityID entity, uint32_t componentHash, UUID componentID=UUID());
+
 		void AddManager(IComponentManager* manager);
 
-		template<ComponentCompatible Component>
-		Component& AddComponent(EntityID entity, UUID componentID=UUID())
+		template<ComponentCompatible Component, typename... Args>
+		Component& AddComponent(EntityID entity, UUID componentID=UUID(), Args&&... args)
 		{
 			size_t index = 0;
 			ComponentManager<Component>* manager = GetComponentManager<Component>(&index);
 			m_ComponentOrderDirty.Set(index);
 			m_HasComponent[entity].Set(index);
 			m_EntityComponentOrder[entity].emplace_back(manager->ComponentHash(), componentID);
-			return *static_cast<Component*>(manager->Add(entity));
+			return *static_cast<Component*>(manager->Add(entity, std::forward<Args>(args)...));
 		}
 
 		template<ComponentCompatible Component>
-		void RemoveComponent(EntityID entity)
+		UUID RemoveComponent(EntityID entity)
 		{
 			size_t index = 0;
 			ComponentManager<Component>* manager = GetComponentManager<Component>(&index);
 			assert(m_HasComponent[entity].IsSet(index));
-			m_HasComponent[entity].UnSet(index);
 			auto iter = std::find_if(m_EntityComponentOrder[entity].begin(), m_EntityComponentOrder[entity].end(),
-				[](const std::pair<uint32_t, UUID>& pair) {
+				[manager](const std::pair<uint32_t, UUID>& pair) {
 					return pair.first == manager->ComponentHash();
 				});
+
+			manager->Remove(entity);
+			const UUID id = iter->second;
 			m_EntityComponentOrder[entity].erase(iter);
-			return *static_cast<Component*>(manager->Remove(entity));
+			m_HasComponent[entity].UnSet(index);
+			return id;
 		}
+
+		UUID RemoveComponent(EntityID entity, uint32_t typeHash);
 
 		template<ComponentCompatible Component>
 		Component& GetComponent(EntityID entity)
@@ -80,12 +87,14 @@ namespace Glory::Utils::ECS
 		}
 
 		template<ComponentCompatible Component>
-		bool HasComponent(EntityID entity)
+		bool HasComponent(EntityID entity) const
 		{
 			size_t index = 0;
-			ComponentManager<Component>* manager = GetComponentManager<Component>(&index);
+			GetComponentManager<Component>(&index);
 			return m_HasComponent[entity].IsSet(index);
 		}
+
+		bool HasComponent(EntityID entity, uint32_t typeHash) const;
 
 		template<ComponentCompatible Component>
 		ComponentManager<Component>* GetComponentManager(size_t* outIndex=nullptr)
@@ -94,8 +103,15 @@ namespace Glory::Utils::ECS
 			return static_cast<ComponentManager<Component>*>(GetComponentManager(hash, outIndex));
 		}
 
+		template<ComponentCompatible Component>
+		const ComponentManager<Component>* GetComponentManager(size_t* outIndex = nullptr) const
+		{
+			const uint32_t hash = Hashing::Hash(typeid(Component).name());
+			return static_cast<const ComponentManager<Component>*>(GetComponentManager(hash, outIndex));
+		}
+
 		IComponentManager* GetComponentManager(uint32_t componentHash, size_t* outIndex=nullptr);
-		IComponentManager* GetComponentManager(uint32_t componentHash, size_t* outIndex=nullptr) const;
+		const IComponentManager* GetComponentManager(uint32_t componentHash, size_t* outIndex=nullptr) const;
 
 		bool EntityValid(EntityID entity) const;
 		bool EntityActiveHierarchy(EntityID entity) const;
@@ -110,7 +126,7 @@ namespace Glory::Utils::ECS
 		void Clear(EntityID entity);
 
 		bool IsEntityDirty(EntityID entity) const;
-		void SetEntityDirty(EntityID entity, bool dirty=true);
+		void SetEntityDirty(EntityID entity, bool dirty=true, bool setChildrenDirty=true);
 
 		size_t ChildCount(EntityID entity) const;
 		EntityID Child(EntityID entity, size_t index) const;
@@ -120,9 +136,11 @@ namespace Glory::Utils::ECS
 		size_t EntityComponentCount(EntityID entity) const;
 		uint32_t EntityComponentType(EntityID entity, size_t index) const;
 		UUID EntityComponentID(EntityID entity, size_t index) const;
+		uint32_t EntityComponentIDToHash(EntityID entity, UUID id) const;
+		uint32_t EntityComponentHashToID(EntityID entity, uint32_t typeHash) const;
 		void* GetComponentAddress(EntityID entity, uint32_t type);
-		void* GetComponentAddress(EntityID entity, uint32_t type) const;
-		void* CopyComponent(EntityID entity, uint32_t type, UUID componentID, void* data);
+		const void* GetComponentAddress(EntityID entity, uint32_t type) const;
+		void* CopyComponent(EntityID entity, uint32_t type, UUID componentID, const void* data);
 		EntityID CopyEntityToOtherRegistry(EntityID entity, EntityID parent, EntityRegistry* pRegistry) const;
 
 		template<typename T>
@@ -147,6 +165,8 @@ namespace Glory::Utils::ECS
 		bool operator==(const EntityRegistry& other) const;
 
 		const std::type_index GetComponentType(uint32_t typeHash) const;
+
+		void Reset();
 
 	public: /* Global calls */
 		void Validate();

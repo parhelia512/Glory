@@ -1,5 +1,7 @@
 #include "UIComponentsCSAPI.h"
 
+#include <UIComponentManagers.h>
+
 #include <Components.h>
 #include <UIDocument.h>
 #include <UIRendererModule.h>
@@ -18,15 +20,13 @@
 #define UI_MODULE UIComponents_EngineInstance->GetOptionalModule<UIRendererModule>()
 namespace Glory
 {
-	IEngine* UIComponents_EngineInstance;
+	static IEngine* UIComponents_EngineInstance;
 
 	template<typename T>
 	static T& GetComponent(UUID sceneID, UUID objectID, uint64_t componentID)
 	{
 		GScene* pScene = GetEntityScene(sceneID);
 		Entity entity = pScene->GetEntityByUUID(objectID);
-		Utils::ECS::EntityView* pEntityView = entity.GetEntityView();
-		uint32_t hash = pEntityView->ComponentType(componentID);
 		return pScene->GetRegistry().GetComponent<T>(entity.GetEntityID());
 	}
 

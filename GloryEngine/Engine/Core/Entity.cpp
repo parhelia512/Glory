@@ -127,4 +127,19 @@ namespace Glory
 	{
 		return m_pGScene->EntityName(m_EntityID);
 	}
+
+	size_t Entity::ComponentCount() const
+	{
+		return m_pRegistry->EntityComponentCount(m_EntityID);
+	}
+
+	uint32_t Entity::ComponentType(size_t index) const
+	{
+		return m_pRegistry->EntityComponentType(m_EntityID, index);
+	}
+
+	size_t Entity::ComponentID(size_t index) const
+	{
+		return m_pRegistry->EntityComponentID(m_EntityID, index);
+	}
 }

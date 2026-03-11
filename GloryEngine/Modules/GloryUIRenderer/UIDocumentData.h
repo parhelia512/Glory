@@ -13,8 +13,10 @@ namespace Glory
         template<typename T>
         T& GetComponent()
         {
-            return m_pOwner->m_Registry.GetComponent<T>(m_Entity);
+            return GetRegistry().GetComponent<T>(m_Entity);
         }
+
+        Utils::ECS::EntityRegistry& GetRegistry();
 
         UIDocumentData* m_pOwner;
         Utils::ECS::EntityID m_Entity;
@@ -47,8 +49,8 @@ namespace Glory
         GLORY_API void Reset();
 
     private:
-        void Serialize(BinaryStream& container) const override;
-        void Deserialize(BinaryStream& container) override;
+        void Serialize(Utils::BinaryStream& container) const override;
+        void Deserialize(Utils::BinaryStream& container) override;
 
         /** @brief Get a vector containing other resources referenced by this resource */
         virtual void References(IEngine* pEngine, std::vector<UUID>& references) const override;
