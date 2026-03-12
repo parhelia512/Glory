@@ -9,7 +9,7 @@ namespace Glory
 {
 	struct StringTableRef
 	{
-		StringTableRef() : m_STReference(0) {}
+		StringTableRef() : m_STReference(0ull) {}
 		StringTableRef(UUID uuid) : m_STReference(uuid) {}
 
 		bool operator==(const StringTableRef&& other)
@@ -30,7 +30,7 @@ namespace Glory
 	/** @brief String table loader component */
 	struct StringTableLoader
 	{
-		StringTableLoader() : m_StringTable(0), m_KeepLoaded(false) {}
+		StringTableLoader() : m_StringTable(0ull), m_KeepLoaded(false) {}
 
 		REFLECTABLE(StringTableLoader,
 			(AssetReference<StringTable>)(m_StringTable),

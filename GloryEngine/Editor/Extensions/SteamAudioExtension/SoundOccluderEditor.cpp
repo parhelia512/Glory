@@ -32,11 +32,14 @@ namespace Glory::Editor
 		const FieldData* pMaterialField = pTypeData->GetFieldData("m_Material");
 
 		const Utils::ECS::EntityID entity = m_pComponentObject->EntityID();
-		Utils::ECS::BaseTypeView* pTypeView = m_pComponentObject->GetRegistry()->GetTypeView(pTypeData->TypeHash());
-		bool active = pTypeView->IsActive(entity);
+		Utils::ECS::IComponentManager* manager = m_pComponentObject->GetRegistry()->GetComponentManager<SoundOccluder>();
+		bool active = manager->IsActive(entity);
 		if (EditorUI::CheckBox("Active", &active))
 		{
-			pTypeView->SetActive(entity, active);
+			if (active)
+				manager->Activate(entity);
+			else
+				manager->Deactivate(entity);
 			change = true;
 		}
 

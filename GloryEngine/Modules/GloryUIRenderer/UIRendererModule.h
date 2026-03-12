@@ -65,6 +65,7 @@ namespace Glory
 
 		GLORY_API UIDocument* FindDocument(UUID uuid);
 		GLORY_API const DescriptorSetLayoutHandle& UIOverlaySetLayout() const;
+		GLORY_API const Utils::ECS::RegistryFactory& GetRegistryFactory() const;
 
 		GLORY_MODULE_VERSION_H(0, 3, 0);
 

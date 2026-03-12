@@ -252,8 +252,8 @@ namespace Glory::Editor
 	{
 		std::filesystem::path finalPath = path;
 		finalPath.replace_filename("Renderer.dat");
-		BinaryFileStream file{ finalPath };
-		BinaryStream* stream = &file;
+		Utils::BinaryFileStream file{ finalPath };
+		Utils::BinaryStream* stream = &file;
 		stream->Write(CoreVersion);
 
 		auto pipelineOrder = RootValue()["PipelineOrder"];

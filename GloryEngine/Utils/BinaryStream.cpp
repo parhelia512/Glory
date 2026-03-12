@@ -81,6 +81,16 @@ namespace Glory::Utils
 		return Write(value.data(), value.size());
 	}
 
+	BinaryStream& BinaryStream::Write(const std::vector<std::string>& value)
+	{
+		Write(value.size());
+		for (size_t i = 0; i < value.size(); ++i)
+		{
+			Write(value[i]);
+		}
+		return *this;
+	}
+
 	BinaryStream& BinaryStream::Write(const Utils::BitSet& value)
 	{
 		return Write(value.DataSize()).Write(value.Data(), value.DataSize());

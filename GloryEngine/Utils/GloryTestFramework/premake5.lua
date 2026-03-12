@@ -1,7 +1,7 @@
 project "GloryTestFramework"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++latest"
+	cppdialect "C++23"
 	staticruntime "Off"
 
 	targetdir ("%{engineOutDir}")

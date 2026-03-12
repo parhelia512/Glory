@@ -2,6 +2,7 @@
 
 #include <GScene.h>
 #include <PhysicsComponents.h>
+#include <ComponentManager.h>
 #include <Components.h>
 #include <SoundComponents.h>
 #include <IEngine.h>
@@ -76,13 +77,13 @@ namespace Glory::Editor
 	bool GenerateAudioScene(IEngine* pEngine, GScene* pScene, const SoundMaterial* defaultMaterial, AudioScene& audioScene)
 	{
 		Utils::ECS::EntityRegistry& registry = pScene->GetRegistry();
-		Utils::ECS::TypeView<PhysicsBody>* pPhysicsBodies = registry.GetTypeView<PhysicsBody>();
+		Utils::ECS::IComponentManager* pPhysicsBodies = registry.GetComponentManager(PhysicsBody::GetTypeData()->TypeHash());
 		if (!pPhysicsBodies) return false;
 
-		for (size_t i = 0; i < pPhysicsBodies->Size(); ++i)
+		for (size_t i = 0; i < pPhysicsBodies->NumComponents(); ++i)
 		{
 			const Utils::ECS::EntityID entity = pPhysicsBodies->EntityAt(i);
-			const PhysicsBody& body = pPhysicsBodies->Get(entity);
+			const PhysicsBody& body = *static_cast<const PhysicsBody*>(pPhysicsBodies->GetAddress(entity));
 
 			/* Only static bodies will be considered */
 			switch (body.m_BodyType)
@@ -103,8 +104,7 @@ namespace Glory::Editor
 			if (registry.HasComponent<SoundOccluder>(entity))
 			{
 				const SoundOccluder& occluder = registry.GetComponent<SoundOccluder>(entity);
-				Utils::ECS::EntityView* pEntityView = registry.GetEntityView(entity);
-				const bool active = pEntityView->IsActive() && registry.GetTypeView<SoundOccluder>()->IsActive(entity);
+				const bool active = registry.EntityActiveHierarchy(entity) && registry.GetComponentManager<SoundOccluder>()->IsActive(entity);
 				if (!active) continue;
 				material = &occluder.m_Material;
 				if (occluder.m_MaterialAsset)

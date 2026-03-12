@@ -39,13 +39,28 @@ namespace Glory
 		return uuid;
 	}
 
-	UIDocument::UIDocument(UIDocumentData* pDocument):
-		m_OriginalDocumentID(pDocument->GetUUID()), m_Registry(this), m_Resolution(1, 1),
-		m_SceneID(0), m_ObjectID(0), m_pRenderer(nullptr), m_Projection(glm::identity<glm::mat4>()),
+	UIDocument::UIDocument(UIRendererModule* pRenderer):
+		m_OriginalDocumentID(0ull), m_Registry(this), m_Resolution(1, 1),
+		m_SceneID(0), m_ObjectID(0), m_pRenderer(pRenderer), m_Projection(glm::identity<glm::mat4>()),
 		m_CursorPos(0.0f, 0.0f), m_CursorScrollDelta(0.0f, 0.0f), m_CursorDown(false),
-		m_WasCursorDown(false), m_InputEnabled(true), m_PanelCounter(0), m_Name(pDocument->m_Name),
-		m_Ids(pDocument->m_Ids), m_UUIds(pDocument->m_UUIds), m_Names(pDocument->m_Names), m_DrawIsDirty(32, true)
+		m_WasCursorDown(false), m_InputEnabled(true), m_PanelCounter(0), m_Name(""),
+		m_Ids(), m_UUIds(), m_Names(), m_DrawIsDirty(32, true)
 	{
+		m_pRenderer->GetRegistryFactory().PopulateRegisry(m_Registry);
+	}
+
+	UIDocument::~UIDocument()
+	{
+	}
+
+	void UIDocument::SetDocument(UIDocumentData* pDocument)
+	{
+		m_OriginalDocumentID = pDocument->GetUUID();
+		m_Name = pDocument->m_Name;
+		m_Ids = pDocument->m_Ids;
+		m_UUIds = pDocument->m_UUIds;
+		m_Names = pDocument->m_Names;
+
 		Utils::ECS::EntityRegistry& registry = pDocument->GetRegistry();
 		for (size_t i = 0; i < registry.ChildCount(0); ++i)
 		{
@@ -174,7 +189,7 @@ namespace Glory
 	Utils::ECS::EntityID UIDocument::CreateEntity(std::string_view name, UUID uuid)
 	{
 		Utils::ECS::EntityID entity = m_Registry.CreateEntity();
-		m_Registry.AddComponent<UITransform>(entity);
+		m_Registry.AddComponent<UITransform>(entity, UUID());
 		m_UUIds.emplace(entity, uuid);
 		m_Ids.emplace(uuid, entity);
 		m_Names.emplace(entity, name);

@@ -348,6 +348,11 @@ namespace Glory
 		return m_UIOverlaySamplerLayout;
 	}
 
+	const Utils::ECS::RegistryFactory& UIRendererModule::GetRegistryFactory() const
+	{
+		return m_RegistryFactory;
+	}
+
 	void UIRendererModule::Initialize()
 	{
 		Reflect::SetReflectInstance(&m_pEngine->Reflection());
@@ -416,7 +421,10 @@ namespace Glory
 		{
 			pLocalize->OnLanguageChanged = [this]() {
 				for (auto& iter : m_Documents)
-					iter.second.Registry().GetComponentManager<UIText>()->Utils::ECS::IComponentManager::Start();
+				{
+					Utils::ECS::IComponentManager* manager = iter.second.Registry().GetComponentManager<UIText>();
+					manager->Start();
+				}
 			};
 		}
 
@@ -679,8 +687,9 @@ namespace Glory
 		auto iter = m_Documents.find(id);
 		if (iter == m_Documents.end())
 		{
-			m_Documents.emplace(id, pDocument);
+			m_Documents.emplace(id, this);
 			UIDocument& newDocument = m_Documents.at(id);
+			newDocument.SetDocument(pDocument);
 			newDocument.CreateRenderPasses(pDevice, pRenderer->GetNumFramesInFlight(), glm::uvec2(uint32_t(data.m_Resolution.x), uint32_t(data.m_Resolution.y)), this);
 			newDocument.m_SceneID = data.m_SceneID;
 			newDocument.m_ObjectID = data.m_ObjectID;
@@ -706,8 +715,9 @@ namespace Glory
 			std::vector<DescriptorSetHandle> overlaySets = std::move(document.m_UIOverlaySets);
 			const glm::uvec2 resolution = document.m_Resolution;
 			m_Documents.erase(iter);
-			m_Documents.emplace(id, pDocument);
+			m_Documents.emplace(id, this);
 			UIDocument& newDocument = m_Documents.at(id);
+			newDocument.SetDocument(pDocument);
 			newDocument.m_SceneID = data.m_SceneID;
 			newDocument.m_ObjectID = data.m_ObjectID;
 			if (!passes.empty())

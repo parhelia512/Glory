@@ -1,7 +1,7 @@
 project "SteamAudioExtension"
 	kind "SharedLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "Off"
 
 	targetdir ("%{modulesOutDir}/GlorySteamAudio/Editor/Extension")

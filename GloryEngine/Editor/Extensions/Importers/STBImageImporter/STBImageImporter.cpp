@@ -50,7 +50,8 @@ namespace Glory::Editor
 		const PixelFormat format = PixelFormat::PF_RGBA;
 
 		ImageData* pImage = new ImageData(resolution, resolution, internalFormat, format, numChannels*sizeof(float), std::move(data), dataSize, false, DataType::DT_Float);
-		const UUID imageID = EditorAssetDatabase::ReserveAssetUUID(path.string(), subPath).first;
+		auto pathStr = path.string();
+		const UUID imageID = EditorAssetDatabase::ReserveAssetUUID(pathStr, subPath).first;
 		pImage->SetResourceUUID(imageID);
 		return pImage;
 	}
@@ -83,7 +84,8 @@ namespace Glory::Editor
 			/* Cubemap face */
 			ImageData* pData = new ImageData(width, height, PixelFormat::PF_R32G32B32A32Sfloat,
 				PixelFormat::PF_RGBA, 4*sizeof(float), std::move(data), targetDataSize, false, DataType::DT_Float);
-			const UUID imageID = EditorAssetDatabase::ReserveAssetUUID(path.string(), "").first;
+			auto pathStr = path.string();
+			const UUID imageID = EditorAssetDatabase::ReserveAssetUUID(pathStr, "").first;
 			pData->SetResourceUUID(imageID);
 			ImportedResource importedResource{ path, pData };
 			TextureData* pDefaultTexture = new TextureData(pData);

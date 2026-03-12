@@ -8,6 +8,8 @@
 #include "AddUIElementWindow.h"
 #include "ConstraintDrawer.h"
 
+#include <UIComponentManagers.h>
+
 #include <SceneManager.h>
 #include <UIDocumentData.h>
 #include <UIRendererModule.h>
@@ -33,10 +35,10 @@ EXTENSION_CPP(UIEditorExtension)
 
 namespace Glory::Editor
 {
-	static constexpr char* Shortcut_Window_UIEditor = "Open UI Preview";
-	static constexpr char* Shortcut_Window_UIGraph = "Open UI Graph";
-	static constexpr char* Shortcut_Window_UIInspector = "Open UI Inspector";
-	static constexpr char* Shortcut_Window_UILibrary = "Open UI Library";
+	static constexpr const char* Shortcut_Window_UIEditor = "Open UI Preview";
+	static constexpr const char* Shortcut_Window_UIGraph = "Open UI Graph";
+	static constexpr const char* Shortcut_Window_UIInspector = "Open UI Inspector";
+	static constexpr const char* Shortcut_Window_UILibrary = "Open UI Library";
 
 	UIDocumentImporter importer;
 	UIMainWindow UIEditorMainWindow;
@@ -44,17 +46,13 @@ namespace Glory::Editor
 	void CreateUIRenderer(Object* pObject, const ObjectMenuType& currentMenu)
 	{
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
-		pEngine->GetSceneManager()->ComponentTypesInstance();
-
 		Entity newEntity = CreateNewEmptyObject(pObject, "UIRenderer", currentMenu);
 		Undo::StartRecord("Create Empty Object", newEntity.EntityUUID());
 		newEntity.AddComponent<UIRenderer>();
 		Undo::AddAction<CreateObjectAction>(newEntity.GetScene());
 		Selection::SetActiveObject(GetEditableEntity(newEntity.GetEntityID(), newEntity.GetScene()));
 		Undo::StopRecord();
-
 		UIRendererModule* pModule = pEngine->GetOptionalModule<UIRendererModule>();
-		Utils::ECS::ComponentTypes::SetInstance(pModule->GetComponentTypes());
 	}
 
 	UIEditorExtension::UIEditorExtension()
@@ -91,8 +89,6 @@ namespace Glory::Editor
 		Reflect::SetReflectInstance(&pEngine->Reflection());
 		Reflect::RegisterType<UIElementType>();
 
-		pEngine->GetSceneManager()->ComponentTypesInstance();
-
 		MenuBar::AddMenuItem("Window/UI Editor/Preview", [&editor]() { editor.GetWindow<UIMainWindow, UIEditor>(); }, NULL, Shortcut_Window_UIEditor);
 		MenuBar::AddMenuItem("Window/UI Editor/Inspector", [&editor]() { editor.GetWindow<UIMainWindow, UIElementInspector>(); }, NULL, Shortcut_Window_UIInspector);
 		MenuBar::AddMenuItem("Window/UI Editor/Graph", [&editor]() { editor.GetWindow<UIMainWindow, UIElementsGraphWindow>(); }, NULL, Shortcut_Window_UIGraph);
@@ -111,8 +107,6 @@ namespace Glory::Editor
 		OBJECT_CREATE_MENU(UIRenderer, UIRenderer);
 
 		UIRendererModule* pModule = pEngine->GetOptionalModule<UIRendererModule>();
-		Utils::ECS::ComponentTypes::SetInstance(pModule->GetComponentTypes());
-
 		PropertyDrawer::RegisterPropertyDrawer<ConstraintDrawer<XConstraint>>();
 		PropertyDrawer::RegisterPropertyDrawer<ConstraintDrawer<YConstraint>>();
 		PropertyDrawer::RegisterPropertyDrawer<ConstraintDrawer<WidthConstraint>>();

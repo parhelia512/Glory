@@ -67,7 +67,7 @@ namespace Glory::Utils
 				const uint8_t newSize = index + 1;
 				Element* newElements = new Element[newSize];
 				std::memcpy(&newElements[0], &m_Elements[0], sizeof(Element)*m_Size);
-				std::memset(&newElements[m_Size], Element(0), sizeof(Element)*size_t(newSize - m_Size));
+				std::memset(&newElements[m_Size], std::numeric_limits<Element>::max(), sizeof(Element)*size_t(newSize - m_Size));
 				newElements[index] = elem;
 				m_Elements.reset(newElements);
 				m_Size = newSize;
@@ -86,7 +86,7 @@ namespace Glory::Utils
 				Element* newElements = new Element[newSize];
 				for (size_t i = 0; i < m_Size; ++i)
 					newElements[i] = std::move(m_Elements[i]);
-				std::memset(&newElements[m_Size], Element(0), sizeof(Element)*(newSize - m_Size));
+				std::memset(&newElements[m_Size], std::numeric_limits<Element>::max(), sizeof(Element)*(newSize - m_Size));
 				newElements[index] = std::move(elem);
 				m_Elements.reset(newElements);
 				m_Size = newSize;
@@ -98,7 +98,7 @@ namespace Glory::Utils
 				Element* newElements = new Element[size];
 				for (size_t i = 0; i < m_Size; ++i)
 					newElements[i] = std::move(m_Elements[i]);
-				std::memset(&newElements[m_Size], Element(0), sizeof(Element)*(size - m_Size));
+				std::memset(&newElements[m_Size], std::numeric_limits<Element>::max(), sizeof(Element)*(size - m_Size));
 				m_Elements.reset(newElements);
 				m_Size = size;
 			}
@@ -287,6 +287,7 @@ namespace Glory::Utils
 
 		void Swap(size_t index1, size_t index2)
 		{
+			if (index1 == index2) return;
 			Sparse& id1 = m_DenseIDs[index1];
 			Sparse& id2 = m_DenseIDs[index2];
 			*m_Sparse[id1] = index2;
@@ -360,7 +361,6 @@ namespace Glory::Utils
 		inline size_t Index(Sparse sparse) const
 		{
 			const size_t* index = m_Sparse[sparse];
-
 			return index ? *index : InvalidIndex;
 		}
 

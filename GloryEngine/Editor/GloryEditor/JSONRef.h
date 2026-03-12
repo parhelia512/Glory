@@ -3,6 +3,7 @@
 #include <rapidjson/document.h>
 
 #include <filesystem>
+#include <string>
 #include <UUID.h>
 
 namespace Glory
@@ -36,7 +37,7 @@ namespace Glory
 		template<typename T>
 		T AsEnum()
 		{
-			const std::string& valueStr = Value().as<std::string>();
+			const std::string& valueStr = Value().GetString();
 			T value;
 			if (!Enum<T>().FromString(valueStr, value)) return T(0);
 			return value;

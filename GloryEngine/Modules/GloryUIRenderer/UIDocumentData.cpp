@@ -41,7 +41,7 @@ namespace Glory
 	Utils::ECS::EntityID UIDocumentData::CreateEntity(std::string_view name, UUID uuid)
 	{
 		Utils::ECS::EntityID entity = m_Registry.CreateEntity();
-		m_Registry.AddComponent<UITransform>(entity);
+		m_Registry.AddComponent<UITransform>(entity, UUID());
 		m_UUIds.emplace(entity, uuid);
 		m_Ids.emplace(uuid, entity);
 		m_Names.emplace(entity, name);

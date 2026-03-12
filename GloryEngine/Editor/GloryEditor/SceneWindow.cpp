@@ -9,6 +9,7 @@
 #include "EntityEditor.h"
 #include "EditorAssetDatabase.h"
 
+#include <TransformManager.h>
 #include <CameraManager.h>
 #include <SceneManager.h>
 #include <AssetManager.h>

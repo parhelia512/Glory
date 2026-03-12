@@ -14,11 +14,6 @@ project "ImGui"
         "%{ImGuiDir}/*.cpp",
 	}
 
-	sysincludedirs
-    {
-        "%{ImGuiDir}"
-    }
-
     includedirs
     {
         "%{ImGuiDir}",

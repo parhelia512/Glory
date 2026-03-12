@@ -16,11 +16,6 @@ project "yaml-cpp"
         "%{YAMLDir}/src/**.h",
         "%{YAMLDir}/src/**.cpp",
 	}
-
-	sysincludedirs
-    {
-        "%{YAMLDir}/include",
-    }
         
     includedirs
     {

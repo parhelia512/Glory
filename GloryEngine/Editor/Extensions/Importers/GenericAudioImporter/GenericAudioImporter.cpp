@@ -49,8 +49,8 @@ namespace Glory::Editor
 
 		if (!file.is_open())
 		{
-			pEngine->GetDebug().LogError("Could not open file: " + path.string());
-			return false;
+			pEngine->GetDebug().LogError(std::format("Could not open file: {}", path.string()));
+			return nullptr;
 		}
 
 		std::vector<char> buffer;

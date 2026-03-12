@@ -1,8 +1,9 @@
 #include "EntityComponentPopup.h"
 
-#include <Reflection.h>
 #include <TypeFlags.h>
 #include <IEngine.h>
+
+#include <Reflection.h>
 
 #include <imgui.h>
 #include <algorithm>
@@ -18,12 +19,12 @@ namespace Glory::Editor
 		m_Open = true;
 		m_MenuItems.clear();
 
-		for (size_t i = 0; i < Glory::Utils::ECS::ComponentTypes::ComponentCount(); ++i)
+		for (size_t i = 0; i < pRegistry->ComponentManagerCount(); ++i)
 		{
-			const Glory::Utils::ECS::ComponentType* componentType = Glory::Utils::ECS::ComponentTypes::GetComponentTypeAt(i);
-			uint32_t typeHash = componentType->m_TypeHash;
+			const Utils::ECS::IComponentManager& manager = pRegistry->GetComponentManagerAt(i);
+			const uint32_t typeHash = manager.ComponentHash();
 
-			if (!componentType->m_AllowMultiple && pRegistry->HasComponent(entity, typeHash)) continue;
+			if (pRegistry->HasComponent(entity, typeHash)) continue;
 
 			const TypeData* pTypeData = Reflect::GetTyeData(typeHash);
 

@@ -77,7 +77,7 @@ namespace Glory
 		{
 			const size_t textureIndex = m_ResourcePropertyInfoIndices.size();
 			m_ResourcePropertyInfoIndices.push_back(index);
-			m_Resources.push_back(0);
+			m_Resources.emplace_back(0ull);
 			m_TextureSetBits &= ~(1u << index);
 			m_TextureTypeIndices[size_t(other.m_TextureType)].push_back(textureIndex);
 		}

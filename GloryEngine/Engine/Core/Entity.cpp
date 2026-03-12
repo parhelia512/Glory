@@ -118,9 +118,9 @@ namespace Glory
 		return m_pRegistry->EntityActiveHierarchy(m_EntityID);
 	}
 
-	void Entity::SetActive(bool active)
+	void Entity::SetActive(bool active, bool withCallbacks)
 	{
-		m_pRegistry->SetActive(m_EntityID, active);
+		m_pRegistry->SetActive(m_EntityID, active, withCallbacks);
 	}
 
 	std::string_view Entity::Name() const

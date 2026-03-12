@@ -9,7 +9,7 @@ if (node.IsDefined()) out = node.as<type>()
 
 #define YAML_WRITE(emitter, key, value) emitter << YAML::Key << #key << YAML::Value << value;
 
-#define APPEND_TYPE(x) PushInheritence<x>()
+#define APPEND_TYPE(x) Object::PushInheritence<x>()
 
 namespace Glory
 {

@@ -29,7 +29,7 @@ namespace Glory::Editor
 	DescriptorSetLayoutHandle ConstantsLayout;
 	DescriptorSetLayoutHandle CubemapSetLayout;
 
-	static constexpr char* EnvironmentPassName = "Environment Generator Pass";
+	static constexpr const char* EnvironmentPassName = "Environment Generator Pass";
 
 	static constexpr uint32_t IrradianceMapResolution = 32;
 	static constexpr uint32_t IrradianceMapChannels = 4;

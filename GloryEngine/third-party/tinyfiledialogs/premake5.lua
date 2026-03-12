@@ -11,11 +11,6 @@ project "tinyfiledialogs"
         "tinyfiledialogs.c",
 	}
 
-	sysincludedirs
-    {
-        
-    }
-
     includedirs
     {
         

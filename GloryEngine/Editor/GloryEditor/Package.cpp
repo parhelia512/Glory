@@ -147,7 +147,7 @@ namespace Glory::Editor
 		}
 	}
 
-	void ScanForAssets(IEngine* pEngine, Utils::NodeValueRef& node, std::vector<UUID>& assets)
+	void ScanForAssets(IEngine* pEngine, Utils::NodeValueRef node, std::vector<UUID>& assets)
 	{
 		if (node.IsMap())
 		{
@@ -371,7 +371,7 @@ namespace Glory::Editor
 
 				std::filesystem::path path = packageRoot;
 				path.append(relativeScenePath.string());
-				BinaryFileStream sceneFile{ path };
+				Utils::BinaryFileStream sceneFile{ path };
 				AssetArchive archive{ &sceneFile, AssetArchiveFlags::WriteNew };
 
 				archive.Serialize(LoadedScenesToPackage[i]);
@@ -405,7 +405,7 @@ namespace Glory::Editor
 			{
 				std::filesystem::path path = packageRoot;
 				path.append(relativeScenePath.string());
-				BinaryFileStream sceneFile{ path };
+				Utils::BinaryFileStream sceneFile{ path };
 				AssetArchive archive{ &sceneFile, AssetArchiveFlags::WriteNew };
 
 				const std::vector<UUID>& assets = AssetsPerScene[ScenesToPackage[i]];
@@ -440,7 +440,7 @@ namespace Glory::Editor
 
 			std::filesystem::path sharedAssetsPath = packageRoot;
 			sharedAssetsPath.append(relativePath.string());
-			BinaryFileStream sharedAssetsFile{ sharedAssetsPath };
+			Utils::BinaryFileStream sharedAssetsFile{ sharedAssetsPath };
 			AssetArchive archive{ &sharedAssetsFile, AssetArchiveFlags::WriteNew };
 			for (size_t i = 0; i < SharedAssets.size(); ++i)
 			{
@@ -476,7 +476,7 @@ namespace Glory::Editor
 			{
 				std::filesystem::path path = packageRoot;
 				path.append(relativeScenePath.string());
-				BinaryFileStream sceneFile{ path };
+				Utils::BinaryFileStream sceneFile{ path };
 				AssetArchive archive{ &sceneFile, AssetArchiveFlags::WriteNew };
 
 				const std::vector<UUID>& pipelines = PipelinesPerScene[ScenesToPackage[i]];
@@ -507,7 +507,7 @@ namespace Glory::Editor
 
 			std::filesystem::path sharedShadersPath = packageRoot;
 			sharedShadersPath.append(relativePath.string());
-			BinaryFileStream sharedShadersFile{ sharedShadersPath };
+			Utils::BinaryFileStream sharedShadersFile{ sharedShadersPath };
 			AssetArchive archive{ &sharedShadersFile, AssetArchiveFlags::WriteNew };
 			for (size_t i = 0; i < SharedPipelines.size(); ++i)
 			{
@@ -541,8 +541,8 @@ namespace Glory::Editor
 			/* Package asset database but only for used assets */
 			std::filesystem::path databasePath = dataPath;
 			databasePath.append("Assets.gcdb");
-			BinaryFileStream dbFile{ databasePath };
-			BinaryStream* stream = &dbFile;
+			Utils::BinaryFileStream dbFile{ databasePath };
+			Utils::BinaryStream* stream = &dbFile;
 			stream->Write(EntryScene);
 			for (size_t i = 0; i < UsedAssets.size(); ++i)
 			{
@@ -922,7 +922,7 @@ namespace Glory::Editor
 		for (size_t i = 0; i < ScenesToPackage.size(); ++i)
 		{
 			GScene* pScene = EditorSceneManager::OpenSceneInMemory(ScenesToPackage[i]);
-			pScene->GetRegistry().DisableCallbacks();
+			pScene->GetRegistry().DisableCalls();
 			LoadedScenesToPackage.push_back(pScene);
 		}
 
@@ -1018,7 +1018,7 @@ namespace Glory::Editor
 
     void PackageScene(GScene* pScene, const std::filesystem::path& path)
     {
-        BinaryFileStream file{ path };
+		Utils::BinaryFileStream file{ path };
         AssetArchive archive{ &file, AssetArchiveFlags::WriteNew };
         archive.Serialize(pScene);
     }

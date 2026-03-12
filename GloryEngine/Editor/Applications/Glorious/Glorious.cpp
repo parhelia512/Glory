@@ -6,6 +6,8 @@
 #include "CommandLine.h"
 #include "ProjectLock.h"
 
+#include <SparseSet.h>
+
 #include <Console.h>
 #include <Logs.h>
 #include <ProjectSpace.h>

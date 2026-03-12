@@ -3,6 +3,7 @@
 
 #include <map>
 
+#include <ResourceType.h>
 #include <GraphicsHandles.h>
 #include <Entity.h>
 

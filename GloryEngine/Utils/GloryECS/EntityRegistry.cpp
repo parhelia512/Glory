@@ -91,12 +91,29 @@ namespace Glory::Utils::ECS
 		return id;
 	}
 
+	UUID EntityRegistry::RemoveComponentAt(EntityID entity, size_t index)
+	{
+		auto& pair = m_EntityComponentOrder[entity][index];
+		size_t managerIndex = 0;
+		IComponentManager* manager = GetComponentManager(pair.first, &managerIndex);
+		manager->Remove(entity);
+		const UUID id = pair.second;
+		m_EntityComponentOrder[entity].erase(m_EntityComponentOrder[entity].begin() + index);
+		m_HasComponent[entity].UnSet(managerIndex);
+		return id;
+	}
+
 
 	bool EntityRegistry::HasComponent(EntityID entity, uint32_t typeHash) const
 	{
 		size_t index = 0;
 		GetComponentManager(typeHash, &index);
 		return m_HasComponent[entity].IsSet(index);
+	}
+
+	size_t EntityRegistry::ComponentManagerCount() const
+	{
+		return m_ComponentManagers.size();
 	}
 
 	IComponentManager* EntityRegistry::GetComponentManager(uint32_t componentHash, size_t* outIndex)
@@ -115,6 +132,16 @@ namespace Glory::Utils::ECS
 		return m_ComponentManagers[iter->second].get();
 	}
 
+	IComponentManager& EntityRegistry::GetComponentManagerAt(size_t index)
+	{
+		return *m_ComponentManagers[index];
+	}
+
+	const IComponentManager& EntityRegistry::GetComponentManagerAt(size_t index) const
+	{
+		return *m_ComponentManagers[index];
+	}
+
 	bool EntityRegistry::EntityValid(EntityID entity) const
 	{
 		return entity < m_NextEntityID ? m_EntityAlive.IsSet(entity) : false;
@@ -122,12 +149,12 @@ namespace Glory::Utils::ECS
 
 	bool EntityRegistry::EntityActiveHierarchy(EntityID entity) const
 	{
-		return entity < m_NextEntityID ? m_EntityActiveHierarchy.IsSet(entity) : false;
+		return entity == 0 ? true : (entity < m_NextEntityID ? m_EntityActiveHierarchy.IsSet(entity) : false);
 	}
 
 	bool EntityRegistry::EntityActiveSelf(EntityID entity) const
 	{
-		return entity < m_NextEntityID ? m_EntityActiveSelf.IsSet(entity) : false;
+		return entity == 0 ? true : (entity < m_NextEntityID ? m_EntityActiveSelf.IsSet(entity) : false);
 	}
 
 	EntityID EntityRegistry::GetParent(EntityID entity) const
@@ -194,7 +221,7 @@ namespace Glory::Utils::ECS
 		}
 	}
 
-	void EntityRegistry::SetActive(EntityID entity, bool active)
+	void EntityRegistry::SetActive(EntityID entity, bool active, bool withCallbacks)
 	{
 		const bool wasActive = m_EntityActiveHierarchy.IsSet(entity);
 		m_EntityActiveSelf.Set(entity, active);
@@ -203,13 +230,13 @@ namespace Glory::Utils::ECS
 		if (active)
 		{
 			EntityID parent = m_Parents[entity];
-			const bool hierarchyActive = parent && !m_EntityActiveHierarchy.IsSet(parent);
+			const bool hierarchyActive = parent ? m_EntityActiveHierarchy.IsSet(parent) : true;
 			m_EntityActiveHierarchy.Set(entity, hierarchyActive);
 		}
 
 		const bool isActive = m_EntityActiveHierarchy.IsSet(entity);
 		if (wasActive == isActive) return;
-		SetHierarchyActiveStateChildren(entity, isActive);
+		SetHierarchyActiveStateChildren(entity, isActive, withCallbacks);
 	}
 
 	void EntityRegistry::DestroyEntity(EntityID entity)
@@ -258,12 +285,12 @@ namespace Glory::Utils::ECS
 		return m_EntityDirty.IsSet(entity);
 	}
 
-	void EntityRegistry::SetEntityDirty(EntityID entity, bool dirty, bool setChildrenDirty)
+	void EntityRegistry::SetEntityDirty(EntityID entity, bool dirty, bool setChildrenDirty, bool withCallbacks)
 	{
 		const bool wasDirty = m_EntityDirty.IsSet(entity);
 		m_EntityDirty.Set(entity, dirty);
 		if (wasDirty || !dirty) return;
-		for (size_t i = 0; i < m_ComponentManagers.size(); ++i)
+		for (size_t i = 0; i < m_ComponentManagers.size() && withCallbacks; ++i)
 		{
 			if (!m_HasComponent[entity].IsSet(i)) continue;
 			m_ComponentManagers[i]->CallOnDirty(entity);
@@ -380,11 +407,23 @@ namespace Glory::Utils::ECS
 		{
 			const uint32_t type = EntityComponentType(entity, i);
 			const UUID uuid = EntityComponentID(entity, i);
-			const void* data = GetComponentAddress(entity, uuid);
+			const void* data = GetComponentAddress(entity, type);
 			pRegistry->CopyComponent(newEntity, type, uuid, data);
 		}
 
 		return newEntity;
+	}
+
+	void EntityRegistry::SetComponentIndex(EntityID entity, size_t from, size_t to)
+	{
+		std::vector<std::pair<uint32_t, UUID>>& componentOrder = m_EntityComponentOrder[entity];
+		size_t currentIndex = from;
+		while (currentIndex != to)
+		{
+			const size_t nextIndex = currentIndex > to ? currentIndex - 1 : currentIndex + 1;
+			std::swap(componentOrder[currentIndex], componentOrder[nextIndex]);
+			currentIndex = nextIndex;
+		}
 	}
 
 	void EntityRegistry::SetUserData(void* data)
@@ -392,9 +431,19 @@ namespace Glory::Utils::ECS
 		m_pUserData = data;
 	}
 
+	void EntityRegistry::EnableCalls()
+	{
+		m_CallsEnabled = true;
+	}
+
 	void EntityRegistry::DisableCalls()
 	{
 		m_CallsEnabled = false;
+	}
+
+	void EntityRegistry::EnableAllIndividualCalls()
+	{
+		m_EnabledCalls.SetAll();
 	}
 
 	size_t EntityRegistry::AliveCount() const
@@ -518,6 +567,19 @@ namespace Glory::Utils::ECS
 		m_pUserData = nullptr;
 	}
 
+	void EntityRegistry::SetComponentOrderDirty(uint32_t typeHash)
+	{
+		auto iter = m_HashToComponentManagerIndex.find(typeHash);
+		assert(iter != m_HashToComponentManagerIndex.end());
+		m_ComponentOrderDirty.Set(iter->second);
+	}
+
+	void EntityRegistry::Dirty()
+	{
+		for (auto& manager : m_ComponentManagers)
+			manager->Dirty();
+	}
+
 	void EntityRegistry::Validate()
 	{
 		/* Validate always gets called first before anything else, so perfect time to sort */
@@ -608,6 +670,15 @@ namespace Glory::Utils::ECS
 		for (size_t i = 0; i < m_ComponentManagers.size(); ++i)
 		{
 			if (!m_HasComponent[entity].IsSet(i)) continue;
+			m_ComponentManagers[i]->CallOnEnableDraw(entity);
+		}
+	}
+
+	void EntityRegistry::CallOnEnableDraw(EntityID entity)
+	{
+		for (size_t i = 0; i < m_ComponentManagers.size(); ++i)
+		{
+			if (!m_HasComponent[entity].IsSet(i)) continue;
 			m_ComponentManagers[i]->CallOnActivate(entity);
 		}
 	}
@@ -622,11 +693,11 @@ namespace Glory::Utils::ECS
 		return m_CallsEnabled && m_EnabledCalls.IsSet(size_t(callType));
 	}
 
-	void EntityRegistry::SetHierarchyActiveStateChildren(EntityID entity, bool active)
+	void EntityRegistry::SetHierarchyActiveStateChildren(EntityID entity, bool active, bool withCallbacks)
 	{
 		/* Component managers for components on this entity will need to be resorted */
 		/* We also need to call OnActivate or OnDeactivate on the entity */
-		for (size_t i = 0; i < m_ComponentManagers.size(); ++i)
+		for (size_t i = 0; i < m_ComponentManagers.size() && withCallbacks; ++i)
 		{
 			if (!m_HasComponent[entity].IsSet(i)) continue;
 			/* If the component was not active we don't need to do anything */
@@ -645,7 +716,7 @@ namespace Glory::Utils::ECS
 		}
 
 		/* We should assume that the entity is dirty */
-		SetEntityDirty(entity);
+		SetEntityDirty(entity, true, true, withCallbacks);
 
 		for (size_t i = 0; i < m_EntityTrees[entity].size(); ++i)
 		{

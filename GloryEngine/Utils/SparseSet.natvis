@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-  <Type Name="Glory::Utils::ECS::SparseSet&lt;*,*&gt;">
+  <Type Name="Glory::Utils::SparseSet&lt;*,*,*&gt;">
     <DisplayString>{{ SparseSet with {"$T2"} size={m_DenseSize} }}</DisplayString>
     <Expand>
       <Item Name="[sparse capacity]">m_SparseCapacity</Item>

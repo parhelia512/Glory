@@ -1,8 +1,10 @@
 #pragma once
 #include "YAML_GLM.h"
-#include "GLORY_YAML.h"
 #include "SerializedTypes.h"
 #include "Serializers.h"
+
+#include <GLORY_YAML.h>
+#include <ResourceType.h>
 
 #include <yaml-cpp/yaml.h>
 #include <Reflection.h>

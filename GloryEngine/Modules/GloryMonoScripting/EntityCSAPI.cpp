@@ -190,9 +190,9 @@ namespace Glory
 		Utils::ECS::IComponentManager* manager = registry.GetComponentManager(componentHash);
 
 		if (active)
-			manager->ActivateComponent(entity.GetEntityID());
+			manager->Activate(entity.GetEntityID());
 		else
-			manager->DeactivateComponent(entity.GetEntityID());
+			manager->Deactivate(entity.GetEntityID());
 	}
 
 	bool EntityBehaviour_GetActive(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
@@ -212,9 +212,9 @@ namespace Glory
 		Utils::ECS::IComponentManager* manager = pScene->GetRegistry().GetComponentManager<MonoScriptComponent>();
 
 		if (active)
-			manager->ActivateComponent(entity.GetEntityID());
+			manager->Activate(entity.GetEntityID());
 		else
-			manager->DeactivateComponent(entity.GetEntityID());
+			manager->Deactivate(entity.GetEntityID());
 	}
 
 #pragma endregion
@@ -519,7 +519,8 @@ namespace Glory
 		CameraComponent& cameraComp = registry.GetComponent<CameraComponent>(entity.GetEntityID());
 		if (cameraComp.m_HalfFOV == halfFov) return;
 		cameraComp.m_HalfFOV = halfFov;
-		registry.GetComponentManager<CameraComponent>()->Utils::ECS::IComponentManager::CallValidate(entity.GetEntityID());
+		Utils::ECS::IComponentManager* manager = registry.GetComponentManager<CameraComponent>();
+		manager->CallValidate(entity.GetEntityID());
 	}
 
 	float CameraComponent_GetNear(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
@@ -536,7 +537,8 @@ namespace Glory
 		CameraComponent& cameraComp = registry.GetComponent<CameraComponent>(entity.GetEntityID());
 		if (cameraComp.m_Near == near) return;
 		cameraComp.m_Near = near;
-		registry.GetComponentManager<CameraComponent>()->Utils::ECS::IComponentManager::CallValidate(entity.GetEntityID());
+		Utils::ECS::IComponentManager* manager = registry.GetComponentManager<CameraComponent>();
+		manager->CallValidate(entity.GetEntityID());
 	}
 
 	float CameraComponent_GetFar(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
@@ -553,7 +555,8 @@ namespace Glory
 		CameraComponent& cameraComp = registry.GetComponent<CameraComponent>(entity.GetEntityID());
 		if (cameraComp.m_Far == far) return;
 		cameraComp.m_Far = far;
-		registry.GetComponentManager<CameraComponent>()->Utils::ECS::IComponentManager::CallValidate(entity.GetEntityID());
+		Utils::ECS::IComponentManager* manager = registry.GetComponentManager<CameraComponent>();
+		manager->CallValidate(entity.GetEntityID());
 	}
 
 	int CameraComponent_GetPriority(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
@@ -570,7 +573,8 @@ namespace Glory
 		CameraComponent& cameraComp = registry.GetComponent<CameraComponent>(entity.GetEntityID());
 		if (cameraComp.m_Priority == priority) return;
 		cameraComp.m_Priority = priority;
-		registry.GetComponentManager<CameraComponent>()->Utils::ECS::IComponentManager::CallValidate(entity.GetEntityID());
+		Utils::ECS::IComponentManager* manager = registry.GetComponentManager<CameraComponent>();
+		manager->CallValidate(entity.GetEntityID());
 	}
 
 	LayerMask CameraComponent_GetLayerMask(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
@@ -587,7 +591,8 @@ namespace Glory
 		CameraComponent& cameraComp = registry.GetComponent<CameraComponent>(entity.GetEntityID());
 		if (cameraComp.m_LayerMask.m_Mask == pLayerMask->m_Mask) return;
 		cameraComp.m_LayerMask.m_Mask = pLayerMask->m_Mask;
-		registry.GetComponentManager<CameraComponent>()->Utils::ECS::IComponentManager::CallValidate(entity.GetEntityID());
+		Utils::ECS::IComponentManager* manager = registry.GetComponentManager<CameraComponent>();
+		manager->CallValidate(entity.GetEntityID());
 	}
 
 	glm::vec4 CameraComponent_GetClearColor(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
@@ -604,7 +609,8 @@ namespace Glory
 		CameraComponent& cameraComp = registry.GetComponent<CameraComponent>(entity.GetEntityID());
 		if (cameraComp.m_ClearColor == *clearCol) return;
 		cameraComp.m_ClearColor = *clearCol;
-		registry.GetComponentManager<CameraComponent>()->Utils::ECS::IComponentManager::CallValidate(entity.GetEntityID());
+		Utils::ECS::IComponentManager* manager = registry.GetComponentManager<CameraComponent>();
+		manager->CallValidate(entity.GetEntityID());
 	}
 
 	uint64_t CameraComponent_GetCameraID(uint64_t sceneID, uint64_t objectID, uint64_t componentID)

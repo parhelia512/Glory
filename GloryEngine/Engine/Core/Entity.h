@@ -20,7 +20,7 @@ namespace Glory
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
-			return m_pRegistry->AddComponent<T>(m_EntityID, std::forward<Args>(args)...);
+			return m_pRegistry->AddComponent<T>(m_EntityID, UUID(), std::forward<Args>(args)...);
 		}
 
 		template<typename T>
@@ -66,7 +66,7 @@ namespace Glory
 		bool IsActiveSelf() const;
 		bool IsActive() const;
 		bool IsHierarchyActive() const;
-		void SetActive(bool active);
+		void SetActive(bool active, bool withCallbacks=true);
 
 		std::string_view Name() const;
 

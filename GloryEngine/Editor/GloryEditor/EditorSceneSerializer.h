@@ -56,7 +56,8 @@ namespace Editor
          * @param name Name to pass to the scenes constructor
          * @param flags Deserialization flags
          */
-        GLORY_EDITOR_API static GScene* DeserializeScene(EditorApplication* pApp, Utils::NodeValueRef node, UUID uuid, const std::string& name, Flags flags = Flags(0));
+        GLORY_EDITOR_API static GScene* DeserializeScene(EditorApplication* pApp,
+            Utils::NodeValueRef node, UUID uuid, const std::string& name, Flags flags=Flags(0));
 
         /**
          * @brief Deserialize a scene from a YAML node
@@ -67,7 +68,8 @@ namespace Editor
          * @param name Name to pass to the scenes constructor
          * @param flags Deserialization flags
          */
-        GLORY_EDITOR_API static void DeserializeScene(EditorApplication* pApp, GScene* pScene, Utils::NodeValueRef node, UUID uuid, const std::string& name, Flags flags = Flags(0));
+        GLORY_EDITOR_API static void DeserializeScene(EditorApplication* pApp, GScene* pScene,
+            Utils::NodeValueRef node, UUID uuid, const std::string& name, Flags flags=Flags(0));
 
         /**
          * @brief Serialize an entity
@@ -76,7 +78,8 @@ namespace Editor
          * @param entity ID of the entity
          * @param entityNode YAML node to serialize the entity to
          */
-        GLORY_EDITOR_API static void SerializeEntity(EditorApplication* pApp, GScene* pScene, Utils::ECS::EntityID entity, Utils::NodeValueRef entityNode);
+        GLORY_EDITOR_API static void SerializeEntity(EditorApplication* pApp, GScene* pScene,
+            Utils::ECS::EntityID entity, Utils::NodeValueRef entityNode);
         /**
          * @brief Serialize an entity and all its children
          * @param pEngine The current engine instance
@@ -84,7 +87,8 @@ namespace Editor
          * @param entity ID of the entity
          * @param entities The YAML sequence node to serialize to
          */
-        GLORY_EDITOR_API static void SerializeEntityRecursive(EditorApplication* pApp, GScene* pScene, Utils::ECS::EntityID entity, Utils::NodeValueRef entities);
+        GLORY_EDITOR_API static void SerializeEntityRecursive(EditorApplication* pApp, GScene* pScene,
+            Utils::ECS::EntityID entity, Utils::NodeValueRef entities);
         /**
          * @brief Deserialize an entity from a YAML node
          * @param pEngine The current engine instance
@@ -92,7 +96,8 @@ namespace Editor
          * @param node Serialized YAML entity data
          * @param flags Deserialization flags
          */
-        GLORY_EDITOR_API static Entity DeserializeEntity(EditorApplication* pApp, GScene* pScene, Utils::NodeValueRef node, Flags flags = Flags(0));
+        GLORY_EDITOR_API static Entity DeserializeEntity(EditorApplication* pApp, GScene* pScene,
+            Utils::NodeValueRef node, Flags flags = Flags(0));
         /**
          * @brief Serialize a component on an entity
          * @param pEngine The current engine instance
@@ -102,7 +107,8 @@ namespace Editor
          * @param index Index of the component to serialize
          * @param node The YAML node to serialize to
          */
-        GLORY_EDITOR_API static void SerializeComponent(EditorApplication* pApp, Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityView* pEntityView, Utils::ECS::EntityID entity, size_t index, Utils::NodeValueRef node);
+        GLORY_EDITOR_API static void SerializeComponent(EditorApplication* pApp, Utils::ECS::EntityRegistry* pRegistry,
+            Utils::ECS::EntityID entity, size_t index, Utils::NodeValueRef node);
         /**
          * @brief Deserialize a component to an entity
          * @param pEngine The current engine instance
@@ -112,7 +118,8 @@ namespace Editor
          * @param component Serialized component data
          * @param flags Deserialization flags
          */
-        GLORY_EDITOR_API static void DeserializeComponent(EditorApplication* pApp, GScene* pScene, Utils::ECS::EntityID entity, UUIDRemapper& uuidRemapper, Utils::NodeValueRef component, Flags flags = Flags(0));
+        GLORY_EDITOR_API static void DeserializeComponent(EditorApplication* pApp, GScene* pScene,
+            Utils::ECS::EntityID entity, UUIDRemapper& uuidRemapper, Utils::NodeValueRef component, Flags flags=Flags(0));
     };
 }
 }

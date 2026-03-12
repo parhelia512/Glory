@@ -38,7 +38,7 @@ namespace Glory
 			return m_ShapeDataBuffer;
 		}
 
-		bool operator==(const ShapeProperty& other)
+		bool operator==(const ShapeProperty& other) const
 		{
 			if (other.m_ShapeType != m_ShapeType) return false;
 			return std::memcmp(m_ShapeDataBuffer, other.m_ShapeDataBuffer, sizeof(m_ShapeDataBuffer)) == 0;

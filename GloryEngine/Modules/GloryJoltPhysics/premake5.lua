@@ -27,6 +27,8 @@ project "GloryJoltPhysics"
 
 	includedirs
 	{
+		"%{rootDir}/submodules/JoltPhysics",
+
 		"%{DepsIncludeDir}",
 		"%{IncludeDir.glm}",
 		"%{BaseIncludeDir.physics}",
@@ -42,11 +44,6 @@ project "GloryJoltPhysics"
 		"%{IncludeDir.yaml_cpp}",
 
 		"%{DepIncludesDir}",
-	}
-
-	sysincludedirs
-	{
-		"%{rootDir}/submodules/JoltPhysics",
 	}
 
 	libdirs

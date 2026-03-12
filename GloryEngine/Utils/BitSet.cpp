@@ -6,7 +6,8 @@ namespace Glory::Utils
 {
 	static constexpr uint32_t RoundingBitMask = 0x1F;
 
-	BitSet::BitSet(size_t capacity, bool defaultOn) : m_pMemory(new Element[capacity + (32 - capacity % 32)]), m_Capacity(capacity) {
+	BitSet::BitSet(size_t capacity, bool defaultOn) :
+		m_pMemory(new Element[(capacity & ~RoundingBitMask) + (capacity & RoundingBitMask ? 32 : 0)]), m_Capacity(capacity) {
 		for (size_t i = 0; i < capacity; ++i)
 		{
 			m_pMemory[i] = defaultOn ? 0xFFFFFFFF : 0;

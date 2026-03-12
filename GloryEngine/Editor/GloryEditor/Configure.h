@@ -21,6 +21,6 @@ namespace Glory
 {
 	namespace Editor
 	{
-		constexpr char* GloryEditorVersion = GLORY_EDITOR_VERSION;
+		constexpr const char* GloryEditorVersion = GLORY_EDITOR_VERSION;
 	}
 }

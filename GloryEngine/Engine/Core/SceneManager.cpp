@@ -273,6 +273,7 @@ namespace Glory
 	void SceneManager::AddExternalScene(GScene* pScene)
 	{
 		m_pExternalScenes.push_back(pScene);
+		m_RegistryFactory.PopulateRegisry(pScene->GetRegistry());
 		pScene->m_pManager = this;
 	}
 

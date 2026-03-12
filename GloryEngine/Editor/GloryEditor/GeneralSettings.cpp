@@ -77,8 +77,8 @@ namespace Glory::Editor
 	{
 		std::filesystem::path finalPath = path;
 		finalPath.replace_filename("General.dat");
-		BinaryFileStream file{ finalPath };
-		BinaryStream* stream = &file;
+		Utils::BinaryFileStream file{ finalPath };
+		Utils::BinaryStream* stream = &file;
 		stream->Write(CoreVersion);
 		
 		auto root = RootValue();

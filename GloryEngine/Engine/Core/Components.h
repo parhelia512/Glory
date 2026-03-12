@@ -46,7 +46,7 @@ namespace Glory
 
 	struct MeshMaterial
 	{
-		MeshMaterial() : m_MaterialReference(0) {}
+		MeshMaterial() : m_MaterialReference(0ull) {}
 		MeshMaterial(UUID uuid) : m_MaterialReference(uuid) {}
 
 		bool operator==(const MeshMaterial&& other)
@@ -70,7 +70,7 @@ namespace Glory
 			: m_Mesh(pMesh != nullptr ? pMesh->GetUUID() : UUID(0ull)), m_Material(pMaterial != nullptr ? pMaterial->GetUUID() : UUID(0ull)),
 			m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
 		MeshRenderer()
-			: m_Mesh(0), m_Material(0), m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
+			: m_Mesh(0ull), m_Material(0ull), m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
 
 		REFLECTABLE(MeshRenderer,
 			(AssetReference<MeshData>)(m_Mesh),
@@ -148,7 +148,7 @@ namespace Glory
 
 	struct TextComponent
 	{
-		TextComponent() : m_Font(0), m_Text("Hello World!"), m_Scale(0.01f),
+		TextComponent() : m_Font(0ull), m_Text("Hello World!"), m_Scale(0.01f),
 			m_Color(1.0f, 1.0f, 1.0f, 1.0f), m_Alignment(Alignment::Left), m_WrapWidth(0.0f), m_Dirty(true) {}
 
 		REFLECTABLE(TextComponent,

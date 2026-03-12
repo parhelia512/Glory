@@ -3,23 +3,20 @@
 #include "EditorAssetDatabase.h"
 #include "Importer.h"
 #include "ProjectSpace.h"
-#include "MaterialData.h"
 #include "EditorPipelineManager.h"
-#include "ResourceType.h"
 #include "EditorApplication.h"
 #include "EditorResourceManager.h"
 #include "EditableResource.h"
 #include "Dispatcher.h"
 #include "EditorShaderData.h"
-#include "AssetManager.h"
-
-#include <PipelineData.h>
-#include <Serializers.h>
-#include <NodeRef.h>
 
 #include <IEngine.h>
+#include <PipelineData.h>
+#include <Serializers.h>
 #include <AssetDatabase.h>
 #include <AssetManager.h>
+#include <MaterialData.h>
+#include <ResourceType.h>
 
 namespace Glory::Editor
 {
@@ -177,7 +174,7 @@ namespace Glory::Editor
 		}
 	}
 
-	void EditorMaterialManager::ReadPropertiesInto(Utils::NodeValueRef& properties, MaterialData* pMaterial, bool clearProperties) const
+	void EditorMaterialManager::ReadPropertiesInto(Utils::NodeValueRef properties, MaterialData* pMaterial, bool clearProperties) const
 	{
 		if (!properties.Exists() || !properties.IsMap()) return;
 		if (clearProperties) pMaterial->ClearProperties();
@@ -210,7 +207,7 @@ namespace Glory::Editor
 		}
 	}
 
-	void EditorMaterialManager::WritePropertiesTo(Utils::NodeValueRef& properties, MaterialData* pMaterial) const
+	void EditorMaterialManager::WritePropertiesTo(Utils::NodeValueRef properties, MaterialData* pMaterial) const
 	{
 		if (!properties.IsMap()) properties.SetMap();
 

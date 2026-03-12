@@ -3,7 +3,6 @@
 #include "EditorApplication.h"
 
 #include <GScene.h>
-#include <ComponentHelpers.h>
 
 namespace Glory::Editor
 {
@@ -21,10 +20,7 @@ namespace Glory::Editor
 		GScene* pScene = EditorApplication::GetInstance()->GetSceneManager().GetOpenScene(m_SceneID);
 		if (!pScene) return;
 		Entity entity = pScene->GetEntityByUUID(actionRecord.ObjectID);
-		if (!m_Active)
-			Components::Activate(entity);
-		else
-			Components::Deactivate(entity);
+		pScene->GetRegistry().SetActive(entity.GetEntityID(), m_Active);
 	}
 
 	void EnableObjectAction::OnRedo(const ActionRecord& actionRecord)
@@ -32,9 +28,6 @@ namespace Glory::Editor
 		GScene* pScene = EditorApplication::GetInstance()->GetSceneManager().GetOpenScene(m_SceneID);
 		if (!pScene) return;
 		Entity entity = pScene->GetEntityByUUID(actionRecord.ObjectID);
-		if (m_Active)
-			Components::Activate(entity);
-		else
-			Components::Deactivate(entity);
+		pScene->GetRegistry().SetActive(entity.GetEntityID(), m_Active);
 	}
 }

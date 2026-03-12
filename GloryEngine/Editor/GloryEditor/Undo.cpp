@@ -227,14 +227,14 @@ namespace Glory::Editor
 
 	void Undo::RegisterChangeHandler(const std::string& extension, const std::string& pathComponent, std::function<void(Utils::YAMLFileRef&, const std::filesystem::path&)> handler)
 	{
-		auto& extIter = m_ChangeHandlers.find(extension);
+		auto extIter = m_ChangeHandlers.find(extension);
 		if (extIter == m_ChangeHandlers.end())
 		{
 			extIter = m_ChangeHandlers.emplace(extension, std::map<std::string,
 				std::vector<std::function<void(Utils::YAMLFileRef&, const std::filesystem::path&)>>>()).first;
 		}
 		auto& pathComp = extIter->second;
-		auto& pathCompIter = pathComp.find(pathComponent);
+		auto pathCompIter = pathComp.find(pathComponent);
 		if (pathCompIter == pathComp.end())
 		{
 			pathCompIter = pathComp.emplace(pathComponent, std::vector<std::function<void(Utils::YAMLFileRef&, const std::filesystem::path&)>>()).first;
@@ -244,7 +244,7 @@ namespace Glory::Editor
 
 	void Undo::TriggerChangeHandler(Utils::YAMLFileRef& file, const std::filesystem::path& path)
 	{
-		auto& extIter = m_ChangeHandlers.find(file.Path().extension().string());
+		auto extIter = m_ChangeHandlers.find(file.Path().extension().string());
 		if (extIter == m_ChangeHandlers.end()) return;
 		auto& pathComp = extIter->second;
 
@@ -258,7 +258,7 @@ namespace Glory::Editor
 		for (auto iter = path.begin(); iter != path.end(); ++iter)
 		{
 			const std::filesystem::path& pathComponent = *iter;
-			auto& pathCompIter = pathComp.find(pathComponent.string());
+			auto pathCompIter = pathComp.find(pathComponent.string());
 			if (pathCompIter == pathComp.end()) continue;
 			for (auto& handler : pathCompIter->second)
 				handler(file, path);

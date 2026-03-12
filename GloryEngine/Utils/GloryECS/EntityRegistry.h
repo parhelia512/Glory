@@ -49,14 +49,14 @@ namespace Glory::Utils::ECS
 		void AddManager(IComponentManager* manager);
 
 		template<ComponentCompatible Component, typename... Args>
-		Component& AddComponent(EntityID entity, UUID componentID=UUID(), Args&&... args)
+		Component& AddComponent(EntityID entity, UUID componentID, Args&&... args)
 		{
 			size_t index = 0;
 			ComponentManager<Component>* manager = GetComponentManager<Component>(&index);
 			m_ComponentOrderDirty.Set(index);
 			m_HasComponent[entity].Set(index);
 			m_EntityComponentOrder[entity].emplace_back(manager->ComponentHash(), componentID);
-			return *static_cast<Component*>(manager->Add(entity, std::forward<Args>(args)...));
+			return manager->AddInPlace(entity, std::forward<Args>(args)...);
 		}
 
 		template<ComponentCompatible Component>
@@ -78,6 +78,7 @@ namespace Glory::Utils::ECS
 		}
 
 		UUID RemoveComponent(EntityID entity, uint32_t typeHash);
+		UUID RemoveComponentAt(EntityID entity, size_t index);
 
 		template<ComponentCompatible Component>
 		Component& GetComponent(EntityID entity)
@@ -110,8 +111,11 @@ namespace Glory::Utils::ECS
 			return static_cast<const ComponentManager<Component>*>(GetComponentManager(hash, outIndex));
 		}
 
+		size_t ComponentManagerCount() const;
 		IComponentManager* GetComponentManager(uint32_t componentHash, size_t* outIndex=nullptr);
 		const IComponentManager* GetComponentManager(uint32_t componentHash, size_t* outIndex=nullptr) const;
+		IComponentManager& GetComponentManagerAt(size_t index);
+		const IComponentManager& GetComponentManagerAt(size_t index) const;
 
 		bool EntityValid(EntityID entity) const;
 		bool EntityActiveHierarchy(EntityID entity) const;
@@ -120,13 +124,13 @@ namespace Glory::Utils::ECS
 		EntityID GetParent(EntityID entity) const;
 		void SetParent(EntityID entity, EntityID parent);
 
-		void SetActive(EntityID entity, bool active);
+		void SetActive(EntityID entity, bool active, bool withCallbacks=true);
 
 		void DestroyEntity(EntityID entity);
 		void Clear(EntityID entity);
 
 		bool IsEntityDirty(EntityID entity) const;
-		void SetEntityDirty(EntityID entity, bool dirty=true, bool setChildrenDirty=true);
+		void SetEntityDirty(EntityID entity, bool dirty=true, bool setChildrenDirty=true, bool withCallbacks=true);
 
 		size_t ChildCount(EntityID entity) const;
 		EntityID Child(EntityID entity, size_t index) const;
@@ -142,6 +146,7 @@ namespace Glory::Utils::ECS
 		const void* GetComponentAddress(EntityID entity, uint32_t type) const;
 		void* CopyComponent(EntityID entity, uint32_t type, UUID componentID, const void* data);
 		EntityID CopyEntityToOtherRegistry(EntityID entity, EntityID parent, EntityRegistry* pRegistry) const;
+		void SetComponentIndex(EntityID entity, size_t from, size_t to);
 
 		template<typename T>
 		T* GetUserData()
@@ -153,7 +158,9 @@ namespace Glory::Utils::ECS
 
 		void SetUserData(void* data);
 
+		void EnableCalls();
 		void DisableCalls();
+		void EnableAllIndividualCalls();
 
 		size_t AliveCount() const;
 
@@ -168,7 +175,15 @@ namespace Glory::Utils::ECS
 
 		void Reset();
 
+		void SetComponentOrderDirty(uint32_t typeHash);
+
+		inline EntityID MaxEntityID() const
+		{
+			return m_NextEntityID;
+		}
+
 	public: /* Global calls */
+		void Dirty();
 		void Validate();
 		void Activate();
 		void Deactivate();
@@ -190,13 +205,14 @@ namespace Glory::Utils::ECS
 		void CallOnValidate(EntityID entity);
 		void CallStart(EntityID entity);
 		void CallOnActivate(EntityID entity);
+		void CallOnEnableDraw(EntityID entity);
 
 	public:
 		void EnableCall(EntityCallType callType, bool enable=true);
 		bool IsCallEnabled(EntityCallType callType) const;
 
 	private:
-		void SetHierarchyActiveStateChildren(EntityID entity, bool active);
+		void SetHierarchyActiveStateChildren(EntityID entity, bool active, bool withCallbacks=true);
 
 	private:
 		std::vector<std::unique_ptr<IComponentManager>> m_ComponentManagers;

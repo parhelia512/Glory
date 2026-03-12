@@ -1,7 +1,7 @@
 project "GloryECS"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++latest"
+	cppdialect "C++20"
 	staticruntime "Off"
 
 	targetdir ("%{engineOutDir}")
@@ -26,8 +26,8 @@ project "GloryECS"
 
 	links
 	{
-		--"GloryEngineCore",
-		--"GloryUtils"
+		"GloryEngineCore",
+		"GloryUtils"
 	}
 
 	filter "system:windows"

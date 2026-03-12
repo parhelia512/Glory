@@ -23,6 +23,5 @@ namespace Glory::Editor
 	{
 		Importer::Register(&Importer);
 		Reflect::SetReflectInstance(&EditorApplication::GetInstance()->GetEngine()->Reflection());
-		EditorApplication::GetInstance()->GetSceneManager().ComponentTypesInstance();
 	}
 }

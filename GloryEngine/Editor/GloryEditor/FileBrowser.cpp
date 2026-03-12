@@ -442,7 +442,7 @@ namespace Glory::Editor
         const ImVec2 cursorPos = ImGui::GetCursorPos();
         EditorRenderImpl* pRenderImpl = EditorApplication::GetInstance()->GetEditorPlatform().GetRenderImpl();
         TextureHandle texture = EditorAssets::GetTexture(CreatingItem.m_Icon.empty() ? "file" : CreatingItem.m_Icon);
-        const UUID selectedID = Selection::GetActiveObject() ? Selection::GetActiveObject()->GetUUID() : 0;
+        const UUID selectedID = Selection::GetActiveObject() ? Selection::GetActiveObject()->GetUUID() : UUID(0ull);
 
         ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
         ImGui::Button("##fileItem", itemSize);

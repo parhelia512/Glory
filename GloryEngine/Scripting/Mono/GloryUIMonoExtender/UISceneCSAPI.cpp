@@ -295,9 +295,9 @@ namespace Glory
         Utils::ECS::IComponentManager* manager = registry.GetComponentManager(componentHash);
 
         if (active)
-            manager->ActivateComponent(entity);
+            manager->Activate(entity);
         else
-            manager->DeactivateComponent(entity);
+            manager->Deactivate(entity);
         pDocument->SetEntityDirty(entity, true, true);
         pDocument->SetDrawDirty();
     }

@@ -441,6 +441,7 @@ namespace Glory
 	void GScene::SetManager(SceneManager* pManager)
 	{
 		m_pManager = pManager;
+		pManager->GetRegistryFactory().PopulateRegisry(m_Registry);
 	}
 
 	void GScene::Serialize(Utils::BinaryStream& container) const

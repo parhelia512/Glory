@@ -39,6 +39,7 @@ namespace Glory
 	public:
 		AssetReference() : AssetReferenceBase() {}
 		AssetReference(UUID uuid) : AssetReferenceBase(uuid) {}
+		AssetReference(uint64_t id) : AssetReferenceBase(id) {}
 		AssetReference(T* pAsset) : AssetReferenceBase(pAsset ? pAsset->GetUUID() : UUID(0ull)) {}
 		virtual ~AssetReference() {}
 

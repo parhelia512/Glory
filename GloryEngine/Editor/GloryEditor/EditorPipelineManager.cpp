@@ -585,7 +585,7 @@ namespace Glory::Editor
 		if (validCacheAvailable)
 		{
 			/* Load cache */
-			BinaryFileStream file{ cachePath, true, false };
+			Utils::BinaryFileStream file{ cachePath, true, false };
 			AssetArchive archive{ &file, AssetArchiveFlags::Read };
 			/* If the cache is from an older version it is likely invalid */
 			if (archive.VerifyVersion())
@@ -662,7 +662,7 @@ namespace Glory::Editor
 		CompileForEditorPlatform(editorPipeline);
 
 		/* Cache pipeline */
-		BinaryFileStream file{ cachePath };
+		Utils::BinaryFileStream file{ cachePath };
 		AssetArchive archive{ &file, AssetArchiveFlags::WriteNew };
 		archive.Serialize(editorPipeline);
 		return editorPipeline;

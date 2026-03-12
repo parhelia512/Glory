@@ -41,12 +41,12 @@ namespace Glory::Editor
 	{
 	}
 
-	void DrawName(float padding, const Utils::ECS::ComponentType* type)
+	static void DrawName(float padding, const Utils::Reflect::TypeData* type)
 	{
 		const ImVec2 cursorPos = ImGui::GetCursorPos();
 
 		const float availableWidth = ImGui::GetContentRegionAvail().x - padding;
-		std::string_view text = type->m_Name;
+		std::string_view text = type->TypeName();
 		const size_t lastNSIndex = text.rfind("::");
 		if (lastNSIndex != std::string_view::npos)
 			text = text.substr(lastNSIndex + 2);
@@ -60,7 +60,7 @@ namespace Glory::Editor
 		ImGui::PopTextWrapPos();
 	}
 
-	void DrawItem(float iconSize, const Utils::ECS::ComponentType* type, UIMainWindow* pMainWindow)
+	static void DrawItem(float iconSize, const Utils::Reflect::TypeData* type, UIMainWindow* pMainWindow)
 	{
 		const ImVec4 buttonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
 		const ImVec4 buttonInactiveColor = { buttonColor.x, buttonColor.y, buttonColor.z, 0.0f };
@@ -77,9 +77,9 @@ namespace Glory::Editor
 		const ImVec2 cursorPos = ImGui::GetCursorPos();
 
 		ImGui::Button("##elementItem", itemSize);
-		const std::string_view icon = ElementIcons.at(type->m_TypeHash).data();
-		UIElementType payload{ true, uint64_t(type->m_TypeHash) };
-		std::string_view typeName = type->m_Name;
+		const std::string_view icon = ElementIcons.at(type->TypeHash()).data();
+		UIElementType payload{ true, uint64_t(type->TypeHash()) };
+		std::string_view typeName = type->TypeName();
 		const size_t lastNSIndex = typeName.rfind("::");
 		if (lastNSIndex != std::string_view::npos)
 			typeName = typeName.substr(lastNSIndex + 2);
@@ -102,18 +102,18 @@ namespace Glory::Editor
 
 			const size_t siblingIndex = pDocument->Registry().ChildCount(0);
 			pMainWindow->SelectedEntity() =
-				AddUIElementAction::AddElement(pApp, pDocument, file, typeName, type->m_TypeHash, 0, siblingIndex);
+				AddUIElementAction::AddElement(pApp, pDocument, file, typeName, type->TypeHash(), 0, siblingIndex);
 		}
 
 		ImGui::SetCursorPos({ cursorPos.x + padding, cursorPos.y + padding });
 		ImGui::PushFont(EditorPlatform::GetHugeFont());
-		ImGui::TextUnformatted(ElementIcons.at(type->m_TypeHash).data());
+		ImGui::TextUnformatted(ElementIcons.at(type->TypeHash()).data());
 		ImGui::PopFont();
 		DrawName(padding, type);
 		ImGui::EndChild();
 	}
 
-	void DrawCategories(float height)
+	static void DrawCategories(float height)
 	{
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
 		ImGui::BeginChild("Categories", ImVec2(0, height), false, window_flags);
@@ -128,7 +128,7 @@ namespace Glory::Editor
 		ImGui::EndChild();
 	}
 
-	void DrawElements(UIMainWindow* pMainWindow, float height)
+	static void DrawElements(UIMainWindow* pMainWindow, float height)
 	{
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
 		ImGui::BeginChild("Elements", ImVec2(0, height), false, window_flags);
@@ -145,8 +145,8 @@ namespace Glory::Editor
 		auto& category = ElementCategories[SelectedCategory];
 		for (size_t i = 0; i < category.second.size(); ++i)
 		{
-			auto componentType = Utils::ECS::ComponentTypes::GetComponentType(category.second[i]);
-			if (componentType->m_TypeHash == ResourceTypes::GetHash<UITransform>()) continue;
+			const Utils::Reflect::TypeData* componentType = Reflect::GetTyeData(category.second[i]);
+			if (componentType->TypeHash() == ResourceTypes::GetHash<UITransform>()) continue;
 
 			const int columnIndex = (i % columns) - 1;
 			ImGui::PushID(i);

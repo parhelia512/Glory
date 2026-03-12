@@ -1,5 +1,5 @@
 #pragma once
-#include <GloryEditor.h>
+#include "GloryEditor.h"
 
 #include <string_view>
 #include <typeindex>
@@ -30,17 +30,17 @@ namespace Glory::Editor
 		T* GetWindow(bool alwaysOpenNew = false)
 		{
 			const std::type_info& type = typeid(T);
-			EditorWindow* pWindow = nullptr;
+			T* pWindow = nullptr;
 			if (!alwaysOpenNew)
 			{
-				pWindow = FindEditorWindow(type);
+				pWindow = static_cast<T*>(FindEditorWindow(type));
 				if (pWindow) return (T*)pWindow;
 			}
 
 			pWindow = new T();
 			pWindow->m_pOwner = this;
 			OpenEditorWindow(pWindow);
-			return (T*)pWindow;
+			return pWindow;
 		}
 
 		GLORY_EDITOR_API EditorWindow* FindEditorWindow(const std::type_info& type);

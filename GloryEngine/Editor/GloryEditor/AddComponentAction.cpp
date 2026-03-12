@@ -39,8 +39,7 @@ namespace Glory::Editor
 		Glory::Utils::ECS::EntityRegistry& pRegistry = pScene->GetRegistry();
 		Utils::ECS::EntityID entity = pEntityObject->EntityID();
 		pRegistry.CreateComponent(entity, m_ComponentTypeHash, m_ComponentUUID);
-		Utils::ECS::EntityView* pEntityView = pRegistry.GetEntityView(entity);
-		pEntityView->SetComponentIndex(pEntityView->ComponentCount(), m_ComponentIndex);
+		pRegistry.SetComponentIndex(entity, pRegistry.EntityComponentCount(entity) - 1, m_ComponentIndex);
 
 		for (size_t i = 0; i < editors.size(); i++)
 		{

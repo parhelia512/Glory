@@ -39,9 +39,10 @@ namespace Glory::Utils::ECS
 		}
 
 		template<typename... Args>
-		void* Add(EntityID entity, Args&&... args)
+		Component& AddInPlace(EntityID entity, Args&&... args)
 		{
-			return &SparseSet<EntityID, Component>::Add(entity, Component(args...));
+			Component c(args...);
+			return SparseSet<EntityID, Component>::Add(entity, std::move(c));
 		}
 
 		virtual void* Add(EntityID entity) override
@@ -69,6 +70,16 @@ namespace Glory::Utils::ECS
 		virtual const void* GetAddress(EntityID entity) const override
 		{
 			return static_cast<const void*>(&SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual size_t NumComponents() override
+		{
+			return SparseSet<EntityID, Component>::Size();
+		}
+
+		virtual EntityID EntityAt(size_t index) override
+		{
+			return SparseSet<EntityID, Component>::DenseID(index);
 		}
 
 		Component& Get(EntityID entity)
@@ -165,28 +176,11 @@ namespace Glory::Utils::ECS
 			return typeid(Component);
 		}
 
-		virtual void ActivateComponent(EntityID entity) override
+		virtual void SetComponentActive(EntityID entity, bool active) override
 		{
-			/* Don't do anything if component is already active */
-			if (m_ComponentActive.IsSet(entity)) return;
-			m_ComponentActive.Set(entity);
-
-			/* Only call callbacks if the entity is also active in the hierarchy */
-			if (!m_pRegistry->EntityActiveHierarchy(entity)) return;
-			CallOnActivate(entity);
-			CallOnEnableDraw(entity);
-		}
-
-		virtual void DeactivateComponent(EntityID entity) override
-		{
-			/* Don't do anything if component is already inactive */
-			if (!m_ComponentActive.IsSet(entity)) return;
-			m_ComponentActive.UnSet(entity);
-
-			/* Only call callbacks if the entity is active in the hierarchy */
-			if (!m_pRegistry->EntityActiveHierarchy(entity)) return;
-			CallOnDeactivate(entity);
-			CallOnDisableDraw(entity);
+			if (m_ComponentActive.IsSet(entity) == active) return;
+			m_ComponentActive.Set(entity, active);
+			m_pRegistry->SetComponentOrderDirty(ComponentTypeHash);
 		}
 
 	protected: /* Custom implementations, these are always called */
@@ -284,6 +278,19 @@ namespace Glory::Utils::ECS
 		}
 
 	private: /* Global component callbacks */
+		virtual void Dirty() override final
+		{
+			if (!DoOnDirty) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnDirty)) return;
+
+			const size_t numComponents = SparseSet<EntityID, Component>::Size();
+			for (size_t i = 0; i < numComponents; ++i)
+			{
+				const EntityID entity = SparseSet<EntityID, Component>::DenseID(i);
+				(this->*DoOnDirty)(entity, SparseSet<EntityID, Component>::GetAt(i));
+			}
+		}
+
 		virtual void Validate() override final
 		{
 			if (!DoValidate) return;
@@ -451,7 +458,7 @@ namespace Glory::Utils::ECS
 				const size_t index = SparseSet<EntityID, Component>::Index(child);
 				if (index == SparseSet<EntityID, Component>::InvalidIndex) continue;
 				if (!m_ComponentActive.IsSet(i) || !m_pRegistry->EntityActiveHierarchy(child)) continue;
-				SparseSet<EntityID, Component>::Swap(currentIndex, index);
+				SparseSet<EntityID, Component>::Swap(index, currentIndex);
 				++currentIndex;
 				SortRecursive(entityTrees, currentIndex, child);
 			}
@@ -526,6 +533,27 @@ namespace Glory::Utils::ECS
 			if (!DoOnDirty) return;
 			if (!m_pRegistry->IsCallEnabled(EntityCallType::OnDirty)) return;
 			(this->*DoOnDirty)(entity, SparseSet<EntityID, Component>::Get(entity));
+		}
+
+		virtual void CallPreUpdate(EntityID entity, float dt) override
+		{
+			if (!DoPreUpdate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::PreUpdate)) return;
+			(this->*DoPreUpdate)(entity, SparseSet<EntityID, Component>::Get(entity), dt);
+		}
+
+		virtual void CallUpdate(EntityID entity, float dt) override
+		{
+			if (!DoUpdate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::Update)) return;
+			(this->*DoUpdate)(entity, SparseSet<EntityID, Component>::Get(entity), dt);
+		}
+
+		virtual void CallPostUpdate(EntityID entity, float dt) override
+		{
+			if (!DoPostUpdate) return;
+			if (!m_pRegistry->IsCallEnabled(EntityCallType::PostUpdate)) return;
+			(this->*DoPostUpdate)(entity, SparseSet<EntityID, Component>::Get(entity), dt);
 		}
 
 	protected:

@@ -28,15 +28,18 @@ namespace Glory::Editor
 
 		const TypeData* pTypeData = Reflect::GetTyeData(hash);
 
-		Utils::ECS::BaseTypeView* pTypeView = pRegistry->GetTypeView(hash);
-		bool active = pTypeView->IsActive(entity);
+		Utils::ECS::IComponentManager* manager = pRegistry->GetComponentManager(hash);
+		bool active = manager->IsActive(entity);
 		if (EditorUI::CheckBox("Active", &active))
 		{
-			pTypeView->SetActive(entity, active);
+			if (active)
+				manager->Activate(entity);
+			else
+				manager->Deactivate(entity);
 			change = true;
 		}
 
-		void* pAddress = pRegistry->GetComponentAddress(entity, componentID);
+		void* pAddress = pRegistry->GetComponentAddress(entity, hash);
 
 		if (pTypeData)
 		{
@@ -46,7 +49,7 @@ namespace Glory::Editor
 		Undo::StopRecord();
 
 		if (change)
-			pRegistry->GetTypeView(hash)->Invoke(Utils::ECS::InvocationType::OnValidate, pRegistry, entity, pAddress);
+			manager->CallValidate(entity);
 
 		return change;
 	}

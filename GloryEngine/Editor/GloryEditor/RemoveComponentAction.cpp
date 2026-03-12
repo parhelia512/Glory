@@ -15,8 +15,7 @@ namespace Glory::Editor
 {
 	RemoveComponentAction::RemoveComponentAction(Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityID entityID, size_t componentIndex) : m_ComponentIndex(componentIndex)
 	{
-		Utils::ECS::EntityView* pEntityView = pRegistry->GetEntityView(entityID);
-		EditorSceneSerializer::SerializeComponent(EditorApplication::GetInstance(), pRegistry, pEntityView, entityID, componentIndex, m_SerializedComponent.RootNodeRef().ValueRef());
+		EditorSceneSerializer::SerializeComponent(EditorApplication::GetInstance(), pRegistry, entityID, componentIndex, m_SerializedComponent.RootNodeRef().ValueRef());
 	}
 
 	RemoveComponentAction::~RemoveComponentAction()
@@ -30,10 +29,10 @@ namespace Glory::Editor
 
 		EditableEntity* pEntityObject = (EditableEntity*)editors[0]->GetTarget();
 		GScene* pEntityScene = EditorApplication::GetInstance()->GetSceneManager().GetOpenScene(pEntityObject->SceneID());
-		Utils::ECS::EntityView* pEntityView = pEntityScene->GetRegistry().GetEntityView(pEntityObject->EntityID());
-		const size_t index = pEntityView->ComponentCount();
-		EditorSceneSerializer::DeserializeComponent(EditorApplication::GetInstance(), pEntityScene, pEntityObject->EntityID(), UUIDRemapper{}, m_SerializedComponent.RootNodeRef().ValueRef());
-		pEntityView->SetComponentIndex(index, m_ComponentIndex);
+		const size_t index = pEntityScene->GetRegistry().EntityComponentCount(pEntityObject->EntityID());
+		UUIDRemapper remapper{};
+		EditorSceneSerializer::DeserializeComponent(EditorApplication::GetInstance(), pEntityScene, pEntityObject->EntityID(), remapper, m_SerializedComponent.RootNodeRef().ValueRef());
+		pEntityScene->GetRegistry().SetComponentIndex(pEntityObject->EntityID(), index, m_ComponentIndex);
 
 		for (size_t i = 0; i < editors.size(); ++i)
 		{
@@ -48,7 +47,8 @@ namespace Glory::Editor
 
 		EditableEntity* pEntityObject = (EditableEntity*)editors[0]->GetTarget();
 		GScene* pEntityScene = EditorApplication::GetInstance()->GetSceneManager().GetOpenScene(pEntityObject->SceneID());
-		pEntityScene->GetRegistry().RemoveComponentAt(pEntityObject->EntityID(), m_ComponentIndex);
+		const uint32_t type = pEntityScene->GetRegistry().EntityComponentType(pEntityObject->EntityID(), m_ComponentIndex);
+		pEntityScene->GetRegistry().RemoveComponent(pEntityObject->EntityID(), type);
 
 		for (size_t i = 0; i < editors.size(); i++)
 		{

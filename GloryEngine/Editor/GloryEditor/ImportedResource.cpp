@@ -18,7 +18,8 @@ namespace Glory::Editor
 	ImportedResource::ImportedResource(const std::filesystem::path& path, Resource* pResource):
 		m_Path(path), m_pResource(pResource), m_Claimed(false)
 	{
-		const auto reserve = EditorAssetDatabase::ReserveAssetUUID(m_Path.string(), "");
+		std::string pathStr = m_Path.string();
+		const auto reserve = EditorAssetDatabase::ReserveAssetUUID(pathStr, "");
 		m_IsNew = !reserve.second;
 		if (reserve.first) pResource->SetResourceUUID(reserve.first);
 	}
@@ -40,7 +41,8 @@ namespace Glory::Editor
 		resource.m_CachedSubPath = m_CachedSubPath;
 		resource.m_CachedSubPath.append(name);
 
-		const auto reserve = EditorAssetDatabase::ReserveAssetUUID(m_Path.string(), resource.m_CachedSubPath);
+		std::string pathStr = m_Path.string();
+		const auto reserve = EditorAssetDatabase::ReserveAssetUUID(pathStr, resource.m_CachedSubPath);
 		resource.m_IsNew = !reserve.second;
 		if (reserve.first) pResource->SetResourceUUID(reserve.first);
 		return resource;

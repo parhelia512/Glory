@@ -53,7 +53,7 @@ namespace Glory::Editor
 
     void WriteStrings(Utils::NodeValueRef root, StringTable* pStringTable)
     {
-        for (auto& iter = pStringTable->Begin(); iter != pStringTable->End(); ++iter)
+        for (auto iter = pStringTable->Begin(); iter != pStringTable->End(); ++iter)
         {
             std::vector<std::string_view> pathComponents;
             Reflect::Tokenize(iter->first, pathComponents, '.');

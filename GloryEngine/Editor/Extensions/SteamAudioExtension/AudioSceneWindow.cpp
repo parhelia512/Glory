@@ -54,7 +54,7 @@ namespace Glory::Editor
 					std::filesystem::create_directory(cachedScenesPath);
 				cachedScenesPath.append(std::to_string(pScene->GetUUID())).replace_extension(".gcas");
 
-				BinaryFileStream out{ cachedScenesPath };
+				Utils::BinaryFileStream out{ cachedScenesPath };
 				audioScene.Serialize(out);
 			}
 
@@ -148,7 +148,7 @@ namespace Glory::Editor
 			std::filesystem::path cachedScenePath = cachedScenesPath;
 			cachedScenePath.append(std::to_string(pScene->GetUUID())).replace_extension(".gcas");
 			if (!std::filesystem::exists(cachedScenePath)) continue;
-			BinaryFileStream fileStream{ cachedScenePath, true };
+			Utils::BinaryFileStream fileStream{ cachedScenePath, true };
 			AudioScene audioScene{ pScene->GetUUID() };
 			audioScene.Deserialize(fileStream);
 			m_AudioScenes.push_back(std::move(audioScene));
@@ -166,7 +166,7 @@ namespace Glory::Editor
 		cachedScenePath.append(std::to_string(sceneID)).replace_extension(".gcas");
 		if (!std::filesystem::exists(cachedScenePath)) return;
 
-		BinaryFileStream fileStream{ cachedScenePath, true };
+		Utils::BinaryFileStream fileStream{ cachedScenePath, true };
 
 		auto iter = std::find_if(m_AudioScenes.begin(), m_AudioScenes.end(), [sceneID](AudioScene& scene) { return scene.SceneID() == sceneID; });
 		if (iter == m_AudioScenes.end())

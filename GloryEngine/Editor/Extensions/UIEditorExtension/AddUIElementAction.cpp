@@ -3,6 +3,7 @@
 #include <UUIDRemapper.h>
 #include <UIDocumentData.h>
 #include <UIDocument.h>
+#include <UIComponentManagers.h>
 #include <GameTime.h>
 
 #include <EditorApplication.h>
@@ -49,7 +50,7 @@ namespace Glory::Editor
 		if (!pDocument->EntityExists(objectID)) return 0;
 		const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
 		const Utils::ECS::EntityID parent = pDocument->Registry().GetParent(entity);
-		const UUID parentUUID = parent ? pDocument->EntityUUID(parent) : 0;
+		const UUID parentUUID = parent ? pDocument->EntityUUID(parent) : UUID(0ull);
 
 		Utils::InMemoryYAML duplicateYAML;
 		auto newEntitiesNode = duplicateYAML["Entities"];

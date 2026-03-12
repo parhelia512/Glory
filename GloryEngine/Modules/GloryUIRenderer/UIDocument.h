@@ -54,7 +54,9 @@ namespace Glory
 	class UIDocument
 	{
 	public:
-		GLORY_API UIDocument(UIDocumentData* pDocument);
+		GLORY_API UIDocument(UIRendererModule* pRenderer);
+		GLORY_API virtual ~UIDocument();
+		GLORY_API void SetDocument(UIDocumentData* pDocument);
 
 		GLORY_API void Update(float dt);
 		GLORY_API void Draw();

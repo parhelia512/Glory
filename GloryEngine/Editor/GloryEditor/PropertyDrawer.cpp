@@ -204,7 +204,8 @@ namespace Glory::Editor
 		if (it != m_PropertyDrawers.end())
 		{
 			PropertyDrawer* drawer = *it;
-			return drawer->Draw(label, node[label], elementTypeHash, flags);
+			auto value = node[label];
+			return drawer->Draw(label, value, elementTypeHash, flags);
 		}
 
 		const TypeData* pTypeData = Reflect::GetTyeData(typeHash);

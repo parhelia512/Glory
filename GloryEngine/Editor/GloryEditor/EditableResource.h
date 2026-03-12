@@ -150,7 +150,7 @@ namespace Glory::Editor
 		{
 			m_File.ChangePath(newPath);
 			m_File.Load();
-			m_Dirty = false;
+			EditableResource::m_Dirty = false;
 		}
 
 		/** @brief Change the path of the underlying YAML file
@@ -185,7 +185,7 @@ namespace Glory::Editor
 		YAMLResourceSection(YAMLResource<S>* pFullResource, const std::filesystem::path& sectionPath) :
 			YAMLResource<T>(), m_pFullResource(pFullResource), m_SectionPath(sectionPath)
 		{
-			PushInheritence<YAMLResourceSection<T, S>>();
+			Object::PushInheritence<YAMLResourceSection<T, S>>();
 		}
 
 		/** @brief Get the root YAML node for editing */

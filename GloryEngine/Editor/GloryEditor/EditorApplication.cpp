@@ -235,9 +235,6 @@ namespace Glory::Editor
 	{
 		GloryAPI::FetchEditorVersion(VersionCheck);
 
-		/* @fixme There is a better place for this */
-		m_pEngine->GetSceneManager()->ComponentTypesInstance();
-
 		/* Tell engine to preload common pipelines and other assets */
 		m_pEngine->Load();
 

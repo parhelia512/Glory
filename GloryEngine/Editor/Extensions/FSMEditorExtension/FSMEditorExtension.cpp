@@ -24,10 +24,10 @@ EXTENSION_CPP(FSMEditorExtension)
 
 namespace Glory::Editor
 {
-	static constexpr char* Shortcut_Window_FSMProperties = "Open FSM Properties";
-	static constexpr char* Shortcut_Window_FSMNodes = "Open FSM Node Editor";
-	static constexpr char* Shortcut_Window_FSMInspector = "Open FSM Inspector";
-	static constexpr char* Shortcut_Window_FSMDebugger = "Open FSM Debugger";
+	static constexpr const char* Shortcut_Window_FSMProperties = "Open FSM Properties";
+	static constexpr const char* Shortcut_Window_FSMNodes = "Open FSM Node Editor";
+	static constexpr const char* Shortcut_Window_FSMInspector = "Open FSM Inspector";
+	static constexpr const char* Shortcut_Window_FSMDebugger = "Open FSM Debugger";
 
 	FSMImporter Importer;
 	FSMEditor Editor;

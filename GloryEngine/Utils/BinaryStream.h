@@ -53,6 +53,7 @@ namespace Glory::Utils
 		}
 
 		BinaryStream& Write(const std::string& value);
+		BinaryStream& Write(const std::vector<std::string>& value);
 		BinaryStream& Write(const Utils::BitSet& value);
 		BinaryStream& Write(const std::vector<Utils::BitSet>& value);
 

@@ -84,42 +84,42 @@
 
 namespace Glory::Editor
 {
-	static constexpr char* Shortcut_File_NewScene			= "New Scene";
-	static constexpr char* Shortcut_File_SaveScene			= "Save Scene";
-	static constexpr char* Shortcut_File_LoadScene			= "Load Scene";
-	static constexpr char* Shortcut_File_Exit				= "Quit";
-	static constexpr char* Shortcut_File_Preferences		= "Preferences";
-	static constexpr char* Shortcut_File_SaveProject		= "Save Project";
-	static constexpr char* Shortcut_Play_Start				= "Enter Playmode";
-	static constexpr char* Shortcut_Play_Stop				= "Stop Playmode";
-	static constexpr char* Shortcut_Play_Pauze				= "Toggle Pauze Playmode";
-	static constexpr char* Shortcut_Play_NextFrame			= "Playmode Next Frame";
-	static constexpr char* Shortcut_CaptureFrame			= "Capture Frame";
-	static constexpr char* Shortcut_About					= "Open About";
-	static constexpr char* Shortcut_Window_Scene			= "Open Scene View";
-	static constexpr char* Shortcut_Window_Game				= "Open Game View";
-	static constexpr char* Shortcut_Window_SceneGraph		= "Open Scene Graph";
-	static constexpr char* Shortcut_Window_Inspector		= "Open New Inspector Window";
-	static constexpr char* Shortcut_Window_Content			= "Open Content Browser";
-	static constexpr char* Shortcut_Window_Console			= "Open Console";
-	static constexpr char* Shortcut_Window_Performance		= "Open Performance Metrics";
-	static constexpr char* Shortcut_Window_Profiler			= "Open Profiler";
-	static constexpr char* Shortcut_Window_ProjectSettings	= "Open Project Settings";
-	static constexpr char* Shortcut_Window_Resources		= "Open Resources";
-	static constexpr char* Shortcut_Window_Environment		= "Open Environment Generator";
-	static constexpr char* Shortcut_View_Perspective		= "Switch To Perspective";
-	static constexpr char* Shortcut_View_Orthographic		= "Switch To Orthographic";
-	static constexpr char* Shortcut_View_Focus				= "Focus Object";
-	static constexpr char* Shortcut_Edit_Undo				= "Undo";
-	static constexpr char* Shortcut_Edit_Redo				= "Redo";
-	static constexpr char* Shortcut_Edit_History			= "Edit History";
+	static constexpr const char* Shortcut_File_NewScene				= "New Scene";
+	static constexpr const char* Shortcut_File_SaveScene			= "Save Scene";
+	static constexpr const char* Shortcut_File_LoadScene			= "Load Scene";
+	static constexpr const char* Shortcut_File_Exit					= "Quit";
+	static constexpr const char* Shortcut_File_Preferences			= "Preferences";
+	static constexpr const char* Shortcut_File_SaveProject			= "Save Project";
+	static constexpr const char* Shortcut_Play_Start				= "Enter Playmode";
+	static constexpr const char* Shortcut_Play_Stop					= "Stop Playmode";
+	static constexpr const char* Shortcut_Play_Pauze				= "Toggle Pauze Playmode";
+	static constexpr const char* Shortcut_Play_NextFrame			= "Playmode Next Frame";
+	static constexpr const char* Shortcut_CaptureFrame				= "Capture Frame";
+	static constexpr const char* Shortcut_About						= "Open About";
+	static constexpr const char* Shortcut_Window_Scene				= "Open Scene View";
+	static constexpr const char* Shortcut_Window_Game				= "Open Game View";
+	static constexpr const char* Shortcut_Window_SceneGraph			= "Open Scene Graph";
+	static constexpr const char* Shortcut_Window_Inspector			= "Open New Inspector Window";
+	static constexpr const char* Shortcut_Window_Content			= "Open Content Browser";
+	static constexpr const char* Shortcut_Window_Console			= "Open Console";
+	static constexpr const char* Shortcut_Window_Performance		= "Open Performance Metrics";
+	static constexpr const char* Shortcut_Window_Profiler			= "Open Profiler";
+	static constexpr const char* Shortcut_Window_ProjectSettings	= "Open Project Settings";
+	static constexpr const char* Shortcut_Window_Resources			= "Open Resources";
+	static constexpr const char* Shortcut_Window_Environment		= "Open Environment Generator";
+	static constexpr const char* Shortcut_View_Perspective			= "Switch To Perspective";
+	static constexpr const char* Shortcut_View_Orthographic			= "Switch To Orthographic";
+	static constexpr const char* Shortcut_View_Focus				= "Focus Object";
+	static constexpr const char* Shortcut_Edit_Undo					= "Undo";
+	static constexpr const char* Shortcut_Edit_Redo					= "Redo";
+	static constexpr const char* Shortcut_Edit_History				= "Edit History";
 
-	static constexpr char* Shortcut_Copy					= "Copy";
-	static constexpr char* Shortcut_Paste					= "Paste";
-	static constexpr char* Shortcut_Duplicate				= "Duplicate";
-	static constexpr char* Shortcut_Delete					= "Delete";
-	static constexpr char* Shortcut_Rename					= "Rename";
-	static constexpr char* Shortcut_Package					= "Package";
+	static constexpr const char* Shortcut_Copy						= "Copy";
+	static constexpr const char* Shortcut_Paste						= "Paste";
+	static constexpr const char* Shortcut_Duplicate					= "Duplicate";
+	static constexpr const char* Shortcut_Delete					= "Delete";
+	static constexpr const char* Shortcut_Rename					= "Rename";
+	static constexpr const char* Shortcut_Package					= "Package";
 
 	size_t MainEditor::m_SaveSceneIndex = 0;
 	float MainEditor::MENUBAR_SIZE = 0.0f;
@@ -170,7 +170,6 @@ namespace Glory::Editor
 
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
 		Reflect::SetReflectInstance(&pEngine->Reflection());
-		Utils::ECS::ComponentTypes::SetInstance(pEngine->GetSceneManager()->ComponentTypesInstance());
 		m_Settings.Load(pEngine);
 
 		pEngine->GetDebug().LogInfo("Initialized editor");
@@ -490,7 +489,6 @@ namespace Glory::Editor
 		ObjectMenu::AddMenuItem("Reimport", ReimportAssetCallback, T_Resource);
 
 		OBJECT_CREATE_MENU(Mesh, MeshRenderer);
-		OBJECT_CREATE_MENU(Model, ModelRenderer);
 		OBJECT_CREATE_MENU(Camera, CameraComponent);
 		OBJECT_CREATE_MENU(Light, LightComponent);
 		OBJECT_CREATE_MENU(Text, TextComponent);
