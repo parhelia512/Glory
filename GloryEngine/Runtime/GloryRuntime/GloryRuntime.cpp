@@ -56,8 +56,8 @@ namespace Glory
 			const std::filesystem::path path = entry.path();
 			if (path.extension().compare(".dat") != 0) continue;
 			const std::string name = path.filename().replace_extension("").string();
-			BinaryFileStream file{ path, true };
-			BinaryStream* stream = &file;
+			Utils::BinaryFileStream file{ path, true };
+			Utils::BinaryStream* stream = &file;
 			Version version;
 			stream->Read(version);
 			if (Version::Compare(version, CoreVersion) != 0)
@@ -102,7 +102,7 @@ namespace Glory
 			return;
 		}
 
-		BinaryFileStream splashStream{ splashPath, true };
+		Utils::BinaryFileStream splashStream{ splashPath, true };
 		std::vector<char> buffer{};
 		buffer.resize(splashStream.Size());
 		splashStream.Read(buffer.data(), buffer.size());
@@ -178,8 +178,8 @@ namespace Glory
 		if (itor != m_AppendedAssetDatabases.end()) return;
 
 		m_AppendedAssetDatabases.push_back(path);
-		BinaryFileStream file{ path, true };
-		BinaryStream* pStream = &file;
+		Utils::BinaryFileStream file{ path, true };
+		Utils::BinaryStream* pStream = &file;
 
 		AssetDatabase& db = m_pEngine->GetAssetDatabase();
 		UUID entryScene;
@@ -208,7 +208,7 @@ namespace Glory
 	{
 		if (!std::filesystem::exists(path)) return;
 
-		BinaryFileStream file{ path, true };
+		Utils::BinaryFileStream file{ path, true };
 		AssetArchive archive{ &file };
 		archive.Deserialize(m_pEngine);
 
@@ -223,7 +223,7 @@ namespace Glory
 	{
 		if (!std::filesystem::exists(path)) return;
 
-		BinaryFileStream file{ path, true };
+		Utils::BinaryFileStream file{ path, true };
 		AssetArchive archive{ &file };
 		archive.Deserialize(m_pEngine);
 
