@@ -101,8 +101,8 @@ int main(int argc, char* argv[])
 	for (size_t i = 0; i < entityCount; ++i)
 	{
 		auto entity = registry.CreateEntity();
-		registry.AddComponent<Transform>(entity);
-		Velocity& velocity = registry.AddComponent<Velocity>(entity);
+		registry.AddComponent<Transform>(entity, Glory::UUID());
+		Velocity& velocity = registry.AddComponent<Velocity>(entity, Glory::UUID());
 		velocity.x = (std::rand()%1000)/1000.0f;
 		velocity.y = (std::rand()%1000)/1000.0f;
 		velocity.z = (std::rand()%1000)/1000.0f;
@@ -144,9 +144,9 @@ int main(int argc, char* argv[])
 		lastTime = time;
 	}
 
-	const bool areTheSame = registry == registry2;
+	//const bool areTheSame = registry == registry2;
 
-	return areTheSame ? 0 : 1;
+	//return areTheSame ? 0 : 1;
 
 	double averageDeltaTime = 0.0f;
 	double longestDeltaTime = 0.0f;

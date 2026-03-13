@@ -37,7 +37,6 @@ project "GloryECS"
 		defines
 		{
 			"_LIB"
-			--"_CONSOLE"
 		}
 
 	filter "platforms:Win32"
