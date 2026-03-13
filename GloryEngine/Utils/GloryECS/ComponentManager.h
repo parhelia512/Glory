@@ -102,14 +102,14 @@ namespace Glory::Utils::ECS
 		virtual bool IsActive(EntityID entity) override
 		{
 			const size_t index = SparseSet<EntityID, Component>::Index(entity);
-			if (index != SparseSet<EntityID, Component>::InvalidIndex) return false;
+			if (index == SparseSet<EntityID, Component>::InvalidIndex) return false;
 			return m_ComponentActive.IsSet(index);
 		}
 
 		virtual void Activate(EntityID entity) override
 		{
 			const size_t index = SparseSet<EntityID, Component>::Index(entity);
-			if (index != SparseSet<EntityID, Component>::InvalidIndex) return;
+			if (index == SparseSet<EntityID, Component>::InvalidIndex) return;
 			const bool wasActive = m_ComponentActive.IsSet(index);
 			if (wasActive) return;
 			m_ComponentActive.Set(index);
@@ -122,7 +122,7 @@ namespace Glory::Utils::ECS
 		virtual void Deactivate(EntityID entity) override
 		{
 			const size_t index = SparseSet<EntityID, Component>::Index(entity);
-			if (index != SparseSet<EntityID, Component>::InvalidIndex) return;
+			if (index == SparseSet<EntityID, Component>::InvalidIndex) return;
 			const bool wasActive = m_ComponentActive.IsSet(index);
 			if (!wasActive) return;
 			m_ComponentActive.UnSet(index);
@@ -456,8 +456,12 @@ namespace Glory::Utils::ECS
 			{
 				const EntityID child = entityTrees[root][i];
 				const size_t index = SparseSet<EntityID, Component>::Index(child);
-				if (index == SparseSet<EntityID, Component>::InvalidIndex) continue;
-				if (!m_ComponentActive.IsSet(i) || !m_pRegistry->EntityActiveHierarchy(child)) continue;
+				if (index == SparseSet<EntityID, Component>::InvalidIndex)
+				{
+					SortRecursive(entityTrees, currentIndex, child);
+					continue;
+				}
+				if (!m_ComponentActive.IsSet(index) || !m_pRegistry->EntityActiveHierarchy(child)) continue;
 				SparseSet<EntityID, Component>::Swap(index, currentIndex);
 				++currentIndex;
 				SortRecursive(entityTrees, currentIndex, child);
