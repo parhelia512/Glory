@@ -19,7 +19,7 @@ namespace Glory::Utils::ECS
 		virtual ~IComponentManager() = default;
 
 	public:
-		virtual void Initialize() = 0;
+		virtual void Initialize(size_t componentManagerIndex) = 0;
 		virtual uint32_t ComponentHash() const = 0;
 		virtual void* Add(EntityID entity) = 0;
 		virtual void* Add(EntityID entity, const void* data) = 0;

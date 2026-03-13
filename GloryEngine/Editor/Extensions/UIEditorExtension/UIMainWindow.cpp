@@ -63,6 +63,7 @@ namespace Glory::Editor
 		Utils::NodeValueRef rootNode = **pDocument;
 
 		UIDocumentData document;
+		pUIRenderer->GetRegistryFactory().PopulateRegisry(document.GetRegistry());
 		Utils::NodeValueRef entities = rootNode["Entities"];
 		for (auto iter = entities.Begin(); iter != entities.End(); ++iter)
 		{

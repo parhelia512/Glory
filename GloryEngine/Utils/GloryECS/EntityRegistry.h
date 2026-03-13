@@ -40,7 +40,7 @@ namespace Glory::Utils::ECS
 			m_HashToComponentManagerIndex.emplace(hash, index);
 			m_ComponentOrderDirty.Reserve(index + 1ull);
 			m_ComponentOrderDirty.Set(index, false);
-			newManager->Initialize();
+			newManager->Initialize(index);
 			return static_cast<Manager&>(*newManager);
 		}
 
@@ -176,6 +176,7 @@ namespace Glory::Utils::ECS
 		void Reset();
 
 		void SetComponentOrderDirty(uint32_t typeHash);
+		void SetComponentOrderDirtyAt(size_t index);
 
 		inline EntityID MaxEntityID() const
 		{

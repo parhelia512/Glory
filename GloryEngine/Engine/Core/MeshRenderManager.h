@@ -21,8 +21,8 @@ namespace Glory
     public:
         void OnDirtyImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
         void OnDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
-        void OnEnableImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
-        void OnDisableImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
+        void OnEnableDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
+        void OnDisableDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
         void OnValidateImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
         void GetReferencesImpl(std::vector<UUID>& references) const;
 

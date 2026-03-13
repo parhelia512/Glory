@@ -71,7 +71,7 @@ namespace Glory::Utils::ECS
 		m_ComponentOrderDirty.Reserve(index + 1ull);
 		m_ComponentOrderDirty.Set(index, false);
 		m_HashToComponentManagerIndex.emplace(hash, index);
-		manager->Initialize();
+		manager->Initialize(index);
 	}
 
 	UUID EntityRegistry::RemoveComponent(EntityID entity, uint32_t typeHash)
@@ -213,12 +213,13 @@ namespace Glory::Utils::ECS
 
 	void EntityRegistry::Sort()
 	{
+		if (!m_ComponentOrderDirty.HasAnySet()) return;
 		for (size_t i = 0; i < m_ComponentManagers.size(); ++i)
 		{
 			if (!m_ComponentOrderDirty.IsSet(i)) continue;
 			m_ComponentManagers[i]->Sort(m_EntityTrees);
-			m_ComponentOrderDirty.Set(i, false);
 		}
+		m_ComponentOrderDirty.Clear();
 	}
 
 	void EntityRegistry::SetActive(EntityID entity, bool active, bool withCallbacks)
@@ -574,6 +575,11 @@ namespace Glory::Utils::ECS
 		m_ComponentOrderDirty.Set(iter->second);
 	}
 
+	void EntityRegistry::SetComponentOrderDirtyAt(size_t index)
+	{
+		m_ComponentOrderDirty.Set(index);
+	}
+
 	void EntityRegistry::Dirty()
 	{
 		for (auto& manager : m_ComponentManagers)
@@ -639,6 +645,8 @@ namespace Glory::Utils::ECS
 
 	void EntityRegistry::Draw()
 	{
+		Sort();
+
 		for (auto& manager : m_ComponentManagers)
 			manager->PreDraw();
 		for (auto& manager : m_ComponentManagers)

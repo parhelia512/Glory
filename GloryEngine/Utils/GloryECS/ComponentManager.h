@@ -20,7 +20,7 @@ namespace Glory::Utils::ECS
 	public:
 		ComponentManager(EntityRegistry* pRegistry, size_t capacity=32) :
 			m_pRegistry(pRegistry), SparseSet<EntityID, Component>{ 1000, capacity },
-			m_ComponentActive(capacity), m_ActiveSize(0) {}
+			m_ComponentManagerIndex(0ull), m_ComponentActive(capacity), m_ActiveSize(0ull) { }
 		virtual ~ComponentManager() = default;
 
 		static uint32_t GetComponentHash()
@@ -28,8 +28,9 @@ namespace Glory::Utils::ECS
 			return Hashing::Hash(typeid(Component).name());
 		}
 
-		virtual void Initialize()
+		virtual void Initialize(size_t componentManagerIndex)
 		{
+			m_ComponentManagerIndex = componentManagerIndex;
 			OnInitialize();
 		}
 
@@ -114,6 +115,7 @@ namespace Glory::Utils::ECS
 			if (wasActive) return;
 			m_ComponentActive.Set(index);
 			const bool entityActive = m_pRegistry->EntityActiveHierarchy(entity);
+			m_pRegistry->SetComponentOrderDirtyAt(m_ComponentManagerIndex);
 			if (!entityActive) return;
 			CallOnActivate(entity);
 			CallOnEnableDraw(entity);
@@ -127,6 +129,7 @@ namespace Glory::Utils::ECS
 			if (!wasActive) return;
 			m_ComponentActive.UnSet(index);
 			const bool entityActive = m_pRegistry->EntityActiveHierarchy(entity);
+			m_pRegistry->SetComponentOrderDirtyAt(m_ComponentManagerIndex);
 			if (!entityActive) return;
 			CallOnDeactivate(entity);
 			CallOnDisableDraw(entity);
@@ -563,6 +566,7 @@ namespace Glory::Utils::ECS
 	protected:
 		const uint32_t ComponentTypeHash = Hashing::Hash(typeid(Component).name());
 		EntityRegistry* m_pRegistry;
+		size_t m_ComponentManagerIndex;
 		BitSet m_ComponentActive;
 		size_t m_ActiveSize;
 	};

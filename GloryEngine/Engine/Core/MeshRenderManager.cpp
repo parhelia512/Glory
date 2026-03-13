@@ -92,7 +92,7 @@ namespace Glory
             pRenderer->SubmitDynamic(std::move(renderData));
     }
 
-    void MeshRenderManager::OnEnableImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent)
+    void MeshRenderManager::OnEnableDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent)
     {
         if (!pComponent.m_RenderStatic || pComponent.m_WasSubmittedForStatic) return;
 
@@ -139,7 +139,7 @@ namespace Glory
         pComponent.m_WasSubmittedForStatic = true;
     }
 
-    void MeshRenderManager::OnDisableImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent)
+    void MeshRenderManager::OnDisableDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent)
     {
         if (!pComponent.m_RenderStatic && !pComponent.m_WasSubmittedForStatic) return;
 
@@ -161,9 +161,9 @@ namespace Glory
         const bool isActive = IsActive(entity) && m_pRegistry->EntityActiveHierarchy(entity);
 
         if (isActive && pComponent.m_RenderStatic && !pComponent.m_WasSubmittedForStatic)
-            OnEnableImpl(entity, pComponent);
+            OnEnableDrawImpl(entity, pComponent);
         else if ((!isActive || !pComponent.m_RenderStatic) && pComponent.m_WasSubmittedForStatic)
-            OnDisableImpl(entity, pComponent);
+            OnDisableDrawImpl(entity, pComponent);
     }
 
     void MeshRenderManager::GetReferencesImpl(std::vector<UUID>& references) const
@@ -182,8 +182,8 @@ namespace Glory
     {
         Bind(DoOnDirty, &MeshRenderManager::OnDirtyImpl);
         Bind(DoDraw, &MeshRenderManager::OnDrawImpl);
-        Bind(DoOnActivate, &MeshRenderManager::OnEnableImpl);
-        Bind(DoOnDeactivate, &MeshRenderManager::OnDisableImpl);
+        Bind(DoOnEnableDraw, &MeshRenderManager::OnEnableDrawImpl);
+        Bind(DoOnDisableDraw, &MeshRenderManager::OnDisableDrawImpl);
         Bind(DoValidate, &MeshRenderManager::OnValidateImpl);
         Bind(DoGetReferences, &MeshRenderManager::GetReferencesImpl);
     }
