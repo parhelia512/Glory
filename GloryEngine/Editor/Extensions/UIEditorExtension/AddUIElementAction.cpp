@@ -42,6 +42,12 @@ namespace Glory::Editor
 
 		SetUIParentAction::StoreDocumentState(pApp, pDocument, file["Entities"]);
 		pDocument->SetDrawDirty();
+		pDocument->Registry().CallOnValidate(entity);
+		if (pDocument->Registry().EntityActiveHierarchy(entity))
+		{
+			pDocument->Registry().CallOnActivate(entity);
+			pDocument->Registry().CallOnEnableDraw(entity);
+		}
 		return newEntityID;
 	}
 
@@ -126,6 +132,12 @@ namespace Glory::Editor
 		registry.AddComponent<UIInteraction>(entity, UUID());
 		registry.SetParent(entity, parent);
 		registry.SetSiblingIndex(entity, m_SiblingIndex);
+		registry.CallOnValidate(entity);
+		if (registry.EntityActiveHierarchy(entity))
+		{
+			registry.CallOnActivate(entity);
+			registry.CallOnEnableDraw(entity);
+		}
 		SetUIParentAction::StoreDocumentState(pApp, pDocument, node["Entities"]);
 	}
 }

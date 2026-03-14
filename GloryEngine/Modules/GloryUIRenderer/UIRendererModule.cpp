@@ -148,13 +148,13 @@ namespace Glory
 
 		if (!batchData.m_WorldsBuffers)
 		{
-			batchData.m_WorldsBuffers = pDevice->CreateBuffer(pDocument->m_UIBatch.m_Worlds.size()*sizeof(glm::mat4), BT_Storage, BF_Write);
+			batchData.m_WorldsBuffers = pDevice->CreateBuffer(std::max(pDocument->m_UIBatch.m_Worlds.size(), 1ull)*sizeof(glm::mat4), BT_Storage, BF_Write);
 			batchData.m_Worlds.SetDirty();
 		}
 
 		if (!batchData.m_ColorsBuffers)
 		{
-			batchData.m_ColorsBuffers = pDevice->CreateBuffer(pDocument->m_UIBatch.m_UniqueColors.size()*sizeof(glm::vec4), BT_Storage, BF_Write);
+			batchData.m_ColorsBuffers = pDevice->CreateBuffer(std::max(pDocument->m_UIBatch.m_UniqueColors.size(), 1ull)*sizeof(glm::vec4), BT_Storage, BF_Write);
 			batchData.m_Colors.SetDirty();
 		}
 

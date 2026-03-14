@@ -137,6 +137,7 @@ namespace Glory::Editor
 
 		if (change)
 		{
+			pDocument->Registry().CallOnValidate(pDocument->EntityID(selected));
 			EditorAssetDatabase::SetAssetDirty(documentID);
 			pDocument->SetDrawDirty();
 		}

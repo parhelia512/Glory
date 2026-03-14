@@ -678,7 +678,7 @@ namespace Glory::Utils::ECS
 		for (size_t i = 0; i < m_ComponentManagers.size(); ++i)
 		{
 			if (!m_HasComponent[entity].IsSet(i)) continue;
-			m_ComponentManagers[i]->CallOnEnableDraw(entity);
+			m_ComponentManagers[i]->CallOnActivate(entity);
 		}
 	}
 
@@ -687,7 +687,7 @@ namespace Glory::Utils::ECS
 		for (size_t i = 0; i < m_ComponentManagers.size(); ++i)
 		{
 			if (!m_HasComponent[entity].IsSet(i)) continue;
-			m_ComponentManagers[i]->CallOnActivate(entity);
+			m_ComponentManagers[i]->CallOnEnableDraw(entity);
 		}
 	}
 

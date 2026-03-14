@@ -427,7 +427,9 @@ namespace Glory
 
 		for (Utils::ECS::EntityID entity : newEntities)
 		{
+			if (!m_Registry.EntityActiveHierarchy(entity)) continue;
 			m_Registry.CallOnActivate(entity);
+			m_Registry.CallOnEnableDraw(entity);
 		}
 
 		return firstEntity;
