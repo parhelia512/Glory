@@ -1,4 +1,4 @@
-project "VersionTest"
+project "ECSTest"
 	language "C++"
 	cppdialect "C++23"
 	staticruntime "Off"
@@ -17,16 +17,21 @@ project "VersionTest"
 
 	includedirs
 	{
+		"%{GloryIncludeDir.enginecore}",
+
 		"%{IncludeDir.TestFramework}",
 		"%{IncludeDir.CommandLine}",
-		"%{IncludeDir.Version}",
+		"%{IncludeDir.ECS}",
+		"%{IncludeDir.Utils}",
 	}
 
 	links
 	{
+		"GloryEngineCore",
 		"GloryTestFramework",
 		"GloryCommandLine",
-		"GloryUtilsVersion"
+		"GloryECS",
+		"GloryUtils"
 	}
 
 	filter "system:windows"

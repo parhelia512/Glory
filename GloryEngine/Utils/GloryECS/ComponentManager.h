@@ -107,6 +107,11 @@ namespace Glory::Utils::ECS
 			return m_ComponentActive.IsSet(index);
 		}
 
+		virtual size_t ActiveSize() const override
+		{
+			return m_ActiveSize;
+		}
+
 		virtual void Activate(EntityID entity) override
 		{
 			const size_t index = SparseSet<EntityID, Component>::Index(entity);

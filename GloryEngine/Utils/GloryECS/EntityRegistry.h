@@ -36,7 +36,7 @@ namespace Glory::Utils::ECS
 		{
 			const uint32_t hash = Manager::GetComponentHash();
 			const uint32_t index = uint32_t(m_ComponentManagers.size());
-			auto& newManager = m_ComponentManagers.emplace_back(new Manager());
+			auto& newManager = m_ComponentManagers.emplace_back(new Manager(this));
 			m_HashToComponentManagerIndex.emplace(hash, index);
 			m_ComponentOrderDirty.Reserve(index + 1ull);
 			m_ComponentOrderDirty.Set(index, false);

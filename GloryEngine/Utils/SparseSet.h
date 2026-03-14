@@ -306,7 +306,7 @@ namespace Glory::Utils
 			}
 
 			size_t* index = m_Sparse[sparseID];
-			if (!index || *index) return;
+			if (!index || *index == InvalidIndex) return;
 			const size_t oldSize = m_DenseSize;
 			--m_DenseSize;
 			if (m_DenseSize == 0)
@@ -318,7 +318,7 @@ namespace Glory::Utils
 			}
 
 			/* Move to end of array */
-			for (size_t i = *index; i < oldSize; ++i)
+			for (size_t i = *index; i < oldSize - 1; ++i)
 				Swap(i, i + 1);
 			OnRemove(sparseID, *index);
 		}

@@ -54,6 +54,7 @@ namespace Glory::Utils
 			bool fail = false;
 			try
 			{
+				m_State.m_CurrentFunction = "";
 				(this->*testCase.Test)();
 			}
 			catch (const Exception&)
@@ -110,7 +111,8 @@ namespace Glory::Utils
 	void Tester::SetState(const std::source_location& source, bool fail)
 	{
 		m_State.m_ExpectFail = fail;
-		m_State.m_CurrentFunction = GetFunctionName(source);
+		if (m_State.m_CurrentFunction.empty())
+			m_State.m_CurrentFunction = GetFunctionName(source);
 		m_State.m_CurrentLine = source.line();
 	}
 

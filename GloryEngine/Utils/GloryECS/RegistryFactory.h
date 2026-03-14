@@ -50,6 +50,11 @@ namespace Glory::Utils::ECS
 				registry.AddManager(factory->Create(&registry));
 		}
 
+		void Clear()
+		{
+			m_ComponentManagerFactories.clear();
+		}
+
 	private:
 		std::vector<std::unique_ptr<ComponentManagerFactoryBase>> m_ComponentManagerFactories;
 	};
