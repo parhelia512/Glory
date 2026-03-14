@@ -25,7 +25,7 @@ namespace Glory
 		for (size_t i = 0; i < tokens.size(); ++i)
 		{
 			std::string token = tokens[i];
-			auto& iter = group->m_Subgroups.find(token);
+			auto iter = group->m_Subgroups.find(token);
 
 			if (i == tokens.size() - 1)
 			{
@@ -63,7 +63,7 @@ namespace Glory
 		for (size_t i = 0; i < tokens.size(); ++i)
 		{
 			std::string token = tokens[i];
-			auto& iter = group->m_Subgroups.find(token);
+			auto iter = group->m_Subgroups.find(token);
 
 			if (i == tokens.size() - 1)
 			{
@@ -87,7 +87,7 @@ namespace Glory
 		for (size_t i = 0; i < tokens.size(); ++i)
 		{
 			std::string token = tokens[i];
-			auto& iter = group->m_Subgroups.find(token);
+			auto iter = group->m_Subgroups.find(token);
 			if (iter == group->m_Subgroups.end()) return nullptr;
 			group = &iter->second;
 		}
@@ -103,14 +103,14 @@ namespace Glory
 		for (size_t i = 0; i < tokens.size(); ++i)
 		{
 			std::string token = tokens[i];
-			auto& iter = group->m_Subgroups.find(token);
+			auto iter = group->m_Subgroups.find(token);
 			if (iter == group->m_Subgroups.end()) return;
 			group = &iter->second;
 		}
 
 		if (group->m_Subgroups.empty()) return;
 		groups.reserve(group->m_Subgroups.size());
-		for (auto& iter = group->m_Subgroups.begin(); iter != group->m_Subgroups.end(); ++iter)
+		for (auto iter = group->m_Subgroups.begin(); iter != group->m_Subgroups.end(); ++iter)
 			groups.push_back(iter->first);
 	}
 
@@ -122,7 +122,7 @@ namespace Glory
 		for (size_t i = 0; i < tokens.size(); ++i)
 		{
 			std::string token = tokens[i];
-			auto& iter = group->m_Subgroups.find(token);
+			auto iter = group->m_Subgroups.find(token);
 			if (iter == group->m_Subgroups.end()) return;
 			group = &iter->second;
 		}
@@ -131,7 +131,7 @@ namespace Glory
 
 	StringTable::LookupResult StringTable::FindString(const std::string& key) const
 	{
-		auto& iter = m_Strings.find(key);
+		auto iter = m_Strings.find(key);
 		if (iter == m_Strings.end()) return StringTable::LookupResult{ false, {} };
 		return StringTable::LookupResult{ true, iter->second };
 	}
@@ -150,14 +150,14 @@ namespace Glory
 	{
 	}
 
-	void StringTable::Serialize(BinaryStream& container) const
+	void StringTable::Serialize(Utils::BinaryStream& container) const
 	{
 		container.Write(m_Strings.size());
 		for (auto iter = m_Strings.begin(); iter != m_Strings.end(); ++iter)
 			container.Write(iter->first).Write(iter->second);
 	}
 
-	void StringTable::Deserialize(BinaryStream& container)
+	void StringTable::Deserialize(Utils::BinaryStream& container)
 	{
 		size_t numStrings = 0;
 		container.Read(numStrings);

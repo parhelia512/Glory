@@ -253,7 +253,7 @@ namespace Glory
 		 */
 		T* Find(GraphicsHandle<T::HandleType> handle)
 		{
-			auto& iter = m_Resources.find(handle.m_ID);
+			auto iter = m_Resources.find(handle.m_ID);
 			if (iter == m_Resources.end()) return nullptr;
 			return &iter->second;
 		}
@@ -273,10 +273,10 @@ namespace Glory
 		 * @brief Free all resources from this container and clear it
 		 * @param @param handler Callback to the free implementation
 		 */
-		void FreeAll(std::function<void(GraphicsHandle<T::HandleType>)> handler)
+		void FreeAll(std::function<void(GraphicsHandle<T::HandleType>&)> handler)
 		{
-			for (auto id : m_IDs)
-				handler(GraphicsHandle<T::HandleType>(id));
+			for (auto& id : m_IDs)
+				handler((GraphicsHandle<T::HandleType>&)(id));
 			Clear();
 		}
 

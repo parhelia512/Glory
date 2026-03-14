@@ -28,11 +28,6 @@ namespace Glory
 		m_pRegistry->SetParent(m_EntityID, parent);
 	}
 
-	Utils::ECS::EntityView* Entity::GetEntityView() const
-	{
-		return m_pRegistry->GetEntityView(m_EntityID);
-	}
-
 	void Entity::Clear()
 	{
 		m_pRegistry->Clear(m_EntityID);
@@ -41,7 +36,7 @@ namespace Glory
 	bool Entity::IsValid() const
 	{
 		if (!m_pGScene) return false;
-		return m_pRegistry->IsValid(m_EntityID);
+		return m_pRegistry->EntityValid(m_EntityID);
 	}
 
 	bool Entity::IsDirty() const
@@ -109,36 +104,23 @@ namespace Glory
 
 	bool Entity::IsActiveSelf() const
 	{
-		return m_pRegistry->GetEntityView(m_EntityID)->Active();
+		return m_pRegistry->EntityActiveSelf(m_EntityID);
 	}
 
 	bool Entity::IsActive() const
 	{
-		return m_pRegistry->GetEntityView(m_EntityID)->IsActive();
+		/* If it is active in the hierarchy, it is active */
+		return IsHierarchyActive();
 	}
 
 	bool Entity::IsHierarchyActive() const
 	{
-		return m_pRegistry->GetEntityView(m_EntityID)->HierarchyActive();
+		return m_pRegistry->EntityActiveHierarchy(m_EntityID);
 	}
 
-	void Entity::SetActive(bool active)
+	void Entity::SetActive(bool active, bool withCallbacks)
 	{
-		Utils::ECS::EntityView* pEntityView = m_pRegistry->GetEntityView(m_EntityID);
-		pEntityView->Active() = active;
-		UpdateHierarchyActive();
-	}
-
-	void Entity::SetActiveSelf(bool active)
-	{
-		Utils::ECS::EntityView* pEntityView = m_pRegistry->GetEntityView(m_EntityID);
-		pEntityView->Active() = active;
-	}
-
-	void Entity::SetActiveHierarchy(bool active)
-	{
-		Utils::ECS::EntityView* pEntityView = m_pRegistry->GetEntityView(m_EntityID);
-		pEntityView->HierarchyActive() = active;
+		m_pRegistry->SetActive(m_EntityID, active, withCallbacks);
 	}
 
 	std::string_view Entity::Name() const
@@ -146,17 +128,18 @@ namespace Glory
 		return m_pGScene->EntityName(m_EntityID);
 	}
 
-	void Entity::UpdateHierarchyActive()
+	size_t Entity::ComponentCount() const
 	{
-		Entity parent = ParentEntity();
+		return m_pRegistry->EntityComponentCount(m_EntityID);
+	}
 
-		const bool activeSelf = IsActiveSelf();
-		const bool activeHierarchy = IsActiveSelf() && (parent.IsValid() ? parent.IsHierarchyActive() : true);
-		SetActiveHierarchy(activeSelf && activeHierarchy);
+	uint32_t Entity::ComponentType(size_t index) const
+	{
+		return m_pRegistry->EntityComponentType(m_EntityID, index);
+	}
 
-		for (size_t i = 0; i < ChildCount(); ++i)
-		{
-			ChildEntity(i).UpdateHierarchyActive();
-		}
+	size_t Entity::ComponentID(size_t index) const
+	{
+		return m_pRegistry->EntityComponentID(m_EntityID, index);
 	}
 }

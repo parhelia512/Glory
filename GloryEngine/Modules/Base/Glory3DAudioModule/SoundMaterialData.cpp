@@ -28,12 +28,12 @@ namespace Glory
 		return m_Material;
 	}
 
-	void SoundMaterialData::Serialize(BinaryStream& container) const
+	void SoundMaterialData::Serialize(Utils::BinaryStream& container) const
 	{
 		container.Write(m_Material);
 	}
 
-	void SoundMaterialData::Deserialize(BinaryStream& container)
+	void SoundMaterialData::Deserialize(Utils::BinaryStream& container)
 	{
 		container.Read(m_Material);
 	}

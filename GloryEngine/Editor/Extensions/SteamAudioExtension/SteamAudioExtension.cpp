@@ -42,7 +42,7 @@ namespace Glory::Editor
 	SoundOccluderEditor OccluderCompEditor;
 	SoundMaterialImporter Importer;
 
-	static constexpr char* Shortcut_Window_SteamAudio = "Open Steam Audio Window";
+	static constexpr const char* Shortcut_Window_SteamAudio = "Open Steam Audio Window";
 
 	CREATE_OBJECT_CALLBACK_CPP(SoundOccluder, SoundOccluder, ());
 
@@ -65,7 +65,7 @@ namespace Glory::Editor
 			std::filesystem::path cachedScenePath = cachedScenesPath;
 			cachedScenePath.append(std::to_string(pScene->GetUUID())).replace_extension(".gcas");
 			if (!std::filesystem::exists(cachedScenePath)) continue;
-			BinaryFileStream fileStream{ cachedScenePath, true };
+			Utils::BinaryFileStream fileStream{ cachedScenePath, true };
 			AudioScene audioScene{ pScene->GetUUID() };
 			audioScene.Deserialize(fileStream);
 			pSteamAudio->AddAudioScene(std::move(audioScene));
@@ -120,8 +120,8 @@ namespace Glory::Editor
 					continue;
 
 				/* Append the audio scene to the scenes archive */
-				BinaryFileStream sceneFile{ path, false, false };
-				sceneFile.Seek(0, BinaryStream::Relative::End);
+				Utils::BinaryFileStream sceneFile{ path, false, false };
+				sceneFile.Seek(0, Utils::BinaryStream::Relative::End);
 				AssetArchive archive{ &sceneFile, AssetArchiveFlags::Write };
 				AudioSceneData audioSceneData{ std::move(audioScene) };
 				archive.Serialize(&audioSceneData);
@@ -139,8 +139,6 @@ namespace Glory::Editor
 		EditorApplication* pApp = EditorApplication::GetInstance();
 		IEngine* pEngine = pApp->GetEngine();
 		Reflect::SetReflectInstance(&pEngine->Reflection());
-
-		pEngine->GetSceneManager()->ComponentTypesInstance();
 
 		EditorPlayer::RegisterLoopHandler(this);
 

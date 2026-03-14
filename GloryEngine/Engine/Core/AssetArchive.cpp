@@ -1,15 +1,15 @@
 #include "AssetArchive.h"
-#include "BinaryStream.h"
 #include "Resource.h"
 #include "ResourceType.h"
 #include "Debug.h"
 #include "IEngine.h"
 
+#include <BinaryStream.h>
 #include <sstream>
 
 namespace Glory
 {
-	AssetArchive::AssetArchive(BinaryStream* pStream, AssetArchiveFlags flags): m_pStream(pStream), m_Version(), m_Owned()
+	AssetArchive::AssetArchive(Utils::BinaryStream* pStream, AssetArchiveFlags flags): m_pStream(pStream), m_Version(), m_Owned()
 	{
 		if ((flags & AssetArchiveFlags::Read) == AssetArchiveFlags::Read)
 		{

@@ -12,7 +12,7 @@ namespace Glory
 	PrefabData::PrefabData()
 	{
 		APPEND_TYPE(PrefabData);
-		m_Registry.DisableCallbacks();
+		m_Registry.DisableCalls();
 	}
 
 	PrefabData* PrefabData::CreateFromEntity(GScene* pScene, Utils::ECS::EntityID entity)
@@ -31,21 +31,15 @@ namespace Glory
 		pPrefab->m_UUIds.emplace(newEntity, uuid);
 		pPrefab->m_Ids.emplace(uuid, newEntity);
 		pPrefab->m_Names.emplace(newEntity, pScene->EntityName(entity));
-		Utils::ECS::EntityView* pEntityView = registry.GetEntityView(entity);
-		for (size_t i = 0; i < pEntityView->ChildCount(); ++i)
+		for (size_t i = 0; i < registry.ChildCount(entity); ++i)
 		{
-			const Utils::ECS::EntityID child = pEntityView->Child(i);
+			const Utils::ECS::EntityID child = registry.Child(entity, i);
 			CopyEntity(pPrefab, pScene, child, newEntity);
 		}
 	}
 
-	void PrefabData::References(IEngine* pEngine, std::vector<UUID>& references) const
+	void PrefabData::References(IEngine*, std::vector<UUID>& references) const
 	{
-		const size_t typeViewCount = m_Registry.TypeViewCount();
-		for (size_t i = 0; i < typeViewCount; ++i)
-		{
-			Utils::ECS::BaseTypeView* pTypeView = m_Registry.TypeViewAt(i);
-			pTypeView->GetReferences(references);
-		}
+		m_Registry.GetReferences(references);
 	}
 }

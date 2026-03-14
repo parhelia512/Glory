@@ -1,5 +1,6 @@
 #pragma once
 #include "KeyEnums.h"
+
 #include <glm/vec2.hpp>
 
 REFLECTABLE_ENUM_NS(Glory, InputDeviceType, Keyboard, Mouse, Gamepad)

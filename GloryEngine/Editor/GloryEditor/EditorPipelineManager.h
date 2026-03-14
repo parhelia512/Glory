@@ -10,10 +10,14 @@
 #include <set>
 #include <filesystem>
 
+namespace Glory::Utils
+{
+	class BinaryStream;
+}
+
 namespace Glory
 {
 	class IEngine;
-	class BinaryStream;
 	class ShaderSourceData;
 
 	namespace Jobs

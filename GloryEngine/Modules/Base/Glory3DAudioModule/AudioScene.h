@@ -8,10 +8,14 @@
 #include <Glory.h>
 #include <Resource.h>
 
+namespace Glory::Utils
+{
+	class BinaryStream;
+}
+
 namespace Glory
 {
 	class MeshData;
-	class BinaryStream;
 	struct SoundMaterial;
 
 	/**
@@ -22,6 +26,8 @@ namespace Glory
 	 */
 	struct AudioMesh
 	{
+		AudioMesh(uint64_t idOrIndex, size_t materialIndex):
+			m_Mesh(idOrIndex), m_Material(materialIndex) {}
 		AudioMesh() = default;
 
 		union MeshUnion
@@ -70,9 +76,9 @@ namespace Glory
 		GLORY_API void AddMesh(MeshData&& meshData, SoundMaterial&& material);
 
 		/** @brief Serialize this audio scene into a stream */
-		GLORY_API void Serialize(BinaryStream& stream) const;
+		GLORY_API void Serialize(Utils::BinaryStream& stream) const;
 		/** @brief Deserialize a stream into this audio scene */
-		GLORY_API void Deserialize(BinaryStream& stream);
+		GLORY_API void Deserialize(Utils::BinaryStream& stream);
 
 		/** @brief ID of the scene @ref GScene this audio scene was created for */
 		GLORY_API UUID SceneID() const;
@@ -113,8 +119,8 @@ namespace Glory
 		/** @brief Destructor */
 		GLORY_API virtual ~AudioSceneData() {}
 
-		GLORY_API void Serialize(BinaryStream& container) const override;
-		GLORY_API void Deserialize(BinaryStream& container) override;
+		GLORY_API void Serialize(Utils::BinaryStream& container) const override;
+		GLORY_API void Deserialize(Utils::BinaryStream& container) override;
 
 		AudioScene m_AudioScene;
 

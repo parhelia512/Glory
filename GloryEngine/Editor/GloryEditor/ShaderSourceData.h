@@ -20,8 +20,8 @@ namespace Glory
         const char* Data() const;
         const ShaderType& GetShaderType() const;
 
-        void Serialize(BinaryStream& container) const override;
-        void Deserialize(BinaryStream& container) override;
+        void Serialize(Utils::BinaryStream& container) const override;
+        void Deserialize(Utils::BinaryStream& container) override;
 
         uint64_t& TimeSinceLastWrite();
         const uint64_t& TimeSinceLastWrite() const;

@@ -6,10 +6,13 @@
 
 #include <glm/glm.hpp>
 
-namespace Glory
+namespace Glory::Utils
 {
 	class BinaryStream;
+}
 
+namespace Glory
+{
 	class InputModule : public Module
 	{
 	public:

@@ -54,7 +54,14 @@ namespace Glory
 	};
 }
 
-const std::string Enum<Glory::AllowedDOFFlag>::m_EnumStringValues[] = {
+template<>
+inline const size_t Enum<Glory::AllowedDOFFlag>::m_NumValues = 3;
+template<>
+inline bool Enum<Glory::AllowedDOFFlag>::Valid() {
+	return true;
+};
+template<>
+inline const std::string Enum<Glory::AllowedDOFFlag>::m_EnumStringValues[] = {
 	"None",
 	"TranslationX",
 	"TranslationY",
@@ -62,10 +69,4 @@ const std::string Enum<Glory::AllowedDOFFlag>::m_EnumStringValues[] = {
 	"RotationX",
 	"RotationY",
 	"RotationZ",
-};
-
-const size_t Enum<Glory::AllowedDOFFlag>::m_NumValues = 3;
-
-bool Enum<Glory::AllowedDOFFlag>::Valid() {
-	return true;
 };

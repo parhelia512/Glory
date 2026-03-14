@@ -1,0 +1,51 @@
+#pragma once
+#include <Glory.h>
+
+#include "MonoComponents.h"
+
+#include <EntityRegistry.h>
+#include <ComponentManager.h>
+
+namespace Glory
+{
+    struct UUIDRemapper;
+    class GScene;
+    class IEngine;
+
+    class CoreLibManager;
+    class MonoScriptManager;
+
+    class MonoScriptedManager : public Utils::ECS::ComponentManager<MonoScriptComponent>
+    {
+    public:
+        MonoScriptedManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity = 100);
+        virtual ~MonoScriptedManager();
+
+    public:
+        void OnStartImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent);
+        void OnStopImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent);
+        void OnValidateImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent);
+        void OnEnableImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent);
+        void OnDisableImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent);
+        void OnUpdateImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent, float);
+        void OnDrawImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent);
+        static void OnCopy(GScene* pScene, void* data, UUID componentId, UUIDRemapper& remapper);
+
+        void GetReferencesImpl(std::vector<UUID>& references) const;
+
+        GLORY_API static void OnBodyActivated(IEngine* pEngine, UUID sceneID, UUID entityUUID);
+        GLORY_API static void OnBodyDeactivated(IEngine* pEngine, UUID sceneID, UUID entityUUID);
+
+        GLORY_API static void OnContactAdded(IEngine* pEngine, UUID scene1ID, UUID entity1UUID, UUID scene2ID, UUID entity2UUID);
+        GLORY_API static void OnContactPersisted(IEngine* pEngine, UUID scene1ID, UUID entity1UUID, UUID scene2ID, UUID entity2UUID);
+        GLORY_API static void OnContactRemoved(IEngine* pEngine, UUID scene1ID, UUID entity1UUID, UUID scene2ID, UUID entity2UUID);
+
+    private:
+        void OnInitialize() override;
+
+    private:
+        friend class GloryMonoScipting;
+        CoreLibManager* m_pCoreLibManager;
+        MonoScriptManager* m_pScriptManager;
+    };
+}

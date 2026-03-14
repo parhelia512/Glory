@@ -12,7 +12,6 @@
 #include <GLORY_YAML.h>
 #include <CreateEntityObjectsCallbacks.h>
 #include <PhysicsComponents.h>
-#include <SceneManager.h>
 #include <Serializers.h>
 #include <PropertySerializer.h>
 
@@ -58,8 +57,8 @@ namespace Glory::Editor
 
 		PropertyDrawer::RegisterPropertyDrawer<PropertyDrawerTemplate<AllowedDOFFlag>>();
 
-		static constexpr char* bodyIcon = ICON_FA_CUBES_STACKED;
-		static constexpr char* characterIcon = ICON_FA_PERSON;
+		static constexpr const char* bodyIcon = ICON_FA_CUBES_STACKED;
+		static constexpr const char* characterIcon = ICON_FA_PERSON;
 		EntitySceneObjectEditor::AddComponentIcon<PhysicsBody>(bodyIcon);
 		EntitySceneObjectEditor::AddComponentIcon<CharacterController>(characterIcon);
 
@@ -74,8 +73,6 @@ namespace Glory::Editor
 		Reflect::SetReflectInstance(&reflect);
 
 		pApp->GetSerializers().RegisterSerializer<SimpleTemplatedPropertySerializer<AllowedDOFFlag>>();
-
-		pEngine->GetSceneManager()->ComponentTypesInstance();
 	}
 
 	const char* JoltEditorExtension::ModuleName()

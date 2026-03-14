@@ -452,7 +452,7 @@ namespace Glory::Editor
 		const UUID uuid = EditorAssetDatabase::FindAssetUUID(relativePath.string());
 		TextureHandle texture = pApplication->GetThumbnailManager().GetThumbnail(uuid);
 
-		const UUID selectedID = Selection::GetActiveObject() ? Selection::GetActiveObject()->GetUUID() : 0;
+		const UUID selectedID = Selection::GetActiveObject() ? Selection::GetActiveObject()->GetUUID() : UUID(0ull);
 		const bool selected = (selectedID != 0 && selectedID == uuid) || m_HighlightedPath == m_CachedPath.string();
 
 		ImGui::PushStyleColor(ImGuiCol_Button, selected ? buttonColor : buttonInactiveColor);

@@ -6,6 +6,7 @@
 
 #include <Serializers.h>
 #include <PropertySerializer.h>
+#include <TransformManager.h>
 #include <UUIDRemapper.h>
 #include <PrefabData.h>
 #include <Components.h>
@@ -104,7 +105,7 @@ namespace Glory::Editor
 
 		/* Update transforms to generate matrices */
 		Utils::ECS::EntityRegistry& registry = pScene->GetRegistry();
-		registry.GetTypeView<Transform>()->InvokeAll(Utils::ECS::InvocationType::OnValidate, &registry, NULL);
+		registry.Validate();
 
 		AssetCompiler::CompileSceneSettings(pScene, node);
 	}
@@ -113,7 +114,6 @@ namespace Glory::Editor
 	{
 		Entity entityHandle = pScene->GetEntityByEntityID(entity);
 		Utils::ECS::EntityRegistry& pRegistry = entityHandle.GetScene()->GetRegistry();
-		Utils::ECS::EntityView* pEntityView = entityHandle.GetEntityView();
 		
 		Entity parent = entityHandle.ParentEntity();
 
@@ -121,7 +121,7 @@ namespace Glory::Editor
 		entityNode["Name"].Set(std::string{ entityHandle.Name() });
 		entityNode["UUID"].Set(uint64_t(entityHandle.EntityUUID()));
 		entityNode["Active"].Set(entityHandle.IsActiveSelf());
-		entityNode["ParentUUID"].Set(uint64_t(parent.IsValid() ? parent.EntityUUID() : 0));
+		entityNode["ParentUUID"].Set(uint64_t(parent.IsValid() ? parent.EntityUUID() : UUID(0ull)));
 		
 		const UUID prefabID = pScene->Prefab(entityHandle.EntityUUID());
 		if (prefabID)
@@ -148,10 +148,10 @@ namespace Glory::Editor
 			 * in scenes where this still occurs.
 			 */
 			const TypeData* pTransformTypeData = Transform::GetTypeData();
-			void* pTransformAddress = pRegistry.GetComponentAddress(entity, pEntityView->ComponentUUIDAt(0));
+			Transform& transformComponent = pRegistry.GetComponent<Transform>(entity);
 			auto transform = entityNode["Transform"];
 			transform.Set(YAML::Node(YAML::NodeType::Map));
-			pApp->GetSerializers().SerializeProperty(pTransformTypeData, pTransformAddress, transform["Properties"]);
+			pApp->GetSerializers().SerializeProperty(pTransformTypeData, &transformComponent, transform["Properties"]);
 		
 			/* TODO: Serialize overrides */
 			return;
@@ -159,10 +159,10 @@ namespace Glory::Editor
 
 		auto components = entityNode["Components"];
 		components.Set(YAML::Node(YAML::NodeType::Sequence));
-		for (size_t i = 0; i < pEntityView->ComponentCount(); ++i)
+		for (size_t i = 0; i < entityHandle.ComponentCount(); ++i)
 		{
 			//components.PushBack(YAML::Node(YAML::NodeType::Map));
-			SerializeComponent(pApp, &pScene->GetRegistry(), pEntityView, entity, i, components[i]);
+			SerializeComponent(pApp, &pScene->GetRegistry(), entity, i, components[i]);
 		}
 	}
 
@@ -242,7 +242,7 @@ namespace Glory::Editor
 					if (!parentEntity.IsValid()) pScene->DelayedSetParent(instantiatedEntity, parentUuid);
 					else instantiatedEntity.SetParent(parentEntity.GetEntityID());
 				}
-		
+
 				/* TODO: Deserialize overrides */
 				return instantiatedEntity;
 			}
@@ -283,24 +283,25 @@ namespace Glory::Editor
 			++currentComponentIndex;
 		}
 		
-		entityHandle.SetActive(active);
+		entityHandle.SetActive(active, false);
 		return entityHandle;
 	}
 
-	void EditorSceneSerializer::SerializeComponent(EditorApplication* pApp, Utils::ECS::EntityRegistry* pRegistry, Utils::ECS::EntityView* pEntityView, Utils::ECS::EntityID entity, size_t index, Utils::NodeValueRef node)
+	void EditorSceneSerializer::SerializeComponent(EditorApplication* pApp, Utils::ECS::EntityRegistry* pRegistry,
+		Utils::ECS::EntityID entity, size_t index, Utils::NodeValueRef node)
 	{
 		node.Set(YAML::Node(YAML::NodeType::Map));
-		const UUID compUUID = pEntityView->ComponentUUIDAt(index);
+		const UUID compUUID = pRegistry->EntityComponentID(entity, index);
 		node["UUID"].Set(uint64_t(compUUID));
 
-		const uint32_t type = pEntityView->ComponentTypeAt(index);
+		const uint32_t type = pRegistry->EntityComponentType(entity, index);
 		const Utils::Reflect::TypeData* pType = Utils::Reflect::Reflect::GetTyeData(type);
 
 		node["TypeName"].Set(pType->TypeName());
 		node["TypeHash"].Set(uint64_t(type));
-		node["Active"].Set(pRegistry->GetTypeView(type)->IsActive(entity));
+		node["Active"].Set(pRegistry->GetComponentManager(type)->IsActive(entity));
 
-		pApp->GetSerializers().SerializeProperty(pType, pRegistry->GetComponentAddress(entity, compUUID), node["Properties"]);
+		pApp->GetSerializers().SerializeProperty(pType, pRegistry->GetComponentAddress(entity, type), node["Properties"]);
 	}
 
 	void EditorSceneSerializer::DeserializeComponent(EditorApplication* pApp, GScene* pScene, Utils::ECS::EntityID entity, UUIDRemapper& uuidRemapper, Utils::NodeValueRef component, Flags flags)
@@ -326,13 +327,14 @@ namespace Glory::Editor
 
 		void* pComponentAddress = nullptr;
 		if (typeHash != transformTypeHash) pComponentAddress = pRegistry.CreateComponent(entity, typeHash, compUUID);
-		else pComponentAddress = pRegistry.GetComponentAddress(entity, compUUID);
+		else pComponentAddress = pRegistry.GetComponentAddress(entity, typeHash);
 
 		const TypeData* pTypeData = Reflect::GetTyeData(typeHash);
 		pApp->GetSerializers().DeserializeProperty(pTypeData, pComponentAddress, component["Properties"]);
 
-		Utils::ECS::BaseTypeView* pTypeView = pRegistry.GetTypeView(typeHash);
-		pTypeView->SetActive(entity, active);
-		pTypeView->Invoke(Utils::ECS::InvocationType::OnValidate, &pRegistry, entity, pComponentAddress);
+		Utils::ECS::IComponentManager* manager = pRegistry.GetComponentManager(typeHash);
+
+		manager->SetComponentActive(entity, active);
+		manager->CallValidate(entity);
 	}
 }

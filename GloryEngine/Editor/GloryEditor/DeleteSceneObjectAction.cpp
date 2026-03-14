@@ -53,7 +53,10 @@ namespace Glory::Editor
 			GatherChildrenRecursive(newEntity.GetEntityID(), newEntity.GetRegistry(), newEntities);
 		}
 
-		pScene->GetRegistry().InvokeAll(Utils::ECS::InvocationType::OnEnableDraw, newEntities);
+		for (size_t i = 0; i < newEntities.size(); ++i)
+		{
+			pScene->GetRegistry().CallOnEnableDraw(newEntities[i]);
+		}
 
 		if (!m_WasSelected) return;
 		Selection::SetActiveObject(GetEditableEntity(pScene->GetEntityByUUID(actionRecord.ObjectID).GetEntityID(), pScene));

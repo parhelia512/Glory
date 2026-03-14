@@ -5,6 +5,7 @@
 
 #include <IModuleLoopHandler.h>
 #include <GScene.h>
+#include <ResourceType.h>
 #include <vector>
 #include <NodeRef.h>
 
@@ -18,7 +19,7 @@ namespace Glory::Editor
 		template<typename T>
 		static void UpdateComponentInEditMode()
 		{
-			UpdateComponentInEditMode(ResourceType::GetHash<T>());
+			UpdateComponentInEditMode(ResourceTypes::GetHash<T>());
 		}
 		static GLORY_EDITOR_API void UpdateComponentInEditMode(uint32_t hash);
 

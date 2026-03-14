@@ -1,5 +1,6 @@
 #include "ImageData.h"
-#include "BinaryStream.h"
+
+#include <BinaryStream.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
@@ -68,7 +69,7 @@ namespace Glory
 		SetDirty(true);
 	}
 
-	void ImageData::Serialize(BinaryStream& container) const
+	void ImageData::Serialize(Utils::BinaryStream& container) const
 	{
 		const int channels = m_Header.m_InternalFormat == PixelFormat::PF_RGBA ? 4 : 3;
 		if (!m_Header.m_Compressed)
@@ -81,7 +82,7 @@ namespace Glory
 		/* TODO: Use libpng to compress this even further */
 		struct ContextData
 		{
-			BinaryStream* stream;
+			Utils::BinaryStream* stream;
 			const ImageData* image;
 		};
 		ContextData data{ &container, this };
@@ -98,7 +99,7 @@ namespace Glory
 		}, &data, int(m_Header.m_Width), int(m_Header.m_Height), int(channels), m_pPixels, int(m_Header.m_BytesPerPixel * m_Header.m_Width));
 	}
 
-	void ImageData::Deserialize(BinaryStream& container)
+	void ImageData::Deserialize(Utils::BinaryStream& container)
 	{
 		container.Read(m_Header);
 

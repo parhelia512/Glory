@@ -24,7 +24,6 @@
 #include "ObjectManager.h"
 #include "CameraManager.h"
 #include "GameTime.h"
-#include "BinaryStream.h"
 #include "RenderData.h"
 #include "GraphicsDevice.h"
 #include "Renderer.h"
@@ -32,6 +31,7 @@
 #include "IModuleLoopHandler.h"
 #include "ResourceLoaderModule.h"
 
+#include <BinaryStream.h>
 #include <JobManager.h>
 #include <ThreadManager.h>
 
@@ -189,9 +189,9 @@ namespace Glory
 		return m_pLoaderModules[loaderIndex];
 	}
 
-	void GloryEngine::UpdateSceneManager()
+	void GloryEngine::UpdateSceneManager(float dt)
 	{
-		m_pSceneManager->Update();
+		m_pSceneManager->Update(dt);
 	}
 
 	void GloryEngine::DrawSceneManager()
@@ -503,8 +503,8 @@ namespace Glory
 	{
 		if (HasData("Layers"))
 		{
-			BinaryMemoryStream memoryStream{ GetData("Layers") };
-			BinaryStream* stream = &memoryStream;
+			Utils::BinaryMemoryStream memoryStream{ GetData("Layers") };
+			Utils::BinaryStream* stream = &memoryStream;
 			while (!stream->Eof())
 			{
 				std::string name;
@@ -515,8 +515,8 @@ namespace Glory
 
 		if (HasData("General"))
 		{
-			BinaryMemoryStream memoryStream{ GetData("General") };
-			BinaryStream* stream = &memoryStream;
+			Utils::BinaryMemoryStream memoryStream{ GetData("General") };
+			Utils::BinaryStream* stream = &memoryStream;
 			stream->Read(m_ApplicationVersion);
 			stream->Read(m_Organization).Read(m_AppName);
 		}
@@ -651,7 +651,6 @@ namespace Glory
 	void GloryEngine::RegisterBasicTypes()
 	{
 		Reflect::SetReflectInstance(m_Reflection.get());
-		Utils::ECS::ComponentTypes::SetInstance(m_pSceneManager->ComponentTypesInstance());
 		Reflect::RegisterTemplatedType("std::vector,vector", (size_t)CustomTypeHash::Array, 0);
 
 		m_ResourceTypes->RegisterType<int>();
@@ -723,7 +722,7 @@ namespace Glory
 		WindowModule* pWindows = IEngine::GetMainModule<WindowModule>();
 		if (pWindows) pWindows->PollEvents();
 		m_pSceneManager->SetRenderer(ActiveRenderer());
-		m_pSceneManager->Update();
+		m_pSceneManager->Update(m_Time->GetDeltaTime());
 		m_pSceneManager->Draw();
 		ModulesLoop();
 		Draw();

@@ -2,7 +2,7 @@
 #include <type_traits>
 #include <concepts>
 
-namespace Glory::Utils::ECS
+namespace Glory::Utils
 {
 	template<typename ID>
 	concept SparseCompatibleSparse = !std::equality_comparable<ID> &&

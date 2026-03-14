@@ -1,4 +1,4 @@
-constexpr char* AboutText =
+constexpr const char* AboutText =
 	"Glory Engine is copyright (C) 2020-2025 Robin Cordemans\n"
 	"All rights reserved.\n"
 	"\n"

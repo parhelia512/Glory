@@ -14,11 +14,11 @@
 	Selection::SetActiveObject(GetEditableEntity(newEntity.GetEntityID(), newEntity.GetScene())); \
 	Undo::StopRecord(); \
 	auto registry = newEntity.GetRegistry(); \
-	auto pTypeView = newEntity.GetRegistry()->GetTypeView<component>(); \
+	Utils::ECS::IComponentManager* manager = newEntity.GetRegistry()->GetComponentManager<component>(); \
 	if (newEntity.IsActive()) \
 	{ \
-		pTypeView->Invoke(Utils::ECS::InvocationType::OnEnable, registry, newEntity.GetEntityID(), &comp); \
-		pTypeView->Invoke(Utils::ECS::InvocationType::OnEnableDraw, registry, newEntity.GetEntityID(), &comp); \
+		manager->CallOnActivate(newEntity.GetEntityID()); \
+		manager->CallOnEnableDraw(newEntity.GetEntityID()); \
 	} \
 }
 

@@ -5,6 +5,7 @@
 #include <UIDocument.h>
 #include <UIDocumentData.h>
 #include <UIRendererModule.h>
+#include <UIComponentManagers.h>
 #include <Renderer.h>
 #include <Debug.h>
 #include <UIComponents.h>
@@ -45,7 +46,7 @@ namespace Glory::Editor
 	void CalculateTransform(Utils::ECS::EntityID entity, Utils::ECS::EntityRegistry& registry, glm::mat4& parentTransform, glm::mat4& result, const glm::vec2& sizeFactor)
 	{
 		const Utils::ECS::EntityID parent = registry.GetParent(entity);
-		if (parent && registry.IsValid(parent))
+		if (parent && registry.EntityValid(parent))
 		{
 			CalculateTransform(parent, registry, parentTransform, result, sizeFactor);
 		}

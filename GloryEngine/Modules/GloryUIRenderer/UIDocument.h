@@ -54,9 +54,11 @@ namespace Glory
 	class UIDocument
 	{
 	public:
-		GLORY_API UIDocument(UIDocumentData* pDocument);
+		GLORY_API UIDocument(UIRendererModule* pRenderer);
+		GLORY_API virtual ~UIDocument();
+		GLORY_API void SetDocument(UIDocumentData* pDocument);
 
-		GLORY_API void Update();
+		GLORY_API void Update(float dt);
 		GLORY_API void Draw();
 
 		GLORY_API UUID OriginalDocumentID() const;
@@ -111,8 +113,6 @@ namespace Glory
 	private:
 		void CopyEntity(Utils::ECS::EntityRegistry& registry, Utils::ECS::EntityID entity, Utils::ECS::EntityID parent);
 		UUID CopyEntity(UIDocumentData* pOtherDocument, Utils::ECS::EntityID entity, Utils::ECS::EntityID parent);
-
-		void UpdateEntityActiveHierarchy(Utils::ECS::EntityID entity);
 
 	private:
 		friend class UIRendererModule;

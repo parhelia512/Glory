@@ -37,8 +37,8 @@ namespace Glory
 
         void SetPixels(char*&& pPixels, size_t dataSize);
 
-        void Serialize(BinaryStream& container) const override;
-        void Deserialize(BinaryStream& container) override;
+        void Serialize(Utils::BinaryStream& container) const override;
+        void Deserialize(Utils::BinaryStream& container) override;
 
     protected:
         Header m_Header;

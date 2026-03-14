@@ -98,8 +98,8 @@ namespace Glory::Editor
 		/* Write Assemblies.dat */
 		std::filesystem::path assembliesPath = path;
 		assembliesPath.append("Data/Assemblies.dat");
-		BinaryFileStream fileStream{ assembliesPath };
-		BinaryStream& stream = fileStream;
+		Utils::BinaryFileStream fileStream{ assembliesPath };
+		Utils::BinaryStream& stream = fileStream;
 
 		stream.Write(CoreVersion);
 		std::vector<std::string> assemblies;
@@ -170,11 +170,11 @@ namespace Glory::Editor
 
 		m_pMonoScriptingModule = pEngine->GetOptionalModule<GloryMonoScipting>();
 		Reflect::SetReflectInstance(&pEngine->Reflection());
-		pEngine->GetSceneManager()->ComponentTypesInstance();
 
 		EditorSettings& settings = pEditorApp->GetMainEditor().Settings();
 		std::filesystem::path visualStudioPath = settings["Mono/VisualStudioPath"].As<std::string>("");
-		if (!FindMSBuildInVSPath(visualStudioPath, std::filesystem::path{}))
+		std::filesystem::path out{};
+		if (!FindMSBuildInVSPath(visualStudioPath, out))
 			FindVisualStudioPath();
 
 		ProjectSpace::RegisterCallback(ProjectCallback::OnClose,
@@ -501,7 +501,8 @@ namespace Glory::Editor
 		EditorSettings& settings = pEditorApp->GetMainEditor().Settings();
 
 		std::filesystem::path msBuildPath = settings["Mono/VisualStudioPath"].As<std::string>("");
-		if (!FindMSBuildInVSPath(msBuildPath, std::filesystem::path{}))
+		std::filesystem::path out{};
+		if (!FindMSBuildInVSPath(msBuildPath, out))
 		{
 			pEditorApp->GetEngine()->GetDebug().LogError("Could not compile C# project because a valid path to a Visual Studio installation is not specified!");
 			return;
@@ -523,7 +524,8 @@ namespace Glory::Editor
 		SceneManager* pScenes = m_pMonoScriptingModule->GetEngine()->GetSceneManager();
 		for (size_t i = 0; i < pScenes->OpenScenesCount(); ++i)
 		{
-			pScenes->GetOpenScene(i)->GetRegistry().InvokeAll(MonoScriptComponent::GetTypeData()->TypeHash(), Utils::ECS::InvocationType::OnValidate);
+			Utils::ECS::IComponentManager* manager = pScenes->GetOpenScene(i)->GetRegistry().GetComponentManager<MonoScriptComponent>();
+			manager->Validate();
 		}
 	}
 
@@ -573,7 +575,9 @@ namespace Glory::Editor
 
 			if (!path) return;
 
-			if (FindMSBuildInVSPath(std::filesystem::path(path), std::filesystem::path{}))
+			std::filesystem::path pathCopy = path;
+			std::filesystem::path out{};
+			if (FindMSBuildInVSPath(pathCopy, out))
 			{
 				settings["Mono/VisualStudioPath"].Set(path);
 				return;

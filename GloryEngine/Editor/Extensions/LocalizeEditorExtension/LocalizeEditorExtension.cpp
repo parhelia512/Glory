@@ -6,6 +6,7 @@
 #include "StringsOverrideTableEditor.h"
 
 #include <Localize.h>
+#include <LocalizeManagers.h>
 #include <StringsOverrideTable.h>
 #include <LocalizeModule.h>
 #include <AssetArchive.h>
@@ -38,7 +39,7 @@ namespace Glory::Editor
 {
 	CREATE_OBJECT_CALLBACK_CPP(StringTableLoader, StringTableLoader, ());
 
-	static constexpr char* Shortcut_Window_StringTableEditor = "Open String Table Editor";
+	static constexpr const char* Shortcut_Window_StringTableEditor = "Open String Table Editor";
 
 	StringTableImporter TableImporter;
 	StringsOverrideTableImporter OverrideTableImporter;
@@ -85,7 +86,7 @@ namespace Glory::Editor
 				if (type == typeid(YAMLResource<StringTable>)) pStringTable = static_cast<YAMLResource<StringTable>*>(pBaseTable);
 			}
 
-			const UUID baseTableID = pStringTable ? pStringTable->GetUUID() : 0;
+			const UUID baseTableID = pStringTable ? pStringTable->GetUUID() : UUID(0ull);
 			ProjectSettings* pLanguageSettings = ProjectSettings::Get("Languages");
 			Utils::YAMLFileRef& languagesFile = **pLanguageSettings;
 			auto defaultLang = languagesFile["DefaultLanguage"];
@@ -135,7 +136,7 @@ namespace Glory::Editor
 
 			std::filesystem::path path = localePath;
 			path.append(std::to_string(stringTableID)).replace_extension(".gcl");
-			BinaryFileStream fileStream{ path };
+			Utils::BinaryFileStream fileStream{ path };
 			AssetArchive archive{ &fileStream, AssetArchiveFlags::WriteNew };
 			archive.Serialize(pStringTable);
 
@@ -158,8 +159,8 @@ namespace Glory::Editor
 		localeDataPath.append("Data/Locale.dat");
 		const std::filesystem::path localePath = "./Data/Locale";
 
-		BinaryFileStream file{ localeDataPath };
-		BinaryStream* stream = &file;
+		Utils::BinaryFileStream file{ localeDataPath };
+		Utils::BinaryStream* stream = &file;
 		stream->Write(CoreVersion);
 		stream->Write(LocaleDatas.size());
 		for (const LocaleData& localeData : LocaleDatas)
@@ -195,7 +196,6 @@ namespace Glory::Editor
 
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
 		Reflect::SetReflectInstance(&pEngine->Reflection());
-		pEngine->GetSceneManager()->ComponentTypesInstance();
 
 		EditorApplication* pApp = EditorApplication::GetInstance();
 		MainEditor& editor = pApp->GetMainEditor();

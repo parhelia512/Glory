@@ -2,14 +2,16 @@
 #include "UIComponents.h"
 #include "UIDocument.h"
 #include "UIDocumentData.h"
-#include "UIRenderSystem.h"
-#include "UISystems.h"
+#include "UIRenderManager.h"
+#include "UIComponentManagers.h"
 #include "Constraints.h"
 
+#include <GameTime.h>
 #include <AssetManager.h>
 #include <PipelineManager.h>
 #include <MaterialManager.h>
 #include <IEngine.h>
+#include <InputModule.h>
 #include <GraphicsDevice.h>
 #include <CameraManager.h>
 #include <InternalMaterial.h>
@@ -24,7 +26,6 @@
 #include <DistributedRandom.h>
 
 #include <EntityRegistry.h>
-#include <GloryECS/ComponentTypes.h>
 #include <Reflection.h>
 #include <PropertyFlags.h>
 #include <VertexHelpers.h>
@@ -112,7 +113,7 @@ namespace Glory
 
 		CalculateProjection(pDocument->m_Projection, pDevice, 0.0f, 0.0f, float(data.m_Resolution.x), float(data.m_Resolution.y));
 		pDocument->m_InputEnabled = data.m_InputEnabled;
-		pDocument->Update();
+		pDocument->Update(m_pEngine->Time().GetDeltaTime());
 
 		if (!pDocument->m_DrawIsDirty.IsSet(frameIndex)) return;
 		pDocument->Draw();
@@ -147,13 +148,13 @@ namespace Glory
 
 		if (!batchData.m_WorldsBuffers)
 		{
-			batchData.m_WorldsBuffers = pDevice->CreateBuffer(pDocument->m_UIBatch.m_Worlds.size()*sizeof(glm::mat4), BT_Storage, BF_Write);
+			batchData.m_WorldsBuffers = pDevice->CreateBuffer(std::max(pDocument->m_UIBatch.m_Worlds.size(), 1ull)*sizeof(glm::mat4), BT_Storage, BF_Write);
 			batchData.m_Worlds.SetDirty();
 		}
 
 		if (!batchData.m_ColorsBuffers)
 		{
-			batchData.m_ColorsBuffers = pDevice->CreateBuffer(pDocument->m_UIBatch.m_UniqueColors.size()*sizeof(glm::vec4), BT_Storage, BF_Write);
+			batchData.m_ColorsBuffers = pDevice->CreateBuffer(std::max(pDocument->m_UIBatch.m_UniqueColors.size(), 1ull)*sizeof(glm::vec4), BT_Storage, BF_Write);
 			batchData.m_Colors.SetDirty();
 		}
 
@@ -337,7 +338,7 @@ namespace Glory
 
 	UIDocument* UIRendererModule::FindDocument(UUID uuid)
 	{
-		auto& iter = m_Documents.find(uuid);
+		auto iter = m_Documents.find(uuid);
 		if (iter == m_Documents.end()) return nullptr;
 		return &iter->second;
 	}
@@ -345,6 +346,11 @@ namespace Glory
 	const DescriptorSetLayoutHandle& UIRendererModule::UIOverlaySetLayout() const
 	{
 		return m_UIOverlaySamplerLayout;
+	}
+
+	const Utils::ECS::RegistryFactory& UIRendererModule::GetRegistryFactory() const
+	{
+		return m_RegistryFactory;
 	}
 
 	void UIRendererModule::Initialize()
@@ -370,58 +376,41 @@ namespace Glory
 		Reflect::SetFieldFlags(pTextField, PropertyFlags::AreaText);
 		pColorField = Reflect::RegisterType<UIBox>()->GetFieldData("m_Color");
 		Reflect::SetFieldFlags(pColorField, PropertyFlags::Color);
-		Reflect::RegisterType<UIInteraction>();
 		Reflect::RegisterType<UIPanel>();
+		Reflect::RegisterType<UIInteraction>();
 		Reflect::RegisterType<UIVerticalContainer>();
 		Reflect::RegisterType<UIScrollView>();
 
 		Constraints::AddBuiltinConstraints();
 
 		/* Register the renderer component using the main component types instance */
-		Utils::ECS::ComponentTypes* pComponentTypes = m_pEngine->GetSceneManager()->ComponentTypesInstance();
-		m_pEngine->GetSceneManager()->RegisterComponent<UIRenderer>();
+		m_pEngine->GetSceneManager()->RegisterComponentManager<UIRenderManager, UIRenderer>(
+			[this](Utils::ECS::EntityRegistry*, UIRenderManager* manager) {
+				manager->m_pModule = this;
+				manager->m_pAssetManager = &m_pEngine->GetAssetManager();
+				manager->m_pDebug = &m_pEngine->GetDebug();
+				manager->m_pInput = m_pEngine->GetModule<InputModule>();
+				manager->m_pLayers = &m_pEngine->GetLayerManager();
+			});
 		m_pEngine->GetResourceTypes().RegisterResource<UIDocumentData>("");
-		pComponentTypes->RegisterInvokaction<UIRenderer>(Glory::Utils::ECS::InvocationType::Draw, UIRenderSystem::OnDraw);
-		pComponentTypes->RegisterInvokaction<UIRenderer>(Glory::Utils::ECS::InvocationType::OnValidate, UIRenderSystem::OnValidate);
-		pComponentTypes->RegisterInvokaction<UIRenderer>(Glory::Utils::ECS::InvocationType::Start, UIRenderSystem::OnStart);
-		pComponentTypes->RegisterReferencesCallback<UIRenderer>(UIRenderSystem::GetReferences);
 
 		/* Register the UI components with a different component types instance */
-		m_pComponentTypes = Utils::ECS::ComponentTypes::CreateInstance();
-		m_pComponentTypes->RegisterComponent<UITransform>();
-		m_pComponentTypes->RegisterComponent<UIImage>();
-		m_pComponentTypes->RegisterComponent<UIText>();
-		m_pComponentTypes->RegisterComponent<UIBox>();
-		m_pComponentTypes->RegisterComponent<UIInteraction>();
-		m_pComponentTypes->RegisterComponent<UIPanel>();
-		m_pComponentTypes->RegisterComponent<UIVerticalContainer>();
-		m_pComponentTypes->RegisterComponent<UIScrollView>();
-		/* Transform */
-		m_pComponentTypes->RegisterInvokaction<UITransform>(Glory::Utils::ECS::InvocationType::PostUpdate, UITransformSystem::OnPostUpdate);
-		/* Image */
-		m_pComponentTypes->RegisterInvokaction<UIImage>(Glory::Utils::ECS::InvocationType::Draw, UIImageSystem::OnDraw);
-		m_pComponentTypes->RegisterReferencesCallback<UIImage>(UIImageSystem::GetReferences);
-		/* Text */
-		m_pComponentTypes->RegisterInvokaction<UIText>(Glory::Utils::ECS::InvocationType::Start, UITextSystem::OnStart);
-		m_pComponentTypes->RegisterInvokaction<UIText>(Glory::Utils::ECS::InvocationType::Draw, UITextSystem::OnDraw);
-		m_pComponentTypes->RegisterInvokaction<UIText>(Glory::Utils::ECS::InvocationType::OnDirty, UITextSystem::OnDirty);
-		m_pComponentTypes->RegisterReferencesCallback<UIText>(UITextSystem::GetReferences);
-		/* Box */
-		m_pComponentTypes->RegisterInvokaction<UIBox>(Glory::Utils::ECS::InvocationType::Draw, UIBoxSystem::OnDraw);
-		/* Interaction */
-		m_pComponentTypes->RegisterInvokaction<UIInteraction>(Glory::Utils::ECS::InvocationType::Update, UIInteractionSystem::OnUpdate);
-		/* Panel */
-		m_pComponentTypes->RegisterInvokaction<UIPanel>(Glory::Utils::ECS::InvocationType::Draw, UIPanelSystem::OnDraw);
-		m_pComponentTypes->RegisterInvokaction<UIPanel>(Glory::Utils::ECS::InvocationType::PostDraw, UIPanelSystem::OnPostDraw);
-		/* Vertical Container */
-		m_pComponentTypes->RegisterInvokaction<UIVerticalContainer>(Glory::Utils::ECS::InvocationType::OnDirty, UIVerticalContainerSystem::OnDirty);
-		m_pComponentTypes->RegisterInvokaction<UIVerticalContainer>(Glory::Utils::ECS::InvocationType::PreUpdate, UIVerticalContainerSystem::OnPreUpdate);
-		/* Scroll View */
-		m_pComponentTypes->RegisterInvokaction<UIScrollView>(Glory::Utils::ECS::InvocationType::Start, UIScrollViewSystem::OnStart);
-		m_pComponentTypes->RegisterInvokaction<UIScrollView>(Glory::Utils::ECS::InvocationType::OnValidate, UIScrollViewSystem::OnValidate);
-		m_pComponentTypes->RegisterInvokaction<UIScrollView>(Glory::Utils::ECS::InvocationType::OnDirty, UIScrollViewSystem::OnDirty);
-		m_pComponentTypes->RegisterInvokaction<UIScrollView>(Glory::Utils::ECS::InvocationType::PreUpdate, UIScrollViewSystem::OnPreUpdate);
-		m_pComponentTypes->RegisterInvokaction<UIScrollView>(Glory::Utils::ECS::InvocationType::Update, UIScrollViewSystem::OnUpdate);
+		m_RegistryFactory.RegisterComponentManager<UITransformManager>();
+		m_RegistryFactory.RegisterComponentManager<UIImageManager>();
+		m_RegistryFactory.RegisterComponentManager<UITextManager>(
+			[this](Utils::ECS::EntityRegistry*, UITextManager* manager) {
+				manager->m_pRenderer = this;
+				manager->m_pLocalizeModule = m_pEngine->GetOptionalModule<LocalizeModuleBase>();
+				manager->m_pAssetManager = &m_pEngine->GetAssetManager();
+			});
+		m_RegistryFactory.RegisterComponentManager<UIBoxManager>();
+		m_RegistryFactory.RegisterComponentManager<UIInteractionManager>(
+			[this](Utils::ECS::EntityRegistry*, UIInteractionManager* manager) {
+				manager->m_pRenderer = this;
+			});
+		m_RegistryFactory.RegisterComponentManager<UIPanelManager>();
+		m_RegistryFactory.RegisterComponentManager<UIVerticalContainerManager>();
+		m_RegistryFactory.RegisterComponentManager<UIScrollViewManager>();
 
 		//pRenderer->AddRenderPass(RenderPassType::RP_ObjectPass, { "UI Worldspace Quad Pass", [this](uint32_t cameraIndex, RendererModule* pRenderer) {
 		//	UIWorldSpaceQuadPass(cameraIndex, pRenderer);
@@ -433,7 +422,8 @@ namespace Glory
 			pLocalize->OnLanguageChanged = [this]() {
 				for (auto& iter : m_Documents)
 				{
-					iter.second.Registry().InvokeAll<UIText>(Utils::ECS::InvocationType::Start);
+					Utils::ECS::IComponentManager* manager = iter.second.Registry().GetComponentManager<UIText>();
+					manager->Start();
 				}
 			};
 		}
@@ -560,8 +550,6 @@ namespace Glory
 
 		delete m_pUIOverlayMaterial;
 		m_pUIOverlayMaterial = nullptr;
-
-		Utils::ECS::ComponentTypes::DestroyInstance();
 	}
 
 	void UIRendererModule::Load()
@@ -610,7 +598,7 @@ namespace Glory
 			if (data.m_Target != UITarget::WorldSpaceQuad) continue;
 
 			/* Get document */
-			auto& iter = m_Documents.find(data.m_ObjectID);
+			auto iter = m_Documents.find(data.m_ObjectID);
 			if (iter == m_Documents.end()) continue;
 			UIDocument& document = iter->second;
 
@@ -663,7 +651,7 @@ namespace Glory
 			if (data.m_Target != UITarget::CameraOverlay || camera.GetUUID() != data.m_TargetCamera) continue;
 		
 			/* Get document */
-			auto& iter = m_Documents.find(data.m_ObjectID);
+			auto iter = m_Documents.find(data.m_ObjectID);
 			if (iter == m_Documents.end()) continue;
 			UIDocument& document = iter->second;
 
@@ -696,15 +684,17 @@ namespace Glory
 
 		const UUID id = data.m_ObjectID;
 
-		auto& iter = m_Documents.find(id);
+		auto iter = m_Documents.find(id);
 		if (iter == m_Documents.end())
 		{
-			m_Documents.emplace(id, pDocument);
+			m_Documents.emplace(id, this);
 			UIDocument& newDocument = m_Documents.at(id);
+			newDocument.SetDocument(pDocument);
 			newDocument.CreateRenderPasses(pDevice, pRenderer->GetNumFramesInFlight(), glm::uvec2(uint32_t(data.m_Resolution.x), uint32_t(data.m_Resolution.y)), this);
 			newDocument.m_SceneID = data.m_SceneID;
 			newDocument.m_ObjectID = data.m_ObjectID;
 			newDocument.m_pRenderer = this;
+			m_RegistryFactory.PopulateRegisry(newDocument.m_Registry);
 
 			return newDocument;
 		}
@@ -725,8 +715,9 @@ namespace Glory
 			std::vector<DescriptorSetHandle> overlaySets = std::move(document.m_UIOverlaySets);
 			const glm::uvec2 resolution = document.m_Resolution;
 			m_Documents.erase(iter);
-			m_Documents.emplace(id, pDocument);
+			m_Documents.emplace(id, this);
 			UIDocument& newDocument = m_Documents.at(id);
+			newDocument.SetDocument(pDocument);
 			newDocument.m_SceneID = data.m_SceneID;
 			newDocument.m_ObjectID = data.m_ObjectID;
 			if (!passes.empty())
@@ -735,6 +726,7 @@ namespace Glory
 				newDocument.m_UIOverlaySets = std::move(overlaySets);
 			newDocument.m_Resolution = resolution;
 			newDocument.m_pRenderer = this;
+			m_RegistryFactory.PopulateRegisry(newDocument.m_Registry);
 			return newDocument;
 		}
 		return document;

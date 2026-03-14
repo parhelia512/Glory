@@ -4,6 +4,9 @@
 #include "EditorMaterialManager.h"
 #include "EditorAssetManager.h"
 
+#include <TransformManager.h>
+#include <MeshRenderManager.h>
+
 #include <GScene.h>
 #include <Components.h>
 #include <EditorAssetDatabase.h>

@@ -31,7 +31,7 @@ namespace Glory::Editor
 
 	const Shortcut* Shortcuts::AddMainWindowAction(const char* action, size_t index, std::function<void()> callback)
 	{
-		auto& iter = m_Shortcuts.find(action);
+		auto iter = m_Shortcuts.find(action);
 
 		if (iter == m_Shortcuts.end())
 		{

@@ -94,8 +94,8 @@ REFLECTABLE_ENUM_NS(Glory, BlendOp,
 
 namespace Glory
 {
-    constexpr size_t AspectRatioCount = 5;
-    constexpr std::string_view AspectRatios[AspectRatioCount] = {
+    inline constexpr size_t AspectRatioCount = 5;
+    inline constexpr std::string_view AspectRatios[AspectRatioCount] = {
         "4:3",
         "16:9",
         "16:10",
@@ -103,7 +103,7 @@ namespace Glory
         "32:9",
     };
 
-    const std::vector<glm::uvec2> Resolutions[AspectRatioCount] = {
+    inline const std::vector<glm::uvec2> Resolutions[AspectRatioCount] = {
         { { 1400, 1050 }, { 1440, 1080 }, { 1600, 1200 }, { 1920, 1440 }, { 2048, 1536 } },
         { { 1280, 720 }, { 1366, 768 }, { 1600, 900 }, { 1920, 1080 }, { 2560, 1440 }, { 3840, 2160 }, { 5120, 2880 }, { 7680, 4320 } },
         { { 1280, 800 }, { 1920, 1200 }, { 2560, 1600 } },
@@ -490,7 +490,7 @@ namespace Glory
 namespace std
 {
     template <class T>
-    inline void CombineHash(size_t& hash, const T& v)
+    void CombineHash(size_t& hash, const T& v)
     {
         std::hash<T> h;
         hash ^= h(v) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
@@ -559,8 +559,8 @@ namespace Glory
         STF_All = STF_Vertex | STF_Fragment | STF_Geomtery | STF_TessControl | STF_TessEval | STF_Compute,
     };
 
-    constexpr size_t ShaderTypeToFlagCount = 7;
-    constexpr ShaderTypeFlag ShaderTypeToFlag[ShaderTypeToFlagCount] = {
+    inline constexpr size_t ShaderTypeToFlagCount = 7;
+    inline constexpr ShaderTypeFlag ShaderTypeToFlag[ShaderTypeToFlagCount] = {
         ShaderTypeFlag(0),
         ShaderTypeFlag::STF_Vertex,
         ShaderTypeFlag::STF_Fragment,
@@ -765,7 +765,8 @@ namespace Glory
         PT_Count,
     };
 
-    const std::string Enum<PipelineType>::m_EnumStringValues[] = {
+    template<>
+    inline const std::string Enum<PipelineType>::m_EnumStringValues[] = {
         "Unknown",
         "Flat",
         "Gouraud",
@@ -786,9 +787,10 @@ namespace Glory
         "Shadow",
         "Compute",
     };
-
-    const size_t Enum<PipelineType>::m_NumValues = PT_Count;
-    bool Enum<PipelineType>::Valid() { return true; }
+    template<>
+    inline const size_t Enum<PipelineType>::m_NumValues = PT_Count;
+    template<>
+    inline bool Enum<PipelineType>::Valid() { return true; }
 
     /** @brief Texture type based on ASSIMP aiTextureType */
     enum TextureType : uint32_t
@@ -936,7 +938,8 @@ namespace Glory
         TT_Count
     };
 
-    const std::string Enum<TextureType>::m_EnumStringValues[] = {
+    template<>
+    inline const std::string Enum<TextureType>::m_EnumStringValues[] = {
         "None",
         "Diffuse",
         "Specular",
@@ -960,9 +963,10 @@ namespace Glory
         "Clearcoat",
         "Transmission",
     };
-
-    const size_t Enum<TextureType>::m_NumValues = TT_Count;
-    bool Enum<TextureType>::Valid() { return true; }
+    template<>
+    inline const size_t Enum<TextureType>::m_NumValues = TT_Count;
+    template<>
+    inline bool Enum<TextureType>::Valid() { return true; }
 
     struct LightingSettings
     {
@@ -986,7 +990,7 @@ namespace Glory
         float m_ResolutionScale = 1.0f;
     };
 
-    constexpr SSAOSettings DefaultSSAO;
+    inline constexpr SSAOSettings DefaultSSAO;
 
     struct PipelineShaderMetaData
     {

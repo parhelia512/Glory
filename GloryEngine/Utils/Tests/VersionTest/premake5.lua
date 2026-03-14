@@ -1,6 +1,6 @@
 project "VersionTest"
 	language "C++"
-	cppdialect "C++latest"
+	cppdialect "C++23"
 	staticruntime "Off"
 	kind "ConsoleApp"
 	debugdir "%{engineOutDir}"

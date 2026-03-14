@@ -100,7 +100,7 @@ namespace Glory
 		virtual LoaderModule* GetLoaderModule(const std::type_info& resourceType) = 0;
 		virtual LoaderModule* GetLoaderModule(uint32_t typeHash) = 0;
 
-		virtual void UpdateSceneManager() = 0;
+		virtual void UpdateSceneManager(float dt) = 0;
 		virtual void DrawSceneManager() = 0;
 		virtual void ModulesLoop(IModuleLoopHandler* pLoopHandler = nullptr) = 0;
 		virtual void BeginFrame() = 0;

@@ -50,12 +50,12 @@ namespace Glory
         return m_ShaderType;
     }
 
-    void ShaderSourceData::Serialize(BinaryStream& container) const
+    void ShaderSourceData::Serialize(Utils::BinaryStream& container) const
     {
         container.Write(m_ShaderType);
     }
 
-    void ShaderSourceData::Deserialize(BinaryStream& container)
+    void ShaderSourceData::Deserialize(Utils::BinaryStream& container)
     {
         container.Read(m_ShaderType);
     }

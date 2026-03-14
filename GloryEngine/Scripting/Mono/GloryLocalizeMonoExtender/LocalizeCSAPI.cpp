@@ -1,5 +1,7 @@
 #include "LocalizeCSAPI.h"
 
+#include <LocalizeManagers.h>
+
 #include <EntityCSAPI.h>
 
 #include <cstdint>
@@ -14,7 +16,7 @@
 
 namespace Glory
 {
-	IEngine* Localize_EngineInstance;
+	static IEngine* Localize_EngineInstance;
 #define LOCALIZE_MODULE Localize_EngineInstance->GetOptionalModule<LocalizeModule>()
 
 	template<typename T>
@@ -22,7 +24,6 @@ namespace Glory
 	{
 		GScene* pScene = GetEntityScene(sceneID);
 		Entity entity = pScene->GetEntityByUUID(objectID);
-		Utils::ECS::EntityView* pEntityView = entity.GetEntityView();
 		return pScene->GetRegistry().GetComponent<T>(entity.GetEntityID());
 	}
 

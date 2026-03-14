@@ -13,11 +13,6 @@ project "ImGuizmo"
         "%{ImGuizmoDir}/*.h",
         "%{ImGuizmoDir}/*.cpp",
 	}
-
-	sysincludedirs
-    {
-        "%{ImGuizmoDir}"
-    }
         
     includedirs
     {

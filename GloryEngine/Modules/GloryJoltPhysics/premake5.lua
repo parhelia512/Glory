@@ -1,7 +1,7 @@
 project "GloryJoltPhysics"
 	kind "SharedLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "Off"
 
 	targetdir ("%{moduleOutDir}")
@@ -27,6 +27,8 @@ project "GloryJoltPhysics"
 
 	includedirs
 	{
+		"%{rootDir}/submodules/JoltPhysics",
+
 		"%{DepsIncludeDir}",
 		"%{IncludeDir.glm}",
 		"%{BaseIncludeDir.physics}",
@@ -42,11 +44,6 @@ project "GloryJoltPhysics"
 		"%{IncludeDir.yaml_cpp}",
 
 		"%{DepIncludesDir}",
-	}
-
-	sysincludedirs
-	{
-		"%{rootDir}/submodules/JoltPhysics",
 	}
 
 	libdirs

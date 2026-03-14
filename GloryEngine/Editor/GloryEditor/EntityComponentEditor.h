@@ -1,6 +1,8 @@
 #pragma once
 #include "Editor.h"
 
+#include <ComponentManager.h>
+
 #include <Object.h>
 #include <EntityComponentObject.h>
 #include <PropertyDrawer.h>
@@ -13,7 +15,7 @@ namespace Glory::Editor
 	class EntityComponentEditor : public EditorTemplate<TEditor, EntityComponentObject>
 	{
 	public:
-		EntityComponentEditor() : EditorTemplate(ResourceTypes::GetHash<TComponent>()), m_pComponentObject(nullptr) {}
+		EntityComponentEditor() : EditorTemplate<TEditor, EntityComponentObject>(ResourceTypes::GetHash<TComponent>()), m_pComponentObject(nullptr) {}
 		virtual ~EntityComponentEditor() {}
 
 	protected:
@@ -24,7 +26,7 @@ namespace Glory::Editor
 
 		virtual void Initialize() override
 		{
-			m_pComponentObject = (EntityComponentObject*)m_pTarget;
+			m_pComponentObject = (EntityComponentObject*)Editor::m_pTarget;
 		}
 
 		virtual bool OnGUI() override
@@ -38,11 +40,14 @@ namespace Glory::Editor
 			if (pTypeData)
 			{
 				const Utils::ECS::EntityID entity = m_pComponentObject->EntityID();
-				Utils::ECS::BaseTypeView* pTypeView = m_pComponentObject->GetRegistry()->GetTypeView(hash);
-				bool active = pTypeView->IsActive(entity);
+				Utils::ECS::IComponentManager* manager = m_pComponentObject->GetRegistry()->GetComponentManager(hash);
+				bool active = manager->IsActive(entity);
 				if (EditorUI::CheckBox("Active", &active))
 				{
-					pTypeView->SetActive(entity, active);
+					if (active)
+						manager->Activate(entity);
+					else
+						manager->Deactivate(entity);
 					change = true;
 				}
 
@@ -59,10 +64,9 @@ namespace Glory::Editor
 	protected:
 		void Validate()
 		{
-			TComponent& component = GetTargetComponent();
 			Utils::ECS::EntityRegistry* pRegistry = m_pComponentObject->GetRegistry();
-			Utils::ECS::TypeView<TComponent>* pTypeView = pRegistry->GetTypeView<TComponent>();
-			pTypeView->Invoke(Utils::ECS::InvocationType::OnValidate, pRegistry, m_pComponentObject->EntityID(), &component);
+			Utils::ECS::IComponentManager* manager = pRegistry->GetComponentManager<TComponent>();
+			manager->CallValidate(m_pComponentObject->EntityID());
 		}
 
 	protected:

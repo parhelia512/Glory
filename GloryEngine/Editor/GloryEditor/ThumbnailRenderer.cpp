@@ -16,7 +16,7 @@
 #include <Renderer.h>
 #include <EditorApplication.h>
 #include <EditorAssetDatabase.h>
-#include <CameraSystem.h>
+#include <CameraComponentManager.h>
 
 namespace Glory::Editor
 {
@@ -96,6 +96,7 @@ namespace Glory::Editor
 		pRenderer->OnWindowResize({ ThumbnailResolution.x, ThumbnailResolution.y });
 
 		GScene* pScene = NewScene("ThumbnailScene");
+		m_pEngine->GetSceneManager()->GetRegistryFactory().PopulateRegisry(pScene->GetRegistry());
 		Entity cameraEntity = pScene->CreateEmptyObject("Camera");
 		CameraComponent& camera = cameraEntity.AddComponent<CameraComponent>();
 		cameraEntity.GetComponent<Transform>().Position = glm::vec3(0.0f, 0.0f, 100.0f);
@@ -121,7 +122,8 @@ namespace Glory::Editor
 		sun2.m_Intensity = 1.0f;
 		sunEntity2.GetComponent<Transform>().Rotation = glm::rotate(glm::identity<glm::quat>(), 45.0f, { 1.0f, -1.0f, 0.0f });
 
-		pScene->GetRegistry().InvokeAll<CameraComponent>(Utils::ECS::InvocationType::OnEnableDraw);
+		Utils::ECS::IComponentManager* manager = pScene->GetRegistry().GetComponentManager<CameraComponent>();
+		manager->EnableDraw();
 
 		m_PixelCopyBuffer = pDevice->CreateBuffer(ThumbnailResolution.x*ThumbnailResolution.y*4, BufferType::BT_TransferWrite, BufferFlags::BF_Read);
 	}
@@ -249,7 +251,7 @@ namespace Glory::Editor
 			/* Update and draw */
 			//m_pEngine->GetDebug().StartCapture();
 			m_pRenderer->BeginFrame();
-			UpdateScene(pScene);
+			UpdateScene(pScene, 0.01f);
 			camera.GetComponent<CameraComponent>().m_Camera.Focus(sphere);
 			DrawScene(pScene);
 			

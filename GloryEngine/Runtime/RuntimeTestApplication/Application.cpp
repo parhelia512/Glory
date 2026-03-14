@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 		loadScene = (LoadSceneProc)GetProcAddress(RuntimeAppLib, "LoadScene");
 		runCommand = (RunCommandProc)GetProcAddress(RuntimeAppLib, "RunCommand");
 
-		create(Config::AppName);
+		create(Config::AppName.data());
 		init(argc, argv);
 		Exec();
 		run();

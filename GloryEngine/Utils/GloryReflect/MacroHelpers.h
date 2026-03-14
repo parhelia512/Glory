@@ -65,3 +65,15 @@
 
 #define SPLIT_ARG2(x) SPLIT_ARG2_1(EAT x)
 #define SPLIT_ARG2_1(x) VAL x
+
+#define NO_COPY(c) c(c&) = delete;\
+c(const c&) = delete;\
+c& operator=(c&) = delete;\
+c& operator=(const c&) = delete;
+
+#define DEFAULT_MOVE(c) c(c&&) noexcept = default;\
+c& operator=(c&&) = default;
+
+#define NO_COPY_DEFAULT_MOVE(c)\
+NO_COPY(c)\
+DEFAULT_MOVE(c)

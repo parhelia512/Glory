@@ -559,8 +559,8 @@ namespace Glory::Editor
 	{
 		std::filesystem::path finalPath = path;
 		finalPath.replace_filename("Input.dat");
-		BinaryFileStream file{ finalPath };
-		BinaryStream* stream = &file;
+		Utils::BinaryFileStream file{ finalPath };
+		Utils::BinaryStream* stream = &file;
 		stream->Write(CoreVersion);
 
 		Utils::NodeValueRef inputModes = RootValue()[Key_InputModes];
@@ -647,7 +647,8 @@ namespace Glory::Editor
 	void InputSettings::OnStartPlay_Impl()
 	{
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
-		pEngine->GetMainModule<InputModule>()->ReadInputData(RootValue().Node());
+		auto node = RootValue().Node();
+		pEngine->GetMainModule<InputModule>()->ReadInputData(node);
 		pEngine->GetMainModule<InputModule>()->InputBlocked() = false;
 	}
 

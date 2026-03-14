@@ -2,7 +2,7 @@
 #include "StringTable.h"
 #include "StringsOverrideTable.h"
 #include "Localize.h"
-#include "LocalizeSystem.h"
+#include "LocalizeManagers.h"
 
 #include <IEngine.h>
 #include <Console.h>
@@ -62,7 +62,7 @@ namespace Glory
 				std::filesystem::path path = m_LocalePath;
 				path.append(std::to_string(localeData.m_OverrideTableID)).replace_extension(".gcl");
 				if (!std::filesystem::exists(path)) continue;
-				BinaryFileStream stream{ path, true, false };
+				Utils::BinaryFileStream stream{ path, true, false };
 				AssetArchive archive{ &stream };
 				archive.Deserialize(m_pEngine);
 				if (archive.Size() != 1) continue;
@@ -193,7 +193,7 @@ namespace Glory
 				std::filesystem::path path = m_LocalePath;
 				path.append(std::to_string(localeData.m_OverrideTableID)).replace_extension(".gcl");
 				if (!std::filesystem::exists(path)) continue;
-				BinaryFileStream stream{ path, true, false };
+				Utils::BinaryFileStream stream{ path, true, false };
 				AssetArchive archive{ &stream };
 				archive.Deserialize(m_pEngine);
 				if (archive.Size() != 1) continue;
@@ -230,16 +230,15 @@ namespace Glory
 		Reflect::RegisterType<StringTableLoader>();
 		Reflect::RegisterType<Localize>();
 
-		Utils::ECS::ComponentTypes* pComponentTypes = m_pEngine->GetSceneManager()->ComponentTypesInstance();
-		pComponentTypes->RegisterComponent<StringTableLoader>();
-		pComponentTypes->RegisterComponent<Localize>();
-
-		pComponentTypes->RegisterInvokaction<StringTableLoader>(Utils::ECS::InvocationType::OnValidate, StringTableLoaderSystem::OnValidate);
-		pComponentTypes->RegisterInvokaction<StringTableLoader>(Utils::ECS::InvocationType::OnRemove, StringTableLoaderSystem::OnStop);
-		pComponentTypes->RegisterInvokaction<StringTableLoader>(Utils::ECS::InvocationType::Stop, StringTableLoaderSystem::OnStop);
-		pComponentTypes->RegisterReferencesCallback<StringTableLoader>(StringTableLoaderSystem::GetReferences);
-		pComponentTypes->RegisterInvokaction<Localize>(Utils::ECS::InvocationType::OnValidate, LocalizeSystem::OnValidate);
-		pComponentTypes->RegisterInvokaction<Localize>(Utils::ECS::InvocationType::Start, LocalizeSystem::OnStart);
+		m_pEngine->GetSceneManager()->RegisterComponentManager<StringTableLoaderManager, StringTableLoader>(
+			[this](Utils::ECS::EntityRegistry*, StringTableLoaderManager* manager) {
+				manager->m_pModule = this;
+			});
+		m_pEngine->GetSceneManager()->RegisterComponentManager<LocalizeManager, Localize>(
+			[this](Utils::ECS::EntityRegistry*, LocalizeManager* manager) {
+				manager->m_pModule = this;
+				manager->m_pDebug = &m_pEngine->GetDebug();
+			});
 
 		m_pEngine->GetConsole().RegisterCommand(new ConsoleCommand1<std::string>("setLanguage", [this](const std::string& language) {
 			SetLanguage(language);
@@ -268,8 +267,8 @@ namespace Glory
 		if (m_pEngine->HasData("Languages"))
 		{
 			std::vector<char>& data = m_pEngine->GetData("Languages");
-			BinaryMemoryStream memoryStream{ data };
-			BinaryStream& stream = memoryStream;
+			Utils::BinaryMemoryStream memoryStream{ data };
+			Utils::BinaryStream& stream = memoryStream;
 			stream.Read(m_DefaultLanguage);
 			stream.Read(m_SupportedLanguages);
 			m_CurrentLanguage = m_DefaultLanguage;
@@ -282,8 +281,8 @@ namespace Glory
 			m_LocalePath = localePath.string();
 
 			std::vector<char>& data = m_pEngine->GetData("Locale");
-			BinaryMemoryStream memoryStream{ data };
-			BinaryStream& stream = memoryStream;
+			Utils::BinaryMemoryStream memoryStream{ data };
+			Utils::BinaryStream& stream = memoryStream;
 
 			size_t numLocaleDatas;
 			stream.Read(numLocaleDatas);
@@ -302,7 +301,7 @@ namespace Glory
 		for (size_t i = 0; i < m_pEngine->GetSceneManager()->OpenScenesCount(); ++i)
 		{
 			GScene* pScene = m_pEngine->GetSceneManager()->GetOpenScene(i);
-			pScene->GetRegistry().InvokeAll<Localize>(Utils::ECS::InvocationType::Start);
+			pScene->GetRegistry().CallStart<Localize>();
 		}
 		if (OnLanguageChanged) OnLanguageChanged();
 		if (LanguageChanged) LanguageChanged(m_CurrentLanguage);

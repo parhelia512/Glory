@@ -6,9 +6,13 @@
 #include <string_view>
 #include <filesystem>
 
-namespace Glory
+namespace Glory::Utils
 {
     class BinaryStream;
+}
+
+namespace Glory
+{
     class IEngine;
 
     /** @brief Resource */
@@ -32,8 +36,8 @@ namespace Glory
         void SetDirty(bool dirty);
 
     public:
-        virtual void Serialize(BinaryStream& container) const {};
-        virtual void Deserialize(BinaryStream& container) {};
+        virtual void Serialize(Utils::BinaryStream& container) const {};
+        virtual void Deserialize(Utils::BinaryStream& container) {};
 
         /** @brief Change the UUID of this resource
          * @param uuid The new UUID of this resource

@@ -182,6 +182,22 @@ namespace Glory
 		void InvalidateContactCache(const BodyID& inBodyID);
 		*/
 
+		static void OnBodyActivated(JoltPhysicsModule* pPhysics, uint32_t bodyID);
+		static void OnBodyDeactivated(JoltPhysicsModule* pPhysics, uint32_t bodyID);
+
+		static void OnContactAdded(JoltPhysicsModule* pPhysics, uint32_t body1ID, uint32_t body2ID);
+		static void OnContactPersisted(JoltPhysicsModule* pPhysics, uint32_t body1ID, uint32_t body2ID);
+		static void OnContactRemoved(JoltPhysicsModule* pPhysics, uint32_t body1ID, uint32_t body2ID);
+
+		void AddToSceneIDsCache(UUID entityUUID, UUID sceneID);
+		void RemoveFromSceneIDsCache(UUID entityUUID);
+
+		std::function<void(IEngine*, UUID, UUID)> OnBodyActivated_Callback;
+		std::function<void(IEngine*, UUID, UUID)> OnBodyDeactivated_Callback;
+		std::function<void(IEngine*, UUID, UUID, UUID, UUID)> OnContactAdded_Callback;
+		std::function<void(IEngine*, UUID, UUID, UUID, UUID)> OnContactPersisted_Callback;
+		std::function<void(IEngine*, UUID, UUID, UUID, UUID)> OnContactRemoved_Callback;
+
 	private:
 		virtual void LoadSettings(ModuleSettings& settings) override;
 		virtual void Initialize() override;
@@ -207,5 +223,7 @@ namespace Glory
 		std::vector<std::vector<bool>> m_CollisionMatrix;
 		std::map<ContactCallback, std::vector<std::function<void(JoltPhysicsModule*, uint32_t, uint32_t)>>> m_ContactCallbacks;
 		std::map<ActivationCallback, std::vector<std::function<void(JoltPhysicsModule*, uint32_t)>>> m_ActivationCallbacks;
+
+		std::map<UUID, UUID> m_CachedSceneIDs;
     };
 }

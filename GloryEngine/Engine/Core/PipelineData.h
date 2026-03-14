@@ -117,9 +117,9 @@ namespace Glory
         void RemoveAllShaders();
 
         /** @brief Serialize the pipeline into a binary stream */
-        void Serialize(BinaryStream& container) const override;
+        void Serialize(Utils::BinaryStream& container) const override;
         /** @brief Deserialize the pipeline from a binary stream */
-        void Deserialize(BinaryStream& container) override;
+        void Deserialize(Utils::BinaryStream& container) override;
 
         /** @brief Load properties into a material
          * @param pMaterial Destination material

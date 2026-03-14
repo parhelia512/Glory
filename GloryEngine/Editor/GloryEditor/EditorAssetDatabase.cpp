@@ -312,7 +312,8 @@ namespace Glory::Editor
 		std::filesystem::path extension = filePath.extension();
 		std::filesystem::path fileName = filePath.filename().replace_extension("");
 		if (!Importer::Export(path, pResource)) return 0;
-		return ImportAsset(path, ImportedResource{ path, pResource });
+		auto resource = ImportedResource{ path, pResource };
+		return ImportAsset(path, resource);
 	}
 
 	UUID EditorAssetDatabase::ImportAsset(const std::string& path, ImportedResource& loadedResource, std::filesystem::path subPath, UUID forceUUID)
@@ -851,7 +852,7 @@ namespace Glory::Editor
 		return true;
 	}
 
-	void EditorAssetDatabase::ImportModuleAsset(const std::filesystem::path& path, Utils::NodeValueRef& value)
+	void EditorAssetDatabase::ImportModuleAsset(const std::filesystem::path& path, Utils::NodeValueRef value)
 	{
 		const UUID uuid = value["ID"].As<uint64_t>();
 		auto children = value["Children"];
@@ -874,6 +875,7 @@ namespace Glory::Editor
 		stream << "Importing module asset at " << path << "...";
 		DB_EngineInstance->GetDebug().LogInfo(stream.str());
 
-		ImportAsset(pathString, ImportedResource{}, "", uuid);
+		auto resource = ImportedResource{};
+		ImportAsset(pathString, resource, "", uuid);
 	}
 }

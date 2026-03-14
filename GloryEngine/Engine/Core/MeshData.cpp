@@ -1,5 +1,6 @@
 #include "MeshData.h"
-#include "BinaryStream.h"
+
+#include <BinaryStream.h>
 
 namespace Glory
 {
@@ -105,7 +106,7 @@ namespace Glory
 		return m_Attributes;
 	}
 
-	void MeshData::Serialize(BinaryStream& container) const
+	void MeshData::Serialize(Utils::BinaryStream& container) const
 	{
 		container.Write(m_BoundingBox);
 		container.Write(m_BoundingSphere);
@@ -118,7 +119,7 @@ namespace Glory
 		container.Write(reinterpret_cast<const char*>(m_Indices.data()), sizeof(uint32_t)*m_Indices.size());
 	}
 
-	void MeshData::Deserialize(BinaryStream& container)
+	void MeshData::Deserialize(Utils::BinaryStream& container)
 	{
 		container.Read(m_BoundingBox);
 		container.Read(m_BoundingSphere);

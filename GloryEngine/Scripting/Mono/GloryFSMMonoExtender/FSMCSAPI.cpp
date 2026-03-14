@@ -4,14 +4,13 @@
 #include <GloryMonoScipting.h>
 #include <Debug.h>
 #include <IEngine.h>
-#include <ComponentTypes.h>
 #include <AssetManager.h>
 #include <FSM.h>
 #include <FSMModule.h>
 
 namespace Glory
 {
-	IEngine* FSM_EngineInstance;
+	static IEngine* FSM_EngineInstance;
 #define FSM_MODULE FSM_EngineInstance->GetOptionalModule<FSMModule>()
 
 #pragma region FSM Template
@@ -32,7 +31,7 @@ namespace Glory
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const std::string_view nameStr = mono_string_to_utf8(name);
 		const FSMNode* node = pFSMData->FindNode(nameStr);
-		return node ? node->m_ID : 0;
+		return node ? node->m_ID : UUID(0ull);
 	}
 	
 	bool FSMTemplate_NodeExists(uint64_t fsmId, uint64_t nodeId)
@@ -134,7 +133,7 @@ namespace Glory
 		if (!pFSMResource) return 0;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const FSMNode* node = pFSMData->Node(state->CurrentState());
-		return node ? node->m_ID : 0;
+		return node ? node->m_ID : UUID(0ull);
 	}
 
 	void FSMInstance_SetTrigger(uint64_t stateId, MonoString* name)

@@ -1,9 +1,11 @@
 #include "PhysicsComponentsCSAPI.h"
-#include "JoltPhysicsModule.h"
-#include "JoltCharacterManager.h"
-#include "JoltShapeManager.h"
 
-#include <PhysicsComponents.h>
+#include <JoltPhysicsModule.h>
+#include <JoltCharacterManager.h>
+#include <JoltShapeManager.h>
+#include <PhysicsBodyManager.h>
+#include <CharacterControllerManager.h>
+
 #include <EntityCSAPI.h>
 #include <cstdint>
 #include <UUID.h>
@@ -14,17 +16,16 @@
 #include <Debug.h>
 #include <IEngine.h>
 
+
 namespace Glory
 {
-	IEngine* PhysicsComponents_EngineInstance;
+	static IEngine* PhysicsComponents_EngineInstance;
 
 	template<typename T>
 	static T& GetComponent(UUID sceneID, UUID objectID, uint64_t componentID)
 	{
 		GScene* pScene = GetEntityScene(sceneID);
 		Entity entity = pScene->GetEntityByUUID(objectID);
-		Utils::ECS::EntityView* pEntityView = entity.GetEntityView();
-		uint32_t hash = pEntityView->ComponentType(componentID);
 		return pScene->GetRegistry().GetComponent<T>(entity.GetEntityID());
 	}
 

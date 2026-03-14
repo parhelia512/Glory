@@ -25,8 +25,8 @@ namespace Glory
         GLORY_API UUID Texture();
         GLORY_API UUID Material();
 
-        GLORY_API void Serialize(BinaryStream& container) const override;
-        GLORY_API void Deserialize(BinaryStream& container) override;
+        GLORY_API void Serialize(Utils::BinaryStream& container) const override;
+        GLORY_API void Deserialize(Utils::BinaryStream& container) override;
 
     private:
         void References(IEngine* pEngine, std::vector<UUID>& references) const override;

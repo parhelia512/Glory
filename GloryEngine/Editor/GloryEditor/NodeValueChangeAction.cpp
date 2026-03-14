@@ -52,7 +52,7 @@ namespace Glory::Editor
 		splitPath.pop_back();
 
 		// TODO: Check if path is a number, arrays would crash here otherwise
-		YAML::Node& nextNode = node[path.string()];
+		YAML::Node nextNode = node[path.string()];
 
 		if (splitPath.empty())
 		{

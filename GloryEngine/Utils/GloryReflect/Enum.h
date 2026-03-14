@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace Glory::Utils::Reflect
@@ -8,6 +9,7 @@ namespace Glory::Utils::Reflect
 	{
 	public: // Instance methods
 		virtual bool FromString(const std::string& str, void* out) = 0;
+		virtual bool FromString(std::string_view str, void* out) = 0;
 		virtual bool ToString(const void* value, std::string& out) = 0;
 		virtual size_t NumValues() = 0;
 		virtual const std::string& GetName(size_t index) = 0;
@@ -18,6 +20,18 @@ namespace Glory::Utils::Reflect
 	{
 	public:
 		bool FromString(const std::string& str, T& out)
+		{
+			const auto beginIter = std::begin(m_EnumStringValues);
+			const auto endIter = std::end(m_EnumStringValues);
+			const auto iter = std::find(beginIter, endIter, str);
+			if (iter == endIter)
+				return false;
+			const size_t index = iter - beginIter;
+			out = T(index);
+			return true;
+		}
+
+		bool FromString(std::string_view str, T& out)
 		{
 			const auto beginIter = std::begin(m_EnumStringValues);
 			const auto endIter = std::end(m_EnumStringValues);
@@ -50,6 +64,12 @@ namespace Glory::Utils::Reflect
 
 	protected:
 		virtual bool FromString(const std::string& str, void* out) override
+		{
+			T* outValue = (T*)out;
+			return FromString(str, *outValue);
+		}
+
+		virtual bool FromString(std::string_view str, void* out) override
 		{
 			T* outValue = (T*)out;
 			return FromString(str, *outValue);

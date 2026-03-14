@@ -1,8 +1,6 @@
 #pragma once
 #include <Module.h>
 
-#include <functional>
-
 namespace Glory
 {
 	/** @brief Base class for audio backend and mixing modules */

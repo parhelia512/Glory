@@ -13,12 +13,7 @@ project "implot"
         "%{ImPlotDir}/*.h",
         "%{ImPlotDir}/*.cpp",
 	}
-
-	sysincludedirs
-    {
-        "%{ImPlotDir}"
-    }
-        
+	
     includedirs
     {
         "%{ImPlotDir}",

@@ -6,6 +6,11 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <TransformManager.h>
+#include <MeshRenderManager.h>
+#include <LightManager.h>
+#include <CameraComponentManager.h>
+
 #include <Components.h>
 #include <MeshData.h>
 #include <PrefabData.h>
@@ -17,6 +22,7 @@
 
 #include <EntityRegistry.h>
 
+#include <EditorSceneManager.h>
 #include <EditorPipelineManager.h>
 #include <EditorMaterialManager.h>
 #include <EditorAssetDatabase.h>
@@ -93,8 +99,6 @@ namespace Glory::Editor
 
     void ASSIMPImporter::Initialize()
 	{
-        /* We need to manually set the component types instance */
-        EditorApplication::GetInstance()->GetEngine()->GetSceneManager()->ComponentTypesInstance();
 	}
 
 	void ASSIMPImporter::Cleanup()
@@ -300,7 +304,8 @@ namespace Glory::Editor
                 const std::string_view name{ material->GetName().C_Str(), material->GetName().length };
                 giveName(resource, pMaterial, name);
 
-                const UUID materialID = EditorAssetDatabase::ReserveAssetUUID(path.string(), pMaterial->Name()).first;
+                auto pathStr = path.string();
+                const UUID materialID = EditorAssetDatabase::ReserveAssetUUID(pathStr, pMaterial->Name()).first;
 
                 EditableResource* pEditorResource = pEditorApp->GetResourceManager().GetEditableResource(materialID);
                 YAMLResourceBase* pYAMLResource = pEditorResource ? static_cast<YAMLResourceBase*>(pEditorResource) : nullptr;
@@ -352,7 +357,7 @@ namespace Glory::Editor
                                     continue;
                                 }
                                 TextureData* pTexture = context.Textures[index];
-                                textures[actualTextureType].emplace_back(pTexture ? pTexture->GetUUID() : 0ull);
+                                textures[actualTextureType].emplace_back(pTexture ? pTexture->GetUUID() : UUID(0ull));
                             }
                             catch (const std::exception&)
                             {
@@ -371,7 +376,8 @@ namespace Glory::Editor
                             debug.LogWarning(str.str());
                         }
 
-                        const UUID texID = EditorAssetDatabase::ReserveAssetUUID(texturePath.string(), "Default").first;
+                        auto texPathStr = texturePath.string();
+                        const UUID texID = EditorAssetDatabase::ReserveAssetUUID(texPathStr, "Default").first;
                         textures[actualTextureType].emplace_back(texID);
                     }
                 }
@@ -461,6 +467,8 @@ namespace Glory::Editor
         const std::string fileName = path.filename().replace_extension().string();
 
         context.Prefab = new PrefabData();
+        pEditorApp->GetSceneManager().GetRegistryFactory().PopulateRegisry(context.Prefab->GetRegistry());
+
         ProcessNode(context, 0, pScene->mRootNode, pScene, resource);
         for (size_t i = 0; i < context.Prefab->ChildCount(0); ++i)
         {

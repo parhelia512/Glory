@@ -1,7 +1,7 @@
 project "GloryUIRenderer"
 	kind "SharedLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "Off"
 
 	targetdir ("%{moduleOutDir}")

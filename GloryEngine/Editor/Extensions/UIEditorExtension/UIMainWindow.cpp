@@ -63,6 +63,7 @@ namespace Glory::Editor
 		Utils::NodeValueRef rootNode = **pDocument;
 
 		UIDocumentData document;
+		pUIRenderer->GetRegistryFactory().PopulateRegisry(document.GetRegistry());
 		Utils::NodeValueRef entities = rootNode["Entities"];
 		for (auto iter = entities.Begin(); iter != entities.End(); ++iter)
 		{
@@ -72,7 +73,8 @@ namespace Glory::Editor
 		document.SetName(EditorAssetDatabase::GetAssetName(documentID));
 		document.SetResourceUUID(documentID);
 		m_EditingDocumentIndex = m_pDocuments.size();
-		m_pDocuments.push_back(new UIDocument(&document));
+		m_pDocuments.push_back(new UIDocument(pUIRenderer));
+		m_pDocuments[m_EditingDocumentIndex]->SetDocument(&document);
 		m_pDocuments[m_EditingDocumentIndex]->CreateRenderPasses(pDevice, pRenderer->GetNumFramesInFlight(), m_Resolution, pUIRenderer);
 	}
 
@@ -123,7 +125,7 @@ namespace Glory::Editor
 			{
 				registry.SetEntityDirty(registry.Child(0, i));
 			}
-			registry.InvokeAll(Utils::ECS::InvocationType::OnDirty, NULL);
+			registry.Dirty();
 		}
 	}
 
@@ -197,7 +199,7 @@ namespace Glory::Editor
 			const Utils::Reflect::TypeData* pType = Reflect::GetTyeData(componentType);
 
 			Utils::ECS::EntityRegistry& registry = pDocument->Registry();
-			void* data = registry.GetComponentAddress(entity, componentID);
+			void* data = registry.GetComponentAddress(entity, componentType);
 			serializers.DeserializeProperty(pType, data, file[componentPath]["Properties"]);
 
 			pDocument->SetEntityDirty(entity, true, true);

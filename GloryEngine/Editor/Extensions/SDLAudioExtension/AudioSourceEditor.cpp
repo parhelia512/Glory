@@ -95,11 +95,14 @@ namespace Glory::Editor
 		if (pTypeData)
 		{
 			const Utils::ECS::EntityID entity = m_pComponentObject->EntityID();
-			Utils::ECS::BaseTypeView* pTypeView = m_pComponentObject->GetRegistry()->GetTypeView(hash);
-			bool active = pTypeView->IsActive(entity);
+			Utils::ECS::IComponentManager* manager = m_pComponentObject->GetRegistry()->GetComponentManager<AudioSource>();
+			bool active = manager->IsActive(entity);
 			if (EditorUI::CheckBox("Active", &active))
 			{
-				pTypeView->SetActive(entity, active);
+				if (active)
+					manager->Activate(entity);
+				else
+					manager->Deactivate(entity);
 				change = true;
 			}
 

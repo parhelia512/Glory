@@ -5,9 +5,12 @@
 #include <Renderer.h>
 #include <Glory.h>
 #include <FileData.h>
-
-#include <glm/glm.hpp>
 #include <CameraRef.h>
+
+#include <RegistryFactory.h>
+#include <glm/glm.hpp>
+
+#include <functional>
 
 namespace Glory
 {
@@ -15,11 +18,6 @@ namespace Glory
 	class UIDocumentData;
 	class FontData;
 	class UIDocument;
-
-	namespace Utils::ECS
-	{
-		class ComponentTypes;
-	}
 
 	struct UIRenderData
 	{
@@ -54,8 +52,6 @@ namespace Glory
 
 		GLORY_API virtual const std::type_info& GetModuleType() override;
 
-		GLORY_API Utils::ECS::ComponentTypes* GetComponentTypes() { return m_pComponentTypes; }
-
 		GLORY_API void Submit(UIRenderData&& data);
 		GLORY_API void Create(const UIRenderData& data, UIDocumentData* pDocument);
 
@@ -69,8 +65,18 @@ namespace Glory
 
 		GLORY_API UIDocument* FindDocument(UUID uuid);
 		GLORY_API const DescriptorSetLayoutHandle& UIOverlaySetLayout() const;
+		GLORY_API const Utils::ECS::RegistryFactory& GetRegistryFactory() const;
 
 		GLORY_MODULE_VERSION_H(0, 3, 0);
+
+		/* IEngine, SceneID, ObjectID, ElementID, ComponentID */
+		std::function<void(IEngine*, UUID, UUID, UUID, UUID)> OnElementHover_Callback;
+		/* IEngine, SceneID, ObjectID, ElementID, ComponentID */
+		std::function<void(IEngine*, UUID, UUID, UUID, UUID)> OnElementUnHover_Callback;
+		/* IEngine, SceneID, ObjectID, ElementID, ComponentID */
+		std::function<void(IEngine*, UUID, UUID, UUID, UUID)> OnElementDown_Callback;
+		/* IEngine, SceneID, ObjectID, ElementID, ComponentID */
+		std::function<void(IEngine*, UUID, UUID, UUID, UUID)> OnElementUp_Callback;
 
 	private:
 		virtual void Initialize() override;
@@ -101,7 +107,7 @@ namespace Glory
 		MaterialData* m_pUITextPrepassMaterial = nullptr;
 		MaterialData* m_pUIOverlayMaterial = nullptr;
 
-		Utils::ECS::ComponentTypes* m_pComponentTypes = nullptr;
+		Utils::ECS::RegistryFactory m_RegistryFactory;
 
 		std::map<UUID, UIDocument> m_Documents;
 

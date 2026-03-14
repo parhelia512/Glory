@@ -1,9 +1,6 @@
 #include "PhysicsModule.h"
 #include "PhysicsComponents.h"
 
-#include <GloryECS/EntityRegistry.h>
-#include <GloryECS/EntityView.h>
-
 #include <IEngine.h>
 #include <SceneManager.h>
 
@@ -24,8 +21,5 @@ namespace Glory
         Reflect::RegisterEnum<MotionQuality>();
         Reflect::RegisterEnum<AllowedDOFFlag>();
         Reflect::RegisterType<PhysicsSimulationSettings>();
-
-        m_pEngine->GetSceneManager()->RegisterComponent<PhysicsBody>();
-        m_pEngine->GetSceneManager()->RegisterComponent<CharacterController>();
     }
 }

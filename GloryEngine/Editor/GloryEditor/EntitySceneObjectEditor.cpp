@@ -20,7 +20,6 @@
 #include <StringUtils.h>
 #include <Reflection.h>
 #include <PrefabData.h>
-#include <ComponentHelpers.h>
 
 #include <IconsFontAwesome6.h>
 
@@ -29,7 +28,6 @@ namespace Glory::Editor
 	std::map<uint32_t, std::string_view> ComponentIcons = {
 		{ ResourceTypes::GetHash<Transform>(), ICON_FA_LOCATION_CROSSHAIRS },
 		{ ResourceTypes::GetHash<MeshRenderer>(), ICON_FA_CUBE },
-		{ ResourceTypes::GetHash<ModelRenderer>(), ICON_FA_CUBES },
 		{ ResourceTypes::GetHash<CameraComponent>(), ICON_FA_VIDEO },
 		{ ResourceTypes::GetHash<LayerComponent>(), ICON_FA_LAYER_GROUP },
 		{ ResourceTypes::GetHash<LightComponent>(), ICON_FA_LIGHTBULB },
@@ -66,11 +64,7 @@ namespace Glory::Editor
 			Undo::StartRecord("Set Active", m_pObject->GetUUID());
 			Undo::AddAction<EnableObjectAction>(pScene, active);
 			Undo::StopRecord();
-
-			if (active)
-				Components::Activate(entity);
-			else
-				Components::Deactivate(entity);
+			pScene->GetRegistry().SetActive(entity.GetEntityID(), active);
 			change = true;
 		}
 		change |= NameGUI();
@@ -106,13 +100,13 @@ namespace Glory::Editor
 		m_pObject = (EditableEntity*)m_pTarget;
 		GScene* pScene = EditorApplication::GetInstance()->GetSceneManager().GetOpenScene(m_pObject->SceneID());
 		Entity entity = pScene->GetEntityByEntityID(m_pObject->EntityID());
+		Utils::ECS::EntityRegistry& registry = pScene->GetRegistry();
 		const Utils::ECS::EntityID entityID = entity.GetEntityID();
-		Utils::ECS::EntityView* pEntityView = entity.GetEntityView();
 
-		for (size_t i = 0; i < pEntityView->ComponentCount(); i++)
+		for (size_t i = 0; i < registry.EntityComponentCount(entityID); i++)
 		{
-			UUID uuid = pEntityView->ComponentUUIDAt(i);
-			uint32_t componentType = pEntityView->ComponentTypeAt(i);
+			const UUID uuid = registry.EntityComponentID(entityID, i);
+			const uint32_t componentType = registry.EntityComponentType(entityID, i);
 			ObjectManager& objects = EditorApplication::GetInstance()->GetEngine()->GetObjectManager();
 			EntityComponentObject* pComponentObject = objects.Find<EntityComponentObject>(uuid);
 			if(!pComponentObject)
@@ -262,7 +256,8 @@ namespace Glory::Editor
 		{
 			Undo::StartRecord("Remove Component", m_pTarget->GetUUID());
 			Undo::AddAction<RemoveComponentAction>(&pRegistry, entityID, toRemoveComponent);
-			pRegistry.RemoveComponentAt(entityID, toRemoveComponent);
+			const uint32_t type = pRegistry.EntityComponentType(entityID, toRemoveComponent);
+			pRegistry.RemoveComponent(entityID, type);
 			Undo::StopRecord();
 
 			Initialize();
@@ -296,11 +291,11 @@ namespace Glory::Editor
 
 	void EntitySceneObjectEditor::DrawObjectNodeName(Entity& entity, bool isPrefab, bool isPrefabMissing)
 	{
-		Utils::ECS::EntityView* pEntityView = entity.GetScene()->GetRegistry().GetEntityView(entity.GetEntityID());
+		Utils::ECS::EntityRegistry* registry = entity.GetRegistry();
 		std::stringstream stream;
-		for (size_t i = 0; i < pEntityView->ComponentCount(); ++i)
+		for (size_t i = 0; i < registry->EntityComponentCount(entity.GetEntityID()); ++i)
 		{
-			const uint32_t typeHash = pEntityView->ComponentTypeAt(i);
+			const uint32_t typeHash = registry->EntityComponentType(entity.GetEntityID(), i);
 			stream << ComponentIcons.at(typeHash) << ' ';
 		}
 
@@ -316,7 +311,7 @@ namespace Glory::Editor
 
 	bool EntitySceneObjectEditor::SearchCompare(std::string_view search, Entity& entity)
 	{
-		Utils::ECS::EntityView* pEntityView = entity.GetScene()->GetRegistry().GetEntityView(entity.GetEntityID());
+		Utils::ECS::EntityRegistry* registry = entity.GetRegistry();
 
 		if (search.size() > 2 && search[1] == ':')
 		{
@@ -327,9 +322,9 @@ namespace Glory::Editor
 			case 'c':
 			{
 				const std::string_view comp = search.substr(2);
-				for (size_t i = 0; i < pEntityView->ComponentCount(); ++i)
+				for (size_t i = 0; i < registry->EntityComponentCount(entity.GetEntityID()); ++i)
 				{
-					const uint32_t typeHash = pEntityView->ComponentTypeAt(i);
+					const uint32_t typeHash = registry->EntityComponentType(entity.GetEntityID(), i);
 					const TypeData* pType = Utils::Reflect::Reflect::GetTyeData(typeHash);
 					const std::string_view name{pType->TypeName()};
 					if (Utils::CaseInsensitiveSearch(name, comp) == std::string::npos) continue;

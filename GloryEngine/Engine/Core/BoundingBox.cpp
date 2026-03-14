@@ -4,6 +4,8 @@
 #include "IEngine.h"
 #include "AssetManager.h"
 
+#include "TransformManager.h"
+
 #include <glm/gtx/matrix_decompose.hpp>
 
 #include <algorithm>

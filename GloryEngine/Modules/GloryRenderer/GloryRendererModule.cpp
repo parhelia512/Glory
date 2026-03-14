@@ -146,8 +146,8 @@ namespace Glory
 
 		std::vector<char> buffer = m_pEngine->GetData("Renderer");
 
-		BinaryMemoryStream memoryStream{ buffer };
-		BinaryStream* stream = &memoryStream;
+		Utils::BinaryMemoryStream memoryStream{ buffer };
+		Utils::BinaryStream* stream = &memoryStream;
 
 		size_t pipelineCount;
 		stream->Read(pipelineCount);

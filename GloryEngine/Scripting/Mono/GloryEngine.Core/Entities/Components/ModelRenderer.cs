@@ -6,6 +6,7 @@ namespace GloryEngine.Entities
     /// <summary>
     /// Handle for a ModelRenderer component
     /// </summary>
+    [System.Obsolete("ModelRenderer is obsolete")]
     public class ModelRenderer : NativeComponent
     {
         #region Props

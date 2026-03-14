@@ -61,7 +61,8 @@ namespace Glory::Editor
 
 		if (m_pApplication->IsInPlayMode())
 		{
-			pScene->GetRegistry().EnableAllIndividualCallbacks();
+			pScene->GetRegistry().EnableCalls();
+			pScene->GetRegistry().EnableAllIndividualCalls();
 			pScene->Start();
 		}
 
@@ -121,16 +122,13 @@ namespace Glory::Editor
 
 		if (m_pApplication->IsInPlayMode())
 		{
-			pScene->GetRegistry().EnableAllIndividualCallbacks();
+			pScene->GetRegistry().EnableCalls();
+			pScene->GetRegistry().EnableAllIndividualCalls();
 			pScene->Start();
 		}
 		else
 		{
-			pScene->GetRegistry().InvokeAll(Utils::ECS::InvocationType::OnEnableDraw,
-			[](Utils::ECS::BaseTypeView* pTypeView, Utils::ECS::EntityView* pEntity, size_t componentIndex) {
-				const bool isActive = pEntity->IsActive() && pTypeView->IsActiveByIndex(componentIndex);
-				return isActive;
-			});
+			pScene->GetRegistry().EnableDraw();
 		}
 
 		AssetLocation location;
@@ -175,11 +173,7 @@ namespace Glory::Editor
 		m_pOpenScenes.emplace_back(pScene);
 		m_OpenedSceneIDs.emplace_back(uuid);
 
-		pScene->GetRegistry().InvokeAll(Utils::ECS::InvocationType::OnEnableDraw,
-		[](Utils::ECS::BaseTypeView* pTypeView, Utils::ECS::EntityView* pEntity, size_t componentIndex) {
-			const bool isActive = pEntity->IsActive() && pTypeView->IsActiveByIndex(componentIndex);
-			return isActive;
-		});
+		pScene->GetRegistry().EnableDraw();
 
 		GScene* pActiveScene = SceneManager::GetActiveScene();
 		TitleBar::SetText("Scene", pActiveScene ? pActiveScene->Name().c_str() : "No Scene open");
@@ -471,9 +465,9 @@ namespace Glory::Editor
 	{
 		if (EditorApplication::GetInstance()->CurrentMode() == EditorMode::M_Play) return;
 		Utils::ECS::EntityRegistry& pRegistry = pScene->GetRegistry();
-		pRegistry.SetCallbackEnabled(Utils::ECS::InvocationType::OnEnable, false);
-		pRegistry.SetCallbackEnabled(Utils::ECS::InvocationType::OnDisable, false);
-		pRegistry.SetCallbackEnabled(Utils::ECS::InvocationType::Start, false);
-		pRegistry.SetCallbackEnabled(Utils::ECS::InvocationType::Stop, false);
+		pRegistry.EnableCall(Utils::ECS::EntityCallType::OnActivate, false);
+		pRegistry.EnableCall(Utils::ECS::EntityCallType::OnDeactivate, false);
+		pRegistry.EnableCall(Utils::ECS::EntityCallType::Start, false);
+		pRegistry.EnableCall(Utils::ECS::EntityCallType::Stop, false);
 	}
 }

@@ -1,17 +1,16 @@
 #include "AudioModule.h"
 #include "AudioComponents.h"
-#include "AudioSourceSystem.h"
+#include "AudioComponentManager.h"
 
 #include <IEngine.h>
 #include <SceneManager.h>
 
 #include <EntityRegistry.h>
 #include <EntityID.h>
-#include <ComponentTypes.h>
 
 namespace Glory
 {
-	AudioModule::AudioModule(): m_AudioSourceSystem(new AudioSourceSystem), m_AudioListenerSystem(new AudioListenerSystem) {}
+	AudioModule::AudioModule() {}
 	AudioModule::~AudioModule() {}
 
 	const std::type_info& AudioModule::GetBaseModuleType()
@@ -40,35 +39,21 @@ namespace Glory
 
 		Reflect::RegisterType<AudioSimulationSettings>();
 
-		m_pEngine->GetSceneManager()->RegisterComponent<AudioSource>();
-		m_pEngine->GetSceneManager()->RegisterComponent<AudioListener>();
-
-		Utils::ECS::ComponentTypes* pComponentTypes = m_pEngine->GetSceneManager()->ComponentTypesInstance();
-		pComponentTypes->RegisterInvokaction<AudioSource>(Glory::Utils::ECS::InvocationType::OnValidate, AudioSourceSystem::OnValidate);
-		pComponentTypes->RegisterInvokaction<AudioSource>(Glory::Utils::ECS::InvocationType::OnRemove, AudioSourceSystem::OnRemove);
-		pComponentTypes->RegisterInvokaction<AudioSource>(Glory::Utils::ECS::InvocationType::Update, AudioSourceSystem::OnUpdate);
-		pComponentTypes->RegisterInvokaction<AudioSource>(Glory::Utils::ECS::InvocationType::Start, AudioSourceSystem::OnStart);
-		pComponentTypes->RegisterReferencesCallback<AudioSource>(AudioSourceSystem::GetReferences);
-		pComponentTypes->RegisterInvokaction<AudioSource>(Glory::Utils::ECS::InvocationType::Stop, AudioSourceSystem::OnStop);
-		pComponentTypes->RegisterInvokaction<AudioListener>(Glory::Utils::ECS::InvocationType::Update, AudioListenerSystem::OnUpdate);
-		pComponentTypes->RegisterInvokaction<AudioListener>(Glory::Utils::ECS::InvocationType::Start, AudioListenerSystem::OnStart);
-		pComponentTypes->RegisterInvokaction<AudioListener>(Glory::Utils::ECS::InvocationType::Stop, AudioListenerSystem::OnStop);
+		m_pEngine->GetSceneManager()->RegisterComponentManager<AudioSourceManager, AudioSource>(
+			[this](Utils::ECS::EntityRegistry*, AudioSourceManager* manager) {
+				manager->m_pAudioModule = this;
+				manager->m_pAssetManager = &m_pEngine->GetAssetManager();
+			});
+		m_pEngine->GetSceneManager()->RegisterComponentManager<AudioListenerManager, AudioListener>(
+			[this](Utils::ECS::EntityRegistry*, AudioListenerManager* manager) {
+				manager->m_pAudioModule = this;
+			});
 	}
 
 	void AudioModule::LoadSettings(ModuleSettings& settings)
 	{
-		settings.RegisterValue<unsigned int>(SettingNames::MixingChannels, 64);
-		settings.RegisterValue<unsigned int>(SettingNames::SamplingRate, 48000);
-		settings.RegisterValue<unsigned int>(SettingNames::Framesize, 1024);
-	}
-
-	AudioSourceSystem& AudioModule::SourceSystem()
-	{
-		return *m_AudioSourceSystem;
-	}
-
-	AudioListenerSystem& AudioModule::ListenerSystem()
-	{
-		return *m_AudioListenerSystem;
+		settings.RegisterValue<unsigned int>(SettingNames::MixingChannels.data(), 64);
+		settings.RegisterValue<unsigned int>(SettingNames::SamplingRate.data(), 48000);
+		settings.RegisterValue<unsigned int>(SettingNames::Framesize.data(), 1024);
 	}
 }

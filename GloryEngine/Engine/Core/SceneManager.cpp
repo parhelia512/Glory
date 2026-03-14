@@ -3,10 +3,15 @@
 #include "EngineProfiler.h"
 #include "GScene.h"
 #include "PropertyFlags.h"
-#include "Systems.h"
 #include "Components.h"
 #include "IEngine.h"
 #include "Renderer.h"
+
+#include "TransformManager.h"
+#include "MeshRenderManager.h"
+#include "CameraComponentManager.h"
+#include "LightManager.h"
+#include "TextManager.h"
 
 #include <Reflection.h>
 
@@ -14,7 +19,7 @@ namespace Glory
 {
 	SceneManager::SceneManager(IEngine* pEngine) : m_pEngine(pEngine), m_pRenderer(nullptr), m_ActiveSceneIndex(0),
 		m_HoveringObjectSceneID(0), m_HoveringObjectID(0), m_HoveringPos(),
-		m_HoveringNormal(), m_pComponentTypesInstance(nullptr), m_NextFrameLoadIsAdditive(false)
+		m_HoveringNormal(), m_NextFrameLoadIsAdditive(false)
 	{
 	}
 
@@ -84,7 +89,7 @@ namespace Glory
 			pScene->Stop();
 			OnUnloadScene(pScene);
 			pScene->m_MarkedForDestruct = true;
-			pScene->m_Registry.DisableCallbacks();
+			pScene->m_Registry.DisableCalls();
 			m_pRemovedScenes.push_back(pScene);
 		}
 		OnUnloadAllScenes();
@@ -158,30 +163,47 @@ namespace Glory
 		OnSetActiveScene(pScene);
 	}
 
-	Utils::ECS::ComponentTypes* SceneManager::ComponentTypesInstance() const
+	Utils::ECS::RegistryFactory& SceneManager::GetRegistryFactory()
 	{
-		Utils::ECS::ComponentTypes::SetInstance(m_pComponentTypesInstance);
-		return m_pComponentTypesInstance;
+		return m_RegistryFactory;
 	}
 
 	void SceneManager::Initialize()
 	{
-		m_pComponentTypesInstance = Utils::ECS::ComponentTypes::CreateInstance();
-
 		/* Register component types */
 		Reflect::RegisterEnum<CameraPerspective>();
 		Reflect::RegisterEnum<CameraOutputMode>();
 		Reflect::RegisterType<MeshMaterial>();
 		Reflect::RegisterType<ShadowSettings>();
 
-		/* Register engine components */
-		RegisterComponent<Transform>();
-		RegisterComponent<LayerComponent>();
-		RegisterComponent<CameraComponent>();
-		RegisterComponent<MeshRenderer>();
-		RegisterComponent<ModelRenderer>();
-		RegisterComponent<LightComponent>();
-		RegisterComponent<TextComponent>();
+		/* Register engine component managers */
+		RegisterComponentManager<TransformManager, Transform>();
+		RegisterComponentManager<Utils::ECS::ComponentManager<LayerComponent>, LayerComponent>();
+		RegisterComponentManager<CameraComponentManager, CameraComponent>(
+			[this](Utils::ECS::EntityRegistry*, CameraComponentManager* manager) {
+				manager->m_pSceneManager = this;
+				manager->m_pCameraManager = &m_pEngine->GetCameraManager();
+			});
+		RegisterComponentManager<MeshRenderManager, MeshRenderer>(
+			[this](Utils::ECS::EntityRegistry*, MeshRenderManager* manager) {
+				manager->m_pSceneManager = this;
+				manager->m_pAssetManager = &m_pEngine->GetAssetManager();
+				manager->m_pMaterialManager = &m_pEngine->GetMaterialManager();
+				manager->m_pAssetDatabase = &m_pEngine->GetAssetDatabase();
+				manager->m_pLayerManager = &m_pEngine->GetLayerManager();
+				manager->m_pDebug = &m_pEngine->GetDebug();
+			});
+		RegisterComponentManager<LightManager, LightComponent>(
+			[this](Utils::ECS::EntityRegistry*, LightManager* manager) {
+				manager->m_pSceneManager = this;
+			});
+		RegisterComponentManager<TextManager, TextComponent>(
+			[this](Utils::ECS::EntityRegistry*, TextManager* manager) {
+				manager->m_pSceneManager = this;
+				manager->m_pAssetManager = &m_pEngine->GetAssetManager();
+				manager->m_pLayerManager = &m_pEngine->GetLayerManager();
+			});
+
 		const Utils::Reflect::FieldData* pTextField = TextComponent::GetTypeData()->GetFieldData("m_Text");
 		const Utils::Reflect::FieldData* pColorField = TextComponent::GetTypeData()->GetFieldData("m_Color");
 		Reflect::SetFieldFlags(pTextField, AreaText);
@@ -190,47 +212,7 @@ namespace Glory
 		pColorField = LightComponent::GetTypeData()->GetFieldData(0);
 		Reflect::SetFieldFlags(pColorField, PropertyFlags::Color);
 
-		/* Temporary components for testing */
-		RegisterComponent<Spin>();
-		RegisterComponent<LookAt>();
-
 		m_pEngine->GetResourceTypes().RegisterResource<GScene>(".gscene");
-
-		// Register Invocations
-		// Transform
-		m_pComponentTypesInstance->RegisterInvokaction<Transform>(Glory::Utils::ECS::InvocationType::OnValidate, TransformSystem::OnValidate);
-		m_pComponentTypesInstance->RegisterInvokaction<Transform>(Glory::Utils::ECS::InvocationType::OnEnableDraw, TransformSystem::OnEnable);
-		m_pComponentTypesInstance->RegisterInvokaction<Transform>(Glory::Utils::ECS::InvocationType::Update, TransformSystem::OnUpdate);
-
-		// Camera
-		m_pComponentTypesInstance->RegisterInvokaction<CameraComponent>(Glory::Utils::ECS::InvocationType::OnValidate, CameraSystem::OnValidate);
-		m_pComponentTypesInstance->RegisterInvokaction<CameraComponent>(Glory::Utils::ECS::InvocationType::OnAdd, CameraSystem::OnComponentAdded);
-		m_pComponentTypesInstance->RegisterInvokaction<CameraComponent>(Glory::Utils::ECS::InvocationType::OnRemove, CameraSystem::OnComponentRemoved);
-		m_pComponentTypesInstance->RegisterInvokaction<CameraComponent>(Glory::Utils::ECS::InvocationType::Update, CameraSystem::OnUpdate);
-		m_pComponentTypesInstance->RegisterInvokaction<CameraComponent>(Glory::Utils::ECS::InvocationType::OnEnableDraw, CameraSystem::OnEnableDraw);
-		m_pComponentTypesInstance->RegisterInvokaction<CameraComponent>(Glory::Utils::ECS::InvocationType::OnDisableDraw, CameraSystem::OnDisableDraw);
-
-		// Light
-		m_pComponentTypesInstance->RegisterInvokaction<LightComponent>(Glory::Utils::ECS::InvocationType::Draw, LightSystem::OnDraw);
-
-		// LookAt
-		m_pComponentTypesInstance->RegisterInvokaction<LookAt>(Glory::Utils::ECS::InvocationType::Update, LookAtSystem::OnUpdate);
-
-		// MeshRenderer
-		m_pComponentTypesInstance->RegisterInvokaction<MeshRenderer>(Glory::Utils::ECS::InvocationType::OnDirty, MeshRenderSystem::OnDirty);
-		m_pComponentTypesInstance->RegisterInvokaction<MeshRenderer>(Glory::Utils::ECS::InvocationType::Draw, MeshRenderSystem::OnDraw);
-		m_pComponentTypesInstance->RegisterInvokaction<MeshRenderer>(Glory::Utils::ECS::InvocationType::OnValidate, MeshRenderSystem::OnValidate);
-		m_pComponentTypesInstance->RegisterInvokaction<MeshRenderer>(Glory::Utils::ECS::InvocationType::OnEnableDraw, MeshRenderSystem::OnEnable);
-		m_pComponentTypesInstance->RegisterInvokaction<MeshRenderer>(Glory::Utils::ECS::InvocationType::OnDisableDraw, MeshRenderSystem::OnDisable);
-		m_pComponentTypesInstance->RegisterReferencesCallback<MeshRenderer>(MeshRenderSystem::GetReferences);
-
-		// Spin
-		m_pComponentTypesInstance->RegisterInvokaction<Spin>(Glory::Utils::ECS::InvocationType::Update, SpinSystem::OnUpdate);
-
-		/* Text Renderer */
-		m_pComponentTypesInstance->RegisterInvokaction<TextComponent>(Glory::Utils::ECS::InvocationType::OnDisableDraw, TextSystem::OnDisableDraw);
-		m_pComponentTypesInstance->RegisterInvokaction<TextComponent>(Glory::Utils::ECS::InvocationType::Draw, TextSystem::OnDraw);
-		m_pComponentTypesInstance->RegisterReferencesCallback<TextComponent>(TextSystem::GetReferences);
 
 		OnInitialize();
 	}
@@ -243,12 +225,10 @@ namespace Glory
 		m_pRemovedScenes.clear();
 		m_pExternalScenes.clear();
 		m_ActiveSceneIndex = 0;
-		Utils::ECS::ComponentTypes::DestroyInstance();
-		m_pComponentTypesInstance = nullptr;
 		OnCleanup();
 	}
 
-	void SceneManager::Update()
+	void SceneManager::Update(float dt)
 	{
 		ProfileSample s{ &m_pEngine->Profiler(), "SceneManager::Tick" };
 		std::for_each(m_ToLoadNextFrame.begin(), m_ToLoadNextFrame.end(), [this](const UUID sceneID) {
@@ -256,11 +236,11 @@ namespace Glory
 		});
 		m_ToLoadNextFrame.clear();
 
-		std::for_each(m_pOpenScenes.begin(), m_pOpenScenes.end(), [this](GScene* pScene) {
-			pScene->OnTick();
+		std::for_each(m_pOpenScenes.begin(), m_pOpenScenes.end(), [dt](GScene* pScene) {
+			pScene->OnTick(dt);
 		});
-		std::for_each(m_pExternalScenes.begin(), m_pExternalScenes.end(), [this](GScene* pScene) {
-			pScene->OnTick();
+		std::for_each(m_pExternalScenes.begin(), m_pExternalScenes.end(), [dt](GScene* pScene) {
+			pScene->OnTick(dt);
 		});
 
 		std::for_each(m_pRemovedScenes.begin(), m_pRemovedScenes.end(), [](GScene* pScene) { delete pScene; });
@@ -293,6 +273,7 @@ namespace Glory
 	void SceneManager::AddExternalScene(GScene* pScene)
 	{
 		m_pExternalScenes.push_back(pScene);
+		m_RegistryFactory.PopulateRegisry(pScene->GetRegistry());
 		pScene->m_pManager = this;
 	}
 
@@ -355,15 +336,23 @@ namespace Glory
 		iter->second(pScene, data, componentID, remapper);
 	}
 
-	void SceneManager::UpdateScene(GScene* pScene) const
+	void SceneManager::UpdateScene(GScene* pScene, float dt) const
 	{
 		if (pScene->m_MarkedForDestruct) return;
-		pScene->OnTick();
+		pScene->OnTick(dt);
 	}
 
 	void SceneManager::DrawScene(GScene* pScene) const
 	{
 		if (pScene->m_MarkedForDestruct) return;
 		pScene->OnPaint();
+	}
+
+	GScene* SceneManager::CreateNewScene_Internal(const std::string& name, UUID uuid)
+	{
+		GScene* pNewScene = new GScene(name, uuid);
+		m_RegistryFactory.PopulateRegisry(pNewScene->m_Registry);
+		pNewScene->m_pManager = this;
+		return pNewScene;
 	}
 }

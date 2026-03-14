@@ -8,7 +8,7 @@
 
 namespace Glory
 {
-	IEngine* Input_EngineInstance;
+	static IEngine* Input_EngineInstance;
 
 #pragma region Input Device
 

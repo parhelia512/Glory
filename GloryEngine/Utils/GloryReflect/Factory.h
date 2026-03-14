@@ -1,4 +1,6 @@
 #pragma once
+#include "../Hash.h"
+
 #include <string>
 #include <typeindex>
 #include <functional>
@@ -23,7 +25,7 @@ namespace Glory::Utils::Reflect
 	class Factory : public FactoryBase
 	{
 	public:
-		Factory() : FactoryBase(Reflect::Hash<T>()) {}
+		Factory() : FactoryBase(Hashing::Hash(typeid(T).name())) {}
 		virtual ~Factory() {}
 
 		virtual void* CreateAsPointer() const override

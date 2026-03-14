@@ -1,8 +1,9 @@
 #include "FontData.h"
-#include "BinaryStream.h"
 #include "AssetManager.h"
 #include "TextureData.h"
 #include "IEngine.h"
+
+#include <BinaryStream.h>
 
 namespace Glory
 {
@@ -68,13 +69,13 @@ namespace Glory
 		return m_Material;
 	}
 
-	void FontData::Serialize(BinaryStream& container) const
+	void FontData::Serialize(Utils::BinaryStream& container) const
 	{
 		container.Write(m_FontHeight).Write(m_Glyphs).
 			Write(m_Texture).Write(m_Material);
 	}
 
-	void FontData::Deserialize(BinaryStream& container)
+	void FontData::Deserialize(Utils::BinaryStream& container)
 	{
 		container.Read(m_FontHeight).Read(m_Glyphs).
 			Read(m_Texture).Read(m_Material);

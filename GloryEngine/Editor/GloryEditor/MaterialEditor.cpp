@@ -46,7 +46,7 @@ namespace Glory::Editor
 
 		Utils::NodeValueRef node = **pMaterial;
 		auto pipeline = node["Pipeline"];
-		UUID pipelineID = pipeline.As<uint64_t>(pMaterialData ? pMaterialData->GetPipelineID() : 0);
+		UUID pipelineID = pipeline.As<uint64_t>(pMaterialData ? pMaterialData->GetPipelineID() : UUID(0ull));
 
 		bool change = false;
 		if (AssetPicker::ResourceDropdown("Pipeline", ResourceTypes::GetHash<PipelineData>(), &pipelineID))
@@ -222,7 +222,7 @@ namespace Glory::Editor
 		Utils::YAMLFileRef& file = pMaterial->File();
 		Utils::NodeValueRef node = **pMaterial;
 		auto pipeline = node["Pipeline"];
-		const UUID pipelineID = pipeline.As<uint64_t>(pMaterialData ? pMaterialData->GetPipelineID() : 0);
+		const UUID pipelineID = pipeline.As<uint64_t>(pMaterialData ? pMaterialData->GetPipelineID() : UUID(0ull));
 		if (pipelineID == 0)
 			return false;
 		PipelineData* pPipeline = pipelineManager.GetPipelineData(pipelineID);

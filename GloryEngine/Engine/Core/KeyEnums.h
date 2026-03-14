@@ -271,9 +271,12 @@ namespace Glory
 	};
 }
 
-const size_t Glory::Utils::Reflect::Enum<Glory::KeyboardKey>::m_NumValues = size_t(Glory::KeyboardKey::KeyboardKeyCount);
-bool Glory::Utils::Reflect::Enum<Glory::KeyboardKey>::Valid() { return true; }\
-const std::string Glory::Utils::Reflect::Enum<Glory::KeyboardKey>::m_EnumStringValues[] = {
+template<>
+inline const size_t Glory::Utils::Reflect::Enum<Glory::KeyboardKey>::m_NumValues = size_t(Glory::KeyboardKey::KeyboardKeyCount);
+template<>
+inline bool Glory::Utils::Reflect::Enum<Glory::KeyboardKey>::Valid() { return true; }
+template<>
+inline const std::string Glory::Utils::Reflect::Enum<Glory::KeyboardKey>::m_EnumStringValues[] = {
 	"KeyEscape",
 	"KeyF1",
 	"KeyF2",
@@ -480,9 +483,12 @@ const std::string Glory::Utils::Reflect::Enum<Glory::KeyboardKey>::m_EnumStringV
 	"KeyKpPeriod",
 };
 
-const size_t Glory::Utils::Reflect::Enum<Glory::MouseButton>::m_NumValues = size_t(Glory::MouseButton::MouseButtonCount);
-bool Glory::Utils::Reflect::Enum<Glory::MouseButton>::Valid() { return true; }
-const std::string Glory::Utils::Reflect::Enum<Glory::MouseButton>::m_EnumStringValues[] = {
+template<>
+inline const size_t Glory::Utils::Reflect::Enum<Glory::MouseButton>::m_NumValues = size_t(Glory::MouseButton::MouseButtonCount);
+template<>
+inline bool Glory::Utils::Reflect::Enum<Glory::MouseButton>::Valid() { return true; }
+template<>
+inline const std::string Glory::Utils::Reflect::Enum<Glory::MouseButton>::m_EnumStringValues[] = {
 	"MouseButtonLeft",
 	"MouseButtonMiddle",
 	"MouseButtonRight",
@@ -506,9 +512,12 @@ const std::string Glory::Utils::Reflect::Enum<Glory::MouseButton>::m_EnumStringV
 	"MouseButton20",
 };
 
-const size_t Glory::Utils::Reflect::Enum<Glory::MouseAxis>::m_NumValues = size_t(Glory::MouseAxis::MouseAxisCount);
-bool Glory::Utils::Reflect::Enum<Glory::MouseAxis>::Valid() { return true; }
-const std::string Glory::Utils::Reflect::Enum<Glory::MouseAxis>::m_EnumStringValues[] = {
+template<>
+inline const size_t Glory::Utils::Reflect::Enum<Glory::MouseAxis>::m_NumValues = size_t(Glory::MouseAxis::MouseAxisCount);
+template<>
+inline bool Glory::Utils::Reflect::Enum<Glory::MouseAxis>::Valid() { return true; }
+template<>
+inline const std::string Glory::Utils::Reflect::Enum<Glory::MouseAxis>::m_EnumStringValues[] = {
 	"MouseAxisX",
 	"MouseAxisY",
 	"MouseAxisScrollX",

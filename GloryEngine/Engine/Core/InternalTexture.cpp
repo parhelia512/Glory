@@ -1,5 +1,6 @@
 #include "InternalTexture.h"
-#include "BinaryStream.h"
+
+#include <BinaryStream.h>
 
 namespace Glory
 {
@@ -27,7 +28,7 @@ namespace Glory
 		return m_pImage;
 	}
 
-	void InternalTexture::Serialize(BinaryStream& container) const
+	void InternalTexture::Serialize(Utils::BinaryStream& container) const
 	{
 		TextureData::Serialize(container);
 		container.Write(m_pImage ? 1 : 0);
@@ -35,7 +36,7 @@ namespace Glory
 			m_pImage->Serialize(container);
 	}
 
-	void InternalTexture::Deserialize(BinaryStream& container)
+	void InternalTexture::Deserialize(Utils::BinaryStream& container)
 	{
 		TextureData::Deserialize(container);
 		int hasImage;

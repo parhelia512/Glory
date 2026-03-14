@@ -2,7 +2,6 @@
 #include "GloryMonoScipting.h"
 #include "MonoManager.h"
 #include "MathCSAPI.h"
-#include "ComponentHelpers.h"
 
 #include <IEngine.h>
 #include <Window.h>
@@ -24,9 +23,9 @@
 
 namespace Glory
 {
-	IEngine* Core_EngineInstance;
+	static IEngine* Core_EngineInstance;
 
-	LayerWrapper::LayerWrapper(const Layer* pLayer) : Mask(pLayer ? pLayer->m_Mask : 0),
+	LayerWrapper::LayerWrapper(const Layer* pLayer) : Mask(pLayer ? pLayer->m_Mask : UUID(0ull)),
 		Name(mono_string_new(mono_domain_get(), pLayer ? pLayer->m_Name.c_str() : ""))
 	{ }
 
@@ -261,7 +260,7 @@ namespace Glory
 		const std::string propNameStr = mono_string_to_utf8(propName);
 		TextureData* pImage = nullptr;
 		if (!pMaterial->GetTexture(propNameStr, &pImage, &pManager)) return false;
-		value = pImage ? pImage->GetUUID() : 0;
+		value = pImage ? pImage->GetUUID() : UUID(0ull);
 		return true;
 	}
 	
@@ -341,7 +340,9 @@ namespace Glory
 		GScene* pScene = Core_EngineInstance->GetSceneManager()->GetOpenScene(UUID(sceneID));
 		if (!pScene) return 0;
 		const Entity parentEntity = pScene->GetEntityByUUID(UUID(parentID));
-		const Entity entity = pScene->InstantiatePrefab(parentEntity.IsValid() ? pScene->GetEntityUUID(parentEntity.GetEntityID()) : 0, pPrefab, ToGLMVec3(position), ToGLMQuat(rotation), ToGLMVec3(scale));
+		const Entity entity = pScene->InstantiatePrefab(parentEntity.IsValid() ?
+			pScene->GetEntityUUID(parentEntity.GetEntityID()) : UUID(0ull), pPrefab,
+			ToGLMVec3(position), ToGLMQuat(rotation), ToGLMVec3(scale));
 		if (!entity.IsValid()) return 0;
 		return pScene->GetEntityUUID(entity.GetEntityID());
 	}
@@ -435,9 +436,9 @@ namespace Glory
 	bool SceneObject_GetActive(uint64_t sceneID, uint64_t objectID)
 	{
 		SceneManager* pScenes = Core_EngineInstance->GetSceneManager();
-		if (!pScenes) return nullptr;
+		if (!pScenes) return false;
 		GScene* pScene = pScenes->GetOpenScene(UUID(sceneID));
-		if (!pScene) return nullptr;
+		if (!pScene) return false;
 		const Entity entity = pScene->GetEntityByUUID(UUID(objectID));
 		return entity.IsActive();
 	}
@@ -450,9 +451,9 @@ namespace Glory
 		if (!pScene) return;
 		Entity entity = pScene->GetEntityByUUID(UUID(objectID));
 		if (active)
-			Components::Activate(entity);
+			entity.SetActive(true);
 		else
-			Components::Deactivate(entity);
+			entity.SetActive(false);
 	}
 
 	MonoString* SceneObject_GetName(uint64_t sceneID, uint64_t objectID)
@@ -519,7 +520,7 @@ namespace Glory
 		if (!entity.IsValid()) return 0;
 		if (index >= entity.ChildCount()) return 0;
 		const Entity childEntity = { pScene->Child(entity.GetEntityID(), index), pScene};
-		return childEntity.IsValid() ? pScene->GetEntityUUID(childEntity.GetEntityID()) : 0;
+		return childEntity.IsValid() ? pScene->GetEntityUUID(childEntity.GetEntityID()) : UUID(0ull);
 	}
 
 	uint64_t SceneObject_GetParent(uint64_t sceneID, uint64_t objectID)
@@ -533,7 +534,7 @@ namespace Glory
 		Utils::ECS::EntityID parent = pScene->Parent(entity.GetEntityID());
 		if (!parent) return 0;
 		Entity parentEntity = pScene->GetEntityByEntityID(parent);
-		return parentEntity.IsValid() ? pScene->GetEntityUUID(parent) : 0;
+		return parentEntity.IsValid() ? pScene->GetEntityUUID(parent) : UUID(0ull);
 	}
 
 	void SceneObject_SetParent(uint64_t sceneID, uint64_t objectID, uint64_t parentID)

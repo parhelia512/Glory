@@ -25,8 +25,8 @@ namespace Glory
         GLORY_API MonoScript(std::vector<char>&& data);
         GLORY_API virtual ~MonoScript();
 
-        GLORY_API void Serialize(BinaryStream& container) const override {};
-        GLORY_API void Deserialize(BinaryStream& container) override {};
+        GLORY_API void Serialize(Utils::BinaryStream & container) const override {};
+        GLORY_API void Deserialize(Utils::BinaryStream& container) override {};
 
         GLORY_API bool HasClass(std::string_view name) const;
         GLORY_API std::string_view ClassName(size_t index) const;

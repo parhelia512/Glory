@@ -4,10 +4,14 @@
 #include <vector>
 #include <BitSet.h>
 
+namespace Glory::Utils
+{
+	class BinaryStream;
+}
+
 namespace Glory
 {
 	class Resource;
-	class BinaryStream;
 	class IEngine;
 
 	enum AssetArchiveFlags
@@ -22,7 +26,7 @@ namespace Glory
 	class AssetArchive
 	{
 	public:
-		AssetArchive(BinaryStream* pStream, AssetArchiveFlags flags=AssetArchiveFlags::Read);
+		AssetArchive(Utils::BinaryStream* pStream, AssetArchiveFlags flags=AssetArchiveFlags::Read);
 		AssetArchive(AssetArchive&& other) noexcept;
 		virtual ~AssetArchive();
 
@@ -41,7 +45,7 @@ namespace Glory
 
 		Resource* ReadResource(IEngine* pEngine);
 
-		BinaryStream* m_pStream;
+		Utils::BinaryStream* m_pStream;
 		Version m_Version;
 		std::vector<Resource*> m_pResources;
 		mutable Utils::BitSet m_Owned;

@@ -7,7 +7,6 @@
 #include <glm/gtx/quaternion.hpp>
 #include <TypeData.h>
 #include <EditorUI.h>
-#include <TransformSystem.h>
 #include <glm/gtx/matrix_decompose.hpp>
 
 namespace Glory::Editor
@@ -96,7 +95,8 @@ namespace Glory::Editor
 			transform.Position = pos;
 			transform.Rotation = rotation;
 			transform.Scale = scale;
-			TransformSystem::OnUpdate(m_pComponentObject->GetRegistry(), entity, transform);
+			Utils::ECS::IComponentManager* manager = m_pComponentObject->GetRegistry()->GetComponentManager<Transform>();
+			manager->CallPreUpdate(entity, 0.01f);
 			//UpdatePhysics();
 		}
 
@@ -137,7 +137,7 @@ namespace Glory::Editor
 
 		glm::mat4 localTransform = newTransform;
 		Utils::ECS::EntityID entity = m_pComponentObject->EntityID();
-		GScene* pScene = m_pComponentObject->GetRegistry()->GetUserData<GScene*>();
+		GScene* pScene = m_pComponentObject->GetRegistry()->GetUserData<GScene>();
 		Entity entityHandle = pScene->GetEntityByEntityID(entity);
 
 		if (entityHandle.ParentEntity().IsValid())

@@ -15,8 +15,8 @@ namespace Glory
 
 		virtual ImageData* GetImageData(AssetManager* pAssetManager);
 
-		GLORY_API void Serialize(BinaryStream& container) const override;
-		GLORY_API void Deserialize(BinaryStream& container) override;
+		GLORY_API void Serialize(Utils::BinaryStream& container) const override;
+		GLORY_API void Deserialize(Utils::BinaryStream& container) override;
 
 	private:
 		ImageData* m_pImage;

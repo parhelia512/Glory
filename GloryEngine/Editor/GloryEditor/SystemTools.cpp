@@ -18,7 +18,8 @@ namespace Glory::Editor
 			const std::filesystem::path versionPath = entry.path();
 			std::filesystem::path editionPath = versionPath;
 			editionPath.append("Enterprise");
-			if (FindMSBuildInVSPath(std::filesystem::path(editionPath), out))
+			auto tempPath = std::filesystem::path(editionPath);
+			if (FindMSBuildInVSPath(tempPath, out))
 			{
 				out = editionPath;
 				return true;
@@ -26,7 +27,8 @@ namespace Glory::Editor
 
 			editionPath = versionPath;
 			editionPath.append("Professional");
-			if (FindMSBuildInVSPath(std::filesystem::path(editionPath), out))
+			tempPath = std::filesystem::path(editionPath);
+			if (FindMSBuildInVSPath(tempPath, out))
 			{
 				out = editionPath;
 				return true;
@@ -34,7 +36,8 @@ namespace Glory::Editor
 
 			editionPath = versionPath;
 			editionPath.append("Community");
-			if (FindMSBuildInVSPath(std::filesystem::path(editionPath), out))
+			tempPath = std::filesystem::path(editionPath);
+			if (FindMSBuildInVSPath(tempPath, out))
 			{
 				out = editionPath;
 				return true;

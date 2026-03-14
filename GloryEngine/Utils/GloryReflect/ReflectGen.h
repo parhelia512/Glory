@@ -66,11 +66,14 @@ REFLECTABLE_TYPEDATA(typeName, offsetof(typeName, bufferMember), bufferSize, __V
 	FOR_EACH(REFLECT_ENUM_VALUE, __VA_ARGS__)												\
 };																							\
 																							\
-const std::string Enum<enumName>::m_EnumStringValues[] = {					\
+template<>																					\
+inline const std::string Enum<enumName>::m_EnumStringValues[] = {							\
 	FOR_EACH(REFLECT_ENUM_STRING_VALUE, __VA_ARGS__)										\
 };																							\
-const size_t Enum<enumName>::m_NumValues = NARGS(__VA_ARGS__);				\
-bool Enum<enumName>::Valid() { return true; }									\
+template<>																					\
+inline const size_t Enum<enumName>::m_NumValues = NARGS(__VA_ARGS__);						\
+template<>																					\
+inline bool Enum<enumName>::Valid() { return true; }										\
 
 #define REFLECTABLE_ENUM_NS(nameSpace, enumName, ...) namespace nameSpace {					\
 enum class enumName																			\
@@ -79,11 +82,14 @@ enum class enumName																			\
 };																							\
 }																							\
 																							\
-const std::string Enum<nameSpace::enumName>::m_EnumStringValues[] = {			\
+template<>																					\
+inline const std::string Enum<nameSpace::enumName>::m_EnumStringValues[] = {				\
 	FOR_EACH(REFLECT_ENUM_STRING_VALUE, __VA_ARGS__)										\
 };																							\
-const size_t Enum<nameSpace::enumName>::m_NumValues = NARGS(__VA_ARGS__);		\
-bool Enum<nameSpace::enumName>::Valid() { return true; }						\
+template<>																					\
+inline const size_t Enum<nameSpace::enumName>::m_NumValues = NARGS(__VA_ARGS__);			\
+template<>																					\
+inline bool Enum<nameSpace::enumName>::Valid() { return true; }								\
 
 
 #define REFLECTABLE_ENUM_NS_SIZE(nameSpace, enumName, size, ...) namespace nameSpace {		\
@@ -93,10 +99,13 @@ enum class enumName	: size																	\
 };																							\
 }																							\
 																							\
-const std::string Enum<nameSpace::enumName>::m_EnumStringValues[] = {			\
+template<>																					\
+inline const std::string Enum<nameSpace::enumName>::m_EnumStringValues[] = {				\
 	FOR_EACH(REFLECT_ENUM_STRING_VALUE, __VA_ARGS__)										\
 };																							\
-const size_t Enum<nameSpace::enumName>::m_NumValues = NARGS(__VA_ARGS__);		\
-bool Enum<nameSpace::enumName>::Valid() { return true; }						\
+template<>																					\
+inline const size_t Enum<nameSpace::enumName>::m_NumValues = NARGS(__VA_ARGS__);			\
+template<>																					\
+inline bool Enum<nameSpace::enumName>::Valid() { return true; }								\
 
 #pragma endregion

@@ -6,6 +6,11 @@
 
 #include <Reflection.h>
 
+namespace Glory::Utils
+{
+    class BinaryStream;
+}
+
 namespace Glory
 {
     /** @brief Sound materia; */
@@ -34,8 +39,8 @@ namespace Glory
         /** @overload */
         GLORY_API const SoundMaterial& Material() const;
 
-        GLORY_API void Serialize(BinaryStream& container) const override;
-        GLORY_API void Deserialize(BinaryStream& container) override;
+        GLORY_API void Serialize(Utils::BinaryStream& container) const override;
+        GLORY_API void Deserialize(Utils::BinaryStream& container) override;
 
     private:
         virtual void References(IEngine*, std::vector<UUID>&) const override {}

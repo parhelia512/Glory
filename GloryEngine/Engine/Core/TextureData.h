@@ -18,8 +18,8 @@ namespace Glory
         AssetReference<ImageData>& Image();
         SamplerSettings& GetSamplerSettings();
 
-        void Serialize(BinaryStream& container) const override;
-        void Deserialize(BinaryStream& container) override;
+        void Serialize(Utils::BinaryStream& container) const override;
+        void Deserialize(Utils::BinaryStream& container) override;
 
         void References(IEngine* pEngine, std::vector<UUID>& references) const override;
 

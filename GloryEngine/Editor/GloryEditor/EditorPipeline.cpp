@@ -20,7 +20,7 @@ namespace Glory::Editor
 		m_EditorShaderDatas.clear();
 	}
 
-	void EditorPipeline::Serialize(BinaryStream& container) const
+	void EditorPipeline::Serialize(Utils::BinaryStream& container) const
 	{
 		container.Write(m_EditorShaderDatas.size());
 		for (size_t i = 0; i < m_EditorShaderDatas.size(); ++i)
@@ -34,7 +34,7 @@ namespace Glory::Editor
 		}
 	}
 
-	void EditorPipeline::Deserialize(BinaryStream& container)
+	void EditorPipeline::Deserialize(Utils::BinaryStream& container)
 	{
 		size_t numShaders;
 		container.Read(numShaders);

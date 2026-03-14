@@ -46,7 +46,7 @@ namespace Glory
 
 	struct MeshMaterial
 	{
-		MeshMaterial() : m_MaterialReference(0) {}
+		MeshMaterial() : m_MaterialReference(0ull) {}
 		MeshMaterial(UUID uuid) : m_MaterialReference(uuid) {}
 
 		bool operator==(const MeshMaterial&& other)
@@ -67,10 +67,10 @@ namespace Glory
 	struct MeshRenderer
 	{
 		MeshRenderer(MeshData* pMesh, MaterialData* pMaterial)
-			: m_Mesh(pMesh != nullptr ? pMesh->GetUUID() : 0), m_Material(pMaterial != nullptr ? pMaterial->GetUUID() : 0),
+			: m_Mesh(pMesh != nullptr ? pMesh->GetUUID() : UUID(0ull)), m_Material(pMaterial != nullptr ? pMaterial->GetUUID() : UUID(0ull)),
 			m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
 		MeshRenderer()
-			: m_Mesh(0), m_Material(0), m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
+			: m_Mesh(0ull), m_Material(0ull), m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
 
 		REFLECTABLE(MeshRenderer,
 			(AssetReference<MeshData>)(m_Mesh),
@@ -79,17 +79,6 @@ namespace Glory
 		);
 
 		bool m_WasSubmittedForStatic;
-	};
-
-	struct ModelRenderer
-	{
-		ModelRenderer(ModelData* pModel, MaterialData* pMaterial) : m_Model(pModel != nullptr ? pModel->GetUUID() : 0), m_Materials({ pMaterial != nullptr ? pMaterial->GetUUID() : 0 }) {}
-		ModelRenderer() : m_Model(0), m_Materials(std::vector<MeshMaterial>()) {}
-
-		REFLECTABLE(ModelRenderer,
-			(AssetReference<ModelData>)	(m_Model),
-			(std::vector<MeshMaterial>)	(m_Materials)
-		)
 	};
 
 	struct CameraComponent
@@ -114,29 +103,6 @@ namespace Glory
 		)
 
 		CameraRef m_Camera;
-	};
-
-	struct LookAt
-	{
-		LookAt() : m_Eye(0.0f), m_Center(0.0f), m_Up({0.0f, 1.0f, 0.0f}) {}
-		LookAt(const glm::vec3& eye, const glm::vec3& center, const glm::vec3& up) : m_Eye(eye), m_Center(center), m_Up(up) {}
-
-		REFLECTABLE(LookAt,
-			(glm::vec3)	(m_Eye),
-			(glm::vec3)	(m_Center),
-			(glm::vec3)	(m_Up)
-		)
-	};
-
-	struct Spin
-	{
-		Spin() : m_Speed(10.0f), m_Time(0.0f) {}
-		Spin(float speed) : m_Speed(speed), m_Time(0.0f) {}
-
-		REFLECTABLE(Spin,
-			(float)	(m_Speed),
-			(float)	(m_Time)
-		)
 	};
 
 	struct LayerComponent
@@ -182,7 +148,7 @@ namespace Glory
 
 	struct TextComponent
 	{
-		TextComponent() : m_Font(0), m_Text("Hello World!"), m_Scale(0.01f),
+		TextComponent() : m_Font(0ull), m_Text("Hello World!"), m_Scale(0.01f),
 			m_Color(1.0f, 1.0f, 1.0f, 1.0f), m_Alignment(Alignment::Left), m_WrapWidth(0.0f), m_Dirty(true) {}
 
 		REFLECTABLE(TextComponent,

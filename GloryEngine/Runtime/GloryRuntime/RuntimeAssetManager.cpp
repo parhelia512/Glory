@@ -91,7 +91,7 @@ namespace Glory
 		}
 
 		/* Load as archive */
-		BinaryFileStream stream{ path };
+		Utils::BinaryFileStream stream{ path };
 		AssetArchive archive{ &stream };
 		archive.Deserialize(m_pEngine);
 		const std::string& str = path.string();

@@ -11,6 +11,7 @@
 
 #include <Components.h>
 #include <Renderer.h>
+#include <GameTime.h>
 
 #include <IconsFontAwesome6.h>
 
@@ -20,7 +21,6 @@ namespace Glory::Editor
 	{
 		ResourceTypes::GetHash<Transform>(),
 		ResourceTypes::GetHash<CameraComponent>(),
-		ResourceTypes::GetHash<LookAt>()
 	};
 
 	std::vector<IPlayModeHandler*> EditorPlayer::m_pSceneLoopHandlers;
@@ -59,14 +59,12 @@ namespace Glory::Editor
 		//if (pSelected) Selection::SetActiveObject(pSelected);
 
 		SceneManager* pScenes = pEngine->GetSceneManager();
-		Utils::ECS::ComponentTypes* pComponentTypes = pScenes->ComponentTypesInstance();
-		Utils::ECS::ComponentTypes::SetInstance(pComponentTypes);
 
 		/* Enable all callbacks */
 		for (size_t i = 0; i < pScenes->OpenScenesCount(); ++i)
 		{
 			GScene* pScene = pScenes->GetOpenScene(i);
-			pScene->GetRegistry().EnableAllIndividualCallbacks();
+			pScene->GetRegistry().EnableAllIndividualCalls();
 		}
 
 		pScenes->Start();
@@ -87,8 +85,6 @@ namespace Glory::Editor
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
 
 		SceneManager* pScenes = pEngine->GetSceneManager();
-		Utils::ECS::ComponentTypes* pComponentTypes = pScenes->ComponentTypesInstance();
-		Utils::ECS::ComponentTypes::SetInstance(pComponentTypes);
 
 		pScenes->Stop();
 
@@ -143,16 +139,16 @@ namespace Glory::Editor
 
 	void EditorPlayer::Tick(IEngine* pEngine)
 	{
+		const float dt = pEngine->Time().GetDeltaTime();
+
 		if (EditorApplication::GetInstance()->CurrentMode() == EditorMode::M_Play)
 		{
-			if (!m_IsPaused || m_FrameRequested) pEngine->UpdateSceneManager();
+			if (!m_IsPaused || m_FrameRequested) pEngine->UpdateSceneManager(dt);
 			m_FrameRequested = false;
 		}
 		else
 		{
 			SceneManager* pScenes = pEngine->GetSceneManager();
-			Utils::ECS::ComponentTypes* pComponentTypes = pScenes->ComponentTypesInstance();
-			Utils::ECS::ComponentTypes::SetInstance(pComponentTypes);
 
 			for (size_t i = 0; i < pScenes->OpenScenesCount(); ++i)
 			{
@@ -160,7 +156,20 @@ namespace Glory::Editor
 				for (size_t i = 0; i < ComponentsToUpdateInEditor.size(); i++)
 				{
 					const uint32_t hash = ComponentsToUpdateInEditor[i];
-					pScene->GetRegistry().InvokeAll(hash, Glory::Utils::ECS::InvocationType::Update);
+					Utils::ECS::IComponentManager* manager = pScene->GetRegistry().GetComponentManager(hash);
+					manager->PreUpdate(dt);
+				}
+				for (size_t i = 0; i < ComponentsToUpdateInEditor.size(); i++)
+				{
+					const uint32_t hash = ComponentsToUpdateInEditor[i];
+					Utils::ECS::IComponentManager* manager = pScene->GetRegistry().GetComponentManager(hash);
+					manager->Update(dt);
+				}
+				for (size_t i = 0; i < ComponentsToUpdateInEditor.size(); i++)
+				{
+					const uint32_t hash = ComponentsToUpdateInEditor[i];
+					Utils::ECS::IComponentManager* manager = pScene->GetRegistry().GetComponentManager(hash);
+					manager->PostUpdate(dt);
 				}
 			}
 
@@ -170,7 +179,20 @@ namespace Glory::Editor
 				for (size_t i = 0; i < ComponentsToUpdateInEditor.size(); i++)
 				{
 					const uint32_t hash = ComponentsToUpdateInEditor[i];
-					pScene->GetRegistry().InvokeAll(hash, Glory::Utils::ECS::InvocationType::Update);
+					Utils::ECS::IComponentManager* manager = pScene->GetRegistry().GetComponentManager(hash);
+					manager->PreUpdate(dt);
+				}
+				for (size_t i = 0; i < ComponentsToUpdateInEditor.size(); i++)
+				{
+					const uint32_t hash = ComponentsToUpdateInEditor[i];
+					Utils::ECS::IComponentManager* manager = pScene->GetRegistry().GetComponentManager(hash);
+					manager->Update(dt);
+				}
+				for (size_t i = 0; i < ComponentsToUpdateInEditor.size(); i++)
+				{
+					const uint32_t hash = ComponentsToUpdateInEditor[i];
+					Utils::ECS::IComponentManager* manager = pScene->GetRegistry().GetComponentManager(hash);
+					manager->PostUpdate(dt);
 				}
 			}
 		}

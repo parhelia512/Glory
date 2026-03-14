@@ -1,6 +1,7 @@
 #include "CubemapData.h"
-#include "BinaryStream.h"
 #include "ImageData.h"
+
+#include <BinaryStream.h>
 
 namespace Glory
 {
@@ -50,7 +51,7 @@ namespace Glory
 		return m_SamplerSettings;
 	}
 
-	void CubemapData::Serialize(BinaryStream& container) const
+	void CubemapData::Serialize(Utils::BinaryStream& container) const
 	{
 		for (size_t i = 0; i < 6; ++i)
 		{
@@ -60,7 +61,7 @@ namespace Glory
 		container.Write(m_SamplerSettings);
 	}
 
-	void CubemapData::Deserialize(BinaryStream& container)
+	void CubemapData::Deserialize(Utils::BinaryStream& container)
 	{
 		for (size_t i = 0; i < 6; ++i)
 		{

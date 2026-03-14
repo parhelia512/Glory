@@ -8,11 +8,15 @@
 #include <vector>
 #include <spirv_cross/spirv_cross.hpp>
 
+namespace Glory::Utils
+{
+	class BinaryStream;
+}
+
 namespace Glory
 {
 	class MaterialData;
 	class PipelineData;
-	class BinaryStream;
 }
 
 namespace Glory::Editor
@@ -35,8 +39,8 @@ namespace Glory::Editor
 		GLORY_EDITOR_API void LoadIntoMaterial(MaterialData* pMaterial) const;
 		GLORY_EDITOR_API void LoadIntoPipeline(PipelineData* pMaterial) const;
 
-		void Serialize(BinaryStream& container) const;
-		void Deserialize(BinaryStream& container);
+		void Serialize(Utils::BinaryStream& container) const;
+		void Deserialize(Utils::BinaryStream& container);
 
 	private:
 		friend class EditorPipelineManager;

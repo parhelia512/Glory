@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cassert>
 
-namespace Glory::Utils::ECS
+namespace Glory::Utils
 {
 	template<typename Element, size_t pageSize>
 	struct PaginatedArray
@@ -67,7 +67,7 @@ namespace Glory::Utils::ECS
 				const uint8_t newSize = index + 1;
 				Element* newElements = new Element[newSize];
 				std::memcpy(&newElements[0], &m_Elements[0], sizeof(Element)*m_Size);
-				std::memset(&newElements[m_Size], Element(0), sizeof(Element)*size_t(newSize - m_Size));
+				std::memset(&newElements[m_Size], std::numeric_limits<Element>::max(), sizeof(Element)*size_t(newSize - m_Size));
 				newElements[index] = elem;
 				m_Elements.reset(newElements);
 				m_Size = newSize;
@@ -86,15 +86,27 @@ namespace Glory::Utils::ECS
 				Element* newElements = new Element[newSize];
 				for (size_t i = 0; i < m_Size; ++i)
 					newElements[i] = std::move(m_Elements[i]);
-				std::memset(&newElements[m_Size], Element(0), sizeof(Element)*(newSize - m_Size));
+				std::memset(&newElements[m_Size], std::numeric_limits<Element>::max(), sizeof(Element)*(newSize - m_Size));
 				newElements[index] = std::move(elem);
 				m_Elements.reset(newElements);
 				m_Size = newSize;
 			}
 
+			void Resize(uint8_t size)
+			{
+				assert(size <= MAX_PAGE_SIZE);
+				Element* newElements = new Element[size];
+				for (size_t i = 0; i < m_Size; ++i)
+					newElements[i] = std::move(m_Elements[i]);
+				std::memset(&newElements[m_Size], std::numeric_limits<Element>::max(), sizeof(Element)*(size - m_Size));
+				m_Elements.reset(newElements);
+				m_Size = size;
+			}
+
 			static constexpr uint8_t MAX_PAGE_SIZE = pageSize;
 
 		private:
+			friend struct PaginatedArray;
 			std::unique_ptr<Element[]> m_Elements;
 			uint8_t m_Size;
 		};
@@ -156,7 +168,53 @@ namespace Glory::Utils::ECS
 			m_Pages[pageIndex].Insert(index, std::move(elem));
 		}
 
+		inline uint32_t PageCount() const
+		{
+			return m_PageCount;
+		}
+
+		uint8_t GetPageSize(size_t index) const
+		{
+			return m_Pages[index].m_Size;
+		}
+
+		Element* GetPageData(size_t index)
+		{
+			return m_Pages[index].m_Elements.get();
+		}
+
+		const Element* GetPageData(size_t index) const
+		{
+			return m_Pages[index].m_Elements.get();
+		}
+
+		void ResizePage(size_t index, uint8_t size)
+		{
+			m_Pages[index].Resize(size);
+		}
+
 		const uint8_t MaxPageSize = pageSize;
+
+		bool operator==(const PaginatedArray<Element, pageSize>& other) const
+		{
+			if (m_PageCount != other.m_PageCount) return false;
+			for (uint32_t i = 0; i < m_PageCount; ++i)
+			{
+				if (m_Pages[i].m_Size != other.m_Pages[i].m_Size) return false;
+				if (std::memcmp(m_Pages[i].m_Elements.get(), other.m_Pages[i].m_Elements.get(), m_Pages[i].m_Size*sizeof(Element)) != 0)
+					return false;
+			}
+			return true;
+		}
+
+		void Clear()
+		{
+			for (size_t i = 0; i < m_PageCount; ++i)
+			{
+				m_Pages[i].m_Elements.release();
+				m_Pages[i].m_Size = 0;
+			}
+		}
 
 	private:
 		std::unique_ptr<Page[]> m_Pages;
@@ -201,6 +259,13 @@ namespace Glory::Utils::ECS
 			OnReserveDense();
 		}
 
+		void ResizeDense(size_t newSize)
+		{
+			if (newSize > m_DenseCapacity)
+				ReserveDense(newSize);
+			m_DenseSize = newSize;
+		}
+
 		Dense& Add(Sparse sparseID, Dense&& dense)
 		{
 			if (sparseID >= m_SparseCapacity)
@@ -222,6 +287,7 @@ namespace Glory::Utils::ECS
 
 		void Swap(size_t index1, size_t index2)
 		{
+			if (index1 == index2) return;
 			Sparse& id1 = m_DenseIDs[index1];
 			Sparse& id2 = m_DenseIDs[index2];
 			*m_Sparse[id1] = index2;
@@ -257,6 +323,12 @@ namespace Glory::Utils::ECS
 			OnRemove(sparseID, *index);
 		}
 
+		void Clear()
+		{
+			m_DenseSize = 0;
+			m_Sparse.Clear();
+		}
+
 		Dense& Get(Sparse sparse)
 		{
 			auto index = m_Sparse[sparse];
@@ -289,7 +361,6 @@ namespace Glory::Utils::ECS
 		inline size_t Index(Sparse sparse) const
 		{
 			const size_t* index = m_Sparse[sparse];
-
 			return index ? *index : InvalidIndex;
 		}
 
@@ -345,12 +416,51 @@ namespace Glory::Utils::ECS
 
 		static constexpr size_t InvalidIndex = UINT64_MAX;
 
+		Dense* DenseData()
+		{
+			return m_Dense.get();
+		}
+
+		Dense* DenseData() const
+		{
+			return m_Dense.get();
+		}
+
+		Sparse* DenseIDData()
+		{
+			return m_DenseIDs.get();
+		}
+
+		Sparse* DenseIDData() const
+		{
+			return m_DenseIDs.get();
+		}
+
+		PaginatedArray<size_t, pageSize>& SparseData()
+		{
+			return m_Sparse;
+		}
+
+		const PaginatedArray<size_t, pageSize>& SparseData() const
+		{
+			return m_Sparse;
+		}
+
+		void DoneReading()
+		{
+			for (size_t i = 0; i < m_DenseSize; ++i)
+			{
+				OnAdd(i, m_DenseIDs[i], m_Dense[i]);
+			}
+		}
+
 	protected:
 		virtual void OnAdd(size_t, Sparse, Dense&) {};
 		virtual void OnRemove(Sparse, size_t) {};
 		virtual void OnReserveDense() {};
 		virtual void OnReserveSparse() {};
 		virtual void OnSwap(size_t index1, size_t index2) {};
+		virtual void OnClear() {};
 
 	private:
 		PaginatedArray<size_t, pageSize> m_Sparse;

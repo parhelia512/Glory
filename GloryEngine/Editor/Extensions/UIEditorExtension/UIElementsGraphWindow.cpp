@@ -84,7 +84,7 @@ namespace Glory::Editor
 			const Utils::ECS::EntityID draggingEntity = payload.m_EntityID;
 			Utils::ECS::EntityID oldParent = registry.GetParent(draggingEntity);
 			const UUID toReParent = pDocument->EntityUUID(draggingEntity);
-			const UUID oldParentID = oldParent ? pDocument->EntityUUID(oldParent) : 0;
+			const UUID oldParentID = oldParent ? pDocument->EntityUUID(oldParent) : UUID(0ull);
 			const size_t oldSiblingIndex = registry.SiblingIndex(draggingEntity);
 			Undo::StartRecord("UI Re-parent", pDocument->OriginalDocumentID());
 			Undo::AddAction<SetUIParentAction>(toReParent, oldParentID, newParentID, oldSiblingIndex, newSiblingIndex);
@@ -134,7 +134,7 @@ namespace Glory::Editor
 			const Utils::ECS::EntityID draggingEntity = payload.m_EntityID;
 			Utils::ECS::EntityID oldParent = registry.GetParent(draggingEntity);
 			const UUID toReParent = pDocument->EntityUUID(draggingEntity);
-			const UUID oldParentID = oldParent ? pDocument->EntityUUID(oldParent) : 0;
+			const UUID oldParentID = oldParent ? pDocument->EntityUUID(oldParent) : UUID(0ull);
 			const size_t oldSiblingIndex = registry.SiblingIndex(draggingEntity);
 			Undo::StartRecord("UI Re-parent", pDocument->OriginalDocumentID());
 			Undo::AddAction<SetUIParentAction>(toReParent, oldParentID, newParentID, oldSiblingIndex, newSiblingIndex);
@@ -207,7 +207,7 @@ namespace Glory::Editor
 				if (dndHash != ResourceTypes::GetHash<UIElementType>()) return;
 				const UIElementType& payload = *(const UIElementType*)pPayload->Data;
 				Utils::ECS::EntityID parent = registry.GetParent(entity);
-				const UUID newParentID = parent ? pDocument->EntityUUID(parent) : 0;
+				const UUID newParentID = parent ? pDocument->EntityUUID(parent) : UUID(0ull);
 				const size_t newSiblingIndex = 0;
 
 				if (payload.m_NewEntity)
@@ -238,7 +238,7 @@ namespace Glory::Editor
 					parent = registry.GetParent(entity);
 					Utils::ECS::EntityID oldParent = registry.GetParent(draggingEntity);
 					const UUID toReParent = pDocument->EntityUUID(draggingEntity);
-					const UUID oldParentID = oldParent ? pDocument->EntityUUID(oldParent) : 0;
+					const UUID oldParentID = oldParent ? pDocument->EntityUUID(oldParent) : UUID(0ull);
 					const size_t oldSiblingIndex = registry.SiblingIndex(draggingEntity);
 					Undo::StartRecord("UI Re-parent", pDocument->OriginalDocumentID());
 					Undo::AddAction<SetUIParentAction>(toReParent, oldParentID, newParentID, oldSiblingIndex, newSiblingIndex);
@@ -292,7 +292,7 @@ namespace Glory::Editor
 				parent = registry.GetParent(entity);
 				Utils::ECS::EntityID oldParent = registry.GetParent(draggingEntity);
 				const UUID toReParent = pDocument->EntityUUID(draggingEntity);
-				const UUID oldParentID = oldParent ? pDocument->EntityUUID(oldParent) : 0;
+				const UUID oldParentID = oldParent ? pDocument->EntityUUID(oldParent) : UUID(0ull);
 				const size_t oldSiblingIndex = registry.SiblingIndex(draggingEntity);
 				Undo::StartRecord("UI Re-parent", pDocument->OriginalDocumentID());
 				Undo::AddAction<SetUIParentAction>(toReParent, oldParentID, newParentID, oldSiblingIndex, newSiblingIndex);
@@ -316,18 +316,16 @@ namespace Glory::Editor
 			m_RightClickedElement = uuid;
 		}
 
-		Utils::ECS::EntityView* pEntity = registry.GetEntityView(entity);
-
 		ImGui::SameLine();
-		ImGui::Text(" %s %s", pEntity->HierarchyActive() ? ICON_FA_EYE : ICON_FA_EYE_SLASH, name.data());
+		ImGui::Text(" %s %s", registry.EntityActiveHierarchy(entity) ? ICON_FA_EYE : ICON_FA_EYE_SLASH, name.data());
 
 		ImGui::PopStyleVar();
 
 		if (node_open)
 		{
-			for (size_t i = 0; i < pEntity->ChildCount(); i++)
+			for (size_t i = 0; i < registry.ChildCount(entity); i++)
 			{
-				Utils::ECS::EntityID child = pEntity->Child(i);
+				Utils::ECS::EntityID child = registry.Child(entity, i);
 				if (!ChildrenList(i == 0, selectedEntity, child, pDocument)) continue;
 			}
 
@@ -339,7 +337,7 @@ namespace Glory::Editor
 			if (dndHash != ResourceTypes::GetHash<UIElementType>()) return;
 			const UIElementType& payload = *(const UIElementType*)pPayload->Data;
 			Utils::ECS::EntityID parent = registry.GetParent(entity);
-			const UUID newParentID = parent ? pDocument->EntityUUID(parent) : 0;
+			const UUID newParentID = parent ? pDocument->EntityUUID(parent) : UUID(0ull);
 			const size_t newSiblingIndex = registry.SiblingIndex(entity) + 1;
 
 			if (payload.m_NewEntity)
@@ -371,7 +369,7 @@ namespace Glory::Editor
 				parent = registry.GetParent(entity);
 				Utils::ECS::EntityID oldParent = registry.GetParent(draggingEntity);
 				const UUID toReParent = pDocument->EntityUUID(draggingEntity);
-				const UUID oldParentID = oldParent ? pDocument->EntityUUID(oldParent) : 0;
+				const UUID oldParentID = oldParent ? pDocument->EntityUUID(oldParent) : UUID(0ull);
 				const size_t oldSiblingIndex = registry.SiblingIndex(draggingEntity);
 				Undo::StartRecord("UI Re-parent", pDocument->OriginalDocumentID());
 				Undo::AddAction<SetUIParentAction>(toReParent, oldParentID, newParentID, oldSiblingIndex, newSiblingIndex);

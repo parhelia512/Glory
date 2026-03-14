@@ -1,7 +1,7 @@
 project "GloryLocalizeMonoExtender"
 	kind "SharedLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "Off"
 
 	targetdir ("%{modulesOutDir}/GloryLocalize/Scripting/csharp")

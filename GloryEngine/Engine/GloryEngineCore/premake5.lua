@@ -1,7 +1,7 @@
 project "GloryEngineCore"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++latest"
+	cppdialect "C++20"
 	staticruntime "Off"
 
 	targetdir ("%{engineOutDir}")
@@ -16,24 +16,8 @@ project "GloryEngineCore"
 
 	includedirs
 	{
-		--"%{GloryIncludeDir.threads}",
-		--"%{GloryIncludeDir.jobs}",
-		--"%{DepsIncludeDir}",
-		--"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",
-		--"%{IncludeDir.Reflect}",
-		--"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
-		--"%{IncludeDir.ECS}",
-		--"%{stb_image}/..",
-	}
-
-	defines
-	{
-		--"GLORY_EXPORTS",
-		--"GLORY_CORE_EXPORTS",
-		--"GLM_FORCE_RADIANS",
-		--"GLM_FORCE_DEPTH_ZERO_TO_ONE"
 	}
 
 	filter "system:windows"

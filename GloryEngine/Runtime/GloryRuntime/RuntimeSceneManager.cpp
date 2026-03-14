@@ -78,7 +78,7 @@ namespace Glory
 			return;
 		}
 
-		BinaryFileStream file{ path, true };
+		Utils::BinaryFileStream file{ path, true };
 		AssetArchive archive{ &file };
 		archive.Deserialize(m_pEngine);
 
@@ -111,7 +111,7 @@ namespace Glory
 		pScene->SetManager(m_pEngine->GetSceneManager());
 
 		/* Have to make sure every components add callbacks are called */
-		pScene->GetRegistry().InvokeAll(Utils::ECS::InvocationType::OnAdd, NULL);
+		//pScene->GetRegistry().InvokeAll(Utils::ECS::InvocationType::OnAdd, NULL);
 		m_pOpenScenes.push_back(pScene);
 		if (m_pRuntime->IsRunning())
 			pScene->Start();

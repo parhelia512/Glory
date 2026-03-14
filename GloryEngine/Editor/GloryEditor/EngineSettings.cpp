@@ -134,11 +134,12 @@ namespace Glory::Editor
                 const std::string& value = *valueItor;
                 const uint32_t type = settings.Type(value);
                 const uint32_t elementType = settings.ElementType(value);
+                auto valueNode = settingsNode[value];
                 switch (type)
                 {
                 case ST_Enum:
                 case ST_Asset:
-                    change |= PropertyDrawer::GetPropertyDrawer(type)->Draw(value, settingsNode[value], elementType, 0);
+                    change |= PropertyDrawer::GetPropertyDrawer(type)->Draw(value, valueNode, elementType, 0);
                     break;
                 default:
                     change |= PropertyDrawer::DrawProperty(value, settingsNode, type, elementType, 0);

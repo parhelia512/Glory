@@ -1,0 +1,81 @@
+#include "LocalizeManagers.h"
+#include "LocalizeModule.h"
+
+#include <Debug.h>
+
+#include <EntityRegistry.h>
+#include <Components.h>
+
+namespace Glory
+{
+	StringTableLoaderManager::StringTableLoaderManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity), m_pModule(nullptr)
+	{
+	}
+
+	StringTableLoaderManager::~StringTableLoaderManager()
+	{
+	}
+
+	void StringTableLoaderManager::OnValidateImpl(Utils::ECS::EntityID entity, StringTableLoader& pComponent)
+	{
+		m_pModule->LoadStringTable(pComponent.m_StringTable.AssetUUID());
+	}
+
+	void StringTableLoaderManager::OnStopImpl(Utils::ECS::EntityID entity, StringTableLoader& pComponent)
+	{
+		if (pComponent.m_KeepLoaded) return;
+		m_pModule->UnloadStringTable(pComponent.m_StringTable.AssetUUID());
+	}
+
+	void StringTableLoaderManager::GetReferencesImpl(std::vector<UUID>& references) const
+	{
+		for (size_t i = 0; i < Size(); ++i)
+		{
+			const StringTableLoader& localizeComponent = GetAt(i);
+			const UUID id = localizeComponent.m_StringTable.AssetUUID();
+			if (!id) continue;
+			references.push_back(id);
+		}
+	}
+
+	void StringTableLoaderManager::OnInitialize()
+	{
+		Bind(DoValidate, &StringTableLoaderManager::OnValidateImpl);
+		Bind(DoStop, &StringTableLoaderManager::OnStopImpl);
+		Bind(DoGetReferences, &StringTableLoaderManager::GetReferencesImpl);
+	}
+
+	LocalizeManager::LocalizeManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
+		ComponentManager(pRegistry, capacity), m_pModule(nullptr), m_pDebug(nullptr)
+	{
+	}
+
+	LocalizeManager::~LocalizeManager()
+	{
+	}
+
+	void LocalizeManager::OnValidateImpl(Utils::ECS::EntityID entity, Localize& pComponent)
+	{
+		if (m_pRegistry->HasComponent<TextComponent>(entity)) return;
+		m_pDebug->LogError("Localize component requires a TextComponent on the entity");
+	}
+
+	void LocalizeManager::OnStartImpl(Utils::ECS::EntityID entity, Localize& pComponent)
+	{
+		if (!m_pRegistry->HasComponent<TextComponent>(entity)) return;
+		TextComponent& text = m_pRegistry->GetComponent<TextComponent>(entity);
+		const std::string_view fullTerm = pComponent.m_Term;
+		const size_t firstDot = fullTerm.find('.');
+		if (firstDot == std::string::npos) return;
+		const std::string_view tableName = fullTerm.substr(0, firstDot);
+		const std::string_view term = fullTerm.substr(firstDot + 1);
+		text.m_Dirty |= m_pModule->FindString(tableName, term, text.m_Text);
+	}
+
+	void LocalizeManager::OnInitialize()
+	{
+		Bind(DoValidate, &LocalizeManager::OnValidateImpl);
+		Bind(DoStart, &LocalizeManager::OnStartImpl);
+	}
+}

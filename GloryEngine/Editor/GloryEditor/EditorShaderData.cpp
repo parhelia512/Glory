@@ -104,7 +104,7 @@ namespace Glory::Editor
 		}
 	}
 
-	void EditorShaderData::Serialize(BinaryStream& container) const
+	void EditorShaderData::Serialize(Utils::BinaryStream& container) const
 	{
 		container.Write(m_ShaderType).Write(m_ShaderData).
 			Write(m_SamplerNames).Write(m_SamplerTypes).Write(m_PropertyInfos.size());
@@ -118,7 +118,7 @@ namespace Glory::Editor
 		container.Write(m_Features);
 	}
 
-	void EditorShaderData::Deserialize(BinaryStream& container)
+	void EditorShaderData::Deserialize(Utils::BinaryStream& container)
 	{
 		size_t numProperties;
 		container.Read(m_ShaderType).Read(m_ShaderData).

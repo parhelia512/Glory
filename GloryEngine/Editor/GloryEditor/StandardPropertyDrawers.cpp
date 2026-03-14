@@ -14,7 +14,7 @@ namespace Glory::Editor
 	template<typename PropertyType>
 	inline bool PropertyDrawerTemplate<PropertyType>::OnGUI(const std::string& label, PropertyType* data, uint32_t flags) const
 	{
-		throw new std::exception("Missing property drawer")
+		throw new std::exception("Missing property drawer");
 	}
 
 	template<>

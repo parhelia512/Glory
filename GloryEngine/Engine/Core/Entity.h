@@ -1,8 +1,10 @@
 #pragma once
+#include <UUID.h>
+#include <EntityRegistry.h>
+
 #include <cstdint>
 #include <functional>
-#include <EntityID.h>
-#include <EntityRegistry.h>
+#include <string_view>
 
 namespace Glory
 {
@@ -18,7 +20,7 @@ namespace Glory
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
-			return m_pRegistry->AddComponent<T>(m_EntityID, std::forward<Args>(args)...);
+			return m_pRegistry->AddComponent<T>(m_EntityID, UUID(), std::forward<Args>(args)...);
 		}
 
 		template<typename T>
@@ -43,8 +45,6 @@ namespace Glory
 		Utils::ECS::EntityID Parent() const;
 		void SetParent(Utils::ECS::EntityID parent);
 
-		Utils::ECS::EntityView* GetEntityView() const;
-
 		void Clear();
 		bool IsValid() const;
 		bool IsDirty() const;
@@ -66,12 +66,13 @@ namespace Glory
 		bool IsActiveSelf() const;
 		bool IsActive() const;
 		bool IsHierarchyActive() const;
-		void SetActive(bool active);
-		void SetActiveSelf(bool active);
-		void SetActiveHierarchy(bool active);
+		void SetActive(bool active, bool withCallbacks=true);
 
 		std::string_view Name() const;
-		void UpdateHierarchyActive();
+
+		size_t ComponentCount() const;
+		uint32_t ComponentType(size_t index) const;
+		size_t ComponentID(size_t index) const;
 
 	private:
 		Utils::ECS::EntityID m_EntityID;

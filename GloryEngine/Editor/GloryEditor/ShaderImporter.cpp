@@ -75,7 +75,7 @@ namespace Glory::Editor
         if (!std::filesystem::exists(pathToFile))
         {
             EditorApplication::GetInstance()->GetEngine()->GetDebug().LogError("Could not open shader include: " + includePath + " File not found.");
-            return nullptr;
+            return false;
         }
 
         shaderData.Includes.push_back(pathToFile);
@@ -88,7 +88,7 @@ namespace Glory::Editor
         if (!file.is_open())
         {
             EditorApplication::GetInstance()->GetEngine()->GetDebug().LogError("Could not open file: " + pathToFile.string());
-            return nullptr;
+            return false;
         }
 
         file.seekg(0, std::ios_base::end);

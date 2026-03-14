@@ -5,6 +5,8 @@
 
 #include <map>
 
+#include <NodeRef.h>
+
 namespace Glory
 {
 	class MaterialData;
@@ -14,7 +16,6 @@ namespace Glory
 namespace Utils
 {
 	struct YAMLFileRef;
-	struct NodeValueRef;
 }
 
 namespace Editor
@@ -73,12 +74,12 @@ namespace Editor
 		 * @param pMaterial Material to read the properties to
 		 * @param clearProperties Whether to clear the property data of the material before reading
 		 */
-		void ReadPropertiesInto(Utils::NodeValueRef& properties, MaterialData* pMaterial, bool clearProperties=true) const;
+		void ReadPropertiesInto(Utils::NodeValueRef properties, MaterialData* pMaterial, bool clearProperties=true) const;
 		/** @brief Write properties to YAML
 		 * @param properties Properties YAML destination
 		 * @param pMaterial Material to read the properties from
 		 */
-		void WritePropertiesTo(Utils::NodeValueRef& properties, MaterialData* pMaterial) const;
+		void WritePropertiesTo(Utils::NodeValueRef properties, MaterialData* pMaterial) const;
 
 		/** @brief Update a material by loading the properties of its attached shaders and reload the YAML data if possible
 		 * @param pMaterial Material to update

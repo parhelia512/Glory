@@ -1,6 +1,6 @@
 project "RuntimeTestApplication"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "Off"
 
 	targetdir ("%{engineOutDir}")

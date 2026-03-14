@@ -1,5 +1,6 @@
 #include "UISceneCSAPI.h"
 
+#include <EntityCSAPI.h>
 #include <UIDocument.h>
 #include <UIRendererModule.h>
 #include <UIComponents.h>
@@ -7,12 +8,11 @@
 #include <GloryMonoScipting.h>
 #include <Debug.h>
 #include <IEngine.h>
-#include <ComponentTypes.h>
 #include <AssetManager.h>
 
 namespace Glory
 {
-	IEngine* UIScene_EngineInstance;
+	static IEngine* UIScene_EngineInstance;
 #define UI_MODULE UIScene_EngineInstance->GetOptionalModule<UIRendererModule>()
 
 #pragma region UI Scene
@@ -22,7 +22,7 @@ namespace Glory
         UIDocument* pDocument = UI_MODULE->FindDocument(sceneID);
         if (!pDocument) return 0;
         const Utils::ECS::EntityID entity = pDocument->CreateEntity("New Empty Element");
-        return entity ? pDocument->EntityUUID(entity) : 0;
+        return entity ? pDocument->EntityUUID(entity) : UUID(0ull);
     }
 
     uint64_t UIScene_NewEmptyObjectWithName(uint64_t sceneID, MonoString* name)
@@ -31,7 +31,7 @@ namespace Glory
         UIDocument* pDocument = UI_MODULE->FindDocument(sceneID);
         if (!pDocument) return 0;
         const Utils::ECS::EntityID entity = pDocument->CreateEntity(nameStr);
-        return entity ? pDocument->EntityUUID(entity) : 0;
+        return entity ? pDocument->EntityUUID(entity) : UUID(0ull);
     }
 
     uint32_t UIScene_ObjectsCount(uint64_t sceneID)
@@ -71,7 +71,7 @@ namespace Glory
         UIDocument* pDocument = UI_MODULE->FindDocument(sceneID);
         if (!pDocument) return false;
         const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
-        return pDocument->Registry().GetEntityView(entity)->Active();
+        return pDocument->Registry().EntityActiveHierarchy(entity);
     }
 
     void UIElement_SetActive(uint64_t sceneID, uint64_t objectID, bool active)
@@ -132,7 +132,7 @@ namespace Glory
         const size_t childCount = pDocument->Registry().ChildCount(entity);
         if (index >= childCount) return 0;
         const Utils::ECS::EntityID child = pDocument->Registry().Child(entity, index);
-        return child ? pDocument->EntityUUID(child) : 0;
+        return child ? pDocument->EntityUUID(child) : UUID(0ull);
     }
 
     uint64_t UIElement_GetParent(uint64_t sceneID, uint64_t objectID)
@@ -141,7 +141,7 @@ namespace Glory
         if (!pDocument) return 0;
         const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
         const Utils::ECS::EntityID parent = pDocument->Registry().GetParent(entity);
-        return parent ? pDocument->EntityUUID(parent) : 0;
+        return parent ? pDocument->EntityUUID(parent) : UUID(0ull);
     }
 
     void UIElement_SetParent(uint64_t sceneID, uint64_t objectID, uint64_t parentID)
@@ -162,15 +162,14 @@ namespace Glory
         if (objectID == 0 || sceneID == 0) return 0;
         UIDocument* pDocument = UI_MODULE->FindDocument(sceneID);
         if (pDocument == nullptr) return 0;
-        const uint32_t componentHash = Glory::ComponentTypes::GetComponentHash(componentName);
+        const uint32_t componentHash = GetComponentHash(componentName);
         const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
         Utils::ECS::EntityRegistry& registry = pDocument->Registry();
-        Utils::ECS::EntityView* pEntityView = registry.GetEntityView(entity);
 
-        for (auto iter = pEntityView->GetIterator(); iter != pEntityView->GetIteratorEnd(); iter++)
+        for (size_t i = 0; i < registry.EntityComponentCount(entity); ++i)
         {
-            if (iter->second != componentHash) continue;
-            return iter->first;
+            if (registry.EntityComponentType(entity, i) != componentHash) continue;
+            return registry.EntityComponentID(entity, i);
         }
         return 0;
     }
@@ -181,13 +180,11 @@ namespace Glory
         if (objectID == 0 || sceneID == 0) return 0;
         UIDocument* pDocument = UI_MODULE->FindDocument(sceneID);
         if (pDocument == nullptr) return 0;
-        const uint32_t componentHash = Glory::ComponentTypes::GetComponentHash(componentName);
+        const uint32_t componentHash = GetComponentHash(componentName);
         const UUID uuid{};
 
         const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
         Utils::ECS::EntityRegistry& registry = pDocument->Registry();
-        Utils::ECS::EntityView* pEntityView = registry.GetEntityView(entity);
-
         if (registry.HasComponent(entity, componentHash))
         {
             UIScene_EngineInstance->GetDebug().LogError("Mutliple components of the same type on one entity is currently not supported");
@@ -195,16 +192,17 @@ namespace Glory
         }
 
         void* pNewComponent = registry.CreateComponent(entity, componentHash, uuid);
-        Utils::ECS::BaseTypeView* pTypeView = registry.GetTypeView(componentHash);
-        pTypeView->Invoke(Utils::ECS::InvocationType::OnValidate, &registry, entity, pNewComponent);
-        pTypeView->Invoke(Utils::ECS::InvocationType::Start, &registry, entity, pNewComponent);
+        Utils::ECS::IComponentManager* manager = registry.GetComponentManager(componentHash);
+        manager->CallValidate(entity);
+        manager->CallStart(entity);
         /* We can assume the component is active, but is the entity active? */
-        if (pEntityView->IsActive())
-            pTypeView->Invoke(Utils::ECS::InvocationType::OnEnable, &registry, entity, pNewComponent);
-
+        if (registry.EntityActiveHierarchy(entity))
+        {
+            manager->CallOnActivate(entity);
+            manager->CallOnEnableDraw(entity);
+        }
         pDocument->SetEntityDirty(entity, true, true);
         pDocument->SetDrawDirty();
-
         return uuid;
     }
 
@@ -214,14 +212,29 @@ namespace Glory
         if (objectID == 0 || sceneID == 0) return 0;
         UIDocument* pDocument = UI_MODULE->FindDocument(sceneID);
         if (pDocument == nullptr) return 0;
-        const uint32_t componentHash = Glory::ComponentTypes::GetComponentHash(componentName);
+        const uint32_t componentHash = GetComponentHash(componentName);
         const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
         Utils::ECS::EntityRegistry& registry = pDocument->Registry();
-        if (!componentHash) return 0;
-        const UUID componentID = registry.RemoveComponent(entity, componentHash);
+
+        if (registry.HasComponent(entity, componentHash))
+        {
+            UIScene_EngineInstance->GetDebug().LogError(
+                std::format("SceneObject_RemoveComponent: Entity does not have a component of type {}.", componentName));
+            return 0ull;
+        }
+
+        /* Call OnDeactivate and OnDisableDraw */
+        Utils::ECS::IComponentManager* manager = registry.GetComponentManager(componentHash);
+        manager->CallStop(entity);
+        if (registry.EntityActiveHierarchy(entity) && manager->IsActive(entity))
+        {
+            manager->CallOnDeactivate(entity);
+            manager->CallOnDisableDraw(entity);
+        }
+        const UUID removedID = registry.RemoveComponent(entity, componentHash);
         pDocument->SetEntityDirty(entity, true, true);
         pDocument->SetDrawDirty();
-        return componentID;
+        return removedID;
     }
 
     void UIElement_RemoveComponentByID(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
@@ -231,10 +244,18 @@ namespace Glory
         if (pDocument == nullptr) return;
         const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
         Utils::ECS::EntityRegistry& registry = pDocument->Registry();
-        Utils::ECS::EntityView* pEntityView = registry.GetEntityView(entity);
-        const uint32_t hash = pEntityView->ComponentType(componentID);
-        if (!hash) return;
-        registry.RemoveComponent(entity, hash);
+        const uint32_t componentHash = registry.EntityComponentIDToHash(entity, componentID);
+
+
+        /* Call OnDeactivate and OnDisableDraw */
+        Utils::ECS::IComponentManager* manager = registry.GetComponentManager(componentHash);
+        manager->CallStop(entity);
+        if (registry.EntityActiveHierarchy(entity) && manager->IsActive(entity))
+        {
+            manager->CallOnDeactivate(entity);
+            manager->CallOnDisableDraw(entity);
+        }
+        registry.RemoveComponent(entity, componentHash);
         pDocument->SetEntityDirty(entity, true, true);
         pDocument->SetDrawDirty();
     }
@@ -258,10 +279,9 @@ namespace Glory
         if (pDocument == nullptr) return false;
         const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
         Utils::ECS::EntityRegistry& registry = pDocument->Registry();
-        Utils::ECS::EntityView* pEntityView = registry.GetEntityView(entity);
-        const uint32_t type = pEntityView->ComponentType(componentID);
-        Utils::ECS::BaseTypeView* pTypeView = registry.GetTypeView(type);
-        return pTypeView->IsActive(entity);
+        const uint32_t componentHash = registry.EntityComponentIDToHash(entity, componentID);
+        Utils::ECS::IComponentManager* manager = registry.GetComponentManager(componentHash);
+        return manager->IsActive(entity);
     }
 
     void UIComponent_SetActive(uint64_t sceneID, uint64_t objectID, uint64_t componentID, bool active)
@@ -271,10 +291,13 @@ namespace Glory
         if (pDocument == nullptr) return;
         const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
         Utils::ECS::EntityRegistry& registry = pDocument->Registry();
-        Utils::ECS::EntityView* pEntityView = registry.GetEntityView(entity);
-        const uint32_t type = pEntityView->ComponentType(componentID);
-        Utils::ECS::BaseTypeView* pTypeView = registry.GetTypeView(type);
-        pTypeView->SetActive(entity, active);
+        const uint32_t componentHash = registry.EntityComponentIDToHash(entity, componentID);
+        Utils::ECS::IComponentManager* manager = registry.GetComponentManager(componentHash);
+
+        if (active)
+            manager->Activate(entity);
+        else
+            manager->Deactivate(entity);
         pDocument->SetEntityDirty(entity, true, true);
         pDocument->SetDrawDirty();
     }

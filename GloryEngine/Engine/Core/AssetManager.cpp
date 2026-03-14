@@ -2,9 +2,9 @@
 #include "AssetDatabase.h"
 #include "IEngine.h"
 #include "Debug.h"
-#include "BinaryStream.h"
 #include "AssetArchive.h"
 
+#include <BinaryStream.h>
 #include <Hash.h>
 
 namespace Glory

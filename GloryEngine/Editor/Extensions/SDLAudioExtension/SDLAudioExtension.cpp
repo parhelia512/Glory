@@ -48,8 +48,6 @@ namespace Glory::Editor
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
 		Reflect::SetReflectInstance(&pEngine->Reflection());
 
-		pEngine->GetSceneManager()->ComponentTypesInstance();
-
 		Editor::RegisterEditor(&AudioEditor);
 		Editor::RegisterEditor(&SourceEditor);
 		EntitySceneObjectEditor::AddComponentIcon<AudioSource>(ICON_FA_VOLUME_HIGH);

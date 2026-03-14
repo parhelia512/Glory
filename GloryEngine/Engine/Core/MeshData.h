@@ -30,8 +30,8 @@ namespace Glory
 		const AttributeType* AttributeTypes() const;
 		const std::vector<AttributeType>& AttributeTypesVector() const;
 
-		void Serialize(BinaryStream& container) const override;
-		void Deserialize(BinaryStream& container) override;
+		void Serialize(Utils::BinaryStream& container) const override;
+		void Deserialize(Utils::BinaryStream& container) override;
 
 		uint32_t AddVertex(const float* vertex);
 		void AddFace(uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3);

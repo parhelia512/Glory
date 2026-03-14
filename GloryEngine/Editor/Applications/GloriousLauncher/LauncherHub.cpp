@@ -12,7 +12,7 @@
 
 namespace Glory::EditorLauncher
 {
-    constexpr char* MenuNames[] = {
+    constexpr const char* MenuNames[] = {
         "Projects",
         "Installs",
         "Support",
