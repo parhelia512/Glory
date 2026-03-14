@@ -141,7 +141,7 @@ namespace Glory::Utils::ECS
 		uint32_t EntityComponentType(EntityID entity, size_t index) const;
 		UUID EntityComponentID(EntityID entity, size_t index) const;
 		uint32_t EntityComponentIDToHash(EntityID entity, UUID id) const;
-		uint32_t EntityComponentHashToID(EntityID entity, uint32_t typeHash) const;
+		UUID EntityComponentHashToID(EntityID entity, uint32_t typeHash) const;
 		void* GetComponentAddress(EntityID entity, uint32_t type);
 		const void* GetComponentAddress(EntityID entity, uint32_t type) const;
 		void* CopyComponent(EntityID entity, uint32_t type, UUID componentID, const void* data);

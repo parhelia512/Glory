@@ -67,7 +67,7 @@ namespace Glory::Utils
 				const uint8_t newSize = index + 1;
 				Element* newElements = new Element[newSize];
 				std::memcpy(&newElements[0], &m_Elements[0], sizeof(Element)*m_Size);
-				std::memset(&newElements[m_Size], std::numeric_limits<Element>::max(), sizeof(Element)*size_t(newSize - m_Size));
+				std::memset(&newElements[m_Size], int(std::numeric_limits<Element>::max()), sizeof(Element)*size_t(newSize - m_Size));
 				newElements[index] = elem;
 				m_Elements.reset(newElements);
 				m_Size = newSize;
@@ -86,7 +86,7 @@ namespace Glory::Utils
 				Element* newElements = new Element[newSize];
 				for (size_t i = 0; i < m_Size; ++i)
 					newElements[i] = std::move(m_Elements[i]);
-				std::memset(&newElements[m_Size], std::numeric_limits<Element>::max(), sizeof(Element)*(newSize - m_Size));
+				std::memset(&newElements[m_Size], int(std::numeric_limits<Element>::max()), sizeof(Element)*(newSize - m_Size));
 				newElements[index] = std::move(elem);
 				m_Elements.reset(newElements);
 				m_Size = newSize;
@@ -98,7 +98,7 @@ namespace Glory::Utils
 				Element* newElements = new Element[size];
 				for (size_t i = 0; i < m_Size; ++i)
 					newElements[i] = std::move(m_Elements[i]);
-				std::memset(&newElements[m_Size], std::numeric_limits<Element>::max(), sizeof(Element)*(size - m_Size));
+				std::memset(&newElements[m_Size], int(std::numeric_limits<Element>::max()), sizeof(Element)*(size - m_Size));
 				m_Elements.reset(newElements);
 				m_Size = size;
 			}

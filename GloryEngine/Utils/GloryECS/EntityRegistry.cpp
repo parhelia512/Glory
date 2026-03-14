@@ -365,7 +365,7 @@ namespace Glory::Utils::ECS
 		return iter->first;
 	}
 
-	uint32_t EntityRegistry::EntityComponentHashToID(EntityID entity, uint32_t typeHash) const
+	UUID EntityRegistry::EntityComponentHashToID(EntityID entity, uint32_t typeHash) const
 	{
 		auto iter = std::find_if(m_EntityComponentOrder[entity].begin(), m_EntityComponentOrder[entity].end(),
 			[this, typeHash](auto& pair) { return pair.first == typeHash; });

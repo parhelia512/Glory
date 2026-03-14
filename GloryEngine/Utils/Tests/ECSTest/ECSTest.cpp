@@ -4,6 +4,8 @@
 #include <EntityRegistry.h>
 #include <RegistryFactory.h>
 
+#include <array>
+
 template<>
 struct std::formatter<Glory::UUID, char>
 {
@@ -315,8 +317,10 @@ namespace Glory::Test
 		GLORY_TEST_VERIFY(transforms);
 		GLORY_TEST_VERIFY(velocities);
 
-		GLORY_TEST_VERIFY(static_cast<TransformManager*>(transforms)->m_pTest);
-		GLORY_TEST_VERIFY(static_cast<VelocityManager*>(velocities)->m_pTest);
+		if (transforms)
+			GLORY_TEST_VERIFY(static_cast<TransformManager*>(transforms)->m_pTest);
+		if (velocities)
+			GLORY_TEST_VERIFY(static_cast<VelocityManager*>(velocities)->m_pTest);
 	}
 
 	void ECSTest::CreateEntities()
@@ -635,7 +639,7 @@ namespace Glory::Test
 		}
 
 		/* Deactivating some components would block some calls */
-		const std::vector<Utils::ECS::EntityID> toDisable = {
+		const std::array<Utils::ECS::EntityID, 12> toDisable = {
 			1ull, 23ull, 25ull, 43ull, 44ull, 49ull, 60ull, 65ull, 67ull, 71ull, 90ull, 95ull
 		};
 
@@ -714,6 +718,7 @@ namespace Glory::Test
 			++updateCount;
 		};
 
+		std::array<Utils::ECS::EntityID, 10> root1Children;
 		Utils::ECS::EntityID root1 = registry.CreateEntity();
 		registry.AddComponent<HierarchyTest>(root1, UUID());
 		expectedOrder.push_back(root1);
@@ -725,6 +730,7 @@ namespace Glory::Test
 			registry.AddComponent<HierarchyTest>(child, UUID());
 			registry.SetParent(child, root1);
 			expectedOrder.push_back(child);
+			root1Children[i] = child;
 
 			GLORY_TEST_COMPARE(registry.ChildCount(root1), i + 1);
 			GLORY_TEST_COMPARE(registry.Child(root1, i), child);
@@ -736,8 +742,8 @@ namespace Glory::Test
 		expectedOrder.push_back(root2);
 
 		/* Predefined child order */
-		Utils::ECS::EntityID children[10];
-		const std::vector<size_t> childOrder = {
+		std::array<Utils::ECS::EntityID, 10> children;
+		const std::array<size_t, 10> childOrder = {
 			5, 1, 2, 7, 0, 9, 3, 6, 4, 8
 		};
 
@@ -755,11 +761,15 @@ namespace Glory::Test
 			GLORY_TEST_COMPARE(registry.ChildCount(child), 0ull);
 		}
 
-		for (size_t i : childOrder)
+		std::array<Utils::ECS::EntityID, 10> root2Children;
+		for (size_t i = 0; i < 10; ++i)
 		{
-			registry.SetParent(children[i], root2);
-			expectedOrder.push_back(children[i]);
-			expectedOrder.push_back(registry.Child(children[i], 0));
+			size_t index = childOrder[i];
+
+			registry.SetParent(children[index], root2);
+			expectedOrder.push_back(children[index]);
+			expectedOrder.push_back(registry.Child(children[index], 0));
+			root2Children[i] = children[index];
 		}
 
 		GLORY_TEST_COMPARE(registry.ChildCount(root2), childOrder.size());
@@ -769,6 +779,48 @@ namespace Glory::Test
 		}
 
 		registry.Update(1.0f);
+
+		/* Test entity trees */
+		GLORY_TEST_COMPARE(registry.ChildCount(0), 2ull);
+		GLORY_TEST_COMPARE(registry.Child(0, 0), root1);
+		GLORY_TEST_COMPARE(registry.Child(0, 1), root2);
+		GLORY_TEST_COMPARE(registry.ChildCount(root1), 10ull);
+		GLORY_TEST_COMPARE(registry.ChildCount(root2), 10ull);
+
+		for (size_t i = 0; i < root1Children.size(); ++i)
+		{
+			GLORY_TEST_COMPARE(registry.Child(root1, i), root1Children[i]);
+		}
+
+		for (size_t i = 0; i < root2Children.size(); ++i)
+		{
+			const Utils::ECS::EntityID child = registry.Child(root2, i);
+			GLORY_TEST_COMPARE(child, root2Children[i]);
+			GLORY_TEST_COMPARE(registry.ChildCount(child), 1ull);
+		}
+
+		/* Change sibling indices */
+		registry.SetSiblingIndex(root1, 1);
+		GLORY_TEST_COMPARE(registry.ChildCount(0), 2ull);
+		GLORY_TEST_COMPARE(registry.Child(0, 0), root2);
+		GLORY_TEST_COMPARE(registry.Child(0, 1), root1);
+		GLORY_TEST_COMPARE(registry.ChildCount(root1), 10ull);
+		GLORY_TEST_COMPARE(registry.ChildCount(root2), 10ull);
+
+		std::array<Utils::ECS::EntityID, 10> root2ChildrenReordered;
+		for (size_t i = 1; i < root2ChildrenReordered.size(); ++i)
+		{
+			root2ChildrenReordered[i - 1] = root2Children[i];
+		}
+		root2ChildrenReordered[9] = root2Children[0];
+
+		registry.SetSiblingIndex(root2Children[0], 9);
+		for (size_t i = 0; i < root2ChildrenReordered.size(); ++i)
+		{
+			const Utils::ECS::EntityID child = registry.Child(root2, i);
+			GLORY_TEST_COMPARE(child, root2ChildrenReordered[i]);
+			GLORY_TEST_COMPARE(registry.ChildCount(child), 1ull);
+		}
 	}
 }
 
