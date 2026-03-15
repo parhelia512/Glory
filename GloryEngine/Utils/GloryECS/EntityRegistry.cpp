@@ -509,10 +509,11 @@ namespace Glory::Utils::ECS
 
 	bool EntityRegistry::operator==(const EntityRegistry& other) const
 	{
-		if (m_NextEntityID != other.m_NextEntityID || m_AliveCount != other.m_AliveCount ||
-			m_EntityAlive != other.m_EntityAlive || m_EntityActiveSelf != other.m_EntityActiveSelf ||
-			m_EntityActiveHierarchy != other.m_EntityActiveHierarchy || m_EntityDirty != other.m_EntityDirty)
-			return false;
+		if (m_NextEntityID != other.m_NextEntityID) return false;
+		if (m_AliveCount != other.m_AliveCount) return false;
+		if (m_EntityAlive != other.m_EntityAlive) return false;
+		if (m_EntityActiveSelf != other.m_EntityActiveSelf) return false;
+		if (m_EntityActiveHierarchy != other.m_EntityActiveHierarchy) return false;
 
 		if (m_EntityTrees.size() != other.m_EntityTrees.size() || m_Parents.size() != other.m_Parents.size() ||
 			m_HasComponent.size() != other.m_HasComponent.size() ||

@@ -3,7 +3,7 @@ project "ECSTest"
 	cppdialect "C++23"
 	staticruntime "Off"
 	kind "ConsoleApp"
-	debugdir "%{engineOutDir}"
+	debugdir "%{engineOutDir}/Tests"
 
 	targetdir ("%{engineOutDir}/Tests")
 	objdir ("%{outputDir}")

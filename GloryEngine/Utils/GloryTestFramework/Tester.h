@@ -65,6 +65,18 @@ namespace Glory::Utils
 				AddTestCase({ static_cast<Test::Function>(test), NULL, NULL });
 		}
 
+		/** @brief Get current tester instance */
+		inline static Tester* Instance()
+		{
+			return m_pInstance;
+		}
+
+		/** @brief Check whether files should be saved when file comparison fails */
+		inline bool ShouldSaveFiles() const
+		{
+			return m_State.m_SaveFiles;
+		}
+
 	protected:
 		/**
 		 * @brief Set current test state to source location.
@@ -98,6 +110,8 @@ namespace Glory::Utils
 		void ExpectThrowInternal(const char* expression, bool raised);
 
 	private:
+		static Tester* m_pInstance;
+
 		std::string_view m_Filename;
 		std::string_view m_Testname;
 
@@ -108,6 +122,7 @@ namespace Glory::Utils
 
 		struct
 		{
+			bool m_SaveFiles = false;
 			std::string_view m_CurrentFunction;
 			size_t m_CurrentLine = 0;
 			bool m_ExpectFail = false;

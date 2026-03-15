@@ -1,4 +1,5 @@
 #include <Tester.h>
+#include <FileComparers.h>
 
 #include <ComponentManager.h>
 #include <EntityRegistry.h>
@@ -83,6 +84,8 @@ namespace Glory::Test
 		void EntityStates();
 		void ComponentCalls();
 		void Hierarchy();
+		void Serialize();
+		void SerializeAndDeserialize();
 
 	private:
 		Utils::ECS::RegistryFactory m_RegistryFactory;
@@ -274,6 +277,8 @@ namespace Glory::Test
 				&ECSTest::EntityStates,
 				&ECSTest::ComponentCalls,
 				&ECSTest::Hierarchy,
+				&ECSTest::Serialize,
+				&ECSTest::SerializeAndDeserialize,
 			},
 			&ECSTest::Initialize, &ECSTest::Cleanup);
 	}
@@ -821,6 +826,93 @@ namespace Glory::Test
 			GLORY_TEST_COMPARE(child, root2ChildrenReordered[i]);
 			GLORY_TEST_COMPARE(registry.ChildCount(child), 1ull);
 		}
+	}
+
+	void ECSTest::Serialize()
+	{
+		Utils::ECS::EntityRegistry registry;
+		m_RegistryFactory.PopulateRegisry(registry);
+
+		UUID idCounter = 1000;
+
+		const size_t entityCount = 100;
+		for (size_t i = 0; i < entityCount/4; ++i)
+		{
+			auto entity = registry.CreateEntity();
+			registry.AddComponent<Transform>(entity, idCounter);
+			idCounter = idCounter + 1;
+			registry.AddComponent<Velocity>(entity, idCounter);
+			idCounter = idCounter + 1;
+		}
+
+		for (size_t i = 0; i < entityCount/4; ++i)
+		{
+			auto entity = registry.CreateEntity();
+			registry.AddComponent<Transform>(entity, idCounter);
+			idCounter = idCounter + 1;
+			registry.SetParent(entity, i + 1);
+		}
+
+		for (size_t i = 0; i < entityCount/4; ++i)
+		{
+			auto entity = registry.CreateEntity();
+			registry.AddComponent<Transform>(entity, idCounter);
+			idCounter = idCounter + 1;
+			registry.AddComponent<Velocity>(entity, idCounter);
+			idCounter = idCounter + 1;
+			registry.SetParent(entity, i%5 + 1);
+		}
+
+		for (size_t i = 0; i < entityCount/4; ++i)
+		{
+			auto entity = registry.CreateEntity();
+			registry.AddComponent<Transform>(entity, idCounter);
+			idCounter = idCounter + 1;
+			registry.SetParent(entity, i%2 + 10);
+		}
+
+		registry.Sort();
+		Glory::Utils::BinaryFileStream file{ "./Serialize.entities" };
+		registry.Serialize(file);
+		file.Close();
+
+		GLORY_TEST_COMPARE_CUSTOM("./Serialize.entities", "../../../../../Utils/Tests/Resources/ECSSerializeTestEntities.expected",
+			Utils::CompareBinaryFiles);
+	}
+
+	void ECSTest::SerializeAndDeserialize()
+	{
+		Utils::ECS::EntityRegistry registry1;
+		m_RegistryFactory.PopulateRegisry(registry1);
+		Utils::ECS::EntityRegistry registry2;
+		m_RegistryFactory.PopulateRegisry(registry2);
+
+		const size_t entityCount = 10000;
+		for (size_t i = 0; i < entityCount; ++i)
+		{
+			auto entity = registry1.CreateEntity();
+			registry1.AddComponent<Transform>(entity, Glory::UUID());
+			registry1.AddComponent<Velocity>(entity, Glory::UUID());
+			if (i <= 20) continue;
+			Utils::ECS::EntityID parent = Utils::ECS::EntityID(std::rand() % i);
+			if (parent == 0ull) continue;
+			registry1.SetParent(entity, parent);
+		}
+
+		{
+			registry1.Sort();
+			Glory::Utils::BinaryFileStream file{ "./SerializeAndDeserialize.entities" };
+			registry1.Serialize(file);
+			file.Close();
+		}
+
+		{
+			Glory::Utils::BinaryFileStream file{ "./SerializeAndDeserialize.entities", true };
+			registry2.Deserialize(file);
+			file.Close();
+		}
+
+		GLORY_TEST_VERIFY(registry1 == registry2);
 	}
 }
 
