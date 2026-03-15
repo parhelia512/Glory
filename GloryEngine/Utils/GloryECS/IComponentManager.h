@@ -31,6 +31,7 @@ namespace Glory::Utils::ECS
 		virtual void Clear() = 0;
 		virtual void Sort(const std::vector<std::vector<EntityID>>& entityTrees) = 0;
 		virtual bool IsActive(EntityID entity) = 0;
+		virtual size_t ActiveSize() const = 0;
 		virtual void Activate(EntityID entity) = 0;
 		virtual void Deactivate(EntityID entity) = 0;
 		virtual void GetReferences(std::vector<UUID>& references) const = 0;

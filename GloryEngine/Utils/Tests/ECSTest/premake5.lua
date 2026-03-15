@@ -1,9 +1,9 @@
-project "VersionTest"
+project "ECSTest"
 	language "C++"
 	cppdialect "C++23"
 	staticruntime "Off"
 	kind "ConsoleApp"
-	debugdir "%{engineOutDir}"
+	debugdir "%{engineOutDir}/Tests"
 
 	targetdir ("%{engineOutDir}/Tests")
 	objdir ("%{outputDir}")
@@ -17,16 +17,21 @@ project "VersionTest"
 
 	includedirs
 	{
+		"%{GloryIncludeDir.enginecore}",
+
 		"%{IncludeDir.TestFramework}",
 		"%{IncludeDir.CommandLine}",
-		"%{IncludeDir.Version}",
+		"%{IncludeDir.ECS}",
+		"%{IncludeDir.Utils}",
 	}
 
 	links
 	{
+		"GloryEngineCore",
 		"GloryTestFramework",
 		"GloryCommandLine",
-		"GloryUtilsVersion"
+		"GloryECS",
+		"GloryUtils"
 	}
 
 	filter "system:windows"

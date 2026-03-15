@@ -107,6 +107,11 @@ namespace Glory::Utils::ECS
 			return m_ComponentActive.IsSet(index);
 		}
 
+		virtual size_t ActiveSize() const override
+		{
+			return m_ActiveSize;
+		}
+
 		virtual void Activate(EntityID entity) override
 		{
 			const size_t index = SparseSet<EntityID, Component>::Index(entity);
@@ -247,7 +252,7 @@ namespace Glory::Utils::ECS
 
 		virtual void OnRemove(EntityID entity, size_t index) override final
 		{
-			const bool wasActive = m_ComponentActive.IsSet(index);
+			const bool wasActive = m_ComponentActive.IsSet(index) && m_pRegistry->EntityActiveHierarchy(entity);
 			m_ComponentActive.Set(index, false);
 			if (wasActive) --m_ActiveSize;
 			OnRemoveComponent(entity, index);

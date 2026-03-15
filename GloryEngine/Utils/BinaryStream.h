@@ -31,6 +31,21 @@ namespace Glory::Utils
 				Write(reinterpret_cast<const char*>(value.data()), sizeof(T)*value.size());
 		}
 
+		template<typename First, typename Second>
+		BinaryStream& Write(const std::pair<First, Second>& value)
+		{
+			return Write(value.first).Write(value.second);
+		}
+
+		template<typename First, typename Second>
+		BinaryStream& Write(const std::vector<std::pair<First, Second>>& value)
+		{
+			Write(value.size());
+			for (size_t i = 0; i < value.size(); ++i)
+				Write(value[i]);
+			return *this;
+		}
+
 		template<typename Sparse, typename Dense, size_t pageSize=4>
 		BinaryStream& Write(const SparseSet<Sparse, Dense, pageSize>& sparseSet)
 		{
@@ -77,6 +92,23 @@ namespace Glory::Utils
 			Read(size);
 			out.resize(size);
 			return Read(reinterpret_cast<char*>(out.data()), size*sizeof(T));
+		}
+
+		template<typename First, typename Second>
+		BinaryStream& Read(std::pair<First, Second>& value)
+		{
+			return Read(value.first).Read(value.second);
+		}
+
+		template<typename First, typename Second>
+		BinaryStream& Read(std::vector<std::pair<First, Second>>& out)
+		{
+			size_t size;
+			Read(size);
+			out.resize(size);
+			for (size_t i = 0; i < out.size(); ++i)
+				Read(out[i]);
+			return *this;
 		}
 
 		template<typename Sparse, typename Dense, size_t pageSize = 4>

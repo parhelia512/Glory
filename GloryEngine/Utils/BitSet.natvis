@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="Glory::Utils::BitSet">
+    <DisplayString>{{ size = {m_Capacity} }}</DisplayString>
+    <Expand>
+      <CustomListItems>
+        <Variable Name="iBit" InitialValue="0" />
+        <Loop>
+          <Break Condition="iBit == m_Capacity" />
+          <Item Name="[{iBit}]">
+            (m_pMemory[iBit / 32] >> (iBit % 32)) &amp; 1, d
+          </Item>
+          <Exec>iBit++</Exec>
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>

@@ -9,6 +9,8 @@
 
 namespace Glory::Utils
 {
+	Tester* Tester::m_pInstance = nullptr;
+
 	struct Exception {};
 
 	uint8_t NumDigits(uint32_t x)
@@ -21,13 +23,16 @@ namespace Glory::Utils
 		return 1;
 	}
 
-	Tester::Tester(): m_pCommandLine(nullptr), m_pCurrentTest(nullptr), m_Verbose(false)
+	Tester::Tester(): m_pCommandLine(nullptr),
+		m_pCurrentTest(nullptr), m_Verbose(false)
 	{
+		m_pInstance = this;
 	}
 
 	Tester::~Tester()
 	{
 		m_Tests.clear();
+		m_pInstance = nullptr;
 		m_pCommandLine = nullptr;
 		m_pCurrentTest = nullptr;
 	}
@@ -54,6 +59,7 @@ namespace Glory::Utils
 			bool fail = false;
 			try
 			{
+				m_State.m_CurrentFunction = "";
 				(this->*testCase.Test)();
 			}
 			catch (const Exception&)
@@ -105,12 +111,17 @@ namespace Glory::Utils
 		m_pCommandLine = pCommandLine;
 		m_Filename = filename;
 		m_Testname = testname;
+
+		m_State.m_SaveFiles = pCommandLine->Contains("s") || pCommandLine->Contains("save");
+		if (m_State.m_SaveFiles)
+			std::println(CONSOLE_YELLOW(WARNING) " File saving enabled, expected files may be overriden!");
 	}
 
 	void Tester::SetState(const std::source_location& source, bool fail)
 	{
 		m_State.m_ExpectFail = fail;
-		m_State.m_CurrentFunction = GetFunctionName(source);
+		if (m_State.m_CurrentFunction.empty())
+			m_State.m_CurrentFunction = GetFunctionName(source);
 		m_State.m_CurrentLine = source.line();
 	}
 

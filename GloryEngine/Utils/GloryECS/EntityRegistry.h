@@ -36,7 +36,7 @@ namespace Glory::Utils::ECS
 		{
 			const uint32_t hash = Manager::GetComponentHash();
 			const uint32_t index = uint32_t(m_ComponentManagers.size());
-			auto& newManager = m_ComponentManagers.emplace_back(new Manager());
+			auto& newManager = m_ComponentManagers.emplace_back(new Manager(this));
 			m_HashToComponentManagerIndex.emplace(hash, index);
 			m_ComponentOrderDirty.Reserve(index + 1ull);
 			m_ComponentOrderDirty.Set(index, false);
@@ -141,7 +141,7 @@ namespace Glory::Utils::ECS
 		uint32_t EntityComponentType(EntityID entity, size_t index) const;
 		UUID EntityComponentID(EntityID entity, size_t index) const;
 		uint32_t EntityComponentIDToHash(EntityID entity, UUID id) const;
-		uint32_t EntityComponentHashToID(EntityID entity, uint32_t typeHash) const;
+		UUID EntityComponentHashToID(EntityID entity, uint32_t typeHash) const;
 		void* GetComponentAddress(EntityID entity, uint32_t type);
 		const void* GetComponentAddress(EntityID entity, uint32_t type) const;
 		void* CopyComponent(EntityID entity, uint32_t type, UUID componentID, const void* data);
@@ -238,10 +238,5 @@ namespace Glory::Utils::ECS
 		void* m_pUserData;
 
 		bool m_CallsEnabled = true;
-
-		/* TODO */
-		/*
-		 * - Keep track of component order per entity
-		 */
 	};
 }
