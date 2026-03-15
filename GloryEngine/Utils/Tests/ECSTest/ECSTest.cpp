@@ -86,6 +86,7 @@ namespace Glory::Test
 		void Hierarchy();
 		void Serialize();
 		void SerializeAndDeserialize();
+		void DestroyEntity();
 
 	private:
 		Utils::ECS::RegistryFactory m_RegistryFactory;
@@ -279,6 +280,7 @@ namespace Glory::Test
 				&ECSTest::Hierarchy,
 				&ECSTest::Serialize,
 				&ECSTest::SerializeAndDeserialize,
+				&ECSTest::DestroyEntity,
 			},
 			&ECSTest::Initialize, &ECSTest::Cleanup);
 	}
@@ -913,6 +915,64 @@ namespace Glory::Test
 		}
 
 		GLORY_TEST_VERIFY(registry1 == registry2);
+	}
+
+	void ECSTest::DestroyEntity()
+	{
+		Utils::ECS::EntityRegistry registry;
+		m_RegistryFactory.PopulateRegisry(registry);
+
+		const size_t entityCount = 100;
+		for (size_t i = 0; i < entityCount; ++i)
+		{
+			auto entity = registry.CreateEntity();
+			registry.AddComponent<Transform>(entity, UUID());
+			registry.AddComponent<Velocity>(entity, UUID());
+		}
+
+		const std::array<size_t, 10> toDelete = {
+			50ull, 1ull, 25ull, 74ull, 11ull, 12ull, 33ull, 69ull, 42ull, 8ull
+		};
+
+		auto transforms = registry.GetComponentManager<Transform>();
+		auto velocities = registry.GetComponentManager<Velocity>();
+
+		registry.Sort();
+		for (size_t i = 0; i < toDelete.size(); ++i)
+		{
+			GLORY_TEST_VERIFY(registry.EntityValid(toDelete[i]));
+			GLORY_TEST_COMPARE(registry.EntityComponentCount(toDelete[i]), 2ull);
+			GLORY_TEST_VERIFY(transforms->Index(toDelete[i]) != UINT64_MAX);
+			GLORY_TEST_VERIFY(velocities->Index(toDelete[i]) != UINT64_MAX);
+			GLORY_TEST_COMPARE(transforms->Size(), entityCount - i);
+			GLORY_TEST_COMPARE(velocities->Size(), entityCount - i);
+			GLORY_TEST_COMPARE(transforms->ActiveSize(), entityCount - i);
+			GLORY_TEST_COMPARE(velocities->ActiveSize(), entityCount - i);
+
+			registry.DestroyEntity(toDelete[i]);
+			GLORY_TEST_FAIL(registry.EntityValid(toDelete[i]));
+			GLORY_TEST_COMPARE(registry.EntityComponentCount(toDelete[i]), 0ull);
+			GLORY_TEST_FAIL(transforms->Index(toDelete[i]) != UINT64_MAX);
+			GLORY_TEST_FAIL(velocities->Index(toDelete[i]) != UINT64_MAX);
+			GLORY_TEST_COMPARE(transforms->Size(), entityCount - i - 1);
+			GLORY_TEST_COMPARE(velocities->Size(), entityCount - i - 1);
+			GLORY_TEST_COMPARE(transforms->ActiveSize(), entityCount - i - 1);
+			GLORY_TEST_COMPARE(velocities->ActiveSize(), entityCount - i - 1);
+		}
+
+		/* Disabled components should not reduce ActiveSize when removed */
+		const Utils::ECS::EntityID disabledEntity = 5ull;
+		registry.SetActive(disabledEntity, false);
+		registry.Sort();
+		GLORY_TEST_COMPARE(transforms->Size(), entityCount - toDelete.size());
+		GLORY_TEST_COMPARE(velocities->Size(), entityCount - toDelete.size());
+		GLORY_TEST_COMPARE(transforms->ActiveSize(), entityCount - toDelete.size() - 1);
+		GLORY_TEST_COMPARE(velocities->ActiveSize(), entityCount - toDelete.size() - 1);
+		registry.DestroyEntity(disabledEntity);
+		GLORY_TEST_COMPARE(transforms->Size(), entityCount - toDelete.size() - 1);
+		GLORY_TEST_COMPARE(velocities->Size(), entityCount - toDelete.size() - 1);
+		GLORY_TEST_COMPARE(transforms->ActiveSize(), entityCount - toDelete.size() - 1);
+		GLORY_TEST_COMPARE(velocities->ActiveSize(), entityCount - toDelete.size() - 1);
 	}
 }
 

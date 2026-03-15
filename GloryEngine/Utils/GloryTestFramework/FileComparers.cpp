@@ -41,11 +41,12 @@ namespace Glory::Utils
 
             if (charA != charB)
             {
+                const size_t byte = fileA.tellg();
                 fileA.close();
                 fileB.close();
                 Overwrite(a, b);
                 return std::unexpected(std::format("Byte at {} mismatch, expected {} to equal {}.",
-                    size_t(fileA.tellg()), charA, charB));
+                    byte, charA, charB));
             }
         }
         return std::format("{} == {}", a.string(), b.string());

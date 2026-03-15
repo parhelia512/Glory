@@ -311,9 +311,9 @@ namespace Glory::Utils
 			--m_DenseSize;
 			if (m_DenseSize == 0)
 			{
-				*index = 0;
 				m_DenseIDs[0] = Sparse(0);
 				OnRemove(sparseID, *index);
+				*index = InvalidIndex;
 				return;
 			}
 
@@ -321,6 +321,7 @@ namespace Glory::Utils
 			for (size_t i = *index; i < oldSize - 1; ++i)
 				Swap(i, i + 1);
 			OnRemove(sparseID, *index);
+			*index = InvalidIndex;
 		}
 
 		void Clear()

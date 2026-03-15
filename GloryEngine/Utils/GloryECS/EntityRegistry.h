@@ -238,10 +238,5 @@ namespace Glory::Utils::ECS
 		void* m_pUserData;
 
 		bool m_CallsEnabled = true;
-
-		/* TODO */
-		/*
-		 * - Keep track of component order per entity
-		 */
 	};
 }
