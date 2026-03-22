@@ -4,6 +4,8 @@
 
 #include "UUIDRemapper.h"
 
+#include <engine_visibility.h>
+
 #include <Object.h>
 #include <IEngine.h>
 #include <Version.h>
@@ -77,115 +79,115 @@ namespace Utils::Reflect
 	class GloryEngine final : public IEngine
 	{
 	public:
-		GloryEngine(const EngineCreateInfo& createInfo);
-		virtual ~GloryEngine();
+		GLORY_ENGINE_API GloryEngine(const EngineCreateInfo& createInfo);
+		GLORY_ENGINE_API virtual ~GloryEngine();
 
 	public:
-		const Version& EngineVersion() const override;
+		GLORY_ENGINE_API const Version& EngineVersion() const override;
 
-		SceneManager* GetSceneManager() override;
+		GLORY_ENGINE_API SceneManager* GetSceneManager() override;
 
-		void AddMainModule(Module* pModule, bool initialize = false) override;
-		void AddOptionalModule(Module* pModule, bool initialize = false) override;
-		void AddInternalModule(Module* pModule, bool initialize = false) override;
-		void AddLoaderModule(LoaderModule* pModule, bool initialize = false) override;
+		GLORY_ENGINE_API void AddMainModule(Module* pModule, bool initialize = false) override;
+		GLORY_ENGINE_API void AddOptionalModule(Module* pModule, bool initialize = false) override;
+		GLORY_ENGINE_API void AddInternalModule(Module* pModule, bool initialize = false) override;
+		GLORY_ENGINE_API void AddLoaderModule(LoaderModule* pModule, bool initialize = false) override;
 
-		Module* GetMainModule(const std::type_info& type) const override;
-		Module* GetMainModule(const std::string& name) const override;
-		Module* GetOptionalModule(const std::type_info& type) const override;
-		Module* GetOptionalModule(const std::string& name) const override;
-		Module* GetModule(const std::type_info& type) const override;
-		Module* GetModule(const std::string& name) const override;
-		Module* GetInternalModule(const std::type_info& type) const override;
-		LoaderModule* GetLoaderModule(const std::string& extension) override;
-		LoaderModule* GetLoaderModule(const std::type_info& resourceType) override;
-		LoaderModule* GetLoaderModule(uint32_t typeHash) override;
+		GLORY_ENGINE_API Module* GetMainModule(const std::type_info& type) const override;
+		GLORY_ENGINE_API Module* GetMainModule(const std::string& name) const override;
+		GLORY_ENGINE_API Module* GetOptionalModule(const std::type_info& type) const override;
+		GLORY_ENGINE_API Module* GetOptionalModule(const std::string& name) const override;
+		GLORY_ENGINE_API Module* GetModule(const std::type_info& type) const override;
+		GLORY_ENGINE_API Module* GetModule(const std::string& name) const override;
+		GLORY_ENGINE_API Module* GetInternalModule(const std::type_info& type) const override;
+		GLORY_ENGINE_API LoaderModule* GetLoaderModule(const std::string& extension) override;
+		GLORY_ENGINE_API LoaderModule* GetLoaderModule(const std::type_info& resourceType) override;
+		GLORY_ENGINE_API LoaderModule* GetLoaderModule(uint32_t typeHash) override;
 
-		void UpdateSceneManager(float dt) override;
-		void DrawSceneManager() override;
-		void ModulesLoop(IModuleLoopHandler* pLoopHandler = nullptr) override;
-		void BeginFrame() override;
-		void EndFrame() override;
+		GLORY_ENGINE_API void UpdateSceneManager(float dt) override;
+		GLORY_ENGINE_API void DrawSceneManager() override;
+		GLORY_ENGINE_API void ModulesLoop(IModuleLoopHandler* pLoopHandler = nullptr) override;
+		GLORY_ENGINE_API void BeginFrame() override;
+		GLORY_ENGINE_API void EndFrame() override;
 
-		void CallModuleUpdate(Module* pModule) const override;
-		void CallModuleDraw(Module* pModule) const override;
+		GLORY_ENGINE_API void CallModuleUpdate(Module* pModule) const override;
+		GLORY_ENGINE_API void CallModuleDraw(Module* pModule) const override;
 
-		const size_t InternalModulesCount() const override;
-		const size_t ModulesCount() const override;
-		Module* GetModule(size_t index) const override;
+		GLORY_ENGINE_API const size_t InternalModulesCount() const override;
+		GLORY_ENGINE_API const size_t ModulesCount() const override;
+		GLORY_ENGINE_API Module* GetModule(size_t index) const override;
 
-		void LoadModuleSettings(const std::filesystem::path& overrideRootPath = "") override;
+		GLORY_ENGINE_API void LoadModuleSettings(const std::filesystem::path& overrideRootPath = "") override;
 
-		void Update() override;
-		void Initialize() override;
-		void Cleanup() override;
-		void Draw() override;
+		GLORY_ENGINE_API void Update() override;
+		GLORY_ENGINE_API void Initialize() override;
+		GLORY_ENGINE_API void Cleanup() override;
+		GLORY_ENGINE_API void Draw() override;
 
-		ThreadManager& Threads() override;
-		Jobs::JobManager& Jobs() override;
-		Console& GetConsole() override;
-		Debug& GetDebug() override;
-		GameTime& Time() override;
-		CameraManager& GetCameraManager() override;
-		AssetDatabase& GetAssetDatabase() override;
-		AssetManager& GetAssetManager() override;
-		ResourceTypes& GetResourceTypes() override;
-		LayerManager& GetLayerManager() override;
-		MaterialManager& GetMaterialManager() override;
-		PipelineManager& GetPipelineManager() override;
-		Utils::Reflect::Reflect& Reflection() override;
-		ObjectManager& GetObjectManager() override;
-		EngineProfiler& Profiler() override;
+		GLORY_ENGINE_API ThreadManager& Threads() override;
+		GLORY_ENGINE_API Jobs::JobManager& Jobs() override;
+		GLORY_ENGINE_API Console& GetConsole() override;
+		GLORY_ENGINE_API Debug& GetDebug() override;
+		GLORY_ENGINE_API GameTime& Time() override;
+		GLORY_ENGINE_API CameraManager& GetCameraManager() override;
+		GLORY_ENGINE_API AssetDatabase& GetAssetDatabase() override;
+		GLORY_ENGINE_API AssetManager& GetAssetManager() override;
+		GLORY_ENGINE_API ResourceTypes& GetResourceTypes() override;
+		GLORY_ENGINE_API LayerManager& GetLayerManager() override;
+		GLORY_ENGINE_API MaterialManager& GetMaterialManager() override;
+		GLORY_ENGINE_API PipelineManager& GetPipelineManager() override;
+		GLORY_ENGINE_API Utils::Reflect::Reflect& Reflection() override;
+		GLORY_ENGINE_API ObjectManager& GetObjectManager() override;
+		GLORY_ENGINE_API EngineProfiler& Profiler() override;
 
-		void SetAssetManager(AssetManager* pManager) override;
-		void SetSceneManager(SceneManager* pManager) override;
-		void SetMaterialManager(MaterialManager* pManager) override;
-		void SetPipelineManager(PipelineManager* pManager) override;
+		GLORY_ENGINE_API void SetAssetManager(AssetManager* pManager) override;
+		GLORY_ENGINE_API void SetSceneManager(SceneManager* pManager) override;
+		GLORY_ENGINE_API void SetMaterialManager(MaterialManager* pManager) override;
+		GLORY_ENGINE_API void SetPipelineManager(PipelineManager* pManager) override;
 
-		void AddUserContext(uint32_t hash, void* pUserContext) override;
-		void* GetUserContext(uint32_t hash) override;
+		GLORY_ENGINE_API void AddUserContext(uint32_t hash, void* pUserContext) override;
+		GLORY_ENGINE_API void* GetUserContext(uint32_t hash) override;
 
-		void RequestQuit() override;
-		void CancelQuit() override;
-		bool WantsToQuit() const override;
+		GLORY_ENGINE_API void RequestQuit() override;
+		GLORY_ENGINE_API void CancelQuit() override;
+		GLORY_ENGINE_API bool WantsToQuit() const override;
 
-		void AddData(const std::filesystem::path& path, const std::string& name, std::vector<char>&& data) override;
-		void ProcessData() override;
-		bool HasData(const std::string& name) const override;
-		const std::filesystem::path& DataPath(const std::string& name) const override;
-		std::vector<char>& GetData(const std::string& name) override;
+		GLORY_ENGINE_API void AddData(const std::filesystem::path& path, const std::string& name, std::vector<char>&& data) override;
+		GLORY_ENGINE_API void ProcessData() override;
+		GLORY_ENGINE_API bool HasData(const std::string& name) const override;
+		GLORY_ENGINE_API const std::filesystem::path& DataPath(const std::string& name) const override;
+		GLORY_ENGINE_API std::vector<char>& GetData(const std::string& name) override;
 
-		void SetRootPath(const std::filesystem::path& path) override;
-		const std::filesystem::path& RootPath() const override;
+		GLORY_ENGINE_API void SetRootPath(const std::filesystem::path& path) override;
+		GLORY_ENGINE_API const std::filesystem::path& RootPath() const override;
 
-		void SetApplicationVersion(uint32_t major, uint32_t minor, uint32_t subMinor, uint32_t rc=0) override;
-		const Version& GetApplicationVersion() const override;
+		GLORY_ENGINE_API void SetApplicationVersion(uint32_t major, uint32_t minor, uint32_t subMinor, uint32_t rc=0) override;
+		GLORY_ENGINE_API const Version& GetApplicationVersion() const override;
 
-		void SetOrganizationAndAppName(std::string&& organization, std::string&& appName) override;
-		std::string_view Organization() const override;
-		std::string_view AppName() const override;
+		GLORY_ENGINE_API void SetOrganizationAndAppName(std::string&& organization, std::string&& appName) override;
+		GLORY_ENGINE_API std::string_view Organization() const override;
+		GLORY_ENGINE_API std::string_view AppName() const override;
 
-		void SetMainWindowInfo(WindowCreateInfo&& info) override;
-		WindowCreateInfo& MainWindowInfo() override;
+		GLORY_ENGINE_API void SetMainWindowInfo(WindowCreateInfo&& info) override;
+		GLORY_ENGINE_API WindowCreateInfo& MainWindowInfo() override;
 
-		void AddGraphicsDevice(GraphicsDevice* pGraphicsDevice) override;
-		GraphicsDevice* ActiveGraphicsDevice() override;
+		GLORY_ENGINE_API void AddGraphicsDevice(GraphicsDevice* pGraphicsDevice) override;
+		GLORY_ENGINE_API GraphicsDevice* ActiveGraphicsDevice() override;
 
-		void AddMainRenderer(Renderer* pRenderer) override;
-		Renderer* ActiveRenderer() override;
+		GLORY_ENGINE_API void AddMainRenderer(Renderer* pRenderer) override;
+		GLORY_ENGINE_API Renderer* ActiveRenderer() override;
 
-		void Load() override;
+		GLORY_ENGINE_API void Load() override;
 
-		UUIDRemapper& GetUUIDRemapper() override;
+		GLORY_ENGINE_API UUIDRemapper& GetUUIDRemapper() override;
 
 		template<class T>
-		void AddUserContext(T* pUserContext)
+		inline void AddUserContext(T* pUserContext)
 		{
 			AddUserContext(ResourceType::GetHash(typeid(T)), (void*)pUserContext);
 		}
 
 		template<class T>
-		T* GetUserContext()
+		inline T* GetUserContext()
 		{
 			return (T*)GetUserContext(ResourceType::GetHash(typeid(T)));
 		}

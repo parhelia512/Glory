@@ -61,7 +61,7 @@ project "Glorious"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"shaderc",
 		"shaderc_combined",
 		"shaderc_shared",

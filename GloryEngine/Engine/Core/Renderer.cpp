@@ -65,10 +65,10 @@ namespace Glory
 		auto materialIter = std::find(pipelineRenderData.m_UniqueMaterials.begin(), pipelineRenderData.m_UniqueMaterials.end(), renderData.m_MaterialID);
 		if (materialIter == pipelineRenderData.m_UniqueMaterials.end())
 		{
-			materialIndex = pipelineRenderData.m_UniqueMaterials.size();
+			materialIndex = uint32_t(pipelineRenderData.m_UniqueMaterials.size());
 			pipelineRenderData.m_UniqueMaterials.emplace_back(renderData.m_MaterialID);
 		}
-		else materialIndex = materialIter - pipelineRenderData.m_UniqueMaterials.begin();
+		else materialIndex = uint32_t(materialIter - pipelineRenderData.m_UniqueMaterials.begin());
 		meshIter->second.m_MaterialIndices.emplace_back(materialIndex);
 		pipelineRenderData.m_Dirty = true;
 	}
@@ -149,10 +149,10 @@ namespace Glory
 		auto materialIter = std::find(pipelineRenderData.m_UniqueMaterials.begin(), pipelineRenderData.m_UniqueMaterials.end(), renderData.m_MaterialID);
 		if (materialIter == pipelineRenderData.m_UniqueMaterials.end())
 		{
-			materialIndex = pipelineRenderData.m_UniqueMaterials.size();
+			materialIndex = uint32_t(pipelineRenderData.m_UniqueMaterials.size());
 			pipelineRenderData.m_UniqueMaterials.emplace_back(renderData.m_MaterialID);
 		}
-		else materialIndex = materialIter - pipelineRenderData.m_UniqueMaterials.begin();
+		else materialIndex = uint32_t(materialIter - pipelineRenderData.m_UniqueMaterials.begin());
 		meshIter->second.m_MaterialIndices.emplace_back(materialIndex);
 		pipelineRenderData.m_Dirty = true;
 
@@ -192,10 +192,10 @@ namespace Glory
 		auto materialIter = std::find(pipelineRenderData.m_UniqueMaterials.begin(), pipelineRenderData.m_UniqueMaterials.end(), renderData.m_MaterialID);
 		if (materialIter == pipelineRenderData.m_UniqueMaterials.end())
 		{
-			materialIndex = pipelineRenderData.m_UniqueMaterials.size();
+			materialIndex = uint32_t(pipelineRenderData.m_UniqueMaterials.size());
 			pipelineRenderData.m_UniqueMaterials.emplace_back(renderData.m_MaterialID);
 		}
-		else materialIndex = materialIter - pipelineRenderData.m_UniqueMaterials.begin();
+		else materialIndex = uint32_t(materialIter - pipelineRenderData.m_UniqueMaterials.begin());
 		meshIter->second.m_MaterialIndices.emplace_back(materialIndex);
 		pipelineRenderData.m_Dirty = true;
 

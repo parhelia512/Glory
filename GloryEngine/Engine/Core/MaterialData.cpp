@@ -284,13 +284,13 @@ namespace Glory
 		}
 	}
 
-	void MaterialData::CopyProperties(void* dst)
+	void MaterialData::CopyProperties(void* dst) const
 	{
 		auto& buffer = m_PropertyBuffer;
 		std::memcpy(dst, buffer.data(), buffer.size());
 	}
 
-	size_t MaterialData::PropertyDataSize()
+	size_t MaterialData::PropertyDataSize() const
 	{
 		return m_PropertyBuffer.size();
 	}

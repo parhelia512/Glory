@@ -58,7 +58,7 @@ project "STBImageImporter"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryEditor",
 		"shaderc",
 		"shaderc_combined",
@@ -85,6 +85,9 @@ project "STBImageImporter"
 		"GLORY_EDITOR_EXPORTS",
 		"GLORY_EDITOR_EXTENSION_EXPORTS",
 		"GLORY_UUID_DEFINED",
+		"STB_IMAGE_IMPLEMENTATION",
+		"STB_IMAGE_WRITE_IMPLEMENTATION",
+		"__STDC_LIB_EXT1__",
 	}
 
 	filter "system:windows"

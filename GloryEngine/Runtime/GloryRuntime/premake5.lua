@@ -51,7 +51,7 @@ project "GloryRuntime"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryJobs",
 		"GloryThreads",
 

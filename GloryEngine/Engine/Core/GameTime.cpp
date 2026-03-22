@@ -30,22 +30,22 @@ namespace Glory
 
     const float GameTime::GetTime() const
     {
-        return m_LastTime*m_TimeScale;
+        return float(m_LastTime*m_TimeScale);
     }
 
     const float GameTime::GetUnscaledTime() const
     {
-        return m_LastTime;
+        return float(m_LastTime);
     }
 
     const float GameTime::GetDeltaTime() const
     {
-        return m_DeltaTime*m_TimeScale;
+        return float(m_DeltaTime*m_TimeScale);
     }
 
     const float GameTime::GetUnscaledDeltaTime() const
     {
-        return m_DeltaTime;
+        return float(m_DeltaTime);
     }
 
     const float GameTime::GetTimeScale() const
@@ -55,7 +55,7 @@ namespace Glory
 
     const float GameTime::GetFrameRate() const
     {
-        return 1.0f/m_DeltaTime;
+        return float(1.0/m_DeltaTime);
     }
 
     const int GameTime::GetTotalFrames() const

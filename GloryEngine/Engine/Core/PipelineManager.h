@@ -1,6 +1,8 @@
 #pragma once
 #include "FileData.h"
 
+#include <engine_visibility.h>
+
 #include <UUID.h>
 
 #include <string>
@@ -16,7 +18,7 @@ namespace Glory
 	{
 	public:
 		/** @brief Constructor */
-		PipelineManager(IEngine* pEngine);
+		GLORY_ENGINE_API PipelineManager(IEngine* pEngine);
 		/** @brief Destructor */
 		virtual ~PipelineManager() = default;
 

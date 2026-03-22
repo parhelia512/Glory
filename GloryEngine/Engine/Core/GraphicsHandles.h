@@ -51,29 +51,29 @@ namespace Glory
 		/** @overload */
 		GraphicsHandle(const GraphicsHandle& other) : m_ID(other.m_ID) {}
 		/** @overload */
-		GraphicsHandle(GraphicsHandle&& other) : m_ID(other.m_ID) {}
+		GraphicsHandle(GraphicsHandle&& other) noexcept : m_ID(other.m_ID) {}
 		/** @brief Destructor */
 		~GraphicsHandle() { m_ID = 0; }
 		/** @brief Convert to UUID */
-		operator UUID() const { return m_ID; }
+		inline operator UUID() const { return m_ID; }
 		/** @brief Convert to bool */
-		operator bool() const { return m_ID != NULL; }
+		inline operator bool() const { return m_ID != NULL; }
 		/** @brief Set to null */
-		GraphicsHandle& operator=(std::nullptr_t) { m_ID = NULL; return *this; }
+		inline GraphicsHandle& operator=(std::nullptr_t) { m_ID = NULL; return *this; }
 		/** @overload Copy assignment */
-		GraphicsHandle& operator=(const GraphicsHandle& other) { m_ID = other.m_ID; return *this; }
+		inline GraphicsHandle& operator=(const GraphicsHandle& other) { m_ID = other.m_ID; return *this; }
 		/** @overload Move assignment */
-		GraphicsHandle& operator=(GraphicsHandle&& other) noexcept { m_ID = other.m_ID; return *this; }
+		inline GraphicsHandle& operator=(GraphicsHandle&& other) noexcept { m_ID = other.m_ID; return *this; }
 		/** @overload Comparator */
-		bool operator==(const GraphicsHandle& other) const { return m_ID == other.m_ID; }
+		inline bool operator==(const GraphicsHandle& other) const { return m_ID == other.m_ID; }
 		/** @overload Comparator */
-		bool operator!=(const GraphicsHandle& other) const { return m_ID != other.m_ID; }
+		inline bool operator!=(const GraphicsHandle& other) const { return m_ID != other.m_ID; }
 		/** @overload Comparator */
-		bool operator==(std::nullptr_t) const { return m_ID == NULL; }
+		inline bool operator==(std::nullptr_t) const { return m_ID == NULL; }
 		/** @overload Comparator */
-		bool operator!=(std::nullptr_t) const { return m_ID != NULL; }
+		inline bool operator!=(std::nullptr_t) const { return m_ID != NULL; }
 		/** @overload Comparator */
-		bool operator==(UUID id) const { return m_ID == id; }
+		inline bool operator==(UUID id) const { return m_ID == id; }
 
 		UUID m_ID;
 	};
@@ -123,7 +123,7 @@ namespace std
 	struct hash<Glory::CommandBufferHandle>
 	{
 		/** @brief Hash function */
-		size_t operator()(const Glory::CommandBufferHandle& handle) const noexcept
+		inline size_t operator()(const Glory::CommandBufferHandle& handle) const noexcept
 		{
 			return hash<uint64_t>()(uint64_t(handle.m_ID));
 		}

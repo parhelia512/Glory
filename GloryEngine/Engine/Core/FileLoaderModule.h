@@ -2,12 +2,14 @@
 #include "ResourceLoaderModule.h"
 #include "FileData.h"
 
+#include <engine_visibility.h>
+
 namespace Glory
 {
     struct FileImportSettings : ImportSettings
     {
-        FileImportSettings();
-        FileImportSettings(const std::string& extension);
+        GLORY_ENGINE_API FileImportSettings();
+        GLORY_ENGINE_API FileImportSettings(const std::string& extension);
 
         int Flags;
         bool AddNullTerminateAtEnd;

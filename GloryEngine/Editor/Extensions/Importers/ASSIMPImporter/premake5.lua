@@ -56,7 +56,7 @@ project "ASSIMPImporter"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryEditor",
 		"shaderc",
 		"shaderc_combined",

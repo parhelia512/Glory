@@ -19,7 +19,7 @@ FieldData(Reflect::Hash(typeid(ARGNAME(x))), ARGNAME_AS_STRING(x), ARGTYPE_AS_ST
 FOR_EACH(REFLECTABLE_FIELD, __VA_ARGS__)\
 typedef typeName TypeName;\
 public:\
-	static const TypeData* GetTypeData()\
+	inline static const TypeData* GetTypeData()\
 	{\
 		static const char* typeNameString = STRINGIZE(typeName);\
 		static const uint32_t TYPE_HASH = Reflect::Hash<typeName>();\
@@ -33,22 +33,22 @@ public:\
 
 #define REFLECTABLE(typeName, ...)\
 REFLECTABLE_TYPEDATA(typeName, -1, 0, __VA_ARGS__)\
-	static int DataBufferOffset()\
+	inline static int DataBufferOffset()\
 	{\
 		return -1;\
 	}\
-	static int DataBufferSize()\
+	inline static int DataBufferSize()\
 	{\
 		return 0;\
 	}
 
 #define REFLECTABLE_WITH_BUFFER(typeName, bufferMember, bufferSize, ...)\
 REFLECTABLE_TYPEDATA(typeName, offsetof(typeName, bufferMember), bufferSize, __VA_ARGS__);\
-	static int DataBufferOffset()\
+	inline static int DataBufferOffset()\
 	{\
 		return offsetof(typeName, bufferMember);\
 	}\
-	static int DataBufferSize()\
+	inline static int DataBufferSize()\
 	{\
 		return bufferSize;\
 	}

@@ -1,5 +1,8 @@
 #pragma once
 #include "ResourceMeta.h"
+
+#include <engine_visibility.h>
+
 #include <string>
 #include <sstream>
 
@@ -7,8 +10,8 @@ namespace Glory
 {
 	struct AssetLocation
 	{
-		AssetLocation();
-		AssetLocation(const std::string& path, const std::string& subresourcePath = "", size_t index = 0);
+		GLORY_ENGINE_API AssetLocation();
+		GLORY_ENGINE_API AssetLocation(const std::string& path, const std::string& subresourcePath = "", size_t index = 0);
 
 		std::string Path;
 		std::string SubresourcePath;
@@ -19,7 +22,7 @@ namespace Glory
 #include <yaml-cpp/yaml.h>
 namespace YAML
 {
-	Emitter& operator<<(Emitter& out, const Glory::AssetLocation& assetLoc);
+	GLORY_ENGINE_API Emitter& operator<<(Emitter& out, const Glory::AssetLocation& assetLoc);
 
 	template<>
 	struct convert<Glory::AssetLocation>

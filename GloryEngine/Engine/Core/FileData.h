@@ -1,5 +1,8 @@
 #pragma once
 #include "Resource.h"
+
+#include <engine_visibility.h>
+
 #include <vector>
 
 namespace Glory
@@ -7,34 +10,34 @@ namespace Glory
     class FileData : public Resource
     {
     public:
-        FileData();
-        FileData(FileData* pFileData);
-        FileData(std::vector<char>&& data);
-        FileData(const std::vector<char>& data);
-        FileData(std::string_view data);
-        virtual ~FileData();
+        GLORY_ENGINE_API FileData();
+        GLORY_ENGINE_API FileData(FileData* pFileData);
+        GLORY_ENGINE_API FileData(std::vector<char>&& data);
+        GLORY_ENGINE_API FileData(const std::vector<char>& data);
+        GLORY_ENGINE_API FileData(std::string_view data);
+        GLORY_ENGINE_API virtual ~FileData();
 
-        size_t Size() const;
-        const char* Data() const;
+        GLORY_ENGINE_API size_t Size() const;
+        GLORY_ENGINE_API const char* Data() const;
 
-        std::vector<char>::iterator Begin();
-        const std::vector<char>::const_iterator Begin() const;
-        std::vector<char>::iterator End();
-        const std::vector<char>::const_iterator End() const;
+        GLORY_ENGINE_API std::vector<char>::iterator Begin();
+        GLORY_ENGINE_API const std::vector<char>::const_iterator Begin() const;
+        GLORY_ENGINE_API std::vector<char>::iterator End();
+        GLORY_ENGINE_API const std::vector<char>::const_iterator End() const;
 
-        void Serialize(Utils::BinaryStream& container) const override;
-        void Deserialize(Utils::BinaryStream& container) override;
+        GLORY_ENGINE_API void Serialize(Utils::BinaryStream& container) const override;
+        GLORY_ENGINE_API void Deserialize(Utils::BinaryStream& container) override;
 
-        void SetMetaData(const void* data, size_t size);
+        GLORY_ENGINE_API void SetMetaData(const void* data, size_t size);
 
         template<typename T>
-        void SetMetaData(const T& value)
+        inline void SetMetaData(const T& value)
         {
             SetMetaData(&value, sizeof(T));
         }
 
         template<typename T>
-        const T& GetMetaData() const
+        inline const T& GetMetaData() const
         {
             return *reinterpret_cast<const T*>(m_MetaData.data());
         }

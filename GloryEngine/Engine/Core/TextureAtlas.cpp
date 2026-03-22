@@ -109,16 +109,17 @@ namespace Glory
 
 		const ReservedChunk& chunk = *iter;
 		glm::vec4 coords;
-		coords.x = chunk.XOffset;
-		coords.y = chunk.YOffset;
-		coords.z = chunk.Width;
-		coords.w = chunk.Height;
+		coords.x = float(chunk.XOffset);
+		coords.y = float(chunk.YOffset);
+		coords.z = float(chunk.Width);
+		coords.w = float(chunk.Height);
 		return coords;
 	}
 
 	void TextureAtlas::ReleaseChunk(UUID id)
 	{
-		auto iter = std::find_if(m_ReservedChunks.begin(), m_ReservedChunks.end(), [id](const ReservedChunk& chunk) { return chunk.ID == id; });
+		auto iter = std::find_if(m_ReservedChunks.begin(), m_ReservedChunks.end(),
+			[id](const ReservedChunk& chunk) { return chunk.ID == id; });
 		if (iter == m_ReservedChunks.end()) return;
 		RowData& row = m_Rows[iter->RowIndex];
 		if (m_Width - iter->Width - row.AvailableWidth == iter->XOffset)

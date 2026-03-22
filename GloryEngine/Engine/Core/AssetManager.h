@@ -1,6 +1,8 @@
 #pragma once
 #include "Resource.h"
 
+#include <engine_visibility.h>
+
 #include <UUID.h>
 
 #include <unordered_map>
@@ -16,9 +18,9 @@ namespace Glory
 	{
 	public:
 		/** @brief Constructor */
-		AssetManager(IEngine* pEngine);
+		GLORY_ENGINE_API AssetManager(IEngine* pEngine);
 		/** @brief Destructor */
-		virtual ~AssetManager();
+		GLORY_ENGINE_API virtual ~AssetManager();
 
 		/**
 		 * @brief Get or load an asset
@@ -28,7 +30,7 @@ namespace Glory
 		 * If the asset is not loaded, it gets loaded asynchronously.
 		 */
 		template<class T>
-		T* GetOrLoadAsset(UUID uuid)
+		inline T* GetOrLoadAsset(UUID uuid)
 		{
 			Resource* pResource = GetOrLoadAsset(uuid);
 			if (!pResource) return nullptr;
@@ -46,7 +48,7 @@ namespace Glory
 		 * If the asset is not loaded, it gets loaded synchronously.
 		 */
 		template<class T>
-		T* GetAssetImmediate(UUID uuid)
+		inline T* GetAssetImmediate(UUID uuid)
 		{
 			Resource* pResource = GetAssetImmediate(uuid);
 			if (!pResource) return nullptr;

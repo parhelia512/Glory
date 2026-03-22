@@ -20,6 +20,11 @@ project "GloryEngineCore"
 		"%{IncludeDir.Utils}",
 	}
 
+	defines
+	{
+		"GLORY_ENGINE_STATIC"
+	}
+
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"

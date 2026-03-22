@@ -61,7 +61,7 @@ project "JoltEditorExtension"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryEditor",
 		"GloryEditorSerialization",
 		"GloryJoltPhysics",

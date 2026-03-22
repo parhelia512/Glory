@@ -1,4 +1,6 @@
 #pragma once
+#include <engine_visibility.h>
+
 #include <string>
 #include <chrono>
 #include <vector>
@@ -8,15 +10,15 @@ namespace Glory
 	class ProfilerSample
 	{
 	public:
-		ProfilerSample(const std::string& name);
-		virtual ~ProfilerSample();
+		GLORY_ENGINE_API ProfilerSample(const std::string& name);
+		GLORY_ENGINE_API virtual ~ProfilerSample();
 
-		const std::string& Name();
-		size_t SubSampleCount();
-		ProfilerSample* GetSubSample(size_t index);
+		GLORY_ENGINE_API const std::string& Name();
+		GLORY_ENGINE_API size_t SubSampleCount();
+		GLORY_ENGINE_API ProfilerSample* GetSubSample(size_t index);
 
 		template<typename T, typename Ratio>
-		const T GetDuration()
+		inline const T GetDuration()
 		{
 			std::chrono::duration<T, Ratio> duration = m_SampleEnd - m_SampleStart;
 			return duration.count();

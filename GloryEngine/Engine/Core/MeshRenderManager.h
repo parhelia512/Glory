@@ -15,16 +15,16 @@ namespace Glory
     class MeshRenderManager : public Utils::ECS::ComponentManager<MeshRenderer>
     {
     public:
-        MeshRenderManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity=100);
-        virtual ~MeshRenderManager();
+        GLORY_ENGINE_API MeshRenderManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity=100);
+        GLORY_ENGINE_API virtual ~MeshRenderManager();
 
     public:
-        void OnDirtyImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
-        void OnDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
-        void OnEnableDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
-        void OnDisableDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
-        void OnValidateImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
-        void GetReferencesImpl(std::vector<UUID>& references) const;
+        GLORY_ENGINE_API void OnDirtyImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
+        GLORY_ENGINE_API void OnDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
+        GLORY_ENGINE_API void OnEnableDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
+        GLORY_ENGINE_API void OnDisableDrawImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
+        GLORY_ENGINE_API void OnValidateImpl(Utils::ECS::EntityID entity, MeshRenderer& pComponent);
+        GLORY_ENGINE_API void GetReferencesImpl(std::vector<UUID>& references) const;
 
     private:
         virtual void OnInitialize() override;

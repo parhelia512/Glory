@@ -3,6 +3,8 @@
 #include "GraphicsEnums.h"
 #include "MaterialPropertyInfo.h"
 
+#include <engine_visibility.h>
+
 #include <BitSet.h>
 
 #include <glm/vec4.hpp>
@@ -34,53 +36,53 @@ namespace Glory
 
     public:
         /** @brief Constructor */
-        PipelineData();
+        GLORY_ENGINE_API PipelineData();
         /** @brief Destructor */
-        virtual ~PipelineData();
+        GLORY_ENGINE_API virtual ~PipelineData();
 
         /** @brief Get the shading type for this pipeline */
-        PipelineType Type() const;
+        GLORY_ENGINE_API PipelineType Type() const;
         /** @brief Get the number of shaders attached to this pipeline */
-        virtual size_t ShaderCount() const;
+        GLORY_ENGINE_API virtual size_t ShaderCount() const;
         /** @brief Get the ID of a shader attached to this pipeline
          * @param index Index of the shader
          */
-        virtual UUID ShaderID(size_t index) const;
+        GLORY_ENGINE_API virtual UUID ShaderID(size_t index) const;
 
         /** @brief Get compiled shader attached to this pipeline
          * @param manager Shader manager to get shaders from
          * @param index Index of the shader to get
          */
-        virtual const FileData* Shader(const PipelineManager& manager, size_t index) const;
+        GLORY_ENGINE_API virtual const FileData* Shader(const PipelineManager& manager, size_t index) const;
         /** @brief Get the type of a shader attached to this pipeline
          * @param manager Shader manager to get shaders from
          * @param index Index of the shader to get the type from
          */
-        virtual ShaderType GetShaderType(const PipelineManager& manager, size_t index) const;
+        GLORY_ENGINE_API virtual ShaderType GetShaderType(const PipelineManager& manager, size_t index) const;
 
         /** @brief Set the shading type for this pipeline
          * @param type @ref PipelineType to set
          */
-        void SetPipelineType(PipelineType type);
+        GLORY_ENGINE_API void SetPipelineType(PipelineType type);
         /** @brief Add a shader to the pipeline
          * @param shaderID ID of the shader to add
          */
-        void AddShader(UUID shaderID);
+        GLORY_ENGINE_API void AddShader(UUID shaderID);
         /** @brief Remove a shader from the pipeline
          * @param index Index of the shader to remove
          */
-        void RemoveShaderAt(size_t index);
+        GLORY_ENGINE_API void RemoveShaderAt(size_t index);
 
         /** @brief Add a property info to the pipeline */
-        void AddProperty(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, size_t size, uint32_t flags = 0);
+        GLORY_ENGINE_API void AddProperty(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, size_t size, uint32_t flags = 0);
         /** @overload for resources */
-        void AddResourceProperty(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, TextureType textureType);
+        GLORY_ENGINE_API void AddResourceProperty(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, TextureType textureType);
         /** @brief Get the number of properties for this pipeline */
-        size_t PropertyInfoCount() const;
+        GLORY_ENGINE_API size_t PropertyInfoCount() const;
         /** @brief Get an @ref MaterialPropertyInfo by index */
-        MaterialPropertyInfo* GetPropertyInfoAt(size_t index);
+        GLORY_ENGINE_API MaterialPropertyInfo* GetPropertyInfoAt(size_t index);
         /** @brief Clear all property infos */
-        void ClearProperties();
+        GLORY_ENGINE_API void ClearProperties();
 
         /** @brief Add information on a uniform buffer to this pipeline
          * @param name Name of the buffer
@@ -88,182 +90,182 @@ namespace Glory
          *
          * Will update the ShaderTypeFlag bits if the buffer was already added.
          */
-        void AddUniformBuffer(const std::string& name, ShaderType shaderType);
+        GLORY_ENGINE_API void AddUniformBuffer(const std::string& name, ShaderType shaderType);
         /** @brief Add information on a storage buffer to this pipeline
          * @param name Name of the buffer
          * @param shaderType Shader stage that uses this buffer
          *
          * Will update the ShaderTypeFlag bits if the buffer was already added.
          */
-        void AddStorageBuffer(const std::string& name, ShaderType shaderType);
+        GLORY_ENGINE_API void AddStorageBuffer(const std::string& name, ShaderType shaderType);
 
         /** @brief Number of uniform buffers in this pipeline */
-        size_t UniformBufferCount() const;
+        GLORY_ENGINE_API size_t UniformBufferCount() const;
         /** @brief Number of storage buffers in this pipeline */
-        size_t StorageBufferCount() const;
+        GLORY_ENGINE_API size_t StorageBufferCount() const;
 
         /** @brief Get the info for a uniform buffer in this pipeline */
-        const ShaderBufferInfo& UniformBuffer(size_t index) const;
+        GLORY_ENGINE_API const ShaderBufferInfo& UniformBuffer(size_t index) const;
         /** @brief Get the info for a storage buffer in this pipeline */
-        const ShaderBufferInfo& StorageBuffer(size_t index) const;
+        GLORY_ENGINE_API const ShaderBufferInfo& StorageBuffer(size_t index) const;
 
-        size_t ResourcePropertyCount() const;
-        MaterialPropertyInfo* ResourcePropertyInfo(size_t resourceIndex);
+        GLORY_ENGINE_API size_t ResourcePropertyCount() const;
+        GLORY_ENGINE_API MaterialPropertyInfo* ResourcePropertyInfo(size_t resourceIndex);
 
         /** @brief Check if this pipeline is using a shader */
-        bool HasShader(const UUID shaderID) const;
+        GLORY_ENGINE_API bool HasShader(const UUID shaderID) const;
 
         /** @brief Remove all shaders from this pipeline */
-        void RemoveAllShaders();
+        GLORY_ENGINE_API void RemoveAllShaders();
 
         /** @brief Serialize the pipeline into a binary stream */
-        void Serialize(Utils::BinaryStream& container) const override;
+        GLORY_ENGINE_API void Serialize(Utils::BinaryStream& container) const override;
         /** @brief Deserialize the pipeline from a binary stream */
-        void Deserialize(Utils::BinaryStream& container) override;
+        GLORY_ENGINE_API void Deserialize(Utils::BinaryStream& container) override;
 
         /** @brief Load properties into a material
          * @param pMaterial Destination material
          */
-        void LoadIntoMaterial(MaterialData* pMaterial) const;
+        GLORY_ENGINE_API void LoadIntoMaterial(MaterialData* pMaterial) const;
         
         /** @brief Check if this pipeline has texture parameters */
-        bool UsesTextures() const;
+        GLORY_ENGINE_API bool UsesTextures() const;
 
         /** @brief Add a feature
          * @param feature The name of the feature
          * @param isOn Is the feature on by default
          */
-        void AddFeature(std::string_view feature, bool isOn);
+        GLORY_ENGINE_API void AddFeature(std::string_view feature, bool isOn);
 
         /** @brief Get the index of a feature
          * @param feature Name of the feature
          */
-        size_t FeatureIndex(std::string_view feature) const;
+        GLORY_ENGINE_API size_t FeatureIndex(std::string_view feature) const;
 
         /** @brief Number of available features for this pipeline */
-        size_t FeatureCount() const;
+        GLORY_ENGINE_API size_t FeatureCount() const;
 
         /** @brief Get the name of a feature */
-        std::string_view FeatureName(size_t index) const;
+        GLORY_ENGINE_API std::string_view FeatureName(size_t index) const;
 
         /** @brief Check if a feature is enabled */
-        bool FeatureEnabled(size_t index) const;
+        GLORY_ENGINE_API bool FeatureEnabled(size_t index) const;
 
         /** @brief Enable a feature */
-        void SetFeatureEnabled(size_t index, bool enabled);
+        GLORY_ENGINE_API void SetFeatureEnabled(size_t index, bool enabled);
         /** @brief Remove all features */
-        void ClearFeatures();
+        GLORY_ENGINE_API void ClearFeatures();
 
         /** @brief Get total size of properties buffer in bytes */
-        size_t TotalPropertiesByteSize() const;
+        GLORY_ENGINE_API size_t TotalPropertiesByteSize() const;
 
         /** @brief Are settings dirty */
-        bool& SettingsDirty() { return m_SettingsDirty; }
+        inline bool& SettingsDirty() { return m_SettingsDirty; }
         /** @overload */
-        const bool& SettingsDirty() const { return m_SettingsDirty; }
+        inline const bool& SettingsDirty() const { return m_SettingsDirty; }
 
         /** @brief Face to cull */
-        CullFace& GetCullFace() { return m_CullFace; }
+        inline CullFace& GetCullFace() { return m_CullFace; }
         /** @overload */
-        const CullFace& GetCullFace() const { return m_CullFace; }
+        inline const CullFace& GetCullFace() const { return m_CullFace; }
 
         /** @brief Primitive type to render */
-        PrimitiveType& GetPrimitiveType() { return m_PrimitiveType; }
+        inline PrimitiveType& GetPrimitiveType() { return m_PrimitiveType; }
         /** @overload */
-        const PrimitiveType& GetPrimitiveType() const { return m_PrimitiveType; }
+        inline const PrimitiveType& GetPrimitiveType() const { return m_PrimitiveType; }
 
         /** @brief Enable/disable depth test */
-        void SetDepthTestEnabled(bool enable);
+        GLORY_ENGINE_API void SetDepthTestEnabled(bool enable);
         /** @brief Is depth test enabled */
-        const bool DepthTestEnabled() const;
+        GLORY_ENGINE_API const bool DepthTestEnabled() const;
 
         /** @brief Enable/disable depth write */
-        void SetDepthWriteEnabled(bool enable);
+        GLORY_ENGINE_API void SetDepthWriteEnabled(bool enable);
         /** @brief Is depth write enabled */
-        const bool DepthWriteEnabled() const;
+        GLORY_ENGINE_API const bool DepthWriteEnabled() const;
 
         /** @brief Set color write mask */
-        void SetColorWriteMask(bool r, bool g, bool b, bool a);
+        GLORY_ENGINE_API void SetColorWriteMask(bool r, bool g, bool b, bool a);
         /** @overload */
-        void SetColorWriteMask(uint8_t mask);
+        GLORY_ENGINE_API void SetColorWriteMask(uint8_t mask);
         /** @brief Get color write mask */
-        const void ColorWriteMask(bool& r, bool& g, bool& b, bool& a) const;
+        GLORY_ENGINE_API const void ColorWriteMask(bool& r, bool& g, bool& b, bool& a) const;
         /** @overload */
-        const uint8_t ColorWriteMask() const;
+        GLORY_ENGINE_API const uint8_t ColorWriteMask() const;
 
         /** @brief Depth compare operator */
-        CompareOp& GetDepthCompareOp() { return m_DepthCompare; }
+        inline CompareOp& GetDepthCompareOp() { return m_DepthCompare; }
         /** @overload */
-        const CompareOp& GetDepthCompareOp() const { return m_DepthCompare; }
+        inline const CompareOp& GetDepthCompareOp() const { return m_DepthCompare; }
 
         /** @brief Enable/disable depth test */
-        void SetStencilTestEnabled(bool enable);
+        GLORY_ENGINE_API void SetStencilTestEnabled(bool enable);
         /** @brief Is depth test enabled */
-        const bool StencilTestEnabled() const;
+        GLORY_ENGINE_API const bool StencilTestEnabled() const;
 
         /** @brief Set stencil compare mask */
-        void SetStencilCompareMask(uint8_t mask);
+        GLORY_ENGINE_API void SetStencilCompareMask(uint8_t mask);
         /** @brief Get stencil compare mask */
-        const uint8_t StencilCompareMask() const;
+        GLORY_ENGINE_API const uint8_t StencilCompareMask() const;
 
         /** @brief Set stencil write mask */
-        void SetStencilWriteMask(uint8_t mask);
+        GLORY_ENGINE_API void SetStencilWriteMask(uint8_t mask);
         /** @brief Get stencil write mask */
-        const uint8_t StencilWriteMask() const;
+        GLORY_ENGINE_API const uint8_t StencilWriteMask() const;
 
         /** @brief Set stencil reference */
-        void SetStencilReference(uint8_t ref);
+        GLORY_ENGINE_API void SetStencilReference(uint8_t ref);
         /** @brief Get stencil reference */
-        const uint8_t StencilReference() const;
+        GLORY_ENGINE_API const uint8_t StencilReference() const;
 
         /** @brief Stencil compare operator */
-        CompareOp& GetStencilCompareOp() { return m_StencilCompareOp; }
+        inline CompareOp& GetStencilCompareOp() { return m_StencilCompareOp; }
         /** @overload */
-        const CompareOp& GetStencilCompareOp() const { return m_StencilCompareOp; }
+        inline const CompareOp& GetStencilCompareOp() const { return m_StencilCompareOp; }
 
         /** @brief Stencil fail func */
-        Func& GetStencilFailOp() { return m_StencilFailOp; }
+        inline Func& GetStencilFailOp() { return m_StencilFailOp; }
         /** @overload */
-        const Func& GetStencilFailOp() const { return m_StencilFailOp; }
+        inline const Func& GetStencilFailOp() const { return m_StencilFailOp; }
 
         /** @brief Stencil depth fail func */
-        Func& GetStencilDepthFailOp() { return m_StencilDepthFailOp; }
+        inline Func& GetStencilDepthFailOp() { return m_StencilDepthFailOp; }
         /** @overload */
-        const Func& GetStencilDepthFailOp() const { return m_StencilDepthFailOp; }
+        inline const Func& GetStencilDepthFailOp() const { return m_StencilDepthFailOp; }
 
         /** @brief Stencil pass func */
-        Func& GetStencilPassOp() { return m_StencilPassOp; }
+        inline Func& GetStencilPassOp() { return m_StencilPassOp; }
         /** @overload */
-        const Func& GetStencilPassOp() const { return m_StencilPassOp; }
+        inline const Func& GetStencilPassOp() const { return m_StencilPassOp; }
 
         /** @brief Enable/disable color blending */
-        void SetBlendEnabled(bool enable);
+        GLORY_ENGINE_API void SetBlendEnabled(bool enable);
         /** @brief Is color blending enabled */
-        const bool BlendEnabled() const;
+        GLORY_ENGINE_API const bool BlendEnabled() const;
 
-        BlendFactor& SrcColorBlendFactor() { return m_SrcColorBlendFactor; }
-        const BlendFactor& SrcColorBlendFactor() const { return m_SrcColorBlendFactor; }
+        inline BlendFactor& SrcColorBlendFactor() { return m_SrcColorBlendFactor; }
+        inline const BlendFactor& SrcColorBlendFactor() const { return m_SrcColorBlendFactor; }
 
-        BlendFactor& DstColorBlendFactor() { return m_DstColorBlendFactor; }
-        const BlendFactor& DstColorBlendFactor() const { return m_DstColorBlendFactor; }
+        inline BlendFactor& DstColorBlendFactor() { return m_DstColorBlendFactor; }
+        inline const BlendFactor& DstColorBlendFactor() const { return m_DstColorBlendFactor; }
 
-        BlendOp& ColorBlendOp() { return m_ColorBlendOp; }
-        const BlendOp& ColorBlendOp() const { return m_ColorBlendOp; }
+        inline BlendOp& ColorBlendOp() { return m_ColorBlendOp; }
+        inline const BlendOp& ColorBlendOp() const { return m_ColorBlendOp; }
 
-        BlendFactor& SrcAlphaBlendFactor() { return m_SrcAlphaBlendFactor; }
-        const BlendFactor& SrcAlphaBlendFactor() const { return m_SrcAlphaBlendFactor; }
+        inline BlendFactor& SrcAlphaBlendFactor() { return m_SrcAlphaBlendFactor; }
+        inline const BlendFactor& SrcAlphaBlendFactor() const { return m_SrcAlphaBlendFactor; }
 
-        BlendFactor& DstAlphaBlendFactor() { return m_DstAlphaBlendFactor; }
-        const BlendFactor& DstAlphaBlendFactor() const { return m_DstAlphaBlendFactor; }
+        inline BlendFactor& DstAlphaBlendFactor() { return m_DstAlphaBlendFactor; }
+        inline const BlendFactor& DstAlphaBlendFactor() const { return m_DstAlphaBlendFactor; }
 
-        BlendOp& AlphaBlendOp() { return m_AlphaBlendOp; }
-        const BlendOp& AlphaBlendOp() const { return m_AlphaBlendOp; }
+        inline BlendOp& AlphaBlendOp() { return m_AlphaBlendOp; }
+        inline const BlendOp& AlphaBlendOp() const { return m_AlphaBlendOp; }
 
-        glm::vec4& BlendConstants() { return m_BlendConstants; }
-        const glm::vec4& BlendConstants() const { return m_BlendConstants; }
+        inline glm::vec4& BlendConstants() { return m_BlendConstants; }
+        inline const glm::vec4& BlendConstants() const { return m_BlendConstants; }
 
         /** @brief BitSet containing state of toggelable settings */
-        const Utils::BitSet& SettingsTogglesBitSet() const { return m_SettingsToggles; }
+        inline const Utils::BitSet& SettingsTogglesBitSet() const { return m_SettingsToggles; }
 
     private:
         virtual void References(IEngine*, std::vector<UUID>&) const override {}

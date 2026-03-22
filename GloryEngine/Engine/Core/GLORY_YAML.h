@@ -4,28 +4,30 @@
 #include "SceneObjectRef.h"
 #include "GraphicsEnums.h"
 
+#include <engine_visibility.h>
+
 #include <yaml-cpp/yaml.h>
 #include <string>
 #include <algorithm>
 
 namespace YAML
 {
-	Emitter& operator<<(Emitter& out, const Glory::LayerMask &mask);
-	Emitter& operator<<(Emitter& out, const Glory::ShaderType &type);
-	Emitter& operator<<(Emitter& out, const Glory::LayerRef &layerRef);
-	Emitter& operator<<(Emitter& out, const Glory::SceneObjectRef& objectRef);
+	GLORY_ENGINE_API Emitter& operator<<(Emitter& out, const Glory::LayerMask &mask);
+	GLORY_ENGINE_API Emitter& operator<<(Emitter& out, const Glory::ShaderType &type);
+	GLORY_ENGINE_API Emitter& operator<<(Emitter& out, const Glory::LayerRef &layerRef);
+	GLORY_ENGINE_API Emitter& operator<<(Emitter& out, const Glory::SceneObjectRef& objectRef);
 
 	template<>
 	struct convert<Glory::LayerRef>
 	{
-		static Node encode(const Glory::LayerRef& layerRef)
+		inline static Node encode(const Glory::LayerRef& layerRef)
 		{
 			Node node;
 			node = layerRef.m_LayerIndex;
 			return node;
 		}
 
-		static bool decode(const Node& node, Glory::LayerRef& layerRef)
+		inline static bool decode(const Node& node, Glory::LayerRef& layerRef)
 		{
 			if (!node.IsScalar())
 				return false;
@@ -38,14 +40,14 @@ namespace YAML
 	template<>
 	struct convert<Glory::LayerMask>
 	{
-		static Node encode(const Glory::LayerMask& mask)
+		inline static Node encode(const Glory::LayerMask& mask)
 		{
 			Node node;
 			node = mask.m_Mask;
 			return node;
 		}
 
-		static bool decode(const Node& node, Glory::LayerMask& mask)
+		inline static bool decode(const Node& node, Glory::LayerMask& mask)
 		{
 			if (!node.IsScalar())
 				return false;
@@ -58,14 +60,14 @@ namespace YAML
 	template<>
 	struct convert<Glory::UUID>
 	{
-		static Node encode(const Glory::UUID& uuid)
+		inline static Node encode(const Glory::UUID& uuid)
 		{
 			Node node;
 			node = (uint64_t)uuid;
 			return node;
 		}
 
-		static bool decode(const Node& node, Glory::UUID& uuid)
+		inline static bool decode(const Node& node, Glory::UUID& uuid)
 		{
 			if (!node.IsScalar())
 				return false;
@@ -78,7 +80,7 @@ namespace YAML
 	template<>
 	struct convert<Glory::SceneObjectRef>
 	{
-		static Node encode(const Glory::SceneObjectRef& objectRef)
+		inline static Node encode(const Glory::SceneObjectRef& objectRef)
 		{
 			Node node{YAML::NodeType::Map};
 			node["SceneUUID"] = objectRef.SceneUUID();
@@ -86,7 +88,7 @@ namespace YAML
 			return node;
 		}
 
-		static bool decode(const Node& node, Glory::SceneObjectRef& objectRef)
+		inline static bool decode(const Node& node, Glory::SceneObjectRef& objectRef)
 		{
 			if (!node.IsMap())
 				return false;
@@ -135,14 +137,14 @@ namespace YAML
 	template<>
 	struct convert<Glory::ShaderType>
 	{
-		static Node encode(const Glory::ShaderType& type)
+		inline static Node encode(const Glory::ShaderType& type)
 		{
 			Node node;
 			node = SHADERTYPE_TOSTRING[type];
 			return node;
 		}
 
-		static bool decode(const Node& node, Glory::ShaderType& type)
+		inline static bool decode(const Node& node, Glory::ShaderType& type)
 		{
 			if (!node.IsScalar())
 				return false;

@@ -60,7 +60,7 @@ project "GloryEditorOGL"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"yaml-cpp",
 		"GloryEditor",
 		"GloryOpenGLGraphics",

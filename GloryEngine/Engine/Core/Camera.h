@@ -2,6 +2,8 @@
 #include "CameraRef.h"
 #include "LayerMask.h"
 
+#include <engine_visibility.h>
+
 #include <glm/glm.hpp>
 #include <unordered_map>
 
@@ -10,43 +12,43 @@ namespace Glory
 	class Camera
 	{
 	public:
-		bool SetBaseResolution(uint32_t width, uint32_t height);
-		const glm::uvec2& GetBaseResolution() const;
-		bool SetResolutionScale(float width, float height);
-		void SetPerspectiveProjection(float halfFOV, float near, float far, bool force=false);
-		void SetOutput(bool output, int x, int y);
-		bool IsOutput() const;
-		void SetOrthographicProjection(float near, float far, bool force=false);
-		void SetView(const glm::mat4& view);
-		void SetPriority(int priority);
-		void SetLayerMask(const LayerMask& layerMask);
-		void SetClearColor(const glm::vec4& clearColor);
-		void SetUserData(const std::string& name, void* data);
-		bool IsResolutionDirty();
-		bool IsPerspectiveDirty();
-		void SetResolutionDirty(bool dirty=true);
-		void SetPerspectiveDirty(bool dirty=true);
-		glm::vec3 GetFocusPosition(const BoundingSphere& boundingSphere) const;
-		void Focus(const BoundingSphere& boundingSphere);
+		GLORY_ENGINE_API bool SetBaseResolution(uint32_t width, uint32_t height);
+		GLORY_ENGINE_API const glm::uvec2& GetBaseResolution() const;
+		GLORY_ENGINE_API bool SetResolutionScale(float width, float height);
+		GLORY_ENGINE_API void SetPerspectiveProjection(float halfFOV, float near, float far, bool force=false);
+		GLORY_ENGINE_API void SetOutput(bool output, int x, int y);
+		GLORY_ENGINE_API bool IsOutput() const;
+		GLORY_ENGINE_API void SetOrthographicProjection(float near, float far, bool force=false);
+		GLORY_ENGINE_API void SetView(const glm::mat4& view);
+		GLORY_ENGINE_API void SetPriority(int priority);
+		GLORY_ENGINE_API void SetLayerMask(const LayerMask& layerMask);
+		GLORY_ENGINE_API void SetClearColor(const glm::vec4& clearColor);
+		GLORY_ENGINE_API void SetUserData(const std::string& name, void* data);
+		GLORY_ENGINE_API bool IsResolutionDirty();
+		GLORY_ENGINE_API bool IsPerspectiveDirty();
+		GLORY_ENGINE_API void SetResolutionDirty(bool dirty=true);
+		GLORY_ENGINE_API void SetPerspectiveDirty(bool dirty=true);
+		GLORY_ENGINE_API glm::vec3 GetFocusPosition(const BoundingSphere& boundingSphere) const;
+		GLORY_ENGINE_API void Focus(const BoundingSphere& boundingSphere);
 
-		const glm::uvec2& GetResolution() const;
-		const glm::mat4& GetView() const;
-		const glm::mat4& GetViewOffset() const;
-		const glm::mat4& GetProjection() const;
-		glm::mat4 GetFinalView() const;
+		GLORY_ENGINE_API const glm::uvec2& GetResolution() const;
+		GLORY_ENGINE_API const glm::mat4& GetView() const;
+		GLORY_ENGINE_API const glm::mat4& GetViewOffset() const;
+		GLORY_ENGINE_API const glm::mat4& GetProjection() const;
+		GLORY_ENGINE_API glm::mat4 GetFinalView() const;
 
-		float* GetViewPointer();
-		float* GetProjectionPointer();
+		GLORY_ENGINE_API float* GetViewPointer();
+		GLORY_ENGINE_API float* GetProjectionPointer();
 
-		int GetPriority() const;
-		const glm::vec4& GetClearColor() const;
-		const LayerMask& GetLayerMask() const;
+		GLORY_ENGINE_API int GetPriority() const;
+		GLORY_ENGINE_API const glm::vec4& GetClearColor() const;
+		GLORY_ENGINE_API const LayerMask& GetLayerMask() const;
 
-		uint64_t& GetUserHandle(const std::string& name);
+		GLORY_ENGINE_API uint64_t& GetUserHandle(const std::string& name);
 
-		float GetNear() const;
-		float GetFar() const;
-		UUID GetUUID() const;
+		GLORY_ENGINE_API float GetNear() const;
+		GLORY_ENGINE_API float GetFar() const;
+		GLORY_ENGINE_API UUID GetUUID() const;
 
 	private:
 		Camera(uint32_t width, uint32_t height);

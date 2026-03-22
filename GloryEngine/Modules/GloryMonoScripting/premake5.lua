@@ -57,7 +57,7 @@ project "GloryMonoScripting"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryAudioModule",
 		"shaderc",
 		"shaderc_combined",

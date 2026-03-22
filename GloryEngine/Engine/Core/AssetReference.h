@@ -1,6 +1,8 @@
 #pragma once
 #include "ResourceType.h"
 
+#include <engine_visibility.h>
+
 #include <UUID.h>
 
 #include <Reflection.h>
@@ -13,21 +15,21 @@ namespace Glory
 	class AssetReferenceBase
 	{
 	public:
-		AssetReferenceBase();
-		AssetReferenceBase(UUID uuid);
-		virtual ~AssetReferenceBase();
+		GLORY_ENGINE_API AssetReferenceBase();
+		GLORY_ENGINE_API AssetReferenceBase(UUID uuid);
+		GLORY_ENGINE_API virtual ~AssetReferenceBase();
 
-		const UUID AssetUUID() const;
-		UUID* AssetUUIDMember();
-		void SetUUID(UUID uuid);
-		Resource* GetResource(AssetManager* pAssets) const;
-		Resource* GetResourceImmediate(AssetManager* pAssets) const;
+		GLORY_ENGINE_API const UUID AssetUUID() const;
+		GLORY_ENGINE_API UUID* AssetUUIDMember();
+		GLORY_ENGINE_API void SetUUID(UUID uuid);
+		GLORY_ENGINE_API Resource* GetResource(AssetManager* pAssets) const;
+		GLORY_ENGINE_API Resource* GetResourceImmediate(AssetManager* pAssets) const;
 
 		virtual const uint32_t TypeHash() { return 0; };
 
 		virtual AssetReferenceBase* CreateCopy() { return new AssetReferenceBase(m_AssetUUID); };
 
-		operator bool() const;
+		GLORY_ENGINE_API operator bool() const;
 
 	protected:
 		REFLECTABLE(AssetReferenceBase, (UUID) (m_AssetUUID))

@@ -48,7 +48,7 @@ project "GloryLocalizeMonoExtender"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryLocalize",
 		"GloryMonoScripting",
 		"yaml-cpp",

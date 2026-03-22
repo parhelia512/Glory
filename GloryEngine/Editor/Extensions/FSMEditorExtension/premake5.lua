@@ -58,7 +58,7 @@ project "FSMEditorExtension"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryEditor",
 		"GloryFSM",
 		"shaderc",

@@ -64,7 +64,7 @@ project "SteamAudioExtension"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GlorySteamAudio",
 		"GloryPhysicsModule",
 		"GloryEditor",

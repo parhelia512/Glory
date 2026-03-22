@@ -52,7 +52,7 @@ project "GloryUIRenderer"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryLocalizeModule",
 		"shaderc",
 		"shaderc_combined",

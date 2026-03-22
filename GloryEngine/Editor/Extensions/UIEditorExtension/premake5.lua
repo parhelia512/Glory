@@ -58,7 +58,7 @@ project "UIEditorExtension"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryEditor",
 		"GloryEditorSerialization",
 		"GloryUIRenderer",

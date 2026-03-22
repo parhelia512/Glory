@@ -1,6 +1,9 @@
 #pragma once
 #include "Resource.h"
 #include "MeshData.h"
+
+#include <engine_visibility.h>
+
 #include <vector>
 
 namespace Glory
@@ -8,8 +11,8 @@ namespace Glory
 	class ModelData : public Resource
 	{
 	public:
-		ModelData();
-		virtual ~ModelData();
+		GLORY_ENGINE_API ModelData();
+		GLORY_ENGINE_API virtual ~ModelData();
 
 	private:
 		virtual void References(IEngine* pEngine, std::vector<UUID>& references) const override {}

@@ -13,8 +13,8 @@ namespace Glory
     class TransformManager : public Glory::Utils::ECS::ComponentManager<Transform>
     {
     public:
-        TransformManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity=1000);
-        virtual ~TransformManager();
+        GLORY_ENGINE_API TransformManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity=1000);
+        GLORY_ENGINE_API virtual ~TransformManager();
 
     public:
         void OnValidateImpl(Utils::ECS::EntityID entity, Transform& pComponent);

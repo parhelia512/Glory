@@ -60,7 +60,7 @@ project "GloryJoltPhysics"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryPhysicsModule",
 		"GloryReflect",
 		"GloryECS",

@@ -2,6 +2,8 @@
 #include "Resource.h"
 #include "GraphicsEnums.h"
 
+#include <engine_visibility.h>
+
 #include <UUID.h>
 
 #include <string>
@@ -12,23 +14,23 @@ namespace Glory
 	struct MaterialPropertyInfo
 	{
 	public:
-		MaterialPropertyInfo();
-		MaterialPropertyInfo(const MaterialPropertyInfo& other);
-		MaterialPropertyInfo(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, size_t size, size_t offset, uint32_t flags);
-		MaterialPropertyInfo(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, size_t offset, TextureType textureType, uint32_t flags);
+		GLORY_ENGINE_API MaterialPropertyInfo();
+		GLORY_ENGINE_API MaterialPropertyInfo(const MaterialPropertyInfo& other);
+		GLORY_ENGINE_API MaterialPropertyInfo(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, size_t size, size_t offset, uint32_t flags);
+		GLORY_ENGINE_API MaterialPropertyInfo(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, size_t offset, TextureType textureType, uint32_t flags);
 
-		const std::string& DisplayName() const;
-		const std::string& ShaderName() const;
-		const uint32_t TypeHash() const;
-		const size_t Size() const;
-		const size_t Offset() const;
-		const size_t EndOffset() const;
-		bool IsResource() const;
-		TextureType GetTextureType() const;
-		uint32_t Flags() const;
+		GLORY_ENGINE_API const std::string& DisplayName() const;
+		GLORY_ENGINE_API const std::string& ShaderName() const;
+		GLORY_ENGINE_API const uint32_t TypeHash() const;
+		GLORY_ENGINE_API const size_t Size() const;
+		GLORY_ENGINE_API const size_t Offset() const;
+		GLORY_ENGINE_API const size_t EndOffset() const;
+		GLORY_ENGINE_API bool IsResource() const;
+		GLORY_ENGINE_API TextureType GetTextureType() const;
+		GLORY_ENGINE_API uint32_t Flags() const;
 
 		template<typename T>
-		bool Read(const std::vector<char> buffer, T& data) const
+		inline bool Read(const std::vector<char> buffer, T& data) const
 		{
 			if (m_TextureType) return false;
 			if (sizeof(T) > m_Size) return false;
@@ -38,7 +40,7 @@ namespace Glory
 		}
 
 		template<typename T>
-		bool Write(std::vector<char>& buffer, const T& data)
+		inline bool Write(std::vector<char>& buffer, const T& data)
 		{
 			if (m_TextureType) return false;
 			if (sizeof(T) > m_Size) return false;
@@ -47,12 +49,12 @@ namespace Glory
 			return true;
 		}
 
-		void* Address(std::vector<char>& buffer);
+		GLORY_ENGINE_API void* Address(std::vector<char>& buffer);
 
-		bool Write(std::vector<char>& buffer, const void* data);
-		void Reserve(std::vector<char>& buffer);
+		GLORY_ENGINE_API bool Write(std::vector<char>& buffer, const void* data);
+		GLORY_ENGINE_API void Reserve(std::vector<char>& buffer);
 
-		void SetDefaultValue(void* dst) const;
+		GLORY_ENGINE_API void SetDefaultValue(void* dst) const;
 
 	private:
 		friend class MaterialData;

@@ -64,14 +64,15 @@ namespace Glory
 		}
 	}
 
-	const Layer* LayerManager::GetLayerByName(const std::string& name)
+	const Layer* LayerManager::GetLayerByName(const std::string& name) const
 	{
-		if (m_NameToLayer.find(name) == m_NameToLayer.end()) return nullptr;
-		size_t index = m_NameToLayer[name];
+		auto iter = m_NameToLayer.find(name);
+		if (iter == m_NameToLayer.end()) return nullptr;
+		size_t index = iter->second;
 		return &m_Layers[index];
 	}
 
-	std::string LayerManager::LayerMaskToString(const LayerMask& layerMask)
+	std::string LayerManager::LayerMaskToString(const LayerMask& layerMask) const
 	{
 		if (layerMask == 0) return "Default";
 
@@ -85,15 +86,16 @@ namespace Glory
 		return result;
 	}
 
-	int LayerManager::GetLayerIndex(const Layer* pLayer)
+	int LayerManager::GetLayerIndex(const Layer* pLayer) const
 	{
 		if (pLayer == nullptr) return -1;
-		if (m_NameToLayer.find(pLayer->m_Name) == m_NameToLayer.end())
+		auto iter = m_NameToLayer.find(pLayer->m_Name);
+		if (iter == m_NameToLayer.end())
 			return -1;
-		return (int)m_NameToLayer[pLayer->m_Name];
+		return (int)iter->second;
 	}
 
-	void LayerManager::GetAllLayerNames(std::vector<std::string_view>& names)
+	void LayerManager::GetAllLayerNames(std::vector<std::string_view>& names) const
 	{
 		names.push_back("Default"); // Layer 0
 		for (size_t i = 0; i < m_Layers.size(); i++)
@@ -102,13 +104,13 @@ namespace Glory
 		}
 	}
 
-	const Layer* LayerManager::GetLayerAtIndex(int index)
+	const Layer* LayerManager::GetLayerAtIndex(int index) const
 	{
 		if (index < 0 || (size_t)(index) >= m_Layers.size()) return nullptr;
 		return &m_Layers[index];
 	}
 
-	const size_t LayerManager::LayerCount()
+	const size_t LayerManager::LayerCount() const
 	{
 		return m_Layers.size();
 	}

@@ -1,29 +1,32 @@
 #pragma once
+#include "ResourceLoaderModule.h"
+#include "ModelLoaderModule.h"
+
+#include <engine_visibility.h>
+
 #include <string>
 #include <fstream>
 #include <yaml-cpp/yaml.h>
-#include "ResourceLoaderModule.h"
-#include "ModelLoaderModule.h"
 
 namespace Glory
 {
 	class ResourceMeta
 	{
 	public:
-		ResourceMeta();
-		ResourceMeta(const std::string& extension, const std::string& name, UUID uuid, uint32_t hash, size_t serializedVersion = 0);
-		virtual ~ResourceMeta();
+		GLORY_ENGINE_API ResourceMeta();
+		GLORY_ENGINE_API ResourceMeta(const std::string& extension, const std::string& name, UUID uuid, uint32_t hash, size_t serializedVersion = 0);
+		GLORY_ENGINE_API virtual ~ResourceMeta();
 
-		void Read(const YAML::Node& node);
-		const std::string& Extension() const;
-		std::string& Name();
-		const std::string& Name() const;
-		UUID ID() const;
-		UUID& ID();
-		uint32_t Hash() const;
-		uint32_t& Hash();
-		size_t SerializedVersion() const;
-		void IncrementSerializedVersion();
+		GLORY_ENGINE_API void Read(const YAML::Node& node);
+		GLORY_ENGINE_API const std::string& Extension() const;
+		GLORY_ENGINE_API std::string& Name();
+		GLORY_ENGINE_API const std::string& Name() const;
+		GLORY_ENGINE_API UUID ID() const;
+		GLORY_ENGINE_API UUID& ID();
+		GLORY_ENGINE_API uint32_t Hash() const;
+		GLORY_ENGINE_API uint32_t& Hash();
+		GLORY_ENGINE_API size_t SerializedVersion() const;
+		GLORY_ENGINE_API void IncrementSerializedVersion();
 
 	private:
 		uint64_t ReadUUID() const;
@@ -62,7 +65,7 @@ namespace std
 #include <yaml-cpp/yaml.h>
 namespace YAML
 {
-	Emitter& operator<<(Emitter& out, const Glory::ResourceMeta& meta);
+	GLORY_ENGINE_API Emitter& operator<<(Emitter& out, const Glory::ResourceMeta& meta);
 
 	template<>
 	struct convert<Glory::ResourceMeta>

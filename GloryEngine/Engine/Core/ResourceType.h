@@ -1,6 +1,8 @@
 #pragma once
 #include "Object.h"
 
+#include <engine_visibility.h>
+
 #include <string>
 #include <string_view>
 #include <typeindex>
@@ -13,7 +15,7 @@ namespace Glory
 
 	struct BasicTypeData
 	{
-		BasicTypeData(const std::string& name, uint32_t typeHash, size_t size);
+		GLORY_ENGINE_API BasicTypeData(const std::string& name, uint32_t typeHash, size_t size);
 
 		const std::string m_Name;
 		uint32_t m_TypeHash;
@@ -30,7 +32,7 @@ namespace Glory
 	class ResourceFactoryTemplate : public ResourceFactory
 	{
 	public:
-		virtual Resource* Create() const override
+		inline virtual Resource* Create() const override
 		{
 			return (Resource*)new R();
 		}
@@ -39,12 +41,12 @@ namespace Glory
 	class ResourceType
 	{
 	public:
-		virtual ~ResourceType();
-		uint32_t Hash() const;
-		const std::string& Extensions() const;
-		const std::string& FullName() const;
-		const std::string& Name() const;
-		Resource* Create() const;
+		GLORY_ENGINE_API virtual ~ResourceType();
+		GLORY_ENGINE_API uint32_t Hash() const;
+		GLORY_ENGINE_API const std::string& Extensions() const;
+		GLORY_ENGINE_API const std::string& FullName() const;
+		GLORY_ENGINE_API const std::string& Name() const;
+		GLORY_ENGINE_API Resource* Create() const;
 
 	private:
 		ResourceType(uint32_t typeHash, const std::string& extensions, const char* name, ResourceFactory* pFactory);
@@ -64,7 +66,7 @@ namespace Glory
 	{
 	public:
 		template<class T>
-		void RegisterResource(const std::string& extensions)
+		inline void RegisterResource(const std::string& extensions)
 		{
 			ResourceFactory* pFactory = new ResourceFactoryTemplate<T>();
 			ResourceType* pResourceType = RegisterResource(typeid(T), extensions, pFactory);
@@ -79,41 +81,41 @@ namespace Glory
 		}
 
 		template<typename T>
-		void RegisterType()
+		inline void RegisterType()
 		{
 			RegisterType(typeid(T), sizeof(T));
 		}
 
 		template<typename T>
-		static uint32_t GetHash()
+		inline static uint32_t GetHash()
 		{
 			return GetHash(typeid(T));
 		}
 
 		template<typename T>
-		ResourceType* GetResourceType()
+		inline ResourceType* GetResourceType()
 		{
 			return GetResourceType(typeid(T));
 		}
 
-		bool IsResource(uint32_t typeHash);
-		ResourceType* RegisterResource(std::type_index type, const std::string& extensions, ResourceFactory* pFactory);
-		void RegisterType(const std::type_info& type, size_t size);
+		GLORY_ENGINE_API bool IsResource(uint32_t typeHash);
+		GLORY_ENGINE_API ResourceType* RegisterResource(std::type_index type, const std::string& extensions, ResourceFactory* pFactory);
+		GLORY_ENGINE_API void RegisterType(const std::type_info& type, size_t size);
 
-		static uint32_t GetHash(std::type_index type);
-		ResourceType* GetResourceType(const std::string& extension);
-		ResourceType* GetResourceType(std::type_index type);
-		ResourceType* GetResourceType(uint32_t hash);
+		GLORY_ENGINE_API static uint32_t GetHash(std::type_index type);
+		GLORY_ENGINE_API ResourceType* GetResourceType(const std::string& extension);
+		GLORY_ENGINE_API ResourceType* GetResourceType(std::type_index type);
+		GLORY_ENGINE_API ResourceType* GetResourceType(uint32_t hash);
 
-		const BasicTypeData* GetBasicTypeData(uint32_t typeHash);
-		const BasicTypeData* GetBasicTypeData(const std::string& name);
+		GLORY_ENGINE_API const BasicTypeData* GetBasicTypeData(uint32_t typeHash);
+		GLORY_ENGINE_API const BasicTypeData* GetBasicTypeData(const std::string& name);
 
-		static size_t SubTypeCount(const ResourceType* pResourceType);
-		ResourceType* GetSubType(const ResourceType* pResourceType, size_t index);
-		static uint32_t GetSubTypeHash(const ResourceType* pResourceType, size_t index);
-		size_t GetAllResourceTypesThatHaveSubType(uint32_t hash, std::vector<ResourceType*>& out);
+		GLORY_ENGINE_API static size_t SubTypeCount(const ResourceType* pResourceType);
+		GLORY_ENGINE_API ResourceType* GetSubType(const ResourceType* pResourceType, size_t index);
+		GLORY_ENGINE_API static uint32_t GetSubTypeHash(const ResourceType* pResourceType, size_t index);
+		GLORY_ENGINE_API size_t GetAllResourceTypesThatHaveSubType(uint32_t hash, std::vector<ResourceType*>& out);
 
-		static bool IsScene(const std::string& ext);
+		GLORY_ENGINE_API static bool IsScene(const std::string& ext);
 
 	public:
 		ResourceTypes();

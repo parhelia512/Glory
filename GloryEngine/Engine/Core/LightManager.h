@@ -15,8 +15,8 @@ namespace Glory
 	class LightManager : public Utils::ECS::ComponentManager<LightComponent>
 	{
     public:
-        LightManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity=1000);
-        virtual ~LightManager();
+        GLORY_ENGINE_API LightManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity=1000);
+        GLORY_ENGINE_API virtual ~LightManager();
 
     public:
         void OnDrawImpl(Utils::ECS::EntityID entity, LightComponent& pComponent);

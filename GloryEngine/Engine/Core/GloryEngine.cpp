@@ -304,14 +304,14 @@ namespace Glory
 		m_pSceneManager->SetRenderer(ActiveRenderer());
 
 		m_Console->RegisterCommand(new ConsoleCommand1<size_t>("type", [this](size_t hash) {
-			const Utils::Reflect::TypeData* pType = Reflect::GetTyeData(hash);
+			const Utils::Reflect::TypeData* pType = Reflect::GetTyeData(uint32_t(hash));
 			if (!pType) return false;
 			m_Console->WriteLine(std::to_string(hash) + " = " + pType->TypeName());
 			return true;
 		}));
 
 		m_Console->RegisterCommand(new ConsoleCommand1<size_t>("resourcetype", [this](size_t hash) {
-			const ResourceType* pType = m_ResourceTypes->GetResourceType(hash);
+			const ResourceType* pType = m_ResourceTypes->GetResourceType(uint32_t(hash));
 			if (!pType) return false;
 			m_Console->WriteLine("Resource type info for: " + std::to_string(hash));
 			m_Console->WriteLine("Name: " + pType->Name());

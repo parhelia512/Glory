@@ -490,7 +490,7 @@ namespace Glory
 namespace std
 {
     template <class T>
-    void CombineHash(size_t& hash, const T& v)
+    inline void CombineHash(size_t& hash, const T& v)
     {
         std::hash<T> h;
         hash ^= h(v) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
@@ -500,7 +500,7 @@ namespace std
     struct hash<Glory::SamplerSettings>
     {
     public:
-        size_t operator()(const Glory::SamplerSettings& settings) const noexcept
+        inline size_t operator()(const Glory::SamplerSettings& settings) const noexcept
         {
             size_t hash = 0;
             CombineHash(hash, settings.MagFilter);
@@ -526,7 +526,7 @@ namespace Glory
     struct SamplerSettingsComparer
     {
     public:
-        bool operator()(const SamplerSettings& a, const SamplerSettings& b) const
+        inline bool operator()(const SamplerSettings& a, const SamplerSettings& b) const
         {
             return std::memcmp(&a, &b, sizeof(SamplerSettings) == 0);
         }

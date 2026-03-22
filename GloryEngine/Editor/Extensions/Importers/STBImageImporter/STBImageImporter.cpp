@@ -49,7 +49,8 @@ namespace Glory::Editor
 		const PixelFormat internalFormat = PixelFormat::PF_R32G32B32A32Sfloat;
 		const PixelFormat format = PixelFormat::PF_RGBA;
 
-		ImageData* pImage = new ImageData(resolution, resolution, internalFormat, format, numChannels*sizeof(float), std::move(data), dataSize, false, DataType::DT_Float);
+		ImageData* pImage = new ImageData(resolution, resolution, internalFormat, format,
+			uint8_t(numChannels*sizeof(float)), std::move(data), dataSize, false, DataType::DT_Float);
 		auto pathStr = path.string();
 		const UUID imageID = EditorAssetDatabase::ReserveAssetUUID(pathStr, subPath).first;
 		pImage->SetResourceUUID(imageID);

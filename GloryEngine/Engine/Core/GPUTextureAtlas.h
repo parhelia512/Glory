@@ -3,6 +3,8 @@
 #include "GraphicsHandles.h"
 #include "GraphicsDevice.h"
 
+#include <engine_visibility.h>
+
 #include <memory>
 
 namespace Glory
@@ -17,14 +19,14 @@ namespace Glory
 		 * @param createInfo Creation info for the attached texture
 		 * @param pEngine Engine instance
 		 */
-		GPUTextureAtlas(TextureCreateInfo&& createInfo, IEngine* pEngine, TextureHandle texture=0);
+		GLORY_ENGINE_API GPUTextureAtlas(TextureCreateInfo&& createInfo, IEngine* pEngine, TextureHandle texture=0);
 		/** @brief Destructor */
-		virtual ~GPUTextureAtlas();
+		GLORY_ENGINE_API virtual ~GPUTextureAtlas();
 
 		/** @brief Get the attached texture */
-		virtual TextureHandle GetTexture() const override;
+		GLORY_ENGINE_API virtual TextureHandle GetTexture() const override;
 		/** @brief Initialize the atlas by creating the render texture */
-		virtual void Initialize() override;
+		GLORY_ENGINE_API virtual void Initialize() override;
 
 	private:
 		/** @brief GPU implementation for resizing the atlas */

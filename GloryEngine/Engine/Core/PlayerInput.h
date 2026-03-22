@@ -1,6 +1,8 @@
 #pragma once
 #include "Input.h"
 
+#include <engine_visibility.h>
+
 #include <string_view>
 #include <map>
 #include <vector>
@@ -16,7 +18,7 @@ namespace Glory
 
 	struct PlayerInputData
 	{
-		PlayerInputData(InputMap* pInputMap);
+		GLORY_ENGINE_API PlayerInputData(InputMap* pInputMap);
 
 		InputMap* m_InputMap;
 		/* The current values of all axes */
@@ -39,27 +41,27 @@ namespace Glory
 	class PlayerInput
 	{
 	public:
-		PlayerInput(InputModule* pInputModule, size_t playerIndex);
-		virtual ~PlayerInput();
+		GLORY_ENGINE_API PlayerInput(InputModule* pInputModule, size_t playerIndex);
+		GLORY_ENGINE_API virtual ~PlayerInput();
 
-		std::string_view InputMode();
+		GLORY_ENGINE_API std::string_view InputMode();
 
-		void HandleInputEvent(InputEvent& event);
-		void HandleCursorEvent(CursorEvent& event);
+		GLORY_ENGINE_API void HandleInputEvent(InputEvent& event);
+		GLORY_ENGINE_API void HandleCursorEvent(CursorEvent& event);
 
 		/* Clears all data from actions during the current frame */
-		void ClearActions();
+		GLORY_ENGINE_API void ClearActions();
 
-		const float GetAxis(const std::string& inputMap, const std::string& actionName) const;
-		const float GetAxisDelta(const std::string& inputMap, const std::string& actionName) const;
-		const bool GetBool(const std::string& inputMap, const std::string& actionName) const;
-		const glm::vec2& GetCursorPos() const;
-		const glm::vec2& GetCursorScrollDelta() const;
-		bool IsCursorDown() const;
+		GLORY_ENGINE_API const float GetAxis(const std::string& inputMap, const std::string& actionName) const;
+		GLORY_ENGINE_API const float GetAxisDelta(const std::string& inputMap, const std::string& actionName) const;
+		GLORY_ENGINE_API const bool GetBool(const std::string& inputMap, const std::string& actionName) const;
+		GLORY_ENGINE_API const glm::vec2& GetCursorPos() const;
+		GLORY_ENGINE_API const glm::vec2& GetCursorScrollDelta() const;
+		GLORY_ENGINE_API bool IsCursorDown() const;
 
-		void Unbind();
+		GLORY_ENGINE_API void Unbind();
 
-		void Update();
+		GLORY_ENGINE_API void Update();
 
 		/*template<typename T>
 		void WriteData(std::string_view name, T value)

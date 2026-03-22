@@ -55,7 +55,7 @@ project "GloriousLauncher"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryAPI",
 		"ImGui",
 		"yaml-cpp",

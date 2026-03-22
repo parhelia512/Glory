@@ -3,6 +3,7 @@
 #include "EditorUI.h"
 #include "Undo.h"
 #include "EditorApplication.h"
+#include "Glory.h"
 
 #include <WindowModule.h>
 #include <InputModule.h>

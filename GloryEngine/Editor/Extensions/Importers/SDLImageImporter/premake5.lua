@@ -59,7 +59,7 @@ project "SDLImageImporter"
 		"SDL2_image",
 
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryEditor",
 		"shaderc",
 		"shaderc_combined",
