@@ -3,6 +3,8 @@
 #include "Entity.h"
 #include "GraphicsEnums.h"
 
+#include <engine_visibility.h>
+
 #include <glm/fwd.hpp>
 #include <EntityRegistry.h>
 
@@ -19,7 +21,8 @@ namespace Glory
 
 	struct DelayedParentData
 	{
-		DelayedParentData(Entity pObjectToParent, UUID parentID) : ObjectToParent(pObjectToParent), ParentID(parentID) {}
+		DelayedParentData(Entity pObjectToParent, UUID parentID):
+			ObjectToParent(pObjectToParent), ParentID(parentID) {}
 		
 		Entity ObjectToParent;
 		UUID ParentID;
@@ -38,32 +41,32 @@ namespace Glory
 	{
 	public:
 		/** @brief Constructor */
-		GScene(const std::string& sceneName = "New Scene");
+		GLORY_ENGINE_API GScene(const std::string& sceneName = "New Scene");
 		/** @overload */
-		GScene(const std::string& sceneName, UUID uuid);
+		GLORY_ENGINE_API GScene(const std::string& sceneName, UUID uuid);
 		/** @brief Destructor */
-		virtual ~GScene();
+		GLORY_ENGINE_API virtual ~GScene();
 
 	public:
 		/** @brief Create a new entity with an ID and transform with ID
 		 * @param uuid ID of the entity, not the same as EntityID
 		 * @param transUuid ID of the entities transform component
 		 */
-		Entity CreateEmptyObject(UUID uuid = UUID(), UUID transUuid = UUID());
+		GLORY_ENGINE_API Entity CreateEmptyObject(UUID uuid=UUID(), UUID transUuid=UUID());
 		/** @overload
 		 * @param name Name of the entity
 		 * @param uuid ID of the entity, not the same as EntityID
 		 * @param transUuid ID of the entities transform component
 		 */
-		Entity CreateEmptyObject(const std::string& name, UUID uuid = UUID(), UUID transUuid = UUID());
+		GLORY_ENGINE_API Entity CreateEmptyObject(const std::string& name, UUID uuid=UUID(), UUID transUuid=UUID());
 
 		/** @brief Get number of active entities in this scene */
-		size_t SceneObjectsCount() const;
+		GLORY_ENGINE_API size_t SceneObjectsCount() const;
 
 		/** @brief Get an entity by UUID */
-		Entity GetEntityByUUID(UUID uuid);
+		GLORY_ENGINE_API Entity GetEntityByUUID(UUID uuid);
 		/** @brief Create an entity handle for an entity in this scene */
-		Entity GetEntityByEntityID(Utils::ECS::EntityID entityId);
+		GLORY_ENGINE_API Entity GetEntityByEntityID(Utils::ECS::EntityID entityId);
 
 		/** @brief Destroy an entity
 		 * @param entity Entity ID
@@ -71,52 +74,52 @@ namespace Glory
 		 * This removes it from the registry and internal ID caches
 		 * Also deletes the entire child hierarchy under this entity
 		 */
-		void DestroyEntity(Utils::ECS::EntityID entity);
+		GLORY_ENGINE_API void DestroyEntity(Utils::ECS::EntityID entity);
 
 		/** @brief Invoke a start on all entities and components */
-		void Start();
+		GLORY_ENGINE_API void Start();
 		/** @brief Invoke a stop on all entities and components */
-		void Stop();
+		GLORY_ENGINE_API void Stop();
 
 		/** @brief Mark an entity in the scene as prefab
 		 * and its child hierarchy as prefab children.
 		 * @param entity Entity ID
 		 * @param prefabID ID of the prefab
 		 */
-		void SetPrefab(Utils::ECS::EntityID entity, UUID prefabID);
+		GLORY_ENGINE_API void SetPrefab(Utils::ECS::EntityID entity, UUID prefabID);
 		/** @brief Unmark an entity and in the scene as prefab
 		 * and its child hierarchy as prefab children.
 		 * @param entity Entity ID
 		 */
-		void UnsetPrefab(Utils::ECS::EntityID entity);
+		GLORY_ENGINE_API void UnsetPrefab(Utils::ECS::EntityID entity);
 
 		/** @brief Get prefab ID for an entities UUID */
-		const UUID Prefab(UUID objectID) const;
+		GLORY_ENGINE_API const UUID Prefab(UUID objectID) const;
 		/** @brief Get prefab ID for a child of an entity by UUID */
-		const UUID PrefabChild(UUID objectID) const;
+		GLORY_ENGINE_API const UUID PrefabChild(UUID objectID) const;
 
 		/** @brief Get entity registry for this scene */
-		Utils::ECS::EntityRegistry& GetRegistry();
+		GLORY_ENGINE_API Utils::ECS::EntityRegistry& GetRegistry();
 
 		/** @brief Get the UUID of an entity */
-		UUID GetEntityUUID(Utils::ECS::EntityID entity) const;
+		GLORY_ENGINE_API UUID GetEntityUUID(Utils::ECS::EntityID entity) const;
 
 		/** @brief Get the parent entity of an entity */
-		Utils::ECS::EntityID Parent(Utils::ECS::EntityID entity) const;
+		GLORY_ENGINE_API Utils::ECS::EntityID Parent(Utils::ECS::EntityID entity) const;
 
 		/** @overload */
-		Utils::ECS::EntityID Parent(UUID uuid) const;
+		GLORY_ENGINE_API Utils::ECS::EntityID Parent(UUID uuid) const;
 
 		/** @brief Re-parent an entity
 		 * @param entity The entity to re-parent
 		 * @param parent The entity to parent to, use 0 to unparrent
 		 */
-		void SetParent(Utils::ECS::EntityID entity, Utils::ECS::EntityID parent);
+		GLORY_ENGINE_API void SetParent(Utils::ECS::EntityID entity, Utils::ECS::EntityID parent);
 
 		/** @brief Get number of children on an entity
 		 * @param entity ID of the entity, set to 0 to get the child count on the root
 		 */
-		size_t ChildCount(Utils::ECS::EntityID entity) const;
+		GLORY_ENGINE_API size_t ChildCount(Utils::ECS::EntityID entity) const;
 
 		/** @brief Get a child entity by index on an entity
 		 * @param entity ID of the entity, set to 0 to get the child on the root
@@ -124,25 +127,25 @@ namespace Glory
 		 * @returns @ref Utils::ECS::EntityID of the child entity,
 		 * you will need to check if the entity is valid
 		 */
-		Utils::ECS::EntityID Child(Utils::ECS::EntityID entity, size_t index) const;
+		GLORY_ENGINE_API Utils::ECS::EntityID Child(Utils::ECS::EntityID entity, size_t index) const;
 
 		/** @brief Get entity handle of a child entity
 		 *
 		 * See @ref GScene::Child() for more info.
 		 */
-		Entity ChildEntity(Utils::ECS::EntityID entity, size_t index);
+		GLORY_ENGINE_API Entity ChildEntity(Utils::ECS::EntityID entity, size_t index);
 
 		/** @brief Get the sibling index of an entity */
-		size_t SiblingIndex(Utils::ECS::EntityID entity) const;
+		GLORY_ENGINE_API size_t SiblingIndex(Utils::ECS::EntityID entity) const;
 
 		/** @brief Set the sibling index of an entity */
-		void SetSiblingIndex(Utils::ECS::EntityID entity, size_t index);
+		GLORY_ENGINE_API void SetSiblingIndex(Utils::ECS::EntityID entity, size_t index);
 
 		/** @brief Get the name of an entity */
-		std::string_view EntityName(Utils::ECS::EntityID entity) const;
+		GLORY_ENGINE_API std::string_view EntityName(Utils::ECS::EntityID entity) const;
 
 		/** @brief Set the name of an entity */
-		void SetEntityName(Utils::ECS::EntityID entity, const std::string_view name);
+		GLORY_ENGINE_API void SetEntityName(Utils::ECS::EntityID entity, const std::string_view name);
 
 		/** @brief Create a new Entity in the scene from a prefab
 		 * @param parent The entity to parent the created object to
@@ -151,7 +154,7 @@ namespace Glory
 		 * @parem rot Rotation of the created entity
 		 * @parem scale Scale of the created entity
 		 */
-		Entity InstantiatePrefab(UUID parent, PrefabData* pPrefab,
+		GLORY_ENGINE_API Entity InstantiatePrefab(UUID parent, PrefabData* pPrefab,
 			const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale);
 		/** @overload
 		 * @param parent The entity to parent the created object to
@@ -161,7 +164,7 @@ namespace Glory
 		 * @parem rot Rotation of the created entity
 		 * @parem scale Scale of the created entity
 		 */
-		Entity InstantiatePrefab(UUID parent, PrefabData* pPrefab, uint32_t remapSeed,
+		GLORY_ENGINE_API Entity InstantiatePrefab(UUID parent, PrefabData* pPrefab, uint32_t remapSeed,
 			const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale);
 		/** @overload
 		 * @param parent The entity to parent the created object to
@@ -171,44 +174,44 @@ namespace Glory
 		 * @parem rot Rotation of the created entity
 		 * @parem scale Scale of the created entity
 		 */
-		Entity InstantiatePrefab(UUID parent, PrefabData* pPrefab, UUIDRemapper& remapper,
+		GLORY_ENGINE_API Entity InstantiatePrefab(UUID parent, PrefabData* pPrefab, UUIDRemapper& remapper,
 			const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale);
 
 		/** @brief Set the parent of an entity at the next @ref HandleDelayedParents() call
 		 *
 		 * Used when an entity doesn't exist yet but will exist in the future
 		 */
-		void DelayedSetParent(Entity entity, UUID parentID);
+		GLORY_ENGINE_API void DelayedSetParent(Entity entity, UUID parentID);
 
 		/** @brief Handle all delayed parents requested by @ref DelayedSetParent() calls. */
-		void HandleDelayedParents();
+		GLORY_ENGINE_API void HandleDelayedParents();
 
 		/** @brief Get the @ref SceneManager that owns this scene */
-		SceneManager* Manager();
+		GLORY_ENGINE_API SceneManager* Manager();
 
 		/** @brief Set the @ref SceneManager for this scene
 		 * this does not add the scene to the manager.
 		 * @param pManager The manager
 		 */
-		void SetManager(SceneManager* pManager);
+		GLORY_ENGINE_API void SetManager(SceneManager* pManager);
 
-		virtual void Serialize(Utils::BinaryStream & container) const;
-		virtual void Deserialize(Utils::BinaryStream& container);
+		GLORY_ENGINE_API virtual void Serialize(Utils::BinaryStream & container) const;
+		GLORY_ENGINE_API virtual void Deserialize(Utils::BinaryStream& container);
 
 		/** @brief Mark this scene for destruction to prevent further update() and draw() calls */
-		void MarkForDestruction();
+		GLORY_ENGINE_API void MarkForDestruction();
 
-		Entity Instantiate(GScene* pOther, UUIDRemapper& IDRemapper, Utils::ECS::EntityID parent,
+		GLORY_ENGINE_API Entity Instantiate(GScene* pOther, UUIDRemapper& IDRemapper, Utils::ECS::EntityID parent,
 			const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale);
 
 		/** @brief Get this scenes settings */
-		SceneSettings& Settings() { return m_Settings; }
+		GLORY_ENGINE_API SceneSettings& Settings() { return m_Settings; }
 
 		/** @overload */
-		const SceneSettings& Settings() const { return m_Settings; }
+		GLORY_ENGINE_API const SceneSettings& Settings() const { return m_Settings; }
 
 		/** @brief Is the scene currently starting up? */
-		bool IsStarting() const;
+		GLORY_ENGINE_API bool IsStarting() const;
 
 	protected:
 		/** @brief Invoke an update on all active entities and components */

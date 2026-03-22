@@ -47,7 +47,7 @@ project "GloryFSMMonoExtender"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryFSM",
 		"GloryMonoScripting",
 		"yaml-cpp",

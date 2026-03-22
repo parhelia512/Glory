@@ -57,7 +57,7 @@ project "GlorySDLAudio"
 		"SDL2_mixer",
 
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryAudioModule",
 		"GloryReflect",
 		"GloryECS",

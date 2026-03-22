@@ -1,6 +1,8 @@
 #pragma once
 #include "Input.h"
 
+#include <engine_visibility.h>
+
 #include <Object.h>
 
 #include <string>
@@ -20,10 +22,10 @@ namespace Glory
 	class Window : public Object
 	{
 	public:
-		virtual void GetVulkanRequiredExtensions(std::vector<const char*>& extensions);
-		virtual void GetVulkanSurface(void* instance, void* surface);
-		virtual void GetDrawableSize(int* width, int* height);
-		virtual void GetWindowSize(int* width, int* height);
+		GLORY_ENGINE_API virtual void GetVulkanRequiredExtensions(std::vector<const char*>& extensions);
+		GLORY_ENGINE_API virtual void GetVulkanSurface(void* instance, void* surface);
+		GLORY_ENGINE_API virtual void GetDrawableSize(int* width, int* height);
+		GLORY_ENGINE_API virtual void GetWindowSize(int* width, int* height);
 		virtual void GetWindowPosition(int* x, int* y) = 0;
 		virtual void SetupForOpenGL() = 0;
 		virtual void CleanupOpenGL() = 0;
@@ -47,22 +49,22 @@ namespace Glory
 		virtual void StartTextInput() = 0;
 		virtual void StopTextInput() = 0;
 
-		void ShowCursor(bool shown);
-		void ForceShowCursor(bool show);
-		void ForceUnlockCursor(bool unlock);
-		bool IsCursorShown() const;
-		void GrabInput(bool grab);
-		bool IsGrabInput();
-		void ForceUngrabInput(bool ungrab);
-		bool HasFocus() const;
-		bool IsShown() const;
+		GLORY_ENGINE_API void ShowCursor(bool shown);
+		GLORY_ENGINE_API void ForceShowCursor(bool show);
+		GLORY_ENGINE_API void ForceUnlockCursor(bool unlock);
+		GLORY_ENGINE_API bool IsCursorShown() const;
+		GLORY_ENGINE_API void GrabInput(bool grab);
+		GLORY_ENGINE_API bool IsGrabInput();
+		GLORY_ENGINE_API void ForceUngrabInput(bool ungrab);
+		GLORY_ENGINE_API bool HasFocus() const;
+		GLORY_ENGINE_API bool IsShown() const;
 
-		void AddInputOverrideHandler(IWindowInputOverrideHandler* handler);
-		void RemoveInputOverrideHandler(IWindowInputOverrideHandler* handler);
+		GLORY_ENGINE_API void AddInputOverrideHandler(IWindowInputOverrideHandler* handler);
+		GLORY_ENGINE_API void RemoveInputOverrideHandler(IWindowInputOverrideHandler* handler);
 
 	protected:
-		Window(const WindowCreateInfo& createInfo, WindowModule* pWindowManager);
-		virtual ~Window();
+		GLORY_ENGINE_API Window(const WindowCreateInfo& createInfo, WindowModule* pWindowManager);
+		GLORY_ENGINE_API virtual ~Window();
 
 		virtual void Open() = 0;
 		virtual void Close() = 0;
@@ -70,9 +72,9 @@ namespace Glory
 		virtual void UpdateCursorShow() = 0;
 		virtual void UpdateGrabInput() = 0;
 
-		bool ForwardInputEvent(InputEvent& input);
-		void ForwardCursorEvent(CursorEvent& input);
-		bool ForwardTextEvent(TextEvent& text);
+		GLORY_ENGINE_API bool ForwardInputEvent(InputEvent& input);
+		GLORY_ENGINE_API void ForwardCursorEvent(CursorEvent& input);
+		GLORY_ENGINE_API bool ForwardTextEvent(TextEvent& text);
 
 	protected:
 		std::string m_WindowName;

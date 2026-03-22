@@ -1,6 +1,8 @@
 #pragma once
 #include "Version.h"
 
+#include <engine_visibility.h>
+
 #include <vector>
 #include <BitSet.h>
 
@@ -26,18 +28,18 @@ namespace Glory
 	class AssetArchive
 	{
 	public:
-		AssetArchive(Utils::BinaryStream* pStream, AssetArchiveFlags flags=AssetArchiveFlags::Read);
-		AssetArchive(AssetArchive&& other) noexcept;
-		virtual ~AssetArchive();
+		GLORY_ENGINE_API AssetArchive(Utils::BinaryStream* pStream, AssetArchiveFlags flags=AssetArchiveFlags::Read);
+		GLORY_ENGINE_API AssetArchive(AssetArchive&& other) noexcept;
+		GLORY_ENGINE_API virtual ~AssetArchive();
 
-		bool VerifyVersion();
+		GLORY_ENGINE_API bool VerifyVersion();
 
-		void Serialize(Resource* pResource) const;
-		void Serialize(const Resource* pResource) const;
-		void Deserialize(IEngine* pEngine);
+		GLORY_ENGINE_API void Serialize(Resource* pResource) const;
+		GLORY_ENGINE_API void Serialize(const Resource* pResource) const;
+		GLORY_ENGINE_API void Deserialize(IEngine* pEngine);
 
-		size_t Size() const;
-		Resource* Get(IEngine* pEngine, size_t index) const;
+		GLORY_ENGINE_API size_t Size() const;
+		GLORY_ENGINE_API Resource* Get(IEngine* pEngine, size_t index) const;
 
 	private:
 		void WriteVersion();

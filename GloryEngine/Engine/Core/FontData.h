@@ -1,7 +1,8 @@
 #pragma once
-#include "Glory.h"
 #include "FileData.h"
 #include "FontDataStructs.h"
+
+#include <engine_visibility.h>
 
 namespace Glory
 {
@@ -11,22 +12,22 @@ namespace Glory
     class FontData : public Resource
     {
     public:
-        GLORY_API FontData();
-        GLORY_API FontData(uint32_t height, std::vector<uint64_t>&& characterCodes,
+        GLORY_ENGINE_API FontData();
+        GLORY_ENGINE_API FontData(uint32_t height, std::vector<uint64_t>&& characterCodes,
             std::vector<GlyphData>&& chars);
-        GLORY_API virtual ~FontData();
+        GLORY_ENGINE_API virtual ~FontData();
 
-        GLORY_API uint32_t FontHeight() const;
-        GLORY_API size_t GetGlyphIndex(uint64_t c) const;
-        GLORY_API const GlyphData* GetGlyph(size_t index) const;
-        GLORY_API TextureData* GetGlyphTexture(AssetManager& assets) const;
-        GLORY_API void SetTexture(UUID texture);
-        GLORY_API void SetMaterial(UUID material);
-        GLORY_API UUID Texture();
-        GLORY_API UUID Material();
+        GLORY_ENGINE_API uint32_t FontHeight() const;
+        GLORY_ENGINE_API size_t GetGlyphIndex(uint64_t c) const;
+        GLORY_ENGINE_API const GlyphData* GetGlyph(size_t index) const;
+        GLORY_ENGINE_API TextureData* GetGlyphTexture(AssetManager& assets) const;
+        GLORY_ENGINE_API void SetTexture(UUID texture);
+        GLORY_ENGINE_API void SetMaterial(UUID material);
+        GLORY_ENGINE_API UUID Texture();
+        GLORY_ENGINE_API UUID Material();
 
-        GLORY_API void Serialize(Utils::BinaryStream& container) const override;
-        GLORY_API void Deserialize(Utils::BinaryStream& container) override;
+        GLORY_ENGINE_API void Serialize(Utils::BinaryStream& container) const override;
+        GLORY_ENGINE_API void Deserialize(Utils::BinaryStream& container) override;
 
     private:
         void References(IEngine* pEngine, std::vector<UUID>& references) const override;

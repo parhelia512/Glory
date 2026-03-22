@@ -54,7 +54,7 @@ project "GlorySDLWindow"
 		"SDL2",
 
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryReflect",
 		"GloryECS",
 

@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 
+#include <engine_visibility.h>
+
 namespace Glory
 {
 	class IEngine;
@@ -8,25 +10,25 @@ namespace Glory
 	class GameTime
 	{
 	public:
-		GameTime(IEngine* pEngine);
-		virtual ~GameTime();
+		GLORY_ENGINE_API GameTime(IEngine* pEngine);
+		GLORY_ENGINE_API virtual ~GameTime();
 
-		void Initialize();
+		GLORY_ENGINE_API void Initialize();
 
-		void BeginFrame();
-		void EndFrame();
+		GLORY_ENGINE_API void BeginFrame();
+		GLORY_ENGINE_API void EndFrame();
 
-		const float GetTime() const;
-		const float GetUnscaledTime() const;
-		const float GetDeltaTime() const;
-		const float GetUnscaledDeltaTime() const;
-		const float GetTimeScale() const;
-		const float GetFrameRate() const;
-		const int GetTotalFrames() const;
-		void SetTimeScale(float scale);
+		GLORY_ENGINE_API const float GetTime() const;
+		GLORY_ENGINE_API const float GetUnscaledTime() const;
+		GLORY_ENGINE_API const float GetDeltaTime() const;
+		GLORY_ENGINE_API const float GetUnscaledDeltaTime() const;
+		GLORY_ENGINE_API const float GetTimeScale() const;
+		GLORY_ENGINE_API const float GetFrameRate() const;
+		GLORY_ENGINE_API const int GetTotalFrames() const;
+		GLORY_ENGINE_API void SetTimeScale(float scale);
 
-		static uint64_t Now();
-		static float TimeSinceSeconds(uint64_t timestamp);
+		GLORY_ENGINE_API static uint64_t Now();
+		GLORY_ENGINE_API static float TimeSinceSeconds(uint64_t timestamp);
 
 	private:
 		friend class IEngine;

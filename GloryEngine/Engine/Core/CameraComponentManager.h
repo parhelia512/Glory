@@ -16,19 +16,19 @@ namespace Glory
     class CameraComponentManager : public Utils::ECS::ComponentManager<CameraComponent>
     {
     public:
-        CameraComponentManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity=6);
-        virtual ~CameraComponentManager();
+        GLORY_ENGINE_API CameraComponentManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity=6);
+        GLORY_ENGINE_API virtual ~CameraComponentManager();
 
     public:
-        void OnValidateImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent);
-        void OnComponentAddedImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent);
-        void OnComponentRemovedImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent);
-        void OnUpdateImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent, float);
-        void OnEnableDrawImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent);
-        void OnDisableDrawImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent);
-        static void Focus(Transform& transform, CameraComponent& pComponent, const BoundingSphere& boundingSphere);
+        GLORY_ENGINE_API void OnValidateImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent);
+        GLORY_ENGINE_API void OnComponentAddedImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent);
+        GLORY_ENGINE_API void OnComponentRemovedImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent);
+        GLORY_ENGINE_API void OnUpdateImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent, float);
+        GLORY_ENGINE_API void OnEnableDrawImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent);
+        GLORY_ENGINE_API void OnDisableDrawImpl(Utils::ECS::EntityID entity, CameraComponent& pComponent);
+        GLORY_ENGINE_API static void Focus(Transform& transform, CameraComponent& pComponent, const BoundingSphere& boundingSphere);
 
-        static std::string Name();
+        GLORY_ENGINE_API static std::string Name();
 
     private:
         virtual void OnInitialize() override;

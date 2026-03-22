@@ -47,7 +47,7 @@ project "GloryFSM"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryReflect",
 		"GloryECS",
 

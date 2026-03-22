@@ -1,10 +1,11 @@
 #pragma once
+#include <engine_visibility.h>
+
 #include <typeinfo>
 #include <string>
 #include <sstream>
 #include <vector>
 #include <functional>
-#include "Debug.h"
 
 namespace Glory
 {
@@ -20,7 +21,7 @@ namespace Glory
 	{
 	public:
 		virtual T Parse(const std::string& data, bool& succes) = 0;
-		const std::type_info& GetType() override
+		inline const std::type_info& GetType() override
 		{
 			return typeid(T);
 		}
@@ -28,7 +29,7 @@ namespace Glory
 
 	class IntParser : public TemplatedParser<int>
 	{
-		int Parse(const std::string& data, bool& succes) override
+		inline int Parse(const std::string& data, bool& succes) override
 		{
 			try
 			{
@@ -45,7 +46,7 @@ namespace Glory
 
 	class FloatParser : public TemplatedParser<float>
 	{
-		float Parse(const std::string& data, bool& succes) override
+		inline float Parse(const std::string& data, bool& succes) override
 		{
 			try
 			{
@@ -62,7 +63,7 @@ namespace Glory
 
 	class StringParser : public TemplatedParser<std::string>
 	{
-		std::string Parse(const std::string& data, bool& succes) override
+		inline std::string Parse(const std::string& data, bool& succes) override
 		{
 			try
 			{
@@ -79,7 +80,7 @@ namespace Glory
 
 	class SizeTParser : public TemplatedParser<size_t>
 	{
-		size_t Parse(const std::string& data, bool& succes) override
+		inline size_t Parse(const std::string& data, bool& succes) override
 		{
 			try
 			{
@@ -103,7 +104,7 @@ namespace Glory
 	{
 	public:
 		template<typename T>
-		static bool Parse(const std::string& data, T& dataOut)
+		inline static bool Parse(const std::string& data, T& dataOut)
 		{
 			for (auto parser : m_Parsers)
 			{
@@ -119,7 +120,7 @@ namespace Glory
 			return false;
 		}
 
-		static void Destroy()
+		inline static void Destroy()
 		{
 			for (auto pParser : m_Parsers)
 			{
@@ -129,7 +130,7 @@ namespace Glory
 		}
 
 	private:
-		static std::vector<BaseParser*> m_Parsers;
+		GLORY_ENGINE_API static std::vector<BaseParser*> m_Parsers;
 	};
 
 	class BaseConsoleCommand
@@ -138,7 +139,7 @@ namespace Glory
 		BaseConsoleCommand(const std::string& command) : m_Command(command) {}
 		~BaseConsoleCommand() {}
 
-		const std::string& GetCommand()
+		inline const std::string& GetCommand()
 		{
 			return m_Command;
 		}

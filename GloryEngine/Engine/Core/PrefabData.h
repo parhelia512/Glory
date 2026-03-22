@@ -1,6 +1,8 @@
 #pragma once
 #include "GScene.h"
 
+#include <engine_visibility.h>
+
 #include <EntityID.h>
 #include <EntityRegistry.h>
 
@@ -12,9 +14,9 @@ namespace Glory
     class PrefabData : public GScene
     {
     public:
-        PrefabData();
-        virtual ~PrefabData() = default;
-        static PrefabData* CreateFromEntity(GScene* pScene, Utils::ECS::EntityID entity);
+        GLORY_ENGINE_API PrefabData();
+        GLORY_ENGINE_API virtual ~PrefabData() = default;
+        GLORY_ENGINE_API static PrefabData* CreateFromEntity(GScene* pScene, Utils::ECS::EntityID entity);
 
     private:
         static void CopyEntity(PrefabData* pPrefab, GScene* pScene, Utils::ECS::EntityID entity, Utils::ECS::EntityID parent);

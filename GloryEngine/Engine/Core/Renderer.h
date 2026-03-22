@@ -9,6 +9,8 @@
 #include "ShapeProperty.h"
 #include "VertexHelpers.h"
 
+#include <engine_visibility.h>
+
 #include <UUID.h>
 
 #include <glm/glm.hpp>
@@ -47,14 +49,14 @@ namespace Glory
 	struct CPUBuffer
 	{
 		template <class... _Valty>
-		decltype(auto) emplace_back(_Valty&&... _Val)
+		inline decltype(auto) emplace_back(_Valty&&... _Val)
 		{
 			T& newElement = m_Data.emplace_back(std::forward<_Valty>(_Val)...);
 			m_Dirty = true;
 			return newElement;
 		}
 
-		void clear()
+		inline void clear()
 		{
 			m_Data.clear();
 			m_Dirty = true;
@@ -62,7 +64,7 @@ namespace Glory
 			m_DirtyRange.second = 1;
 		}
 
-		void resize(size_t newSize)
+		inline void resize(size_t newSize)
 		{
 			m_Data.resize(newSize);
 			m_Dirty = true;
@@ -71,23 +73,23 @@ namespace Glory
 			m_SizeDirty = true;
 		}
 
-		operator bool()
+		inline operator bool()
 		{
 			const bool value = m_Dirty;
 			m_Dirty = false;
 			return value;
 		}
 
-		bool SizeDirty()
+		inline bool SizeDirty()
 		{
 			const bool value = m_SizeDirty;
 			m_SizeDirty = false;
 			return value;
 		}
 
-		std::vector<T>* operator->() { return &m_Data; }
+		inline std::vector<T>* operator->() { return &m_Data; }
 
-		void SetDirty(size_t index)
+		inline void SetDirty(size_t index)
 		{
 			if (index >= m_Data.size()) return;
 
@@ -105,25 +107,25 @@ namespace Glory
 				m_DirtyRange.second = index + 1;
 		}
 
-		void SetDirty()
+		inline void SetDirty()
 		{
 			m_Dirty = true;
 			m_DirtyRange.first = 0;
 			m_DirtyRange.second = m_Data.size();
 		}
 
-		size_t DirtySize()
+		inline size_t DirtySize()
 		{
 			return m_DirtyRange.second - m_DirtyRange.first;
 		}
 
-		void* DirtyStart()
+		inline void* DirtyStart()
 		{
 			char* start = (char*)m_Data.data();
 			return start + m_DirtyRange.first * sizeof(T);
 		}
 
-		size_t TotalByteSize()
+		inline size_t TotalByteSize()
 		{
 			return sizeof(T) * m_Data.size();
 		}
@@ -136,7 +138,7 @@ namespace Glory
 
 	struct PipelineMeshBatch
 	{
-		PipelineMeshBatch(UUID mesh) : m_Mesh(mesh) {}
+		PipelineMeshBatch(UUID mesh): m_Mesh(mesh) {}
 
 		UUID m_Mesh;
 		std::vector<glm::mat4> m_Worlds;
@@ -147,10 +149,10 @@ namespace Glory
 
 	struct PipelineBatch
 	{
-		PipelineBatch(UUID pipeline);
-		virtual ~PipelineBatch();
+		GLORY_ENGINE_API PipelineBatch(UUID pipeline);
+		GLORY_ENGINE_API virtual ~PipelineBatch();
 
-		void Reset();
+		GLORY_ENGINE_API void Reset();
 
 		UUID m_PipelineID;
 		std::unordered_map<UUID, PipelineMeshBatch> m_Meshes;
@@ -170,29 +172,29 @@ namespace Glory
 	class Renderer
 	{
 	public:
-		Renderer(Module* pModule);
-		virtual ~Renderer();
+		GLORY_ENGINE_API Renderer(Module* pModule);
+		GLORY_ENGINE_API virtual ~Renderer();
 
 	public:
-		void SetSceneManager(SceneManager* pSceneManager);
+		GLORY_ENGINE_API void SetSceneManager(SceneManager* pSceneManager);
 
-		void SubmitStatic(RenderData&& renderData);
-		void UpdateStatic(UUID pipelineID, UUID meshID, UUID objectID, glm::mat4 world);
-		void UnsubmitStatic(UUID pipelineID, UUID meshID, UUID objectID);
-		void SubmitDynamic(RenderData&& renderData);
-		void SubmitLate(RenderData&& renderData);
-		void SubmitCamera(CameraRef camera);
-		void UnsubmitCamera(CameraRef camera);
-		void UpdateCamera(CameraRef camera);
-		size_t Submit(const glm::ivec2& pickPos, UUID cameraID);
-		void Submit(LightData&& light, glm::mat4&& lightView, glm::mat4&& lightProjection, UUID id);
+		GLORY_ENGINE_API void SubmitStatic(RenderData&& renderData);
+		GLORY_ENGINE_API void UpdateStatic(UUID pipelineID, UUID meshID, UUID objectID, glm::mat4 world);
+		GLORY_ENGINE_API void UnsubmitStatic(UUID pipelineID, UUID meshID, UUID objectID);
+		GLORY_ENGINE_API void SubmitDynamic(RenderData&& renderData);
+		GLORY_ENGINE_API void SubmitLate(RenderData&& renderData);
+		GLORY_ENGINE_API void SubmitCamera(CameraRef camera);
+		GLORY_ENGINE_API void UnsubmitCamera(CameraRef camera);
+		GLORY_ENGINE_API void UpdateCamera(CameraRef camera);
+		GLORY_ENGINE_API size_t Submit(const glm::ivec2& pickPos, UUID cameraID);
+		GLORY_ENGINE_API void Submit(LightData&& light, glm::mat4&& lightView, glm::mat4&& lightProjection, UUID id);
 
-		virtual void OnCameraResize(CameraRef camera);
-		virtual void OnCameraPerspectiveChanged(CameraRef camera);
+		GLORY_ENGINE_API virtual void OnCameraResize(CameraRef camera);
+		GLORY_ENGINE_API virtual void OnCameraPerspectiveChanged(CameraRef camera);
 		virtual MaterialData* GetInternalMaterial(std::string_view name) const = 0;
 
-		size_t LastSubmittedObjectCount();
-		size_t LastSubmittedCameraCount();
+		GLORY_ENGINE_API size_t LastSubmittedObjectCount();
+		GLORY_ENGINE_API size_t LastSubmittedCameraCount();
 
 		enum CircleUp
 		{
@@ -201,31 +203,38 @@ namespace Glory
 			z
 		};
 
-		void DrawLine(const glm::mat4& transform, const glm::vec3& p1, const glm::vec3& p2, const glm::vec4& color);
-		void DrawLineQuad(const glm::mat4& transform, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, const glm::vec3& p4, const glm::vec4& color);
-		void DrawLineCircle(const glm::mat4& transform, const glm::vec3& position, float radius, CircleUp up, const glm::vec4& color);
-		void DrawLineBox(const glm::mat4& transform, const glm::vec3& position, const glm::vec3& extends, const glm::vec4& color);
-		void DrawLineAABB(const glm::mat4& transform, const glm::vec3& min, const glm::vec3& max, const glm::vec4& color);
-		void DrawLineSphere(const glm::mat4& transform, const glm::vec3& position, float radius, const glm::vec4& color);
+		GLORY_ENGINE_API void DrawLine(const glm::mat4& transform, const glm::vec3& p1,
+			const glm::vec3& p2, const glm::vec4& color);
+		GLORY_ENGINE_API void DrawLineQuad(const glm::mat4& transform, const glm::vec3& p1,
+			const glm::vec3& p2, const glm::vec3& p3, const glm::vec3& p4, const glm::vec4& color);
+		GLORY_ENGINE_API void DrawLineCircle(const glm::mat4& transform, const glm::vec3& position,
+			float radius, CircleUp up, const glm::vec4& color);
+		GLORY_ENGINE_API void DrawLineBox(const glm::mat4& transform, const glm::vec3& position,
+			const glm::vec3& extends, const glm::vec4& color);
+		GLORY_ENGINE_API void DrawLineAABB(const glm::mat4& transform, const glm::vec3& min,
+			const glm::vec3& max, const glm::vec4& color);
+		GLORY_ENGINE_API void DrawLineSphere(const glm::mat4& transform, const glm::vec3& position,
+			float radius, const glm::vec4& color);
 
-		void DrawLineShape(const glm::mat4& transform, const glm::vec3& position, const ShapeProperty& shape, const glm::vec4& color);
+		GLORY_ENGINE_API void DrawLineShape(const glm::mat4& transform, const glm::vec3& position,
+			const ShapeProperty& shape, const glm::vec4& color);
 
-		bool PickResultValid(size_t index) const;
-		bool PickResultIndex(UUID cameraID, size_t& index) const;
-		const PickResult& GetPickResult(size_t index) const;
-		void GetPickResult(UUID cameraID, std::function<void(const PickResult&)> callback);
+		GLORY_ENGINE_API bool PickResultValid(size_t index) const;
+		GLORY_ENGINE_API bool PickResultIndex(UUID cameraID, size_t& index) const;
+		GLORY_ENGINE_API const PickResult& GetPickResult(size_t index) const;
+		GLORY_ENGINE_API void GetPickResult(UUID cameraID, std::function<void(const PickResult&)> callback);
 
-		void OnWindowResize(glm::uvec2 size);
+		GLORY_ENGINE_API void OnWindowResize(glm::uvec2 size);
 
-		size_t CreateGPUTextureAtlas(TextureCreateInfo&& textureInfo, TextureHandle texture = 0);
-		GPUTextureAtlas& GetGPUTextureAtlas(size_t index);
-		const GPUTextureAtlas& GetGPUTextureAtlas(size_t index) const;
+		GLORY_ENGINE_API size_t CreateGPUTextureAtlas(TextureCreateInfo&& textureInfo, TextureHandle texture=0);
+		GLORY_ENGINE_API GPUTextureAtlas& GetGPUTextureAtlas(size_t index);
+		GLORY_ENGINE_API const GPUTextureAtlas& GetGPUTextureAtlas(size_t index) const;
 
-		void Reset();
+		GLORY_ENGINE_API void Reset();
 
-		CameraRef GetActiveCamera(uint32_t cameraIndex) const;
-		CameraRef GetOutputCamera(uint32_t cameraIndex) const;
-		size_t GetOutputCameraCount() const;
+		GLORY_ENGINE_API CameraRef GetActiveCamera(uint32_t cameraIndex) const;
+		GLORY_ENGINE_API CameraRef GetOutputCamera(uint32_t cameraIndex) const;
+		GLORY_ENGINE_API size_t GetOutputCameraCount() const;
 
 		virtual size_t DefaultAttachmenmtIndex() const = 0;
 		virtual size_t CameraAttachmentPreviewCount() const = 0;
@@ -240,26 +249,26 @@ namespace Glory
 		virtual void SetDebugOverlayEnabled(CameraRef camera, size_t index, bool enabled = true) = 0;
 		virtual bool DebugOverlayEnabled(CameraRef camera, size_t index) const = 0;
 
-		bool ResolutionChanged() const;
-		const glm::uvec2& Resolution() const;
+		GLORY_ENGINE_API bool ResolutionChanged() const;
+		GLORY_ENGINE_API const glm::uvec2& Resolution() const;
 
 		virtual void PresentFrame() = 0;
 
-		void SetSwapchain(SwapchainHandle swapchain);
+		GLORY_ENGINE_API void SetSwapchain(SwapchainHandle swapchain);
 
-		void SetEnabled(bool enabled = true);
+		GLORY_ENGINE_API void SetEnabled(bool enabled=true);
 
-		void InjectDatapass(std::function<void(GraphicsDevice*, Renderer*)> datapassFunc);
-		void InjectSwapchainSubpass(std::function<void(GraphicsDevice*, RenderPassHandle, CommandBufferHandle)> subpassFunc);
-		void InjectPreRenderPass(std::function<void(GraphicsDevice*, CommandBufferHandle, uint32_t)> passFunc);
+		GLORY_ENGINE_API void InjectDatapass(std::function<void(GraphicsDevice*, Renderer*)> datapassFunc);
+		GLORY_ENGINE_API void InjectSwapchainSubpass(std::function<void(GraphicsDevice*, RenderPassHandle, CommandBufferHandle)> subpassFunc);
+		GLORY_ENGINE_API void InjectPreRenderPass(std::function<void(GraphicsDevice*, CommandBufferHandle, uint32_t)> passFunc);
 
-		void AddPostProcess(PostProcess&& postProcess);
+		GLORY_ENGINE_API void AddPostProcess(PostProcess&& postProcess);
 
 		virtual uint32_t GetNumFramesInFlight() const = 0;
 		virtual uint32_t GetCurrentFrameInFlight() const = 0;
 
-		virtual RenderPassHandle GetSwapchainPass() const { return NULL; };
-		virtual RenderPassHandle GetDummyPostProcessPass() const { return NULL; };
+		inline virtual RenderPassHandle GetSwapchainPass() const { return NULL; };
+		inline virtual RenderPassHandle GetDummyPostProcessPass() const { return NULL; };
 
 		virtual void SetPipelineOrder(std::vector<UUID>&& pipelineOrder) = 0;
 
@@ -268,8 +277,8 @@ namespace Glory
 		virtual void InitializeAsMainRenderer() = 0;
 		virtual void Draw() = 0;
 
-		void BeginFrame();
-		void EndFrame();
+		GLORY_ENGINE_API void BeginFrame();
+		GLORY_ENGINE_API void EndFrame();
 
 		virtual Renderer* CreateSecondaryRenderer(size_t imageCount) = 0;
 

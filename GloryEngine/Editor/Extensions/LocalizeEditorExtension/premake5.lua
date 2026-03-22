@@ -58,7 +58,7 @@ project "LocalizeEditorExtension"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryEditor",
 		"GloryLocalize",
 		"shaderc",

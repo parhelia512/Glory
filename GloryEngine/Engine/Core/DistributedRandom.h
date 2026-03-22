@@ -23,12 +23,12 @@ namespace Glory
 
 		virtual ~DistributedRandom() {}
 
-		T Next()
+		inline T Next()
 		{
 			return m_Distribution(m_Random);
 		}
 
-		void Reset(uint32_t seed)
+		inline void Reset(uint32_t seed)
 		{
 			m_Random.seed(seed);
 		}

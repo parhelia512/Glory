@@ -1,6 +1,8 @@
 #pragma once
 #include <Object.h>
 
+#include <engine_visibility.h>
+
 #include <map>
 #include <string>
 #include <string_view>
@@ -20,20 +22,20 @@ namespace Glory
     {
     public:
         /** @brief Constructor */
-        Resource();
+        GLORY_ENGINE_API Resource();
         /** @overload */
-        Resource(UUID uuid);
+        GLORY_ENGINE_API Resource(UUID uuid);
         /** @overload */
-        Resource(const std::string& name);
+        GLORY_ENGINE_API Resource(const std::string& name);
         /** @overload */
-        Resource(UUID uuid, const std::string& name);
+        GLORY_ENGINE_API Resource(UUID uuid, const std::string& name);
         /** @brief Destructor */
-        virtual ~Resource();
+        GLORY_ENGINE_API virtual ~Resource();
 
         /** @brief Whether the resource is dirty */
-        bool IsDirty() const;
+        GLORY_ENGINE_API bool IsDirty() const;
         /** @brief Set resource dirty */
-        void SetDirty(bool dirty);
+        GLORY_ENGINE_API void SetDirty(bool dirty);
 
     public:
         virtual void Serialize(Utils::BinaryStream& container) const {};
@@ -45,7 +47,7 @@ namespace Glory
          * Only use this after constructing a new resource,
          * never use this on an existing resource!
          */
-        void SetResourceUUID(UUID uuid);
+        GLORY_ENGINE_API void SetResourceUUID(UUID uuid);
 
         /** @brief Get a vector containing other resources referenced by this resource */
         virtual void References(IEngine* pEngine, std::vector<UUID>& references) const = 0;

@@ -2,6 +2,8 @@
 #include "AssetLocation.h"
 #include "ResourceMeta.h"
 
+#include <engine_visibility.h>
+
 #include <UUID.h>
 #include <map>
 
@@ -10,49 +12,49 @@ namespace Glory
 	class AssetDatabase
 	{
 	public:
-		AssetDatabase();
-		virtual ~AssetDatabase();
+		GLORY_ENGINE_API AssetDatabase();
+		GLORY_ENGINE_API virtual ~AssetDatabase();
 
-		void Initialize();
-		void Destroy();
+		GLORY_ENGINE_API void Initialize();
+		GLORY_ENGINE_API void Destroy();
 
-		bool GetAssetLocation(UUID uuid, AssetLocation& location);
-		bool GetResourceMeta(UUID uuid, ResourceMeta& meta);
-		UUID GetAssetUUID(const std::string& path);
-		bool AssetExists(UUID uuid);
-		bool AssetExists(const std::string& path);
+		GLORY_ENGINE_API bool GetAssetLocation(UUID uuid, AssetLocation& location);
+		GLORY_ENGINE_API bool GetResourceMeta(UUID uuid, ResourceMeta& meta);
+		GLORY_ENGINE_API UUID GetAssetUUID(const std::string& path);
+		GLORY_ENGINE_API bool AssetExists(UUID uuid);
+		GLORY_ENGINE_API bool AssetExists(const std::string& path);
 
-		void GetAllAssetsOfType(uint32_t typeHash, std::vector<UUID>& out);
-		void GetAllAssetsOfType(uint32_t typeHash, std::vector<std::string>& out);
+		GLORY_ENGINE_API void GetAllAssetsOfType(uint32_t typeHash, std::vector<UUID>& out);
+		GLORY_ENGINE_API void GetAllAssetsOfType(uint32_t typeHash, std::vector<std::string>& out);
 
-		std::string GetAssetName(UUID uuid);
+		GLORY_ENGINE_API std::string GetAssetName(UUID uuid);
 
-		void Clear();
+		GLORY_ENGINE_API void Clear();
 
-		void SetIDAndName(Resource* pResource, UUID newID, const std::string& name);
+		GLORY_ENGINE_API void SetIDAndName(Resource* pResource, UUID newID, const std::string& name);
 
-		void SetAsset(AssetLocation& assetLocation, const ResourceMeta& meta);
+		GLORY_ENGINE_API void SetAsset(AssetLocation& assetLocation, const ResourceMeta& meta);
 
-		void Remove(UUID uuid);
+		GLORY_ENGINE_API void Remove(UUID uuid);
 
 		/** @brief Set the root path where assets are located */
-		void SetAssetPath(const std::filesystem::path& path);
+		GLORY_ENGINE_API void SetAssetPath(const std::filesystem::path& path);
 		/** @brief Set the root path where engine and module settings are located */
-		void SetSettingsPath(const std::filesystem::path& path);
+		GLORY_ENGINE_API void SetSettingsPath(const std::filesystem::path& path);
 
 		/** @brief Get the root path where assets are located */
-		const std::string_view GetAssetPath() const { return m_AssetPath; }
+		GLORY_ENGINE_API const std::string_view GetAssetPath() const { return m_AssetPath; }
 		/** @brief Get the root path where engine and module settings are located */
-		const std::string_view GetSettingsPath() const { return m_SettingsPath; };
+		GLORY_ENGINE_API const std::string_view GetSettingsPath() const { return m_SettingsPath; };
 
 		/**
 		 * @brief Get the ID of a scene by name
 		 * @param name Name of the scene to find
 		 * @returns ID of the scene or 0 if not found
 		 */
-		UUID FindSceneID(const std::string name) const;
+		GLORY_ENGINE_API UUID FindSceneID(const std::string name) const;
 
-		struct WriteLock
+		struct GLORY_ENGINE_API WriteLock
 		{
 		public:
 			WriteLock(AssetDatabase* pDatabase);
@@ -63,8 +65,8 @@ namespace Glory
 			AssetDatabase* m_pDatabase;
 		};
 
-		void SetEntryScene(UUID uuid);
-		UUID GetEntryScene() const;
+		GLORY_ENGINE_API void SetEntryScene(UUID uuid);
+		GLORY_ENGINE_API UUID GetEntryScene() const;
 
 	private:
 		bool m_IsWriting;

@@ -64,7 +64,7 @@ namespace Glory
 		Resource* pMeshResource = m_pAssetManager->FindResource(renderData.m_MeshID);
 		if (!pMeshResource)
 		{
-			pMeshResource = new MeshData(textData.m_Text.size()*4, sizeof(VertexPosColorTex),
+			pMeshResource = new MeshData(uint32_t(textData.m_Text.size()*4), sizeof(VertexPosColorTex),
 				{ AttributeType::Float2, AttributeType::Float3, AttributeType::Float2 });
 			pMeshResource->SetResourceUUID(renderData.m_MeshID);
 			m_pAssetManager->AddLoadedResource(pMeshResource);

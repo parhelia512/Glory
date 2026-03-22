@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GloryRuntimeApplication.h"
 
+#include <Debug.h>
 #include <Console.h>
 #include <Logs.h>
 #include <WindowsDebugConsole.h>

@@ -1,10 +1,13 @@
 #pragma once
-#include <queue>
 #include "RenderData.h"
 #include "CameraRef.h"
 #include "LightData.h"
 
 #include "Debug.h"
+
+#include <engine_visibility.h>
+
+#include <queue>
 
 namespace Glory
 {
@@ -19,7 +22,7 @@ namespace Glory
 			m_Counter = 0;
 		}
 
-		void push_back(const T& value)
+		inline void push_back(const T& value)
 		{
 			if (m_Counter >= m_ActiveObjects.size())
 			{
@@ -31,32 +34,32 @@ namespace Glory
 			++m_Counter;
 		}
 
-		size_t count() const
+		inline size_t count() const
 		{
 			return m_Counter;
 		}
 
-		size_t size() const
+		inline size_t size() const
 		{
 			return m_ActiveObjects.size();
 		}
 
-		const T& operator[](size_t index) const
+		inline const T& operator[](size_t index) const
 		{
 			return m_ActiveObjects[index];
 		}
 
-		T& operator[](size_t index)
+		inline T& operator[](size_t index)
 		{
 			return m_ActiveObjects[index];
 		}
 
-		const void* data() const
+		inline const void* data() const
 		{
 			return m_ActiveObjects.data();
 		}
 
-		void reset()
+		inline void reset()
 		{
 			m_Counter = 0;
 		}
@@ -69,10 +72,10 @@ namespace Glory
 	struct RenderFrame
 	{
 	public:
-		RenderFrame(size_t maxLigts);
-		~RenderFrame();
+		GLORY_ENGINE_API RenderFrame(size_t maxLigts);
+		GLORY_ENGINE_API ~RenderFrame();
 
-		void Reset();
+		GLORY_ENGINE_API void Reset();
 
 	public:
 		std::vector<std::pair<glm::ivec2, UUID>> Picking;

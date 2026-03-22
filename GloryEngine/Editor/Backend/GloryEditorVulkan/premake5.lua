@@ -61,7 +61,7 @@ project "GloryEditorVulkan"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"yaml-cpp",
 		"GloryEditor",
 		"GloryVulkanGraphics",

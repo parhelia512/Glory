@@ -23,9 +23,8 @@
 #include "ShapePropertySerializer.h"
 #include "Serializers.h"
 
-#include <imgui.h>
+#include <Debug.h>
 #include <Console.h>
-#include <implot.h>
 #include <Version.h>
 #include <RenderDocAPI.h>
 
@@ -34,6 +33,9 @@
 #include <SceneManager.h>
 #include <WindowModule.h>
 #include <ThreadManager.h>
+
+#include <imgui.h>
+#include <implot.h>
 
 namespace Glory::Editor
 {

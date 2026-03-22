@@ -2,12 +2,14 @@
 #include "ResourceLoaderModule.h"
 #include "ModelData.h"
 
+#include <engine_visibility.h>
+
 namespace Glory
 {
 	struct ModelImportSettings : ImportSettings
 	{
-		ModelImportSettings();
-		ModelImportSettings(const std::string& extension);
+		GLORY_ENGINE_API ModelImportSettings();
+		GLORY_ENGINE_API ModelImportSettings(const std::string& extension);
 	};
 
 	class ModelLoaderModule : public ResourceLoaderModule<ModelData, ModelImportSettings>

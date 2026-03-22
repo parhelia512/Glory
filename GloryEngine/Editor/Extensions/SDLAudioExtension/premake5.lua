@@ -65,7 +65,7 @@ project "SDLAudioExtension"
 		"SDL2_mixer",
 
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GlorySDLAudio",
 		"GloryEditor",
 		"GloryEditorSerialization",

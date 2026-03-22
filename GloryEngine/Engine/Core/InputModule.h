@@ -1,6 +1,7 @@
 #pragma once
 #include "PlayerInput.h"
-#include "Glory.h"
+
+#include <engine_visibility.h>
 
 #include <Module.h>
 
@@ -16,63 +17,63 @@ namespace Glory
 	class InputModule : public Module
 	{
 	public:
-		InputModule();
-		virtual ~InputModule();
+		GLORY_ENGINE_API InputModule();
+		GLORY_ENGINE_API virtual ~InputModule();
 
-		virtual const std::type_info& GetModuleType() override;
+		GLORY_ENGINE_API virtual const std::type_info& GetModuleType() override;
 
-		bool OnInput(InputEvent& event);
-		void OnCursor(CursorEvent& event);
-		bool OnText(TextEvent& event);
+		GLORY_ENGINE_API bool OnInput(InputEvent& event);
+		GLORY_ENGINE_API void OnCursor(CursorEvent& event);
+		GLORY_ENGINE_API bool OnText(TextEvent& event);
 
-		size_t AddPlayer();
-		void RemovePlayer(size_t playerIndex);
+		GLORY_ENGINE_API size_t AddPlayer();
+		GLORY_ENGINE_API void RemovePlayer(size_t playerIndex);
 
-		void ReadInputData(YAML::Node& node);
+		GLORY_ENGINE_API void ReadInputData(YAML::Node& node);
 
-		void ClearInputData();
+		GLORY_ENGINE_API void ClearInputData();
 
-		void SetPlayerInputMode(const size_t playerIndex, const std::string& inputMode);
+		GLORY_ENGINE_API void SetPlayerInputMode(const size_t playerIndex, const std::string& inputMode);
 
-		const UUID GetDeviceUUID(const InputDeviceType deviceType, const size_t deviceID) const;
-		InputDevice* GetInputDevice(const UUID deviceID);
+		GLORY_ENGINE_API const UUID GetDeviceUUID(const InputDeviceType deviceType, const size_t deviceID) const;
+		GLORY_ENGINE_API InputDevice* GetInputDevice(const UUID deviceID);
 
-		InputMode* GetInputMode(const std::string& name);
+		GLORY_ENGINE_API InputMode* GetInputMode(const std::string& name);
 
-		bool& InputBlocked();
+		GLORY_ENGINE_API bool& InputBlocked();
 
-		PlayerInput* GetPlayer(size_t playIndex);
-		const PlayerInput* GetPlayer(size_t playIndex) const;
-		float GetAxis(size_t playerIndex, const std::string& inputMap, const std::string& actionName) const;
-		float GetAxisDelta(size_t playerIndex, const std::string& inputMap, const std::string& actionName) const;
-		bool GetBool(size_t playerIndex, const std::string& inputMap, const std::string& actionName) const;
-		glm::vec2 GetCursorPos(size_t playerIndex) const;
-		glm::vec2 GetCursorScrollDelta(size_t playerIndex) const;
-		bool IsCursorDown(size_t playerIndex) const;
+		GLORY_ENGINE_API PlayerInput* GetPlayer(size_t playIndex);
+		GLORY_ENGINE_API const PlayerInput* GetPlayer(size_t playIndex) const;
+		GLORY_ENGINE_API float GetAxis(size_t playerIndex, const std::string& inputMap, const std::string& actionName) const;
+		GLORY_ENGINE_API float GetAxisDelta(size_t playerIndex, const std::string& inputMap, const std::string& actionName) const;
+		GLORY_ENGINE_API bool GetBool(size_t playerIndex, const std::string& inputMap, const std::string& actionName) const;
+		GLORY_ENGINE_API glm::vec2 GetCursorPos(size_t playerIndex) const;
+		GLORY_ENGINE_API glm::vec2 GetCursorScrollDelta(size_t playerIndex) const;
+		GLORY_ENGINE_API bool IsCursorDown(size_t playerIndex) const;
 
-		void FreeDevice(const UUID deviceId);
+		GLORY_ENGINE_API void FreeDevice(const UUID deviceId);
 
-		const UUID FindAvailableInputDevice(const InputDeviceType deviceType) const;
+		GLORY_ENGINE_API const UUID FindAvailableInputDevice(const InputDeviceType deviceType) const;
 
-		GLORY_API void SetCursorBounds(const glm::vec4& bounds);
-		GLORY_API const glm::vec4& GetCursorBounds();
+		GLORY_ENGINE_API void SetCursorBounds(const glm::vec4& bounds);
+		GLORY_ENGINE_API const glm::vec4& GetCursorBounds();
 
-		GLORY_API void SetScreenScale(const glm::vec2& scale);
-		GLORY_API const glm::vec2& GetScreenScale();
+		GLORY_ENGINE_API void SetScreenScale(const glm::vec2& scale);
+		GLORY_ENGINE_API const glm::vec2& GetScreenScale();
 
 	protected:
 		virtual void OnInitialize() {};
 		virtual void OnCleanup() {};
 		virtual void OnUpdate() {};
 
-		virtual void OnProcessData() override;
+		GLORY_ENGINE_API virtual void OnProcessData() override;
 
 	private:
-		virtual void Initialize() override;
-		virtual void PostInitialize() override;
-		virtual void Cleanup() override;
-		virtual void Update() override;
-		virtual void OnBeginFrame() override;
+		GLORY_ENGINE_API virtual void Initialize() override;
+		GLORY_ENGINE_API virtual void PostInitialize() override;
+		GLORY_ENGINE_API virtual void Cleanup() override;
+		GLORY_ENGINE_API virtual void Update() override;
+		GLORY_ENGINE_API virtual void OnBeginFrame() override;
 
 		void ReadInputModes(YAML::Node& node);
 		void ReadInputMaps(YAML::Node& node);

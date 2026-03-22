@@ -2,6 +2,8 @@
 #include <UUID.h>
 #include <Reflection.h>
 
+#include <engine_visibility.h>
+
 #include <string>
 #include <vector>
 #include <map>
@@ -19,82 +21,82 @@ namespace Glory
 	class SceneManager
 	{
 	public:
-		SceneManager(IEngine* pEngine);
-		virtual ~SceneManager();
+		GLORY_ENGINE_API SceneManager(IEngine* pEngine);
+		GLORY_ENGINE_API virtual ~SceneManager();
 
-		void SetRenderer(Renderer* pRenderer);
-		Renderer* GetRenderer() const;
+		GLORY_ENGINE_API void SetRenderer(Renderer* pRenderer);
+		GLORY_ENGINE_API Renderer* GetRenderer() const;
 
 		virtual GScene* NewScene(const std::string& name="Empty Scene", bool additive=false) = 0;
-		void LoadScene(UUID uuid, bool additive);
-		void UnloadScene(UUID uuid);
-		void UnloadAllScenes();
-		void LoadSceneNextFrame(UUID uuid, bool additive);
+		GLORY_ENGINE_API void LoadScene(UUID uuid, bool additive);
+		GLORY_ENGINE_API void UnloadScene(UUID uuid);
+		GLORY_ENGINE_API void UnloadAllScenes();
+		GLORY_ENGINE_API void LoadSceneNextFrame(UUID uuid, bool additive);
 
 		virtual void OnLoadScene(UUID uuid) = 0;
 		virtual void OnUnloadScene(GScene* pScene) = 0;
 		virtual void OnUnloadAllScenes() = 0;
 
-		Utils::ECS::RegistryFactory& GetRegistryFactory();
+		GLORY_ENGINE_API Utils::ECS::RegistryFactory& GetRegistryFactory();
 
 		template<Utils::ECS::IsComponentManager Manager, typename Component>
-		void RegisterComponentManager(std::function<void(Utils::ECS::EntityRegistry*, Manager*)> createCallback=NULL)
+		inline void RegisterComponentManager(std::function<void(Utils::ECS::EntityRegistry*, Manager*)> createCallback=NULL)
 		{
 			m_RegistryFactory.RegisterComponentManager<Manager>(createCallback);
 		    Reflect::RegisterType<Component>();
 		}
 
 		/** @brief Get the engine that owns this manager */
-		IEngine* GetEngine();
-		GScene* GetActiveScene(bool force=false);
-		void SetActiveScene(GScene* pScene);
+		GLORY_ENGINE_API IEngine* GetEngine();
+		GLORY_ENGINE_API GScene* GetActiveScene(bool force=false);
+		GLORY_ENGINE_API void SetActiveScene(GScene* pScene);
 
-		size_t OpenScenesCount();
-		GScene* GetOpenScene(size_t index);
-		GScene* GetOpenScene(UUID uuid);
-		size_t GetSceneIndex(UUID uuid) const;
-		size_t ExternalSceneCount();
-		GScene* GetExternalScene(size_t index);
+		GLORY_ENGINE_API size_t OpenScenesCount();
+		GLORY_ENGINE_API GScene* GetOpenScene(size_t index);
+		GLORY_ENGINE_API GScene* GetOpenScene(UUID uuid);
+		GLORY_ENGINE_API size_t GetSceneIndex(UUID uuid) const;
+		GLORY_ENGINE_API size_t ExternalSceneCount();
+		GLORY_ENGINE_API GScene* GetExternalScene(size_t index);
 
-		void UpdateScene(GScene* pScene, float dt) const;
-		void DrawScene(GScene* pScene) const;
+		GLORY_ENGINE_API void UpdateScene(GScene* pScene, float dt) const;
+		GLORY_ENGINE_API void DrawScene(GScene* pScene) const;
 
-		void Start();
-		void Stop();
+		GLORY_ENGINE_API void Start();
+		GLORY_ENGINE_API void Stop();
 
 		/** @brief Add an external scene */
-		void AddExternalScene(GScene* pScene);
-		void RemoveExternalScene(GScene* pScene);
+		GLORY_ENGINE_API void AddExternalScene(GScene* pScene);
+		GLORY_ENGINE_API void RemoveExternalScene(GScene* pScene);
 
-		UUID AddSceneClosingCallback(std::function<void(UUID, UUID)> callback);
-		void RemoveSceneClosingCallback(UUID id);
+		GLORY_ENGINE_API UUID AddSceneClosingCallback(std::function<void(UUID, UUID)> callback);
+		GLORY_ENGINE_API void RemoveSceneClosingCallback(UUID id);
 
-		UUID AddSceneObjectDestroyedCallback(std::function<void(UUID, UUID)> callback);
-		void RemoveSceneObjectDestroyedCallback(UUID id);
+		GLORY_ENGINE_API UUID AddSceneObjectDestroyedCallback(std::function<void(UUID, UUID)> callback);
+		GLORY_ENGINE_API void RemoveSceneObjectDestroyedCallback(UUID id);
 
-		void OnSceneObjectDestroyed(UUID objectID, UUID sceneID);
+		GLORY_ENGINE_API void OnSceneObjectDestroyed(UUID objectID, UUID sceneID);
 
 		template<typename T>
-		void SubscribeOnCopy(std::function<void(GScene*, void*, UUID, UUIDRemapper&)> callback)
+		inline void SubscribeOnCopy(std::function<void(GScene*, void*, UUID, UUIDRemapper&)> callback)
 		{
 			const uint32_t hash = T::GetTypeData()->TypeHash();
 			SubscribeOnCopy(hash, callback);
 		}
 
-		void SubscribeOnCopy(uint32_t hash, std::function<void(GScene*, void*, UUID, UUIDRemapper&)> callback);
-		void TriggerOnCopy(uint32_t hash, GScene* pScene, void* data, UUID componentID, UUIDRemapper& remapper);
+		GLORY_ENGINE_API void SubscribeOnCopy(uint32_t hash, std::function<void(GScene*, void*, UUID, UUIDRemapper&)> callback);
+		GLORY_ENGINE_API void TriggerOnCopy(uint32_t hash, GScene* pScene, void* data, UUID componentID, UUIDRemapper& remapper);
 
-		void Initialize();
-		void Cleanup();
-		void Update(float dt);
-		void Draw();
+		GLORY_ENGINE_API void Initialize();
+		GLORY_ENGINE_API void Cleanup();
+		GLORY_ENGINE_API void Update(float dt);
+		GLORY_ENGINE_API void Draw();
 
 	protected:
 		virtual void OnInitialize() = 0;
 		virtual void OnCleanup() = 0;
 		virtual void OnSetActiveScene(GScene* pActiveScene) = 0;
 
-		GScene* CreateNewScene_Internal(const std::string& name, UUID uuid=UUID());
+		GLORY_ENGINE_API GScene* CreateNewScene_Internal(const std::string& name, UUID uuid=UUID());
 		
 	protected:
 		IEngine* m_pEngine;

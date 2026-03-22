@@ -49,7 +49,7 @@ project "GloryLocalize"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryLocalizeModule",
 		"GloryReflect",
 		"GloryECS",

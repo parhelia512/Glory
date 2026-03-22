@@ -6,6 +6,8 @@
 #include "AssetReference.h"
 #include "TextureData.h"
 
+#include <engine_visibility.h>
+
 #include <vector>
 #include <unordered_map>
 #include <mutex>
@@ -19,49 +21,51 @@ namespace Glory
     class MaterialData : public Resource
     {
     public:
-        MaterialData();
-        virtual ~MaterialData();
+        GLORY_ENGINE_API MaterialData();
+        GLORY_ENGINE_API virtual ~MaterialData();
 
-        void AddProperty(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, size_t size, uint32_t flags = 0);
-        void AddResourceProperty(const std::string& displayName, const std::string& shaderName, uint32_t typeHash, UUID resourceUUID, TextureType type, uint32_t flags = 0);
-        void AddProperty(const MaterialPropertyInfo& other);
+        GLORY_ENGINE_API void AddProperty(const std::string& displayName, const std::string& shaderName,
+            uint32_t typeHash, size_t size, uint32_t flags = 0);
+        GLORY_ENGINE_API void AddResourceProperty(const std::string& displayName, const std::string& shaderName,
+            uint32_t typeHash, UUID resourceUUID, TextureType type, uint32_t flags = 0);
+        GLORY_ENGINE_API void AddProperty(const MaterialPropertyInfo& other);
 
-        void SetPipeline(PipelineData* pPipeline);
-        void SetPipeline(UUID pipelineID);
-        virtual PipelineData* GetPipeline(const PipelineManager& pipelineManager) const;
-        virtual UUID GetPipelineID() const;
+        GLORY_ENGINE_API void SetPipeline(PipelineData* pPipeline);
+        GLORY_ENGINE_API void SetPipeline(UUID pipelineID);
+        GLORY_ENGINE_API virtual PipelineData* GetPipeline(const PipelineManager& pipelineManager) const;
+        GLORY_ENGINE_API virtual UUID GetPipelineID() const;
 
-        [[nodiscard]]virtual size_t PropertyInfoCount() const;
-        virtual MaterialPropertyInfo* GetPropertyInfoAt(size_t index);
-        [[nodiscard]]virtual size_t GetCurrentBufferOffset() const;
-        std::vector<char>& GetBufferReference();
-        bool GetPropertyInfoIndex(const std::string& name, size_t& index) const;
-        bool GetPropertyInfoIndex(TextureType textureType, size_t texIndex, size_t& index) const;
-        [[nodiscard]]size_t ResourceCount() const;
-        AssetReference<TextureData>* GetResourceUUIDPointer(size_t index);
-        [[nodiscard]]virtual size_t GetResourcePropertyCount() const;
-        MaterialPropertyInfo* GetResourcePropertyInfo(size_t index);
-        [[nodiscard]]virtual size_t GetPropertyIndexFromResourceIndex(size_t index) const;
-        void ClearProperties();
+        GLORY_ENGINE_API [[nodiscard]]virtual size_t PropertyInfoCount() const;
+        GLORY_ENGINE_API virtual MaterialPropertyInfo* GetPropertyInfoAt(size_t index);
+        GLORY_ENGINE_API [[nodiscard]]virtual size_t GetCurrentBufferOffset() const;
+        GLORY_ENGINE_API std::vector<char>& GetBufferReference();
+        GLORY_ENGINE_API bool GetPropertyInfoIndex(const std::string& name, size_t& index) const;
+        GLORY_ENGINE_API bool GetPropertyInfoIndex(TextureType textureType, size_t texIndex, size_t& index) const;
+        GLORY_ENGINE_API [[nodiscard]]size_t ResourceCount() const;
+        GLORY_ENGINE_API AssetReference<TextureData>* GetResourceUUIDPointer(size_t index);
+        GLORY_ENGINE_API [[nodiscard]]virtual size_t GetResourcePropertyCount() const;
+        GLORY_ENGINE_API MaterialPropertyInfo* GetResourcePropertyInfo(size_t index);
+        GLORY_ENGINE_API [[nodiscard]]virtual size_t GetPropertyIndexFromResourceIndex(size_t index) const;
+        GLORY_ENGINE_API void ClearProperties();
 
-        size_t TextureCount(TextureType textureType) const;
+        GLORY_ENGINE_API size_t TextureCount(TextureType textureType) const;
 
-        void Serialize(Utils::BinaryStream& container) const override;
-        void Deserialize(Utils::BinaryStream& container) override;
+        GLORY_ENGINE_API void Serialize(Utils::BinaryStream& container) const override;
+        GLORY_ENGINE_API void Deserialize(Utils::BinaryStream& container) override;
 
-        void References(IEngine* pEngine, std::vector<UUID>& references) const override;
+        GLORY_ENGINE_API void References(IEngine* pEngine, std::vector<UUID>& references) const override;
 
-        void CopyProperties(void* dst);
-        size_t PropertyDataSize();
+        GLORY_ENGINE_API void CopyProperties(void* dst) const;
+        GLORY_ENGINE_API size_t PropertyDataSize() const;
 
-        MaterialData* CreateCopy() const;
+        GLORY_ENGINE_API MaterialData* CreateCopy() const;
 
-        virtual uint32_t TextureSetBits() const;
+        GLORY_ENGINE_API virtual uint32_t TextureSetBits() const;
 
     public: // Properties
         // Setters
         template<typename T>
-        void Set(const std::string& name, const T& value)
+        inline void Set(const std::string& name, const T& value)
         {
             size_t index;
             if (!GetPropertyInfoIndex(name, index)) return;
@@ -70,20 +74,20 @@ namespace Glory
 
         // Getters
         template<typename T>
-        bool Get(const std::string& name, T& value)
+        inline bool Get(const std::string& name, T& value)
         {
             size_t index;
             if (!GetPropertyInfoIndex(name, index)) return false;
             return GetPropertyInfoAt(index)->Read<T>(m_PropertyBuffer, value);
         }
 
-        GLORY_API void* Address(size_t index);
+        GLORY_ENGINE_API void* Address(size_t index);
 
-        GLORY_API void SetTexture(const std::string& name, TextureData* value);
-        GLORY_API void SetTexture(const std::string& name, UUID uuid);
-        GLORY_API void SetTexture(TextureType textureType, size_t texIndex, UUID uuid);
-        GLORY_API bool GetTexture(const std::string& name, TextureData** value, AssetManager* pManager);
-        GLORY_API bool GetTexture(const std::string& name, UUID* texID);
+        GLORY_ENGINE_API void SetTexture(const std::string& name, TextureData* value);
+        GLORY_ENGINE_API void SetTexture(const std::string& name, UUID uuid);
+        GLORY_ENGINE_API void SetTexture(TextureType textureType, size_t texIndex, UUID uuid);
+        GLORY_ENGINE_API bool GetTexture(const std::string& name, TextureData** value, AssetManager* pManager);
+        GLORY_ENGINE_API bool GetTexture(const std::string& name, UUID* texID);
 
     protected:
         friend class PipelineData;

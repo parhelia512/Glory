@@ -1,6 +1,8 @@
 #pragma once
 #include "GraphicsHandles.h"
 
+#include <engine_visibility.h>
+
 #include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
 
@@ -17,9 +19,9 @@ namespace Glory
 		 * @param width Width of the atlas
 		 * @param width Height of the atlas
 		 */
-		TextureAtlas(IEngine* pEngine, uint32_t width, uint32_t height);
+		GLORY_ENGINE_API TextureAtlas(IEngine* pEngine, uint32_t width, uint32_t height);
 		/** @brief Destructor */
-		virtual ~TextureAtlas();
+		GLORY_ENGINE_API virtual ~TextureAtlas();
 
 		/** @brief Initialize the atlas by creating the nescesary resources */
 		virtual void Initialize() = 0;
@@ -36,37 +38,37 @@ namespace Glory
 		 * If a new row is required for the chosen height, reservation will fail if the
 		 * remaining available height is smaller than the requested height.
 		 */
-		UUID ReserveChunk(uint32_t width, uint32_t height, UUID id=UUID());
+		GLORY_ENGINE_API UUID ReserveChunk(uint32_t width, uint32_t height, UUID id=UUID());
 		/** @brief Check if the atlas has a reserved chunk with an id
 		 * @param id ID of the chunk to find
 		 */
-		bool HasReservedChunk(UUID id) const;
+		GLORY_ENGINE_API bool HasReservedChunk(UUID id) const;
 		/** @brief Get the texture coordinates of a chunk
 		 * @param id ID of the chunk
 		 */
-		glm::vec4 GetChunkCoords(UUID id) const;
-		glm::vec4 GetChunkPositionAndSize(UUID id) const;
+		GLORY_ENGINE_API glm::vec4 GetChunkCoords(UUID id) const;
+		GLORY_ENGINE_API glm::vec4 GetChunkPositionAndSize(UUID id) const;
 
 		/** @brief Release a specific chunk from the atlas so that it can be reserved again
 		 * @param id ID of the chunk to release
 		 *
 		 * Does not clear the attached texture
 		 */
-		void ReleaseChunk(UUID id);
+		GLORY_ENGINE_API void ReleaseChunk(UUID id);
 		/** @brief Release all chunks and reset rows in the texture atlas
 		 *
 		 * Does not clear the attached texture
 		 */
-		void ReleaseAllChunks();
+		GLORY_ENGINE_API void ReleaseAllChunks();
 
 		/** @brief Resize the texture atlas
 		 * @param newSize New width and height of the atlas
 		 *
 		 * Note: this releases all chunks!
 		 */
-		void Resize(uint32_t newSize);
+		GLORY_ENGINE_API void Resize(uint32_t newSize);
 
-		glm::uvec2 Resolution() const;
+		GLORY_ENGINE_API glm::uvec2 Resolution() const;
 
 	protected:
 		/** @brief Reserved chunk data */

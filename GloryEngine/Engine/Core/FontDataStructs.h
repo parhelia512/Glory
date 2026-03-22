@@ -1,6 +1,8 @@
 #pragma once
 #include <UUID.h>
 
+#include <engine_visibility.h>
+
 #include <vector>
 #include <glm/ext/vector_int2.hpp>
 #include <glm/vec2.hpp>
@@ -42,6 +44,6 @@ namespace Glory
 
 	namespace Utils
 	{
-		glm::vec2 GenerateTextMesh(MeshData* pMesh, FontData* pFontData, const TextData& renderData, float textWrap=0.0f);
+		GLORY_ENGINE_API glm::vec2 GenerateTextMesh(MeshData* pMesh, FontData* pFontData, const TextData& renderData, float textWrap=0.0f);
 	}
 }

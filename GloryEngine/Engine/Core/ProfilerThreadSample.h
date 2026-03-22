@@ -8,16 +8,16 @@ namespace Glory
 	class ProfilerThreadSample
 	{
 	public:
-		ProfilerThreadSample();
-		ProfilerThreadSample(const std::string& name);
-		virtual ~ProfilerThreadSample();
+		GLORY_ENGINE_API ProfilerThreadSample();
+		GLORY_ENGINE_API ProfilerThreadSample(const std::string& name);
+		GLORY_ENGINE_API virtual ~ProfilerThreadSample();
 
-		const std::string& Name() const;
-		size_t SampleCount() const;
-		ProfilerSample* GetSample(size_t index);
+		GLORY_ENGINE_API const std::string& Name() const;
+		GLORY_ENGINE_API size_t SampleCount() const;
+		GLORY_ENGINE_API ProfilerSample* GetSample(size_t index);
 
 		template<typename T, typename Ratio>
-		const T GetDuration() const
+		inline const T GetDuration() const
 		{
 			std::chrono::duration<T, Ratio> duration = m_End - m_Start;
 			return duration.count();

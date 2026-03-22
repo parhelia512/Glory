@@ -51,7 +51,7 @@ project "GloryVulkanGraphics"
 	{
 		"vulkan-1",
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"shaderc",
 		"shaderc_combined",
 		"shaderc_shared",

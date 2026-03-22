@@ -1,7 +1,10 @@
 #pragma once
 #include "Resource.h"
-#include <cstdint>
 #include "GraphicsEnums.h"
+
+#include <engine_visibility.h>
+
+#include <cstdint>
 
 namespace Glory
 {
@@ -21,24 +24,24 @@ namespace Glory
         };
 
     public:
-        ImageData(uint32_t w, uint32_t h, PixelFormat internalFormat, PixelFormat format, uint8_t bytesPerPixel, char*&& pPixels, size_t dataSize, bool compressed=false, DataType dataType=DataType::DT_UByte);
-        ImageData();
-        virtual ~ImageData();
+        GLORY_ENGINE_API ImageData(uint32_t w, uint32_t h, PixelFormat internalFormat, PixelFormat format, uint8_t bytesPerPixel, char*&& pPixels, size_t dataSize, bool compressed=false, DataType dataType=DataType::DT_UByte);
+        GLORY_ENGINE_API ImageData();
+        GLORY_ENGINE_API virtual ~ImageData();
 
-        uint32_t GetWidth() const;
-        uint32_t GetHeight() const;
-        const PixelFormat& GetFormat() const;
-        const PixelFormat& GetInternalFormat() const;
-        uint8_t GetBytesPerPixel() const;
-        uint32_t GetByteSize() const;
-        virtual const void* GetPixels() const;
-        virtual size_t DataSize() const;
-        virtual DataType GetDataType() const;
+        GLORY_ENGINE_API uint32_t GetWidth() const;
+        GLORY_ENGINE_API uint32_t GetHeight() const;
+        GLORY_ENGINE_API const PixelFormat& GetFormat() const;
+        GLORY_ENGINE_API const PixelFormat& GetInternalFormat() const;
+        GLORY_ENGINE_API uint8_t GetBytesPerPixel() const;
+        GLORY_ENGINE_API uint32_t GetByteSize() const;
+        GLORY_ENGINE_API virtual const void* GetPixels() const;
+        GLORY_ENGINE_API virtual size_t DataSize() const;
+        GLORY_ENGINE_API virtual DataType GetDataType() const;
 
-        void SetPixels(char*&& pPixels, size_t dataSize);
+        GLORY_ENGINE_API void SetPixels(char*&& pPixels, size_t dataSize);
 
-        void Serialize(Utils::BinaryStream& container) const override;
-        void Deserialize(Utils::BinaryStream& container) override;
+        GLORY_ENGINE_API void Serialize(Utils::BinaryStream& container) const override;
+        GLORY_ENGINE_API void Deserialize(Utils::BinaryStream& container) override;
 
     protected:
         Header m_Header;

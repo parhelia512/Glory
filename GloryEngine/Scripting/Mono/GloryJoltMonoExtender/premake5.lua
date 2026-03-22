@@ -48,7 +48,7 @@ project "GloryJoltMonoExtender"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryJoltPhysics",
 		"GloryMonoScripting",
 		"yaml-cpp",

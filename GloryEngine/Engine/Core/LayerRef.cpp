@@ -10,7 +10,7 @@ namespace Glory
 	LayerRef::LayerRef() : m_LayerIndex(0) {}
 	LayerRef::LayerRef(uint32_t layerIndex) : m_LayerIndex(layerIndex) {}
 
-	bool LayerRef::operator==(const LayerRef&& other)
+	bool LayerRef::operator==(const LayerRef& other) const
 	{
 		return m_LayerIndex == other.m_LayerIndex;
 	}

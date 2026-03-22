@@ -54,7 +54,7 @@ project "GlorySteamAudio"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryAudioModule",
 		"Glory3DAudioModule",
 		"GloryReflect",

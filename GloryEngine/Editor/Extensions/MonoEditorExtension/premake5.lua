@@ -59,7 +59,7 @@ project "MonoEditorExtension"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryEditor",
 		"GloryEditorSerialization",
 		"GloryMonoScripting",

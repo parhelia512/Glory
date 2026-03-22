@@ -13,6 +13,8 @@
 #include "ShapeProperty.h"
 #include "RenderData.h"
 
+#include <engine_visibility.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -31,9 +33,9 @@ namespace Glory
 {
 	struct Transform
 	{
-		GLORY_API Transform();
-		GLORY_API Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
-		GLORY_API Transform(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale);
+		GLORY_ENGINE_API Transform();
+		GLORY_ENGINE_API Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
+		GLORY_ENGINE_API Transform(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale);
 
 		REFLECTABLE(Transform,
 			(glm::vec3)	(Position),
@@ -46,15 +48,15 @@ namespace Glory
 
 	struct MeshMaterial
 	{
-		MeshMaterial() : m_MaterialReference(0ull) {}
-		MeshMaterial(UUID uuid) : m_MaterialReference(uuid) {}
+		GLORY_ENGINE_API MeshMaterial() : m_MaterialReference(0ull) {}
+		GLORY_ENGINE_API MeshMaterial(UUID uuid) : m_MaterialReference(uuid) {}
 
-		bool operator==(const MeshMaterial&& other)
+		inline bool operator==(const MeshMaterial&& other)
 		{
 			return other.m_MaterialReference.AssetUUID() == other.m_MaterialReference.AssetUUID();
 		}
 
-		bool operator==(MeshMaterial& other)
+		inline bool operator==(MeshMaterial& other)
 		{
 			return other.m_MaterialReference.AssetUUID() == other.m_MaterialReference.AssetUUID();
 		}
@@ -66,10 +68,10 @@ namespace Glory
 
 	struct MeshRenderer
 	{
-		MeshRenderer(MeshData* pMesh, MaterialData* pMaterial)
+		GLORY_ENGINE_API MeshRenderer(MeshData* pMesh, MaterialData* pMaterial)
 			: m_Mesh(pMesh != nullptr ? pMesh->GetUUID() : UUID(0ull)), m_Material(pMaterial != nullptr ? pMaterial->GetUUID() : UUID(0ull)),
 			m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
-		MeshRenderer()
+		GLORY_ENGINE_API MeshRenderer()
 			: m_Mesh(0ull), m_Material(0ull), m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
 
 		REFLECTABLE(MeshRenderer,
@@ -83,10 +85,10 @@ namespace Glory
 
 	struct CameraComponent
 	{
-		GLORY_API CameraComponent() : m_HalfFOV(45.0f), m_Near(0.1f), m_Far(3000.0f), m_Priority(0),
+		GLORY_ENGINE_API CameraComponent() : m_HalfFOV(45.0f), m_Near(0.1f), m_Far(3000.0f), m_Priority(0),
 			m_ClearColor(glm::vec4(0.0f)), m_Offset(0.0f, 0.0f), m_Resolution(1.0f, 1.0f),
 			m_OutputMode(CameraOutputMode::ScaledResolution), m_LayerMask(0) {}
-		GLORY_API CameraComponent(float halfFOV, float near, float far, int priority = 0, const glm::vec4& clearColor = glm::vec4(0.0f))
+		GLORY_ENGINE_API CameraComponent(float halfFOV, float near, float far, int priority = 0, const glm::vec4& clearColor = glm::vec4(0.0f))
 			: m_HalfFOV(halfFOV), m_Near(near), m_Far(far), m_Priority(priority), m_ClearColor(clearColor), m_Offset(0.0f, 0.0f),
 			m_Resolution(1.0f, 1.0f), m_OutputMode(CameraOutputMode::ScaledResolution), m_LayerMask(0) {}
 
@@ -107,7 +109,7 @@ namespace Glory
 
 	struct LayerComponent
 	{
-		LayerComponent() : m_Layer(0) {}
+		GLORY_ENGINE_API LayerComponent() : m_Layer(0) {}
 
 		REFLECTABLE(LayerComponent,
 			(LayerRef)	(m_Layer)
@@ -116,7 +118,7 @@ namespace Glory
 
 	struct ShadowSettings
 	{
-		ShadowSettings() : m_Enable(false), m_Bias(0.0000005f)
+		GLORY_ENGINE_API ShadowSettings() : m_Enable(false), m_Bias(0.0000005f)
 		{}
 
 		REFLECTABLE(ShadowSettings,
@@ -127,10 +129,10 @@ namespace Glory
 
 	struct LightComponent
 	{
-		LightComponent() :
+		GLORY_ENGINE_API LightComponent() :
 			m_Type(LightType::Point), m_Color(1.0f), m_Intensity(1.0f), m_Inner(45.0f),
 			m_Outer(60.0f), m_Range(100.0f), m_FalloffExponent(1.0f) {}
-		LightComponent(const glm::vec4& color, float intensity, float exponent, float range) :
+		GLORY_ENGINE_API LightComponent(const glm::vec4& color, float intensity, float exponent, float range) :
 			m_Type(LightType::Point), m_Color(color), m_Intensity(intensity), m_Inner(45.0f),
 			m_Outer(60.0f), m_Range(range), m_FalloffExponent(exponent) {}
 
@@ -148,7 +150,7 @@ namespace Glory
 
 	struct TextComponent
 	{
-		TextComponent() : m_Font(0ull), m_Text("Hello World!"), m_Scale(0.01f),
+		GLORY_ENGINE_API TextComponent() : m_Font(0ull), m_Text("Hello World!"), m_Scale(0.01f),
 			m_Color(1.0f, 1.0f, 1.0f, 1.0f), m_Alignment(Alignment::Left), m_WrapWidth(0.0f), m_Dirty(true) {}
 
 		REFLECTABLE(TextComponent,

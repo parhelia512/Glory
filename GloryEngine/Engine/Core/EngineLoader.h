@@ -2,6 +2,8 @@
 #include "GloryEngine.h"
 #include "Window.h"
 
+#include <engine_visibility.h>
+
 #include <Module.h>
 
 #include <string>
@@ -16,16 +18,16 @@ namespace Glory
 	class EngineLoader
 	{
 	public:
-		EngineLoader(const std::filesystem::path& cfgPath);
-		virtual ~EngineLoader();
+		GLORY_ENGINE_API EngineLoader(const std::filesystem::path& cfgPath);
+		GLORY_ENGINE_API virtual ~EngineLoader();
 
-		GloryEngine LoadEngine(Console* pConsole, Debug* pDebug);
-		GloryEngine LoadEngineFromPath(Console* pConsole, Debug* pDebug);
-		EngineCreateInfo LoadEngineInfoFromPath(Console* pConsole, Debug* pDebug);
-		void Unload();
+		GLORY_ENGINE_API GloryEngine LoadEngine(Console* pConsole, Debug* pDebug);
+		GLORY_ENGINE_API GloryEngine LoadEngineFromPath(Console* pConsole, Debug* pDebug);
+		GLORY_ENGINE_API EngineCreateInfo LoadEngineInfoFromPath(Console* pConsole, Debug* pDebug);
+		GLORY_ENGINE_API void Unload();
 
-		const size_t ModuleCount() const;
-		const Module* GetModule(size_t index) const;
+		GLORY_ENGINE_API const size_t ModuleCount() const;
+		GLORY_ENGINE_API const Module* GetModule(size_t index) const;
 
 	private:
 		void LoadModules(YAML::Node& modules);

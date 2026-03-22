@@ -48,7 +48,7 @@ project "GloryUIMonoExtender"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryUIRenderer",
 		"GloryMonoScripting",
 		"yaml-cpp",

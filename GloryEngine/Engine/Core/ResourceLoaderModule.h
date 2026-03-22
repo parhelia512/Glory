@@ -3,6 +3,8 @@
 #include "ResourceType.h"
 #include "IEngine.h"
 
+#include <engine_visibility.h>
+
 #include <Module.h>
 
 #include <string>
@@ -14,8 +16,8 @@ namespace Glory
 {
 	struct ImportSettings
 	{
-		ImportSettings();
-		ImportSettings(const std::string& extension);
+		GLORY_ENGINE_API ImportSettings();
+		GLORY_ENGINE_API ImportSettings(const std::string& extension);
 
 		std::string m_Extension;
 	};
@@ -26,8 +28,8 @@ namespace Glory
 	class LoaderModule : public Module
 	{
 	public:
-		LoaderModule();
-		virtual ~LoaderModule();
+		GLORY_ENGINE_API LoaderModule();
+		GLORY_ENGINE_API virtual ~LoaderModule();
 
 		virtual Resource* LoadUsingAny(const std::string& path, const std::any& importSettings) = 0;
 		virtual Resource* Load(const std::string& path, const ImportSettings& importSettings = ImportSettings()) = 0;
@@ -46,7 +48,7 @@ namespace Glory
 
 	private:
 		friend class GloryEngine;
-		virtual bool HasPriority() override;
+		GLORY_ENGINE_API virtual bool HasPriority() override;
 	};
 
 	template<class T, typename S>
@@ -59,7 +61,7 @@ namespace Glory
 
 		virtual ~ResourceLoaderModule() {}
 
-		virtual Resource* LoadUsingAny(const std::string& path, const std::any& importSettings) override
+		inline virtual Resource* LoadUsingAny(const std::string& path, const std::any& importSettings) override
 		{
 			std::filesystem::path filePath = path;
 			std::string name = filePath.filename().replace_extension("").string();
@@ -78,7 +80,7 @@ namespace Glory
 			return pResource;
 		}
 
-		virtual Resource* Load(const std::string& path, const ImportSettings& importSettings = ImportSettings()) override
+		inline virtual Resource* Load(const std::string& path, const ImportSettings& importSettings = ImportSettings()) override
 		{
 			std::filesystem::path filePath = path;
 			std::string name = filePath.filename().replace_extension("").string();
@@ -87,28 +89,28 @@ namespace Glory
 			return (Resource*)pResource;
 		}
 
-		virtual Resource* Load(const void* buffer, size_t length, const ImportSettings& importSettings = ImportSettings()) override
+		inline virtual Resource* Load(const void* buffer, size_t length, const ImportSettings& importSettings = ImportSettings()) override
 		{
 			T* pResource = LoadResource(buffer, length, (const S&)importSettings);
 			return (Resource*)pResource;
 		}
 
-		virtual void Save(const std::string& path, Resource* pResource) override
+		inline virtual void Save(const std::string& path, Resource* pResource) override
 		{
 			SaveResource(path, (T*)pResource);
 		}
 
-		virtual const std::type_info& GetResourceType() override
+		inline virtual const std::type_info& GetResourceType() override
 		{
 			return typeid(T);
 		}
 
-		virtual std::any ReadImportSettings(YAML::Node& node) override
+		inline virtual std::any ReadImportSettings(YAML::Node& node) override
 		{
 			return ReadImportSettings_Internal(node);
 		}
 
-		virtual void WriteImportSettings(const std::any& importSettings, YAML::Emitter& out) override
+		inline virtual void WriteImportSettings(const std::any& importSettings, YAML::Emitter& out) override
 		{
 			if (importSettings.type() != typeid(S))
 			{
@@ -122,7 +124,7 @@ namespace Glory
 			WriteImportSettings_Internal(convertedSettings, out);
 		}
 
-		virtual std::any CreateDefaultImportSettings(const std::string& extension) override
+		inline virtual std::any CreateDefaultImportSettings(const std::string& extension) override
 		{
 			return CreateDefaultImportSettings_Internal(extension);
 		}
@@ -134,13 +136,13 @@ namespace Glory
 		virtual S ReadImportSettings_Internal(YAML::Node& node) = 0;
 		virtual void WriteImportSettings_Internal(const S& importSettings, YAML::Emitter& out) = 0;
 
-		virtual S CreateDefaultImportSettings_Internal(const std::string& extension)
+		inline virtual S CreateDefaultImportSettings_Internal(const std::string& extension)
 		{
 			return S(extension);
 		}
 
 	protected:
-		virtual void Initialize()
+		inline virtual void Initialize()
 		{
 			m_pEngine->GetResourceTypes().RegisterResource<T>(m_Extensions);
 		}

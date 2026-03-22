@@ -1,6 +1,8 @@
 #pragma once
 #include <UUID.h>
 
+#include <engine_visibility.h>
+
 namespace Glory
 {
 	class IEngine;
@@ -9,7 +11,7 @@ namespace Glory
 	class MaterialManager
 	{
 	public:
-		MaterialManager(IEngine* pEngine);
+		GLORY_ENGINE_API MaterialManager(IEngine* pEngine);
 		virtual ~MaterialManager() = default;
 
 		virtual MaterialData* GetMaterial(UUID materialID) const = 0;

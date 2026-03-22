@@ -1,6 +1,8 @@
 #pragma once
 #include "Layer.h"
 
+#include <engine_visibility.h>
+
 #include <vector>
 #include <unordered_map>
 
@@ -13,20 +15,20 @@ namespace Glory
 	class LayerManager
 	{
 	public:
-		LayerManager(IEngine* pEngine);
-		virtual ~LayerManager();
+		GLORY_ENGINE_API LayerManager(IEngine* pEngine);
+		GLORY_ENGINE_API virtual ~LayerManager();
 
-		void AddLayer(const std::string& name);
-		void Load();
+		GLORY_ENGINE_API void AddLayer(const std::string& name);
+		GLORY_ENGINE_API void Load();
 
-		const Layer* GetLayerByName(const std::string& name);
-		std::string LayerMaskToString(const LayerMask& layerMask);
+		GLORY_ENGINE_API const Layer* GetLayerByName(const std::string& name) const;
+		GLORY_ENGINE_API std::string LayerMaskToString(const LayerMask& layerMask) const;
 
-		int GetLayerIndex(const Layer* pLayer);
-		void GetAllLayerNames(std::vector<std::string_view>& names);
-		const Layer* GetLayerAtIndex(int index);
+		GLORY_ENGINE_API int GetLayerIndex(const Layer* pLayer) const;
+		GLORY_ENGINE_API void GetAllLayerNames(std::vector<std::string_view>& names) const;
+		GLORY_ENGINE_API const Layer* GetLayerAtIndex(int index) const;
 
-		const size_t LayerCount();
+		GLORY_ENGINE_API const size_t LayerCount() const;
 
 	private:
 		void CreateDefaultLayers();

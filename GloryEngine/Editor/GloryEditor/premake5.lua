@@ -92,7 +92,7 @@ project "GloryEditor"
 	links
 	{
 		"GloryEngineCore",
-		"GloryCore",
+		"GloryEngine",
 		"GloryEditorSerialization",
 		"GloryJobs",
 		"GloryThreads",

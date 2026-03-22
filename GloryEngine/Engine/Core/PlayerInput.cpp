@@ -292,7 +292,7 @@ namespace Glory
 
 	float PlayerInput::SLerp(float a, float b, float t)
 	{
-		t = Lerp(-M_PI / 2.0f, M_PI / 2.0f, t);
+		t = Lerp(-float(M_PI/2.0), float(M_PI/2.0), t);
 		t = std::sin(t);
 		t = (t/2.0f) + 0.5f;
 		return Lerp(a, b, t);

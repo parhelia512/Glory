@@ -1,5 +1,5 @@
-project "GloryCore"
-	kind "StaticLib"
+project "GloryEngine"
+	kind "SharedLib"
 	language "C++"
 	cppdialect "C++20"
 	staticruntime "Off"
@@ -60,12 +60,39 @@ project "GloryCore"
 		"%{stb_image}/..",
 	}
 
+	libdirs
+	{
+		"%{DepsLibDir}",
+
+		"%{LibDirs.glory}",
+		"%{LibDirs.ImGui}",
+		"%{LibDirs.ImGuizmo}",
+		"%{LibDirs.implot}",
+		"%{LibDirs.yaml_cpp}",
+	}
+
+	links
+	{
+		"GloryEngineCore",
+		"yaml-cpp",
+		"GloryReflect",
+
+		"GloryECS",
+		"GloryUtils",
+		"GloryUtilsVersion",
+
+		"GloryJobs",
+		"GloryThreads",
+	}
+
 	defines
 	{
 		"GLORY_EXPORTS",
+		"GLORY_ENGINE_EXPORTS",
 		"GLORY_CORE_EXPORTS",
 		"GLM_FORCE_RADIANS",
-		"GLM_FORCE_DEPTH_ZERO_TO_ONE"
+		"GLM_FORCE_DEPTH_ZERO_TO_ONE",
+		"__STDC_LIB_EXT1__",
 	}
 
 	filter "system:windows"

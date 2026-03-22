@@ -8,12 +8,12 @@ namespace Glory
     class TextManager : public Utils::ECS::ComponentManager<TextComponent>
     {
     public:
-        TextManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity=100);
-        virtual ~TextManager();
+        GLORY_ENGINE_API TextManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity=100);
+        GLORY_ENGINE_API virtual ~TextManager();
 
     public:
-        void OnDrawImpl(Utils::ECS::EntityID entity, TextComponent& pComponent);
-        void GetReferencesImpl(std::vector<UUID>& references) const;
+        GLORY_ENGINE_API void OnDrawImpl(Utils::ECS::EntityID entity, TextComponent& pComponent);
+        GLORY_ENGINE_API void GetReferencesImpl(std::vector<UUID>& references) const;
 
     private:
         virtual void OnInitialize() override;

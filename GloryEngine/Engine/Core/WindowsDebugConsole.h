@@ -1,6 +1,8 @@
 #pragma once
 #include "IConsole.h"
 
+#include <engine_visibility.h>
+
 #include <string>
 #include <vector>
 #include <thread>
@@ -13,11 +15,11 @@ namespace Glory
 	class WindowsDebugConsole : public IConsole
 	{
 	public:
-		WindowsDebugConsole(Console* pConsole);
-		virtual ~WindowsDebugConsole();
+		GLORY_ENGINE_API WindowsDebugConsole(Console* pConsole);
+		GLORY_ENGINE_API virtual ~WindowsDebugConsole();
 
-		bool Running();
-		void WaitForInput();
+		GLORY_ENGINE_API bool Running();
+		GLORY_ENGINE_API void WaitForInput();
 
 	private:
 		void Initialize() override;

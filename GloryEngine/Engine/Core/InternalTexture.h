@@ -1,6 +1,7 @@
 #pragma once
 #include "TextureData.h"
-#include "Glory.h"
+
+#include <engine_visibility.h>
 
 namespace Glory
 {
@@ -9,14 +10,14 @@ namespace Glory
 	class InternalTexture : public TextureData
 	{
 	public:
-		InternalTexture();
-		InternalTexture(ImageData* pImage);
-		virtual ~InternalTexture();
+		GLORY_ENGINE_API InternalTexture();
+		GLORY_ENGINE_API InternalTexture(ImageData* pImage);
+		GLORY_ENGINE_API virtual ~InternalTexture();
 
-		virtual ImageData* GetImageData(AssetManager* pAssetManager);
+		GLORY_ENGINE_API virtual ImageData* GetImageData(AssetManager* pAssetManager);
 
-		GLORY_API void Serialize(Utils::BinaryStream& container) const override;
-		GLORY_API void Deserialize(Utils::BinaryStream& container) override;
+		GLORY_ENGINE_API void Serialize(Utils::BinaryStream& container) const override;
+		GLORY_ENGINE_API void Deserialize(Utils::BinaryStream& container) override;
 
 	private:
 		ImageData* m_pImage;

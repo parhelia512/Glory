@@ -1,6 +1,8 @@
 #pragma once
 #include "CameraRef.h"
 
+#include <engine_visibility.h>
+
 #include <unordered_map>
 
 namespace Glory
@@ -11,12 +13,12 @@ namespace Glory
 	class CameraManager
 	{
 	public:
-		CameraManager(IEngine* pEngine);
-		virtual ~CameraManager();
+		GLORY_ENGINE_API CameraManager(IEngine* pEngine);
+		GLORY_ENGINE_API virtual ~CameraManager();
 
-		CameraRef GetNewOrUnusedCamera();
-		void SetUnused(Camera* pCamera);
-		Camera* GetCamera(UUID uuid);
+		GLORY_ENGINE_API CameraRef GetNewOrUnusedCamera();
+		GLORY_ENGINE_API void SetUnused(Camera* pCamera);
+		GLORY_ENGINE_API Camera* GetCamera(UUID uuid);
 
 	private:
 		friend class IEngine;

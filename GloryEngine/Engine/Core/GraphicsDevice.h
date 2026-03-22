@@ -4,6 +4,8 @@
 #include "GraphicsFeatures.h"
 #include "GraphicsHandles.h"
 
+#include <engine_visibility.h>
+
 #include <glm/vec4.hpp>
 
 namespace Glory
@@ -74,7 +76,7 @@ namespace Glory
 		std::vector<SamplerDescritporLayout> m_Samplers;
 		std::vector<std::string> m_SamplerNames;
 
-		bool operator==(const DescriptorSetLayoutInfo& other) const
+		inline bool operator==(const DescriptorSetLayoutInfo& other) const
 		{
 			if (m_SamplerNames.size() != other.m_SamplerNames.size()) return false;
 			for (size_t i = 0; i < m_SamplerNames.size(); ++i)
@@ -171,7 +173,7 @@ namespace std
 	struct hash<Glory::DescriptorSetLayoutInfo>
 	{
 		/** @brief Hash function */
-		size_t operator()(const Glory::DescriptorSetLayoutInfo& info) const noexcept
+		inline size_t operator()(const Glory::DescriptorSetLayoutInfo& info) const noexcept
 		{
 			size_t hash = 0;
 			CombineHash(hash, info.m_PushConstantRange.m_Offset);
@@ -221,7 +223,7 @@ namespace Glory
 	{
 	public:
 		/** @brief Clear this container */
-		void Clear()
+		inline void Clear()
 		{
 			m_Resources.clear();
 			m_IDs.clear();
@@ -232,7 +234,7 @@ namespace Glory
 		 * @param handle Unique resource handle
 		 * @param resource Resource to add
 		 */
-		T& Emplace(GraphicsHandle<T::HandleType> handle, T&& resource)
+		inline T& Emplace(GraphicsHandle<T::HandleType> handle, T&& resource)
 		{
 			m_IDs.push_back(handle.m_ID);
 			return m_Resources.emplace(handle.m_ID, std::move(resource)).first->second;
@@ -240,7 +242,7 @@ namespace Glory
 
 		/** @overload */
 		template <class... _Valty>
-		T& Emplace(GraphicsHandle<T::HandleType> handle, _Valty&&... _Val)
+		inline T& Emplace(GraphicsHandle<T::HandleType> handle, _Valty&&... _Val)
 		{
 			m_IDs.push_back(handle.m_ID);
 			return m_Resources.emplace(handle.m_ID, forward<_Valty>(_Val)...).first->second;
@@ -251,7 +253,7 @@ namespace Glory
 		 * @param handle Unique resource handle to find
 		 * @returns A pointer to the resource or nullptr if not found
 		 */
-		T* Find(GraphicsHandle<T::HandleType> handle)
+		inline T* Find(GraphicsHandle<T::HandleType> handle)
 		{
 			auto iter = m_Resources.find(handle.m_ID);
 			if (iter == m_Resources.end()) return nullptr;
@@ -262,7 +264,7 @@ namespace Glory
 		 * @brief Remove a resource from this container
 		 * @param @param handle Unique resource handle to remove
 		 */
-		void Erase(GraphicsHandle<T::HandleType> handle)
+		inline void Erase(GraphicsHandle<T::HandleType> handle)
 		{
 			m_Resources.erase(handle.m_ID);
 			auto itor = std::find(m_IDs.begin(), m_IDs.end(), handle.m_ID);
@@ -273,7 +275,7 @@ namespace Glory
 		 * @brief Free all resources from this container and clear it
 		 * @param @param handler Callback to the free implementation
 		 */
-		void FreeAll(std::function<void(GraphicsHandle<T::HandleType>&)> handler)
+		inline void FreeAll(std::function<void(GraphicsHandle<T::HandleType>&)> handler)
 		{
 			for (auto& id : m_IDs)
 				handler((GraphicsHandle<T::HandleType>&)(id));
@@ -412,29 +414,29 @@ namespace Glory
 		 * @brief Constructor
 		 * @param pModule Module that owns the device
 		 */
-		GraphicsDevice(Module* pModule);
+		GLORY_ENGINE_API GraphicsDevice(Module* pModule);
 		/** @brief Destructor */
-		virtual ~GraphicsDevice();
+		GLORY_ENGINE_API virtual ~GraphicsDevice();
 
 		/** @brief Helper for getting the debug logger */
-		Debug& Debug();
+		GLORY_ENGINE_API Debug& Debug();
 		/** @brief Helper for getting the profiler */
-		EngineProfiler& Profiler();
+		GLORY_ENGINE_API EngineProfiler& Profiler();
 
 		/**
 		 * @brief Check whether certain API features are supported
 		 * @param features Features to check for
 		 */
-		virtual bool IsSupported(const APIFeatures& features) const;
-		virtual ViewportOrigin GetViewportOrigin() const { return ViewportOrigin::BottomLeft; }
+		GLORY_ENGINE_API virtual bool IsSupported(const APIFeatures& features) const;
+		inline virtual ViewportOrigin GetViewportOrigin() const { return ViewportOrigin::BottomLeft; }
 
-		void Initialize();
-		void BeginFrame();
-		void EndFrame();
+		GLORY_ENGINE_API void Initialize();
+		GLORY_ENGINE_API void BeginFrame();
+		GLORY_ENGINE_API void EndFrame();
 
-		int GetLastDrawCalls() const;
-		int GetLastVertexCount() const;
-		int GetLastTriangleCount() const;
+		GLORY_ENGINE_API int GetLastDrawCalls() const;
+		GLORY_ENGINE_API int GetLastVertexCount() const;
+		GLORY_ENGINE_API int GetLastTriangleCount() const;
 
 		TextureHandle GetDefaultTexture() const { return m_DefaultTexture; }
 
@@ -445,7 +447,7 @@ namespace Glory
 		 * @brief Create a new command buffer and call Begin() on it
 		 * @returns The handle to the command buffer
 		 */
-		virtual CommandBufferHandle Begin();
+		GLORY_ENGINE_API virtual CommandBufferHandle Begin();
 		/**
 		 * @brief Begin recording on a command buffer
 		 * @param commandBuffer The handle to the command buffer
@@ -571,12 +573,12 @@ namespace Glory
 		 * @brief Record commands to draw a basic quad, this quad consists of 6 vec3's for positions
 		 * @param commandBuffer The handle to the command buffer
 		 */
-		void DrawQuad(CommandBufferHandle commandBuffer);
+		GLORY_ENGINE_API void DrawQuad(CommandBufferHandle commandBuffer);
 		/**
 		 * @brief Record commands to draw a basic unit cube, this cube consists of 36 vec3's for positions
 		 * @param commandBuffer The handle to the command buffer
 		 */
-		void DrawUnitCube(CommandBufferHandle commandBuffer);
+		GLORY_ENGINE_API void DrawUnitCube(CommandBufferHandle commandBuffer);
 
 		/**
 		 * @brief Push a pipeline barrier onto a command buffer
@@ -633,32 +635,32 @@ namespace Glory
 		 * The pipeline gets recreated if the shaders have changed,
 		 * and gets updated if its settings were changed.
 		 */
-		PipelineHandle AcquireCachedPipeline(RenderPassHandle renderPass, PipelineData* pPipeline,
+		GLORY_ENGINE_API PipelineHandle AcquireCachedPipeline(RenderPassHandle renderPass, PipelineData* pPipeline,
 			std::vector<DescriptorSetLayoutHandle>&& descriptorSets, size_t stride,
 			const std::vector<AttributeType>& attributeTypes);
 
-		PipelineHandle AcquireCachedComputePipeline(PipelineData* pPipeline,
+		GLORY_ENGINE_API PipelineHandle AcquireCachedComputePipeline(PipelineData* pPipeline,
 			std::vector<DescriptorSetLayoutHandle>&& descriptorSets);
 		/**
 		 * @brief Acquire a cached mesh or create a new one
 		 * @param pMesh The mesh data to create a mesh from
 		 */
-		MeshHandle AcquireCachedMesh(MeshData* pMesh, MeshUsage usage=MeshUsage::MU_Static);
+		GLORY_ENGINE_API MeshHandle AcquireCachedMesh(MeshData* pMesh, MeshUsage usage=MeshUsage::MU_Static);
 		/**
 		 * @brief Acquire a cached texture or create a new one
 		 * @param pTexture The texture data to create a texture from
 		 */
-		TextureHandle AcquireCachedTexture(TextureData* pTexture);
+		GLORY_ENGINE_API TextureHandle AcquireCachedTexture(TextureData* pTexture);
 		/**
 		 * @brief Acquire a cached cubemap texture or create a new one
 		 * @param pTexture The cubemap data to create a texture from
 		 */
-		TextureHandle AcquireCachedTexture(CubemapData* pCubemap);
+		GLORY_ENGINE_API TextureHandle AcquireCachedTexture(CubemapData* pCubemap);
 		/**
 		 * @brief Check if a texture exists on this device
 		 * @param pTexture The texture data to check for
 		 */
-		bool CachedTextureExists(TextureData* pTexture);
+		GLORY_ENGINE_API bool CachedTextureExists(TextureData* pTexture);
 
 		/**
 		 * @brief Acquire a cached shader or create a new one
@@ -666,10 +668,10 @@ namespace Glory
 		 * @param shaderType Type of the shader
 		 * @param function Main function to invoke in the shader
 		 */
-		ShaderHandle AcquireCachedShader(const FileData* pShaderFileData, const ShaderType& shaderType, const std::string& function);
+		GLORY_ENGINE_API ShaderHandle AcquireCachedShader(const FileData* pShaderFileData, const ShaderType& shaderType, const std::string& function);
 
-		void SetCachedTexture(TextureData* pTexture, TextureHandle texture);
-		TextureHandle GetCachedTexture(TextureData* pTexture) const;
+		GLORY_ENGINE_API void SetCachedTexture(TextureData* pTexture, TextureHandle texture);
+		GLORY_ENGINE_API TextureHandle GetCachedTexture(TextureData* pTexture) const;
 
 	public: /* Resource management */
 		
@@ -722,7 +724,7 @@ namespace Glory
 		 * @brief Create a mesh on this device
 		 * @param pMeshData Mesh data
 		 */
-		MeshHandle CreateMesh(MeshData* pMeshData, MeshUsage usage=MeshUsage::MU_Static);
+		GLORY_ENGINE_API MeshHandle CreateMesh(MeshData* pMeshData, MeshUsage usage=MeshUsage::MU_Static);
 		/**
 		 * @brief Create a mesh on this device
 		 * @param buffers Vertex buffers and an index buffer at the last index
