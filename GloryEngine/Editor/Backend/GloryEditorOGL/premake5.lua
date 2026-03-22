@@ -29,7 +29,7 @@ project "GloryEditorOGL"
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGui}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.opengl}",
 		"%{GloryIncludeDir.editor}",
 		"%{GloryIncludeDir.threads}",

@@ -28,7 +28,7 @@ project "UIEditorExtension"
 		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.serialization}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.threads}",
 		"%{GloryIncludeDir.jobs}",
 		"%{GloryIncludeDir.editor}",

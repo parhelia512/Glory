@@ -29,7 +29,7 @@ project "GloryVulkanGraphics"
 		"%{IncludeDir.shaderc}",
 		"%{IncludeDir.spirv_cross}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",

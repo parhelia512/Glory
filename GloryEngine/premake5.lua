@@ -5,7 +5,7 @@ workspace "GloryEngine"
 		"x64"
 	}
 
-	startproject "GloryCore"
+	startproject "Glorious"
 
 	configurations
 	{
@@ -56,7 +56,7 @@ GloryIncludeDir["FSM"]					= "%{modulesDir}/GloryFSM"
 GloryIncludeDir["Localize"]				= "%{modulesDir}/GloryLocalize"
 
 GloryIncludeDir["enginecore"]			= "%{engineDir}/GloryEngineCore"
-GloryIncludeDir["core"]					= "%{engineDir}/Core"
+GloryIncludeDir["engine"]				= "%{engineDir}/GloryEngine"
 GloryIncludeDir["serialization"]		= "%{editorDir}/GloryEditorSerialization"
 GloryIncludeDir["editor"]				= "%{editorDir}/GloryEditor"
 GloryIncludeDir["api"]					= "%{editorDir}/GloryAPI"
@@ -141,7 +141,7 @@ group ""
 
 group "Engine"
 	include "Engine/GloryEngineCore"
-	include "Engine/Core"
+	include "Engine/GloryEngine"
 	include "Engine/Threads"
 	include "Engine/Jobs"
 	include "Engine/RenderDocAPI"

@@ -27,13 +27,13 @@ project "LocalizeEditorExtension"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.threads}",
 		"%{GloryIncludeDir.jobs}",
 		"%{GloryIncludeDir.editor}",
 		"%{GloryIncludeDir.ImGui}",
-		"%{BaseIncludeDir.localize}",
 		"%{GloryIncludeDir.Localize}",
+		"%{BaseIncludeDir.localize}",
 
 		"%{IncludeDir.FA}",
 

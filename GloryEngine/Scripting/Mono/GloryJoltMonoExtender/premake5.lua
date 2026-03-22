@@ -28,7 +28,7 @@ project "GloryJoltMonoExtender"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.jolt}",
 		"%{GloryIncludeDir.mono}",
 

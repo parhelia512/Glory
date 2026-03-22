@@ -29,7 +29,7 @@ project "GloryOpenGLGraphics"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",

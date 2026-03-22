@@ -25,7 +25,8 @@ project "GloriousLauncher"
 		"%{DepsIncludeDir}",
 
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
+		"%{GloryIncludeDir.api}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.Reflect}",
@@ -33,7 +34,6 @@ project "GloriousLauncher"
 		"%{IncludeDir.FA}",
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.ECS}",
-		"%{GloryIncludeDir.api}",
 		"%{rapidjson}",
 
 		"%{IncludeDir.glm}",

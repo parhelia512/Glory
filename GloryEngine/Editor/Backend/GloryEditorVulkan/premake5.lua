@@ -30,7 +30,7 @@ project "GloryEditorVulkan"
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGui}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.vulkan}",
 		"%{GloryIncludeDir.editor}",
 		"%{GloryIncludeDir.threads}",
