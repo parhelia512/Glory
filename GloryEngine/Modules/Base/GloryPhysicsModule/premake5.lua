@@ -25,7 +25,7 @@ project "GloryPhysicsModule"
 
 		"%{IncludeDir.glm}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",

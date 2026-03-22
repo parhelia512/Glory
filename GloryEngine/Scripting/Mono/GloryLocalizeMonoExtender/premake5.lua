@@ -27,10 +27,10 @@ project "GloryLocalizeMonoExtender"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
-		"%{BaseIncludeDir.localize}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.Localize}",
 		"%{GloryIncludeDir.mono}",
+		"%{BaseIncludeDir.localize}",
 
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",

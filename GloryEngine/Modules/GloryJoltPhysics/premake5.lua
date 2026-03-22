@@ -34,7 +34,7 @@ project "GloryJoltPhysics"
 		"%{BaseIncludeDir.physics}",
 
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",

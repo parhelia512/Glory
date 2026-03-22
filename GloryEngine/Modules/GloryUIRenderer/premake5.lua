@@ -30,7 +30,7 @@ project "GloryUIRenderer"
 		"%{IncludeDir.yaml_cpp}",
 
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.threads}",
 		"%{GloryIncludeDir.jobs}",
 		"%{BaseIncludeDir.localize}",

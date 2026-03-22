@@ -28,7 +28,7 @@ project "FreeTypeFontImporter"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.ui}",
 		"%{GloryIncludeDir.threads}",
 		"%{GloryIncludeDir.jobs}",

@@ -32,7 +32,7 @@ project "GloryEditorSDL"
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGui}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.editor}",
 		"%{GloryIncludeDir.sdlwindow}",
 		"%{GloryIncludeDir.threads}",

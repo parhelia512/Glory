@@ -32,7 +32,7 @@ project "Glorious"
 		"%{IncludeDir.implot}",
 
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.threads}",
 		"%{GloryIncludeDir.editor}",
 

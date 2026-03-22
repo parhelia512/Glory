@@ -20,8 +20,8 @@ project "GloryEditorSerialization"
 
 	includedirs
 	{
-		"%{GloryIncludeDir.core}",
 		"%{GloryIncludeDir.enginecore}",
+		"%{GloryIncludeDir.engine}",
 
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",

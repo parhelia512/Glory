@@ -27,10 +27,10 @@ project "GloryUIMonoExtender"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.ui}",
-		"%{BaseIncludeDir.localize}",
 		"%{GloryIncludeDir.mono}",
+		"%{BaseIncludeDir.localize}",
 
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",

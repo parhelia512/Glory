@@ -26,7 +26,7 @@ project "GloryRuntimeApplication"
 		"%{DepsIncludeDir}",
 
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.runtime}",
 		"%{GloryIncludeDir.threads}",
 		"%{GloryIncludeDir.jobs}",

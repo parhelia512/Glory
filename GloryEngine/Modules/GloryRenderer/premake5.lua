@@ -30,7 +30,7 @@ project "GloryRenderer"
 		"%{IncludeDir.yaml_cpp}",
 
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.threads}",
 		"%{GloryIncludeDir.jobs}",
 

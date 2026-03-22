@@ -27,7 +27,7 @@ project "GlorySDLInput"
 		"%{DepsIncludeDir}",
 
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.glm}",

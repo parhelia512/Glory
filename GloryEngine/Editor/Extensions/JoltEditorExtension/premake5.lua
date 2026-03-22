@@ -28,7 +28,7 @@ project "JoltEditorExtension"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.serialization}",
 		"%{GloryIncludeDir.editor}",
 		"%{GloryIncludeDir.ImGui}",

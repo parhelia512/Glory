@@ -28,7 +28,7 @@ project "GloryLocalize"
 		"%{IncludeDir.glm}",
 
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.core}",
+		"%{GloryIncludeDir.engine}",
 
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
