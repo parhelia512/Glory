@@ -1,11 +1,11 @@
 #pragma once
+#include "mono_visibility.h"
+
 #include <mono/jit/jit.h>
 #include <string>
 #include <map>
 #include <vector>
 #include <array>
-#include <string>
-#include <Glory.h>
 #include <filesystem>
 
 namespace Glory
@@ -67,10 +67,10 @@ namespace Glory
 		MonoClass* m_pClass;
 		std::map<std::string, MonoMethod*> m_pMethods;
 
-		GLORY_API MonoMethod* GetMethod(const std::string& name);
-		GLORY_API const AssemblyClassField* GetField(const std::string& name) const;
-		GLORY_API const AssemblyClassField* GetField(const size_t index) const;
-		GLORY_API const size_t NumFields() const;
+		GLORY_MONO_API MonoMethod* GetMethod(const std::string& name);
+		GLORY_MONO_API const AssemblyClassField* GetField(const std::string& name) const;
+		GLORY_MONO_API const AssemblyClassField* GetField(const size_t index) const;
+		GLORY_MONO_API const size_t NumFields() const;
 
 	private:
 		MonoMethod* LoadMethod(const std::string& name);
@@ -103,55 +103,55 @@ namespace Glory
 		};
 
 	public:
-		GLORY_API Assembly(AssemblyDomain* pDomain);
-		virtual GLORY_API ~Assembly();
+		GLORY_MONO_API Assembly(AssemblyDomain* pDomain);
+		virtual GLORY_MONO_API ~Assembly();
 
-		GLORY_API AssemblyClass* GetClass(const std::string& namespaceName, const std::string& className);
-		GLORY_API bool GetClass(const std::string& namespaceName, const std::string& className, AssemblyClass& c);
+		GLORY_MONO_API AssemblyClass* GetClass(const std::string& namespaceName, const std::string& className);
+		GLORY_MONO_API bool GetClass(const std::string& namespaceName, const std::string& className, AssemblyClass& c);
 
-		GLORY_API bool Load(const ScriptingLib& lib, IMonoLibManager* pLibManager);
-		GLORY_API bool Load(MonoImage* monoImage);
-		GLORY_API void Unload(bool isReloading = false);
-		GLORY_API MonoReflectionAssembly* GetReflectionAssembly() const;
-		GLORY_API void Initialize();
-		GLORY_API void CollectTypes();
+		GLORY_MONO_API bool Load(const ScriptingLib& lib, IMonoLibManager* pLibManager);
+		GLORY_MONO_API bool Load(MonoImage* monoImage);
+		GLORY_MONO_API void Unload(bool isReloading = false);
+		GLORY_MONO_API MonoReflectionAssembly* GetReflectionAssembly() const;
+		GLORY_MONO_API void Initialize();
+		GLORY_MONO_API void CollectTypes();
 
-		GLORY_API bool IsLoading() const
+		GLORY_MONO_API bool IsLoading() const
 		{
 			return m_State == AssemblyState::AS_Loading;
 		}
 
-		GLORY_API bool IsLoaded() const
+		GLORY_MONO_API bool IsLoaded() const
 		{
 			return m_State == AssemblyState::AS_Loaded;
 		}
 
-		GLORY_API AssemblyDomain* GetDomain() const
+		GLORY_MONO_API AssemblyDomain* GetDomain() const
 		{
 			return m_pDomain;
 		}
 
-		GLORY_API MonoAssembly* GetMonoAssembly() const
+		GLORY_MONO_API MonoAssembly* GetMonoAssembly() const
 		{
 			return m_pAssembly;
 		}
 
-		GLORY_API MonoImage* GetMonoImage()
+		GLORY_MONO_API MonoImage* GetMonoImage()
 		{
 			return m_pImage;
 		}
 
-		GLORY_API const std::string& Name()
+		GLORY_MONO_API const std::string& Name()
 		{
 			return m_Name;
 		}
 
-		GLORY_API const std::string& Location()
+		GLORY_MONO_API const std::string& Location()
 		{
 			return m_Location;
 		}
 
-		GLORY_API IMonoLibManager* LibManager()
+		GLORY_MONO_API IMonoLibManager* LibManager()
 		{
 			return m_pLibManager;
 		}
@@ -187,5 +187,5 @@ namespace Glory
 		std::map<std::string, MonoClass*> m_AttributeClasses;
 	};
 
-	GLORY_API void AddMonoType(std::string name, uint32_t type, uint32_t elementType);
+	GLORY_MONO_API void AddMonoType(std::string name, uint32_t type, uint32_t elementType);
 }

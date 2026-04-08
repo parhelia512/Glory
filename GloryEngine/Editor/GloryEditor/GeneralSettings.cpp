@@ -3,8 +3,9 @@
 #include "Undo.h"
 #include "EditorApplication.h"
 
+#include <GloryVersion.h>
+
 #include <BinaryStream.h>
-#include <Glory.h>
 #include <IEngine.h>
 
 namespace Glory::Editor

@@ -1,13 +1,20 @@
 #pragma once
 #include "EditorWindowImpl.h"
-#include <Glory.h>
 #include <EditorCreateInfo.h>
+
+#ifdef GLORY_EDITORSDL_EXPORTS
+// BUILD LIB
+#define GLORY_EDITORSDL_API __declspec(dllexport)
+#else
+// USE LIB
+#define GLORY_EDITORSDL_API __declspec(dllimport)
+#endif
 
 namespace Glory::Editor
 {
 	class EditorApplication;
 
-	extern "C" GLORY_API void LoadBackend(EditorCreateInfo& editorCreateInfo);
+	extern "C" GLORY_EDITORSDL_API void LoadBackend(EditorCreateInfo& editorCreateInfo);
 
 	class EditorSDLWindowImpl : public EditorWindowImpl
 	{

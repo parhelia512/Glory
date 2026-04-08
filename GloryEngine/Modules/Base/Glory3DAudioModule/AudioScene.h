@@ -5,7 +5,6 @@
 #include <AssetReference.h>
 #include <SoundMaterialData.h>
 #include <BitSet.h>
-#include <Glory.h>
 #include <Resource.h>
 
 namespace Glory::Utils
@@ -49,56 +48,56 @@ namespace Glory
 	{
 	public:
 		/** @brief Constructor */
-		GLORY_API AudioScene();
+		AudioScene();
 		/**
 		 * @overload
 		 * @param sceneID ID of the @ref GScene this audio scene is created for
 		 */
-		GLORY_API AudioScene(UUID sceneID);
+		AudioScene(UUID sceneID);
 		/** @overload */
-		GLORY_API AudioScene(AudioScene&& other) noexcept;
+		AudioScene(AudioScene&& other) noexcept;
 		/** @brief Destructor */
-		GLORY_API ~AudioScene() = default;
+		~AudioScene() = default;
 
-		GLORY_API void operator=(AudioScene&& other) noexcept;
+		void operator=(AudioScene&& other) noexcept;
 
 		/**
 		 * @brief Add a mesh asset reference to the scene
 		 * @param meshID ID of the mesh asset to add
 		 * @param material Material of the mesh
 		 */
-		GLORY_API void AddMesh(UUID meshID, SoundMaterial&& material);
+		void AddMesh(UUID meshID, SoundMaterial&& material);
 		/**
 		 * @brief Add a mesh to the scene
 		 * @param meshData Mesh to add
 		 * @param material Material of the mesh
 		 */
-		GLORY_API void AddMesh(MeshData&& meshData, SoundMaterial&& material);
+		void AddMesh(MeshData&& meshData, SoundMaterial&& material);
 
 		/** @brief Serialize this audio scene into a stream */
-		GLORY_API void Serialize(Utils::BinaryStream& stream) const;
+		void Serialize(Utils::BinaryStream& stream) const;
 		/** @brief Deserialize a stream into this audio scene */
-		GLORY_API void Deserialize(Utils::BinaryStream& stream);
+		void Deserialize(Utils::BinaryStream& stream);
 
 		/** @brief ID of the scene @ref GScene this audio scene was created for */
-		GLORY_API UUID SceneID() const;
+		UUID SceneID() const;
 
 		/** @brief Number of meshes in this audio scene */
-		GLORY_API size_t MeshCount() const;
+		size_t MeshCount() const;
 		/**
 		 * @brief Get a mesh in this audio scene
 		 * @param index Index of the mesh
 		 */
-		GLORY_API const MeshData& Mesh(size_t index) const;
+		const MeshData& Mesh(size_t index) const;
 		/** @overload */
-		GLORY_API MeshData& Mesh(size_t index);
+		MeshData& Mesh(size_t index);
 		/**
 		 * @brief Get the material for a mesh in this audio scene
 		 * @param index Index of the mesh
 		 */
-		GLORY_API const SoundMaterial& Material(size_t index) const;
+		const SoundMaterial& Material(size_t index) const;
 		/** @overload */
-		GLORY_API SoundMaterial& Material(size_t index);
+		SoundMaterial& Material(size_t index);
 
 	private:
 		UUID m_SceneID;
@@ -113,14 +112,14 @@ namespace Glory
 	{
 	public:
 		/** @brief Constructor */
-		GLORY_API AudioSceneData();
+		AudioSceneData();
 		/** @overload */
-		GLORY_API AudioSceneData(AudioScene&& audioScene);
+		AudioSceneData(AudioScene&& audioScene);
 		/** @brief Destructor */
-		GLORY_API virtual ~AudioSceneData() {}
+		virtual ~AudioSceneData() {}
 
-		GLORY_API void Serialize(Utils::BinaryStream& container) const override;
-		GLORY_API void Deserialize(Utils::BinaryStream& container) override;
+		void Serialize(Utils::BinaryStream& container) const override;
+		void Deserialize(Utils::BinaryStream& container) override;
 
 		AudioScene m_AudioScene;
 

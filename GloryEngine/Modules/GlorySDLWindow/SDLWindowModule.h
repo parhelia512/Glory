@@ -1,7 +1,6 @@
 #pragma once
+#include <Version.h>
 #include <WindowModule.h>
-
-#include <Glory.h>
 
 namespace Glory
 {
@@ -15,7 +14,7 @@ namespace Glory
 
 		virtual std::filesystem::path GetPrefPath() const override;
 
-		GLORY_MODULE_VERSION_H(0,3,0);
+		GLORY_MODULE_VERSION_H(0, 4, 0);
 
 	protected: // Internal functions
 		virtual Window* CreateWindow_Internal(const WindowCreateInfo& createInfo) override;

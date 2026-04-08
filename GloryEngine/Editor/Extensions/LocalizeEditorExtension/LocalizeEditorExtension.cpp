@@ -5,6 +5,8 @@
 #include "StringTableEditor.h"
 #include "StringsOverrideTableEditor.h"
 
+#include <GloryVersion.h>
+
 #include <Localize.h>
 #include <LocalizeManagers.h>
 #include <StringsOverrideTable.h>

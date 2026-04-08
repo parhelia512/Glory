@@ -31,6 +31,8 @@
 #include "IModuleLoopHandler.h"
 #include "ResourceLoaderModule.h"
 
+#include "GloryVersion.h"
+
 #include <BinaryStream.h>
 #include <JobManager.h>
 #include <ThreadManager.h>

@@ -2,7 +2,15 @@
 #include <BaseEditorExtension.h>
 #include <IPlayModeHandler.h>
 
-EXTENSION_H
+#ifdef GLORY_LOCALIZE_EXTENSION_EXPORTS
+// BUILD LIB
+#define GLORY_LOCALIZE_EXTENSION_API __declspec(dllexport)
+#else
+// USE LIB
+#define GLORY_LOCALIZE_EXTENSION_API __declspec(dllimport)
+#endif
+
+EXTENSION_H(GLORY_LOCALIZE_EXTENSION_API)
 
 namespace Glory
 {

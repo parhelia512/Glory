@@ -1,10 +1,11 @@
 #pragma once
+#include "jolt_visibility.h"
+
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/Body/Body.h>
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhase.h>
 #include <Jolt/Physics/Collision/ContactListener.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
-#include <Glory.h>
 #include <LayerMask.h>
 
 REFLECTABLE_ENUM_NS(Glory, BPLayer, Default, One, Two, Three);
@@ -27,7 +28,7 @@ namespace Glory
 		virtual const char* GetBroadPhaseLayerName(BroadPhaseLayer layer) const override;
 #endif
 
-		GLORY_API void SetObjectToBroadphase(std::map<JPH::ObjectLayer, JPH::BroadPhaseLayer>&& mapping);
+		GLORY_JOLT_API void SetObjectToBroadphase(std::map<JPH::ObjectLayer, JPH::BroadPhaseLayer>&& mapping);
 
 	private:
 		std::map<JPH::ObjectLayer, JPH::BroadPhaseLayer> m_ObjectToBroadPhase;
@@ -39,7 +40,7 @@ namespace Glory
 	public:
 		bool ShouldCollide(JPH::ObjectLayer layer1, JPH::BroadPhaseLayer layer2) const override;
 
-		GLORY_API void SetBPCollisionMapping(std::vector<LayerMask>&& mapping);
+		GLORY_JOLT_API void SetBPCollisionMapping(std::vector<LayerMask>&& mapping);
 
 	private:
 		friend class JoltPhysicsModule;

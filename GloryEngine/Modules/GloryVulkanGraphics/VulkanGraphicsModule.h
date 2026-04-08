@@ -1,6 +1,8 @@
 #pragma once
+#include "vulkan_visibility.h"
+
+#include <Version.h>
 #include <Module.h>
-#include <Glory.h>
 #include <WindowModule.h>
 #include <GraphicsEnums.h>
 
@@ -18,19 +20,19 @@ namespace Glory
 		VulkanGraphicsModule();
 		virtual ~VulkanGraphicsModule();
 
-		GLORY_API VkSurfaceKHR GetCSurface();
-		GLORY_API vk::SurfaceKHR GetSurface();
+		GLORY_VULKAN_API VkSurfaceKHR GetCSurface();
+		GLORY_VULKAN_API vk::SurfaceKHR GetSurface();
 
-		GLORY_API VkInstance GetCInstance();
-		GLORY_API vk::Instance GetInstance();
+		GLORY_VULKAN_API VkInstance GetCInstance();
+		GLORY_VULKAN_API vk::Instance GetInstance();
 
-		GLORY_API const std::vector<const char*>& GetExtensions() const;
-		GLORY_API const std::vector<const char*>& GetValidationLayers() const;
+		GLORY_VULKAN_API const std::vector<const char*>& GetExtensions() const;
+		GLORY_VULKAN_API const std::vector<const char*>& GetValidationLayers() const;
 
 		/** @brief VulkanGraphicsModule type */
 		const std::type_info& GetModuleType() override;
 
-		GLORY_API vk::Sampler& GetSampler(const SamplerSettings& settings);
+		GLORY_VULKAN_API vk::Sampler& GetSampler(const SamplerSettings& settings);
 
 		GLORY_MODULE_VERSION_H(0, 1, 0);
 

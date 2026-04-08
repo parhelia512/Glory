@@ -69,7 +69,7 @@ project "GloryLocalize"
 
 	defines
 	{
-		"GLORY_EXPORTS",
+		"GLORY_LOCALIZE_EXPORTS",
 	}
 
 	postbuildcommands

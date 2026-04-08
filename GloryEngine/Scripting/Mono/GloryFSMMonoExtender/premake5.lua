@@ -67,8 +67,7 @@ project "GloryFSMMonoExtender"
 
 	defines
 	{
-		"GLORY_EXPORTS",
-		"GLORY_UUID_DEFINED"
+		"GLORY_FSM_MONO_EXPORTS",
 	}
 
 	filter "system:windows"

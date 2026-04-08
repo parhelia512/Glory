@@ -2,12 +2,13 @@
 #include "ModuleMetaData.h"
 #include "ModuleSettings.h"
 #include "UUID.h"
+#include "CommonMacros.h"
 
 #include <typeinfo>
 
-#define GLORY_MODULE_H																						\
-extern "C" GLORY_API Glory::Module* OnLoadModule();															\
-extern "C" GLORY_API const char* ModuleVersion();
+#define GLORY_MODULE_H(api)																					\
+extern "C" api Glory::Module* OnLoadModule();																\
+extern "C" api const char* ModuleVersion();
 
 #define GLORY_MODULE_CPP(moduleName)																		\
 Glory::Module* OnLoadModule()																				\
@@ -15,9 +16,9 @@ Glory::Module* OnLoadModule()																				\
 	return new Glory::moduleName();																			\
 }																											\
 																											\
-const char* ModuleVersion()																		\
+const char* ModuleVersion()																					\
 {																											\
-	return Glory::moduleName::VersionStr.data();																	\
+	return Glory::moduleName::VersionStr.data();															\
 }
 
 #define GLORY_MODULE_VERSION_CPP(moduleName)																\

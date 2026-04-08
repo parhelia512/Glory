@@ -6,7 +6,7 @@
 
 namespace Glory::Editor
 {
-	GLORY_API void LoadBackend(EditorCreateInfo& editorCreateInfo)
+	void LoadBackend(EditorCreateInfo& editorCreateInfo)
 	{
 		editorCreateInfo.pWindowImpl = new EditorSDLWindowImpl();
 	}

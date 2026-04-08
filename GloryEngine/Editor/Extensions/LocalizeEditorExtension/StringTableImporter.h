@@ -1,7 +1,6 @@
 #pragma once
 #include <ImporterTemplate.h>
 #include <StringsOverrideTable.h>
-#include <Glory.h>
 
 namespace Glory::Editor
 {

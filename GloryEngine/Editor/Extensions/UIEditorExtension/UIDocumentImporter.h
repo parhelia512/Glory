@@ -1,8 +1,9 @@
 #pragma once
+#include "ui_editor_visibility.h"
+
 #include <ImporterTemplate.h>
 #include <UIDocumentData.h>
 #include <UIDocument.h>
-#include <Glory.h>
 
 namespace Glory::Editor
 {
@@ -16,12 +17,12 @@ namespace Glory::Editor
 
 		std::string_view Name() const override;
 
-		GLORY_API static void DeserializeComponent(EditorApplication* pApp, UIDocumentData* pDocument, Utils::ECS::EntityID entity, Utils::NodeValueRef component);
-		GLORY_API static void DeserializeEntity(EditorApplication* pApp, UIDocumentData* pDocument, Utils::NodeValueRef node);
-		GLORY_API static void DeserializeComponent(EditorApplication* pApp, UIDocument* pDocument, Utils::ECS::EntityID entity, Utils::NodeValueRef component);
-		GLORY_API static void DeserializeEntity(EditorApplication* pApp, UIDocument* pDocument, Utils::NodeValueRef node);
-		GLORY_API static void SerializeEntityRecursive(EditorApplication* pApp, UIDocumentData* pDocument, Utils::ECS::EntityID entity, Utils::NodeValueRef entities);
-		GLORY_API static void SerializeEntityRecursive(EditorApplication* pApp, UIDocument* pDocument, Utils::ECS::EntityID entity, Utils::NodeValueRef entities);
+		GLORY_UI_EXTENSION_API static void DeserializeComponent(EditorApplication* pApp, UIDocumentData* pDocument, Utils::ECS::EntityID entity, Utils::NodeValueRef component);
+		GLORY_UI_EXTENSION_API static void DeserializeEntity(EditorApplication* pApp, UIDocumentData* pDocument, Utils::NodeValueRef node);
+		GLORY_UI_EXTENSION_API static void DeserializeComponent(EditorApplication* pApp, UIDocument* pDocument, Utils::ECS::EntityID entity, Utils::NodeValueRef component);
+		GLORY_UI_EXTENSION_API static void DeserializeEntity(EditorApplication* pApp, UIDocument* pDocument, Utils::NodeValueRef node);
+		GLORY_UI_EXTENSION_API static void SerializeEntityRecursive(EditorApplication* pApp, UIDocumentData* pDocument, Utils::ECS::EntityID entity, Utils::NodeValueRef entities);
+		GLORY_UI_EXTENSION_API static void SerializeEntityRecursive(EditorApplication* pApp, UIDocument* pDocument, Utils::ECS::EntityID entity, Utils::NodeValueRef entities);
 
 	private:
 		virtual bool SupportsExtension(const std::filesystem::path& extension) const override;

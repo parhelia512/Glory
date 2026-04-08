@@ -7,20 +7,20 @@ namespace Glory
 	{
 	public:
 		/** @brief Constructor */
-		GLORY_API StringsOverrideTable();
+		GLORY_LOCALIZE_API StringsOverrideTable();
 		/** @override */
-		GLORY_API StringsOverrideTable(UUID baseTableID, std::string&& language);
+		GLORY_LOCALIZE_API StringsOverrideTable(UUID baseTableID, std::string&& language);
 		/** @brief Destructor */
-		GLORY_API virtual ~StringsOverrideTable();
+		GLORY_LOCALIZE_API virtual ~StringsOverrideTable();
 
 		/** @brief Base table ID */
-		GLORY_API UUID BaseTableID() const;
+		GLORY_LOCALIZE_API UUID BaseTableID() const;
 		/** @brief Set base table ID */
-		GLORY_API void SetBaseTableID(UUID uuid);
+		GLORY_LOCALIZE_API void SetBaseTableID(UUID uuid);
 		/** @brief Language */
-		GLORY_API const std::string& Language() const;
+		GLORY_LOCALIZE_API const std::string& Language() const;
 		/** @brief Set language */
-		GLORY_API void SetLanguage(std::string&& language);
+		GLORY_LOCALIZE_API void SetLanguage(std::string&& language);
 
 	private:
 		/** @brief Get a vector containing other resources referenced by this resource */

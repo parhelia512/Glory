@@ -1,14 +1,6 @@
 #pragma once
 #include "Version.h"
 
-#ifdef GLORY_EXPORTS
-// BUILD LIB
-#define GLORY_API __declspec(dllexport)
-#else
-// USE LIB
-#define GLORY_API __declspec(dllimport)
-#endif
-
 #define GLORY_CORE_VERSION_MAJOR 0
 #define GLORY_CORE_VERSION_MINOR 6
 #define GLORY_CORE_VERSION_SUBMINOR 0

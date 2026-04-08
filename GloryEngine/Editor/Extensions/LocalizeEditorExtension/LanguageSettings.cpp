@@ -3,6 +3,8 @@
 #include "EditorApplication.h"
 #include "Undo.h"
 
+#include <GloryVersion.h>
+
 #include <LocalizeModule.h>
 
 #include <IEngine.h>

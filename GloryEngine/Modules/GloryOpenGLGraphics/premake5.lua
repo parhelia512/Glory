@@ -67,7 +67,7 @@ project "GloryOpenGLGraphics"
 
 	defines
 	{
-		"GLORY_EXPORTS",
+		"GLORY_OGL_EXPORTS",
 		"GLM_FORCE_RADIANS",
 		"GLM_FORCE_DEPTH_ZERO_TO_ONE"
 	}

@@ -4,12 +4,19 @@
 #include "imgui_impl_opengl3.h"
 
 #include <GloryOGL.h>
-#include <Glory.h>
 #include <EditorCreateInfo.h>
+
+#ifdef GLORY_EDITOROGL_EXPORTS
+// BUILD LIB
+#define GLORY_EDITOROGL_API __declspec(dllexport)
+#else
+// USE LIB
+#define GLORY_EDITOROGL_API __declspec(dllimport)
+#endif
 
 namespace Glory::Editor
 {
-    extern "C" GLORY_API void LoadBackend(EditorCreateInfo& editorCreateInfo);
+    extern "C" GLORY_EDITOROGL_API void LoadBackend(EditorCreateInfo& editorCreateInfo);
 
     class EditorOpenGLRenderImpl : public EditorRenderImpl
     {

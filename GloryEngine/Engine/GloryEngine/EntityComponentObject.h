@@ -1,6 +1,4 @@
 #pragma once
-#include "Glory.h"
-
 #include <engine_visibility.h>
 
 #include <Object.h>

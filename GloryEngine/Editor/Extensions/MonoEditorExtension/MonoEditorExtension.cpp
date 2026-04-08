@@ -6,6 +6,8 @@
 #include "ScriptTypeReferenceDrawer.h"
 #include "ScriptedComponentSerializer.h"
 
+#include <GloryVersion.h>
+
 #include <Debug.h>
 #include <IEngine.h>
 #include <AssetDatabase.h>

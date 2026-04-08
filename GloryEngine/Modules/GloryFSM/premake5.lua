@@ -66,7 +66,7 @@ project "GloryFSM"
 
 	defines
 	{
-		"GLORY_EXPORTS",
+		"GLORY_FSM_EXPORTS",
 	}
 
 	postbuildcommands

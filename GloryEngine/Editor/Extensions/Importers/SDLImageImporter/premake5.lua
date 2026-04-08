@@ -82,10 +82,7 @@ project "SDLImageImporter"
 
 	defines
 	{
-		"GLORY_EXPORTS",
-		"GLORY_EDITOR_EXPORTS",
-		"GLORY_EDITOR_EXTENSION_EXPORTS",
-		"GLORY_UUID_DEFINED",
+		"GLORY_SDL_IMAGE_EXTENSION_EXPORTS"
 	}
 
 	postbuildcommands

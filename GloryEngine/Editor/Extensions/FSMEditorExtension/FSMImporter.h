@@ -1,7 +1,6 @@
 #pragma once
 #include <ImporterTemplate.h>
 #include <FSM.h>
-#include <Glory.h>
 
 namespace Glory::Editor
 {

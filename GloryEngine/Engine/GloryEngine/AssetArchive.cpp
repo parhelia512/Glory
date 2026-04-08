@@ -4,6 +4,8 @@
 #include "Debug.h"
 #include "IEngine.h"
 
+#include "GloryVersion.h"
+
 #include <BinaryStream.h>
 #include <sstream>
 

@@ -4,6 +4,7 @@
 #include "RuntimeMaterialManager.h"
 #include "RuntimePipelineManager.h"
 
+#include <GloryVersion.h>
 #include <IEngine.h>
 #include <Window.h>
 #include <Renderer.h>

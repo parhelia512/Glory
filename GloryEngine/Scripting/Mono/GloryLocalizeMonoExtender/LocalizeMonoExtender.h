@@ -1,6 +1,7 @@
 #pragma once
+#include "localize_mono_visibility.h"
+
 #include <IScriptExtender.h>
-#include <Glory.h>
 #include <IMonoLibManager.h>
 
 #include <mono/metadata/object-forward.h>
@@ -10,7 +11,7 @@ namespace Glory
 	class IEngine;
 	class Module;
 
-	extern "C" GLORY_API bool OnLoadExtra(const char* path, Module* pModule, Module* pRequiredModule);
+	extern "C" GLORY_LOCALIZE_MONO_API bool OnLoadExtra(const char* path, Module* pModule, Module* pRequiredModule);
 
 	class LocalizeLibManager : public IMonoLibManager
 	{

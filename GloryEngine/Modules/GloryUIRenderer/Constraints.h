@@ -1,7 +1,7 @@
 #pragma once
-#include "UIComponents.h"
+#include "ui_renderer_visibility.h"
 
-#include <Glory.h>
+#include "UIComponents.h"
 
 #include <functional>
 
@@ -25,23 +25,23 @@ namespace Glory
 		 * @param name Name of the constraint
 		 * @param callback Callback handler of the constraint
 		 */
-		GLORY_API static void AddConstraint(std::string&& name, std::function<void(Constraint&, ConstraintAxis,
+		GLORY_UI_RENDERER_API static void AddConstraint(std::string&& name, std::function<void(Constraint&, ConstraintAxis,
 			const glm::vec2&, const glm::vec2&, const glm::vec2&)> callback);
 
 		/** @brief Get a vector with all constraint names */
-		GLORY_API static const std::vector<std::string_view>& Names();
+		GLORY_UI_RENDERER_API static const std::vector<std::string_view>& Names();
 		/** @brief Get the index of a constraint type
 		 * @parm type The type hash of the constraint
 		 */
-		GLORY_API static size_t IndexOf(uint32_t type);
+		GLORY_UI_RENDERER_API static size_t IndexOf(uint32_t type);
 		/** @overload
 		 * @parm name Name of the constraint
 		 */
-		GLORY_API static size_t IndexOf(std::string_view name);
+		GLORY_UI_RENDERER_API static size_t IndexOf(std::string_view name);
 		/** @brief Get the type of a constraint
 		 * @parm index Index of the constraint
 		 */
-		GLORY_API static uint32_t Type(size_t index);
+		GLORY_UI_RENDERER_API static uint32_t Type(size_t index);
 
 		/** @brief Process a constraint
 		 * @parm constraint Constraint to process
@@ -69,7 +69,7 @@ namespace Glory
 		}
 
 		/** @brief Register built-in constraints */
-		GLORY_API static void AddBuiltinConstraints();
+		GLORY_UI_RENDERER_API static void AddBuiltinConstraints();
 
 	private:
 		/** @brief Process a constraint
@@ -79,7 +79,7 @@ namespace Glory
 		 * @parm self The container size of self
 		 * @parm parent The container size of the parent
 		 */
-		GLORY_API static void ProcessConstraint(ConstraintAxis axis, void* constraint, size_t handler,
+		GLORY_UI_RENDERER_API static void ProcessConstraint(ConstraintAxis axis, void* constraint, size_t handler,
 			const glm::vec2& self, const glm::vec2& parent, const glm::vec2& screen);
 
 	private:

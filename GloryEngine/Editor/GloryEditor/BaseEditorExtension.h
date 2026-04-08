@@ -6,8 +6,8 @@
 
 typedef void(__cdecl* SetContextProc)(ImGuiContext* pImGUIContext);
 
-#define EXTENSION_H extern "C" GLORY_EDITOR_EXTENSION_API Glory::Editor::BaseEditorExtension* LoadExtension(); \
-extern "C" GLORY_EDITOR_EXTENSION_API void SetContext(ImGuiContext * pImGUIContext);
+#define EXTENSION_H(api) extern "C" api Glory::Editor::BaseEditorExtension* LoadExtension(); \
+extern "C" api void SetContext(ImGuiContext* pImGUIContext);
 
 #define EXTENSION_CPP(ext) Glory::Editor::BaseEditorExtension* LoadExtension() \
 { \

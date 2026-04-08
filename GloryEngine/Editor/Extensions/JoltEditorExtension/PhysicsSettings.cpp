@@ -3,6 +3,8 @@
 #include "EditorApplication.h"
 #include "Undo.h"
 
+#include <GloryVersion.h>
+
 #include <JoltPhysicsModule.h>
 #include <IEngine.h>
 #include <YAML_GLM.h>

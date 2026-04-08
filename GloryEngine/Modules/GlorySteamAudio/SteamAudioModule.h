@@ -1,4 +1,7 @@
 #pragma once
+#include "steam_audio_visibility.h"
+
+#include <Version.h>
 #include <Audio3DModule.h>
 
 #include <phonon/phonon.h>
@@ -31,9 +34,9 @@ namespace Glory
 		/** @brief Module type - typeid(SteamAudioModule) */
 		virtual const std::type_info& GetModuleType() override;
 
-		GLORY_MODULE_VERSION_H(0,1,0);
+		GLORY_MODULE_VERSION_H(0, 2, 0);
 
-		GLORY_API IPLContext GetContext();
+		GLORY_STEAM_AUDIO_API IPLContext GetContext();
 
 		/**
 		 * @brief Add an audio scene for audio simulation
@@ -41,27 +44,27 @@ namespace Glory
 		 *
 		 * @note You must call @ref RebuildAudioSimulationScene() before the changes take effect
 		 */
-		GLORY_API size_t AddAudioScene(AudioScene&& audioScene);
+		GLORY_STEAM_AUDIO_API size_t AddAudioScene(AudioScene&& audioScene);
 		/**
 		 * @brief Remove all loaded audio scenes from the simulation
 		 *
 		 * @note You must call @ref RebuildAudioSimulationScene() before the changes take effect
 		 */
-		GLORY_API void RemoveAllAudioScenes();
+		GLORY_STEAM_AUDIO_API void RemoveAllAudioScenes();
 
 		/** @brief Rebuild the @ref IPLScene from loaded @ref AudioScene datas */
-		GLORY_API void RebuildAudioSimulationScene();
+		GLORY_STEAM_AUDIO_API void RebuildAudioSimulationScene();
 
 		/** @brief Append another @ref AudioScene to the @ref IPLScene */
-		GLORY_API void BuildAudioSimulationScene(size_t sceneIndex);
+		GLORY_STEAM_AUDIO_API void BuildAudioSimulationScene(size_t sceneIndex);
 
 		/** @brief Commit the simulation scene to SteamAudio */
-		GLORY_API void CommitAudioSimulationScene();
+		GLORY_STEAM_AUDIO_API void CommitAudioSimulationScene();
 
 		/** @brief Get the default sound material */
-		GLORY_API const SoundMaterial& DefaultMaterial() const;
+		GLORY_STEAM_AUDIO_API const SoundMaterial& DefaultMaterial() const;
 		/** @overload */
-		GLORY_API SoundMaterial& DefaultMaterial();
+		GLORY_STEAM_AUDIO_API SoundMaterial& DefaultMaterial();
 
 		/**
 		 * @brief Check if a feature is supported
@@ -72,7 +75,7 @@ namespace Glory
 		 * - Transmission
 		 * - Absorption
 		 */
-		GLORY_API bool HasFeature(uint32_t feature) const override;
+		GLORY_STEAM_AUDIO_API bool HasFeature(uint32_t feature) const override;
 
 		virtual bool ClaimExtraSceneData(Resource* pSceneResource) override;
 

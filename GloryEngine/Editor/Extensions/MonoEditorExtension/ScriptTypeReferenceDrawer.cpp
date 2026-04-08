@@ -21,7 +21,7 @@ namespace Glory::Editor
 	bool ForceFilter = false;
 
 	template<>
-	inline bool PropertyDrawerTemplate<ScriptTypeReference>::OnGUI(const std::string& label, ScriptTypeReference* data, uint32_t flags) const
+	bool PropertyDrawerTemplate<ScriptTypeReference>::OnGUI(const std::string& label, ScriptTypeReference* data, uint32_t flags) const
 	{
 		EditorApplication* pApp = EditorApplication::GetInstance();
 		GloryMonoScipting* pScripting = pApp->GetEngine()->GetOptionalModule<GloryMonoScipting>();

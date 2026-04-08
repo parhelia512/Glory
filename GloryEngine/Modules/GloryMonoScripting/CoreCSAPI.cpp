@@ -3,6 +3,7 @@
 #include "MonoManager.h"
 #include "MathCSAPI.h"
 
+#include <Version.h>
 #include <IEngine.h>
 #include <Window.h>
 #include <SceneManager.h>

@@ -1,4 +1,6 @@
 #pragma once
+#include "mono_visibility.h"
+
 #include "MonoScript.h"
 #include "MonoScriptLoader.h"
 #include "GloryMono.h"
@@ -19,13 +21,13 @@ namespace Glory
         GloryMonoScipting();
         virtual ~GloryMonoScipting();
 
-        GLORY_MODULE_VERSION_H(0,6,0);
+        GLORY_MODULE_VERSION_H(0, 7, 0);
 
-        GLORY_API MonoManager* GetMonoManager() const;
+        GLORY_MONO_API MonoManager* GetMonoManager() const;
 
-        GLORY_API const std::type_info& GetModuleType() override;
+        GLORY_MONO_API const std::type_info& GetModuleType() override;
 
-        GLORY_API ScriptingExtender* GetScriptingExtender();
+        GLORY_MONO_API ScriptingExtender* GetScriptingExtender();
 
     private:
         virtual void LoadSettings(ModuleSettings& settings) override;

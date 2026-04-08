@@ -3,9 +3,10 @@
 #include <ObjectMenu.h>
 #include <Entity.h>
 
+#define CREATE_OBJECT_CALLBACK_API_H(api, name) api void Create##name(Object* pObject, const ObjectMenuType& currentMenu);
 #define CREATE_OBJECT_CALLBACK_H(name) GLORY_EDITOR_API void Create##name(Object* pObject, const ObjectMenuType& currentMenu);
 
-#define CREATE_OBJECT_CALLBACK_CPP(name, component, ctor) void Create##name(Object* pObject, const ObjectMenuType& currentMenu) \
+#define CREATE_OBJECT_CALLBACK_CPP(name, component, ctor) static void Create##name(Object* pObject, const ObjectMenuType& currentMenu) \
 {\
     Entity newEntity = CreateNewEmptyObject(pObject, STRINGIFY(name), currentMenu); \
 	Undo::StartRecord("Create Empty Object", newEntity.EntityUUID()); \
@@ -30,8 +31,6 @@ namespace Glory::Editor
 	CREATE_OBJECT_CALLBACK_H(Model);
 	CREATE_OBJECT_CALLBACK_H(Camera);
 	CREATE_OBJECT_CALLBACK_H(Light);
-	CREATE_OBJECT_CALLBACK_H(PhysicsBody);
-	CREATE_OBJECT_CALLBACK_H(Character);
 	CREATE_OBJECT_CALLBACK_H(Text);
 }
 
