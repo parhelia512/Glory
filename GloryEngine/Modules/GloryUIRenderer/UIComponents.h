@@ -62,7 +62,8 @@ namespace Glory
             m_ParentSize(), m_Transform(glm::identity<glm::mat4>()),
             m_TransformNoScale(glm::identity<glm::mat4>()),
             m_TransformNoScaleNoPivot(glm::identity<glm::mat4>()),
-            m_InteractionTransform(glm::identity<glm::mat4>())
+            m_InteractionTransform(glm::identity<glm::mat4>()),
+            m_InteractionTransformNoPivot(glm::identity<glm::mat4>())
         {}
 
         REFLECTABLE(UITransform,

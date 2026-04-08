@@ -68,8 +68,7 @@ project "GlorySDLInput"
 
 	defines
 	{
-		"GLORY_EXPORTS",
-		"GLORY_UUID_DEFINED"
+		"GLORY_SDL_INPUT_EXPORTS"
 	}
 
 	postbuildcommands

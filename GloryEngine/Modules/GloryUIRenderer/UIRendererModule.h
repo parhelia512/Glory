@@ -1,9 +1,11 @@
 #pragma once
+#include "ui_renderer_visibility.h"
+
 #include "UIComponents.h"
 
+#include <Version.h>
 #include <Module.h>
 #include <Renderer.h>
-#include <Glory.h>
 #include <FileData.h>
 #include <CameraRef.h>
 
@@ -45,27 +47,27 @@ namespace Glory
 	class UIRendererModule : public Module
 	{
 	public:
-		GLORY_API UIRendererModule();
-		GLORY_API virtual ~UIRendererModule();
+		GLORY_UI_RENDERER_API UIRendererModule();
+		GLORY_UI_RENDERER_API virtual ~UIRendererModule();
 
-		GLORY_API virtual void CollectReferences(std::vector<UUID>& references) override;
+		GLORY_UI_RENDERER_API virtual void CollectReferences(std::vector<UUID>& references) override;
 
-		GLORY_API virtual const std::type_info& GetModuleType() override;
+		GLORY_UI_RENDERER_API virtual const std::type_info& GetModuleType() override;
 
-		GLORY_API void Submit(UIRenderData&& data);
-		GLORY_API void Create(const UIRenderData& data, UIDocumentData* pDocument);
+		GLORY_UI_RENDERER_API void Submit(UIRenderData&& data);
+		GLORY_UI_RENDERER_API void Create(const UIRenderData& data, UIDocumentData* pDocument);
 
-		GLORY_API void DrawDocument(GraphicsDevice* pDevice, CommandBufferHandle commandBuffer,
+		GLORY_UI_RENDERER_API void DrawDocument(GraphicsDevice* pDevice, CommandBufferHandle commandBuffer,
 			uint32_t frameIndex, UIDocument* pDocument, const UIRenderData& data);
 
-		GLORY_API MaterialData* PrepassStencilMaterial();
-		GLORY_API MaterialData* PrepassMaterial();
-		GLORY_API MaterialData* TextPrepassMaterial();
-		GLORY_API MeshData* GetImageMesh();
+		GLORY_UI_RENDERER_API MaterialData* PrepassStencilMaterial();
+		GLORY_UI_RENDERER_API MaterialData* PrepassMaterial();
+		GLORY_UI_RENDERER_API MaterialData* TextPrepassMaterial();
+		GLORY_UI_RENDERER_API MeshData* GetImageMesh();
 
-		GLORY_API UIDocument* FindDocument(UUID uuid);
-		GLORY_API const DescriptorSetLayoutHandle& UIOverlaySetLayout() const;
-		GLORY_API const Utils::ECS::RegistryFactory& GetRegistryFactory() const;
+		GLORY_UI_RENDERER_API UIDocument* FindDocument(UUID uuid);
+		GLORY_UI_RENDERER_API const DescriptorSetLayoutHandle& UIOverlaySetLayout() const;
+		GLORY_UI_RENDERER_API const Utils::ECS::RegistryFactory& GetRegistryFactory() const;
 
 		GLORY_MODULE_VERSION_H(0, 3, 0);
 

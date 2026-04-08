@@ -1,6 +1,7 @@
 #pragma once
+#include "localize_visibility.h"
+
 #include <Resource.h>
-#include <Glory.h>
 
 namespace Glory
 {
@@ -9,49 +10,49 @@ namespace Glory
 	{
 	public:
 		/** @brief Constructor */
-		GLORY_API StringTable();
+		GLORY_LOCALIZE_API StringTable();
 		/** @brief Destructor */
-		GLORY_API virtual ~StringTable();
+		GLORY_LOCALIZE_API virtual ~StringTable();
 
 		/** @brief Add a string to this table
 		 * @param key The lookup key of the string
 		 * @param value The value of the string
 		 */
-		GLORY_API void AddString(std::string&& key, std::string&& value);
+		GLORY_LOCALIZE_API void AddString(std::string&& key, std::string&& value);
 		/** @brief Update the value of a string
 		 * @param key The key of the string
 		 * @param value The new value of the string
 		 */
-		GLORY_API void UpdateString(const std::string& key, std::string&& value);
+		GLORY_LOCALIZE_API void UpdateString(const std::string& key, std::string&& value);
 		/** @brief Check if this table contains a sepcific key
 		 * @param key The key to check for
 		 */
-		GLORY_API bool HasKey(const std::string& key) const;
+		GLORY_LOCALIZE_API bool HasKey(const std::string& key) const;
 		/** @brief Remove a string from this table
 		 * @param key The key of the string to remove
 		 */
-		GLORY_API void RemoveKey(const std::string& key);
+		GLORY_LOCALIZE_API void RemoveKey(const std::string& key);
 		/** @brief Find all keys belonging to a specific group at a specified path
 		 * @param path Path to the group
 		 */
-		GLORY_API std::vector<std::string>* FindKeys(const std::string& path);
+		GLORY_LOCALIZE_API std::vector<std::string>* FindKeys(const std::string& path);
 		/** @brief Find all subgroups belonging to a specific group at a specified path
 		 * @param path Path to the group
 		 * @param groups Vector of string views to write the group names to
 		 */
-		GLORY_API void FindSubgroups(const std::string& path, std::vector<std::string_view>& groups);
+		GLORY_LOCALIZE_API void FindSubgroups(const std::string& path, std::vector<std::string_view>& groups);
 		/** @brief Search for all keys recursively starting at a path
 		 * @param path Path to the group to search recursively
 		 * @param keys Vector containing all found keys
 		 */
-		GLORY_API void FindKeysRecursively(const std::string& path, std::vector<std::string>& keys);
+		GLORY_LOCALIZE_API void FindKeysRecursively(const std::string& path, std::vector<std::string>& keys);
 
 		/** @brief String lookup result */
 		struct LookupResult
 		{
 		public:
-			GLORY_API operator bool() const { return Valid; }
-			GLORY_API const std::string_view operator*() const { return Value; }
+			GLORY_LOCALIZE_API operator bool() const { return Valid; }
+			GLORY_LOCALIZE_API const std::string_view operator*() const { return Value; }
 
 		private:
 			friend class StringTable;
@@ -66,12 +67,12 @@ namespace Glory
 		 * @param key The lookup key of the string
 		 * @returns A valid @ref LookupResult if the key was found, invalid otherwise
 		 */
-		GLORY_API LookupResult FindString(const std::string& key) const;
+		GLORY_LOCALIZE_API LookupResult FindString(const std::string& key) const;
 
 		/** @brief Begin iterator for terms */
-		GLORY_API std::map<std::string, std::string>::const_iterator Begin() const;
+		GLORY_LOCALIZE_API std::map<std::string, std::string>::const_iterator Begin() const;
 		/** @brief End iterator for terms */
-		GLORY_API std::map<std::string, std::string>::const_iterator End() const;
+		GLORY_LOCALIZE_API std::map<std::string, std::string>::const_iterator End() const;
 
 	protected:
 		/** @brief Get a vector containing other resources referenced by this resource */

@@ -74,7 +74,7 @@ project "GlorySDLWindow"
 
 	defines
 	{
-		"GLORY_EXPORTS"
+		"GLORY_SDL_WINDOW_EXPORTS"
 	}
 
 	postbuildcommands

@@ -2,12 +2,19 @@
 #include <BaseEditorExtension.h>
 #include <ProjectSpace.h>
 #include <ObjectMenu.h>
-#include <Glory.h>
 #include <ResourceMeta.h>
 #include <IPlayModeHandler.h>
 #include <efsw/efsw.hpp>
 
-EXTENSION_H
+#ifdef GLORY_MONO_EXTENSION_EXPORTS
+// BUILD LIB
+#define GLORY_MONO_EXTENSION_API __declspec(dllexport)
+#else
+// USE LIB
+#define GLORY_MONO_EXTENSION_API __declspec(dllimport)
+#endif
+
+EXTENSION_H(GLORY_MONO_EXTENSION_API)
 
 namespace Glory
 {

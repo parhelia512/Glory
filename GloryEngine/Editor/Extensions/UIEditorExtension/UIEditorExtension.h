@@ -1,9 +1,11 @@
 #pragma once
+#include "ui_editor_visibility.h"
+
 #include <BaseEditorExtension.h>
 
 #include <Reflection.h>
 
-EXTENSION_H
+EXTENSION_H(GLORY_UI_EXTENSION_API)
 
 namespace Glory::Editor
 {

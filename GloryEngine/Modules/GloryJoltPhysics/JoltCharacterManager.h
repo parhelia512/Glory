@@ -1,10 +1,11 @@
 #pragma once
+#include "jolt_visibility.h"
+
 #include <Physics.h>
 
 #include <map>
 #include <cstdint>
 #include <glm/gtc/quaternion.hpp>
-#include <Glory.h>
 
 namespace JPH
 {
@@ -19,27 +20,27 @@ namespace Glory
     class JoltCharacterManager
     {
 	public:
-        GLORY_API uint32_t CreateCharacter(float maxSlopeAngle, float mass, float friction, float gravityFactor,
+        GLORY_JOLT_API uint32_t CreateCharacter(float maxSlopeAngle, float mass, float friction, float gravityFactor,
 			uint32_t layerIndex, const glm::vec3& inPosition, const glm::quat& inRotation, const ShapeData& shape);
-        GLORY_API void DestroyCharacter(uint32_t characterID);
-        GLORY_API void DestroyAll();
+        GLORY_JOLT_API void DestroyCharacter(uint32_t characterID);
+        GLORY_JOLT_API void DestroyAll();
 
-		GLORY_API void Activate(uint32_t characterID, bool lockBodies = true);
-		GLORY_API void SetLinearAndAngularVelocity(uint32_t characterID, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity, bool lockBodies = true);
-		GLORY_API glm::vec3 GetLinearVelocity(uint32_t characterID, bool lockBodies = true) const;
-		GLORY_API void SetLinearVelocity(uint32_t characterID, const glm::vec3& linearVelocity, bool lockBodies = true);
-		GLORY_API void AddLinearVelocity(uint32_t characterID, const glm::vec3& linearVelocity, bool lockBodies = true);
-		GLORY_API void AddImpulse(uint32_t characterID, const glm::vec3& impulse, bool lockBodies = true);
-		GLORY_API uint32_t GetBodyID(uint32_t characterID) const;
-		GLORY_API void GetPositionAndRotation(uint32_t characterID, glm::vec3& outPosition, glm::quat& outRotation, bool lockBodies = true) const;
-		GLORY_API void SetPositionAndRotation(uint32_t characterID, const glm::vec3& position, const glm::quat& rotation, ActivationType activationMode, bool lockBodies = true) const;
-		GLORY_API glm::vec3 GetPosition(uint32_t characterID, bool lockBodies = true) const;
-		GLORY_API void SetPosition(uint32_t characterID, const glm::vec3& position, ActivationType activationMode, bool lockBodies = true);
-		GLORY_API glm::quat GetRotation(uint32_t characterID, bool lockBodies = true) const;
-		GLORY_API void SetRotation(uint32_t characterID, const glm::quat& rotation, ActivationType activationMode, bool lockBodies = true);
-		GLORY_API glm::vec3 GetCenterOfMassPosition(uint32_t characterID, bool lockBodies = true) const;
-		GLORY_API void SetLayer(uint32_t characterID, uint32_t layer, bool lockBodies = true);
-		GLORY_API bool SetShape(uint32_t characterID, const ShapeData& shape, float maxPenetrationDepth, bool lockBodies = true);
+		GLORY_JOLT_API void Activate(uint32_t characterID, bool lockBodies = true);
+		GLORY_JOLT_API void SetLinearAndAngularVelocity(uint32_t characterID, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity, bool lockBodies = true);
+		GLORY_JOLT_API glm::vec3 GetLinearVelocity(uint32_t characterID, bool lockBodies = true) const;
+		GLORY_JOLT_API void SetLinearVelocity(uint32_t characterID, const glm::vec3& linearVelocity, bool lockBodies = true);
+		GLORY_JOLT_API void AddLinearVelocity(uint32_t characterID, const glm::vec3& linearVelocity, bool lockBodies = true);
+		GLORY_JOLT_API void AddImpulse(uint32_t characterID, const glm::vec3& impulse, bool lockBodies = true);
+		GLORY_JOLT_API uint32_t GetBodyID(uint32_t characterID) const;
+		GLORY_JOLT_API void GetPositionAndRotation(uint32_t characterID, glm::vec3& outPosition, glm::quat& outRotation, bool lockBodies = true) const;
+		GLORY_JOLT_API void SetPositionAndRotation(uint32_t characterID, const glm::vec3& position, const glm::quat& rotation, ActivationType activationMode, bool lockBodies = true) const;
+		GLORY_JOLT_API glm::vec3 GetPosition(uint32_t characterID, bool lockBodies = true) const;
+		GLORY_JOLT_API void SetPosition(uint32_t characterID, const glm::vec3& position, ActivationType activationMode, bool lockBodies = true);
+		GLORY_JOLT_API glm::quat GetRotation(uint32_t characterID, bool lockBodies = true) const;
+		GLORY_JOLT_API void SetRotation(uint32_t characterID, const glm::quat& rotation, ActivationType activationMode, bool lockBodies = true);
+		GLORY_JOLT_API glm::vec3 GetCenterOfMassPosition(uint32_t characterID, bool lockBodies = true) const;
+		GLORY_JOLT_API void SetLayer(uint32_t characterID, uint32_t layer, bool lockBodies = true);
+		GLORY_JOLT_API bool SetShape(uint32_t characterID, const ShapeData& shape, float maxPenetrationDepth, bool lockBodies = true);
 
     private:
         void SetPhysicsSystem(JPH::PhysicsSystem* pPhysics);

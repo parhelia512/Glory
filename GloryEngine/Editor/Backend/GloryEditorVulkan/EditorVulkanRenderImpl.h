@@ -3,7 +3,6 @@
 #include "EditorPlatform.h"
 #include "imgui_impl_vulkan.h"
 
-#include <Glory.h>
 #include <EditorCreateInfo.h>
 
 #include <vulkan/vulkan.hpp>
@@ -13,9 +12,17 @@ namespace Glory
     class VulkanDevice;
 }
 
+#ifdef GLORY_EDITORVULKAN_EXPORTS
+// BUILD LIB
+#define GLORY_EDITORVULKAN_API __declspec(dllexport)
+#else
+// USE LIB
+#define GLORY_EDITORVULKAN_API __declspec(dllimport)
+#endif
+
 namespace Glory::Editor
 {
-    extern "C" GLORY_API void LoadBackend(EditorCreateInfo& editorCreateInfo);
+    extern "C" GLORY_EDITORVULKAN_API void LoadBackend(EditorCreateInfo& editorCreateInfo);
 
     class EditorVulkanRenderImpl : public EditorRenderImpl
     {

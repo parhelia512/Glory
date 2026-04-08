@@ -1,6 +1,4 @@
 #pragma once
-#include <Glory.h>
-
 #include <AssetReference.h>
 #include <Reflection.h>
 
@@ -10,7 +8,7 @@ namespace Glory
 {
 	struct SoundOccluder
 	{
-		GLORY_API SoundOccluder() {}
+		SoundOccluder() {}
 
 		REFLECTABLE(SoundOccluder,
 			(AssetReference<SoundMaterialData>)(m_MaterialAsset),

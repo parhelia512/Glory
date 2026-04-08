@@ -1,16 +1,18 @@
 #pragma once
+#include "sdl_input_visibility.h"
+
+#include <Version.h>
 #include <InputModule.h>
-#include <Glory.h>
 
 namespace Glory
 {
 	class SDLInputModule : public InputModule
 	{
 	public:
-		GLORY_API SDLInputModule();
-		GLORY_API virtual ~SDLInputModule();
+		GLORY_SDL_INPUT_API SDLInputModule();
+		GLORY_SDL_INPUT_API virtual ~SDLInputModule();
 
-		GLORY_MODULE_VERSION_H(0,1,0);
+		GLORY_MODULE_VERSION_H(0, 2, 0);
 
 	private:
 		virtual void OnInitialize() override;

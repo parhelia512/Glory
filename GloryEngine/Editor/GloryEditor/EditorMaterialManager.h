@@ -21,7 +21,7 @@ namespace Utils
 namespace Editor
 {
 	struct AssetCallbackData;
-	struct EditorApplication;
+	class EditorApplication;
 
 	/** @brief Material manager for the editor */
 	class EditorMaterialManager : public MaterialManager

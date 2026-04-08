@@ -1,7 +1,8 @@
 #pragma once
-#include <AudioModule.h>
+#include "sdl_audio_visibility.h"
 
-#include <Glory.h>
+#include <Version.h>
+#include <AudioModule.h>
 
 #include <SDL2/SDL_mixer.h>
 
@@ -19,7 +20,7 @@ namespace Glory
 		/** @brief AudioModule type */
 		const std::type_info& GetModuleType() override;
 
-		GLORY_MODULE_VERSION_H(0,1,0);
+		GLORY_MODULE_VERSION_H(0, 2, 0);
 
 		/** @brief Play an audio resource
 		 * @param pAudio Audio asset to play
@@ -29,7 +30,7 @@ namespace Glory
 		 * @param finishedCallback Callback that will be called when the audio finishes playing
 		 * @returns The channel that was chosen to play the audio
 		 */
-		GLORY_API int Play(AudioData* pAudio, int loops=0, AudioChannelUData&& udata={}, std::function<void(IEngine*, const AudioChannel&)> finishedCallback=NULL) override;
+		GLORY_SDL_AUDIO_API int Play(AudioData* pAudio, int loops=0, AudioChannelUData&& udata={}, std::function<void(IEngine*, const AudioChannel&)> finishedCallback=NULL) override;
 		/** @brief Play an audio resource
 		 * @param pAudio Audio asset to play
 		 * @param loops How many times to loop the audio
@@ -37,7 +38,7 @@ namespace Glory
 		 * @param finishedCallback Callback that will be called when the audio finishes playing
 		 * @returns The channel that was chosen to play the audio
 		 */
-		GLORY_API int PlayWithEffects(AudioData* pAudio, int loops = 0, AudioChannelUData&& udata={}, std::function<void(IEngine*, const AudioChannel&)> finishedCallback = NULL) override;
+		GLORY_SDL_AUDIO_API int PlayWithEffects(AudioData* pAudio, int loops = 0, AudioChannelUData&& udata={}, std::function<void(IEngine*, const AudioChannel&)> finishedCallback = NULL) override;
 		/** @brief Play an audio resource with 3D effects enabled
 		 * @param pAudio Audio asset to play
 		 * @param loops How many times to loop the audio
@@ -45,82 +46,82 @@ namespace Glory
 		 * @param finishedCallback Callback that will be called when the audio finishes playing
 		 * @returns The channel that was chosen to play the audio
 		 */
-		GLORY_API AudioChannel& Channel(int channel) override;
+		GLORY_SDL_AUDIO_API AudioChannel& Channel(int channel) override;
 
 		/** @brief Stop a channel from playing
 		 * @param channel Channel to stop
 		 */
-		GLORY_API void Stop(int channel) override;
+		GLORY_SDL_AUDIO_API void Stop(int channel) override;
 		/** @brief Stop music */
-		GLORY_API void StopMusic() override;
+		GLORY_SDL_AUDIO_API void StopMusic() override;
 		/** @brief Stop all channels */
-		GLORY_API void StopAll() override;
+		GLORY_SDL_AUDIO_API void StopAll() override;
 		/** @brief Play an audio asset as music
 		 * @param pAudio Audio asset to play
 		 * @param loops How many times to loop the music
 		 */
-		GLORY_API void PlayMusic(AudioData* pAudio, int loops=0) override;
+		GLORY_SDL_AUDIO_API void PlayMusic(AudioData* pAudio, int loops=0) override;
 		/** @brief Is a specific channel currently playing
 		 * @param channel Channel to check
 		 */
-		GLORY_API bool IsPlaying(int channel) override;
+		GLORY_SDL_AUDIO_API bool IsPlaying(int channel) override;
 		/** @brief Is music currently playing */
-		GLORY_API bool IsMusicPlaying() override;
+		GLORY_SDL_AUDIO_API bool IsMusicPlaying() override;
 		/** @brief Pause the entire sound engine */
-		GLORY_API void Pause() override;
+		GLORY_SDL_AUDIO_API void Pause() override;
 		/** @brief Pause a specific channel
 		 * @param channel Channel to pause
 		 */
-		GLORY_API void Pause(int channel) override;
+		GLORY_SDL_AUDIO_API void Pause(int channel) override;
 		/** @brief Pause music */
-		GLORY_API void PauseMusic() override;
+		GLORY_SDL_AUDIO_API void PauseMusic() override;
 		/** @brief Is a specific channel currently paused
 		 * @param channel Channel to check
 		 */
-		GLORY_API bool IsPaused(int channel) override;
+		GLORY_SDL_AUDIO_API bool IsPaused(int channel) override;
 		/** @brief Is the music paused */
-		GLORY_API bool IsMusicPaused() override;
+		GLORY_SDL_AUDIO_API bool IsMusicPaused() override;
 		/** @brief Resume the audio engine */
-		GLORY_API void Resume() override;
+		GLORY_SDL_AUDIO_API void Resume() override;
 		/** @brief Resume a specific channel
 		 * @param channel Channel to resume
 		 */
-		GLORY_API void Resume(int channel) override;
+		GLORY_SDL_AUDIO_API void Resume(int channel) override;
 		/** @brief Resume music */
-		GLORY_API void ResumeMusic() override;
+		GLORY_SDL_AUDIO_API void ResumeMusic() override;
 		/** @brief Set the volume of a specific channel
 		 * @param channel Channel to resume
 		 * @param volume Volume to set
 		 */
-		GLORY_API void SetVolume(int channel, float volume) override;
+		GLORY_SDL_AUDIO_API void SetVolume(int channel, float volume) override;
 		/** @brief Set the volume of the music
 		 * @param volume Volume to set
 		 */
-		GLORY_API void SetMusicVolume(float volume) override;
+		GLORY_SDL_AUDIO_API void SetMusicVolume(float volume) override;
 		/** @brief Set the master volume of the audio engine
 		 * @param volume Volume to set
 		 */
-		GLORY_API void SetMasterVolume(float volume) override;
+		GLORY_SDL_AUDIO_API void SetMasterVolume(float volume) override;
 		/** @brief Get volume of a channel
 		 * @param channel Channel to get the volume from
 		 */
-		GLORY_API float Volume(int channel) override;
+		GLORY_SDL_AUDIO_API float Volume(int channel) override;
 		/** @brief Get volume of the music */
-		GLORY_API float MusicVolume() override;
+		GLORY_SDL_AUDIO_API float MusicVolume() override;
 		/** @brief Get master volume of the audio engine */
-		GLORY_API float MasterVolume() override;
+		GLORY_SDL_AUDIO_API float MasterVolume() override;
 
 		/** @brief Get the chunk data of an audio data pointer */
-		GLORY_API uint8_t* GetChunkData(void* chunk) override;
+		GLORY_SDL_AUDIO_API uint8_t* GetChunkData(void* chunk) override;
 
 		/** @brief The current sampling rate this module is running at */
-		GLORY_API uint32_t SamplingRate() { return uint32_t(m_Frequency); }
+		GLORY_SDL_AUDIO_API uint32_t SamplingRate() { return uint32_t(m_Frequency); }
 		/** @brief The current audio output channels this module is running at */
-		GLORY_API uint32_t Channels() override { return uint32_t(m_Channels); }
+		GLORY_SDL_AUDIO_API uint32_t Channels() override { return uint32_t(m_Channels); }
 		/** @brief The current mixing channels this module is running at */
-		GLORY_API uint32_t MixingChannels() override;
+		GLORY_SDL_AUDIO_API uint32_t MixingChannels() override;
 		/** @brief The current listener matrix this module is running at */
-		GLORY_API glm::mat4& ListenerTransform() override { return m_ListerenTransform; }
+		GLORY_SDL_AUDIO_API glm::mat4& ListenerTransform() override { return m_ListerenTransform; }
 
 	protected:
 		virtual void Initialize() override;

@@ -1,6 +1,7 @@
 #pragma once
 #include "OpenGLDevice.h"
 
+#include <Version.h>
 #include <Module.h>
 #include <GL/glew.h>
 

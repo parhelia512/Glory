@@ -13,7 +13,7 @@ namespace Glory
 	struct LayerWrapper
 	{
 	public:
-		GLORY_API LayerWrapper(const Layer* pLayer);
+		GLORY_MONO_API LayerWrapper(const Layer* pLayer);
 
 		LayerMask Mask;
 		MonoString* Name;

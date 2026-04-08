@@ -1,5 +1,6 @@
 #pragma once
-#include <Glory.h>
+#include "mono_visibility.h"
+
 #include <string>
 #include <map>
 #include <functional>
@@ -15,23 +16,23 @@ namespace Glory
 	class AssemblyDomain
 	{
 	public:
-		GLORY_API MonoDomain* GetMonoDomain() const { return m_pMonoDomain; }
-		GLORY_API const std::string& Name() const { return m_Name; }
+		GLORY_MONO_API MonoDomain* GetMonoDomain() const { return m_pMonoDomain; }
+		GLORY_MONO_API const std::string& Name() const { return m_Name; }
 
-		GLORY_API void LoadLib(const ScriptingLib& lib);
+		GLORY_MONO_API void LoadLib(const ScriptingLib& lib);
 
-		GLORY_API void Reload(const std::string& name);
-		GLORY_API void Unload(bool isReloading = false);
+		GLORY_MONO_API void Reload(const std::string& name);
+		GLORY_MONO_API void Unload(bool isReloading = false);
 
-		GLORY_API Assembly* GetAssembly(const std::string& name);
+		GLORY_MONO_API Assembly* GetAssembly(const std::string& name);
 
-		GLORY_API MonoObject* InvokeMethod(MonoMethod* pMethod, MonoObject* pObject, void** args);
+		GLORY_MONO_API MonoObject* InvokeMethod(MonoMethod* pMethod, MonoObject* pObject, void** args);
 
-		GLORY_API size_t AssemblyCount();
-		GLORY_API void ForEachAssembly(std::function<void(Assembly*)> callback);
+		GLORY_MONO_API size_t AssemblyCount();
+		GLORY_MONO_API void ForEachAssembly(std::function<void(Assembly*)> callback);
 
-		GLORY_API bool SetCurrentDomain(bool force = false);
-		GLORY_API void Initialize();
+		GLORY_MONO_API bool SetCurrentDomain(bool force = false);
+		GLORY_MONO_API void Initialize();
 
 	private:
 		AssemblyDomain(const std::string& name, MonoDomain* pMonoDomain);

@@ -1,5 +1,5 @@
 #pragma once
-#include <Glory.h>
+#include "mono_visibility.h"
 
 #include "MonoComponents.h"
 
@@ -33,12 +33,12 @@ namespace Glory
 
         void GetReferencesImpl(std::vector<UUID>& references) const;
 
-        GLORY_API static void OnBodyActivated(IEngine* pEngine, UUID sceneID, UUID entityUUID);
-        GLORY_API static void OnBodyDeactivated(IEngine* pEngine, UUID sceneID, UUID entityUUID);
+        GLORY_MONO_API static void OnBodyActivated(IEngine* pEngine, UUID sceneID, UUID entityUUID);
+        GLORY_MONO_API static void OnBodyDeactivated(IEngine* pEngine, UUID sceneID, UUID entityUUID);
 
-        GLORY_API static void OnContactAdded(IEngine* pEngine, UUID scene1ID, UUID entity1UUID, UUID scene2ID, UUID entity2UUID);
-        GLORY_API static void OnContactPersisted(IEngine* pEngine, UUID scene1ID, UUID entity1UUID, UUID scene2ID, UUID entity2UUID);
-        GLORY_API static void OnContactRemoved(IEngine* pEngine, UUID scene1ID, UUID entity1UUID, UUID scene2ID, UUID entity2UUID);
+        GLORY_MONO_API static void OnContactAdded(IEngine* pEngine, UUID scene1ID, UUID entity1UUID, UUID scene2ID, UUID entity2UUID);
+        GLORY_MONO_API static void OnContactPersisted(IEngine* pEngine, UUID scene1ID, UUID entity1UUID, UUID scene2ID, UUID entity2UUID);
+        GLORY_MONO_API static void OnContactRemoved(IEngine* pEngine, UUID scene1ID, UUID entity1UUID, UUID scene2ID, UUID entity2UUID);
 
     private:
         void OnInitialize() override;

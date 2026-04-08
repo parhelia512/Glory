@@ -1,5 +1,4 @@
 #pragma once
-#include <Glory.h>
 #include <Resource.h>
 
 #include <glm/glm.hpp>
@@ -30,17 +29,17 @@ namespace Glory
     class SoundMaterialData : public Resource
     {
     public:
-        GLORY_API SoundMaterialData();
-        GLORY_API SoundMaterialData(SoundMaterial&& material);
-        GLORY_API virtual ~SoundMaterialData();
+        SoundMaterialData();
+        SoundMaterialData(SoundMaterial&& material);
+        virtual ~SoundMaterialData();
 
         /** @brief Get the attached material */
-        GLORY_API SoundMaterial& Material();
+        SoundMaterial& Material();
         /** @overload */
-        GLORY_API const SoundMaterial& Material() const;
+        const SoundMaterial& Material() const;
 
-        GLORY_API void Serialize(Utils::BinaryStream& container) const override;
-        GLORY_API void Deserialize(Utils::BinaryStream& container) override;
+        void Serialize(Utils::BinaryStream& container) const override;
+        void Deserialize(Utils::BinaryStream& container) override;
 
     private:
         virtual void References(IEngine*, std::vector<UUID>&) const override {}

@@ -4,13 +4,11 @@
 
 #include "ScriptExtensions.h"
 #include "IScriptExtender.h"
+#include "mono_visibility.h"
 
-#include <Glory.h>
 #include <Module.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/debug-helpers.h>
-#include <mono/metadata/debug-helpers.h>
 
-GLORY_MODULE_H
-
+GLORY_MODULE_H(GLORY_MONO_API)

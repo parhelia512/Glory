@@ -1,7 +1,8 @@
 #pragma once
-#include <Physics.h>
+#include "jolt_visibility.h"
 
-#include <Glory.h>
+#include <Version.h>
+#include <Physics.h>
 
 #include <PhysicsModule.h>
 #include <glm/fwd.hpp>
@@ -45,88 +46,88 @@ namespace Glory
     class JoltPhysicsModule : public PhysicsModule
     {
 	public:
-		GLORY_API JoltPhysicsModule();
-		GLORY_API virtual ~JoltPhysicsModule();
+		GLORY_JOLT_API JoltPhysicsModule();
+		GLORY_JOLT_API virtual ~JoltPhysicsModule();
 
-		GLORY_MODULE_VERSION_H(0,6,0);
+		GLORY_MODULE_VERSION_H(0, 7, 0);
 
 		/* Body management */
-		GLORY_API uint32_t CreatePhysicsBody(const Shape& shape, const glm::vec3& inPosition, const glm::quat& inRotation, const glm::vec3& inScale, const BodyType bodyType, const uint16_t layerIndex, const PhysicsSimulationSettings& settings);
-		GLORY_API void SetBodyUserData(uint32_t bodyID, uint64_t userData);
-		GLORY_API uint64_t GetBodyUserData(uint32_t bodyID);
-		GLORY_API void DestroyPhysicsBody(uint32_t& bodyID);
-		GLORY_API void PollPhysicsState(uint32_t bodyID, glm::vec3* outPosition, glm::quat* outRotation);
+		GLORY_JOLT_API uint32_t CreatePhysicsBody(const Shape& shape, const glm::vec3& inPosition, const glm::quat& inRotation, const glm::vec3& inScale, const BodyType bodyType, const uint16_t layerIndex, const PhysicsSimulationSettings& settings);
+		GLORY_JOLT_API void SetBodyUserData(uint32_t bodyID, uint64_t userData);
+		GLORY_JOLT_API uint64_t GetBodyUserData(uint32_t bodyID);
+		GLORY_JOLT_API void DestroyPhysicsBody(uint32_t& bodyID);
+		GLORY_JOLT_API void PollPhysicsState(uint32_t bodyID, glm::vec3* outPosition, glm::quat* outRotation);
 
 		/* States */
-		GLORY_API void ActivateBody(uint32_t bodyID);
-		GLORY_API void DeactivateBody(uint32_t bodyID);
-		GLORY_API bool IsBodyActive(uint32_t bodyID) const;
-		GLORY_API bool IsValidBody(uint32_t bodyID) const;
-		GLORY_API void SetBodyType(uint32_t bodyID, BodyType bodyType, const ActivationType activationType);
+		GLORY_JOLT_API void ActivateBody(uint32_t bodyID);
+		GLORY_JOLT_API void DeactivateBody(uint32_t bodyID);
+		GLORY_JOLT_API bool IsBodyActive(uint32_t bodyID) const;
+		GLORY_JOLT_API bool IsValidBody(uint32_t bodyID) const;
+		GLORY_JOLT_API void SetBodyType(uint32_t bodyID, BodyType bodyType, const ActivationType activationType);
 
 		/* Position and rotation */
-		GLORY_API void SetBodyPosition(uint32_t bodyID, const glm::vec3& position, const ActivationType activationType = ActivationType::Activate);
-		GLORY_API void SetBodyRotation(uint32_t bodyID, const glm::quat& rotation, const ActivationType activationType = ActivationType::Activate);
-		GLORY_API void SetBodyScale(uint32_t bodyID, const glm::vec3& scale, const ActivationType activationType = ActivationType::Activate);
-		GLORY_API glm::vec3 GetBodyPosition(uint32_t bodyID) const;
-		GLORY_API glm::vec3 GetBodyCenterOfMassPosition(uint32_t bodyID) const;
-		GLORY_API glm::quat GetBodyRotation(uint32_t bodyID) const;
+		GLORY_JOLT_API void SetBodyPosition(uint32_t bodyID, const glm::vec3& position, const ActivationType activationType = ActivationType::Activate);
+		GLORY_JOLT_API void SetBodyRotation(uint32_t bodyID, const glm::quat& rotation, const ActivationType activationType = ActivationType::Activate);
+		GLORY_JOLT_API void SetBodyScale(uint32_t bodyID, const glm::vec3& scale, const ActivationType activationType = ActivationType::Activate);
+		GLORY_JOLT_API glm::vec3 GetBodyPosition(uint32_t bodyID) const;
+		GLORY_JOLT_API glm::vec3 GetBodyCenterOfMassPosition(uint32_t bodyID) const;
+		GLORY_JOLT_API glm::quat GetBodyRotation(uint32_t bodyID) const;
 
 		/* Velocities */
-		GLORY_API void MoveBodyKinematic(uint32_t bodyID, const glm::vec3& targetPosition, const glm::quat& targetRotation, float deltaTime);
-		GLORY_API void SetBodyLinearAndAngularVelocity(uint32_t bodyID, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity);
-		GLORY_API void GetBodyLinearAndAngularVelocity(uint32_t bodyID, glm::vec3& linearVelocity, glm::vec3& angularVelocity) const;
-		GLORY_API void SetBodyLinearVelocity(uint32_t bodyID, const glm::vec3& linearVelocity);
-		GLORY_API glm::vec3 GetBodyLinearVelocity(uint32_t bodyID) const;
-		GLORY_API void AddBodyLinearVelocity(uint32_t bodyID, const glm::vec3& linearVelocity);
-		GLORY_API void AddBodyLinearAndAngularVelocity(uint32_t bodyID, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity);
-		GLORY_API void SetBodyAngularVelocity(uint32_t bodyID, const glm::vec3& angularVelocity);
-		GLORY_API glm::vec3 GetBodyAngularVelocity(uint32_t bodyID) const;
-		GLORY_API glm::vec3 GetBodyPointVelocity(uint32_t bodyID, const glm::vec3& point) const;
-		GLORY_API void SetBodyPositionRotationAndVelocity(uint32_t bodyID, const glm::vec3& position, const glm::quat& rotation, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity);
+		GLORY_JOLT_API void MoveBodyKinematic(uint32_t bodyID, const glm::vec3& targetPosition, const glm::quat& targetRotation, float deltaTime);
+		GLORY_JOLT_API void SetBodyLinearAndAngularVelocity(uint32_t bodyID, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity);
+		GLORY_JOLT_API void GetBodyLinearAndAngularVelocity(uint32_t bodyID, glm::vec3& linearVelocity, glm::vec3& angularVelocity) const;
+		GLORY_JOLT_API void SetBodyLinearVelocity(uint32_t bodyID, const glm::vec3& linearVelocity);
+		GLORY_JOLT_API glm::vec3 GetBodyLinearVelocity(uint32_t bodyID) const;
+		GLORY_JOLT_API void AddBodyLinearVelocity(uint32_t bodyID, const glm::vec3& linearVelocity);
+		GLORY_JOLT_API void AddBodyLinearAndAngularVelocity(uint32_t bodyID, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity);
+		GLORY_JOLT_API void SetBodyAngularVelocity(uint32_t bodyID, const glm::vec3& angularVelocity);
+		GLORY_JOLT_API glm::vec3 GetBodyAngularVelocity(uint32_t bodyID) const;
+		GLORY_JOLT_API glm::vec3 GetBodyPointVelocity(uint32_t bodyID, const glm::vec3& point) const;
+		GLORY_JOLT_API void SetBodyPositionRotationAndVelocity(uint32_t bodyID, const glm::vec3& position, const glm::quat& rotation, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity);
 
 		/* Forces */
-		GLORY_API void AddBodyForce(uint32_t bodyID, const glm::vec3& force);
-		GLORY_API void AddBodyForce(uint32_t bodyID, const glm::vec3& force, const glm::vec3& point);
-		GLORY_API void AddBodyTorque(uint32_t bodyID, const glm::vec3& torque);
-		GLORY_API void AddBodyForceAndTorque(uint32_t bodyID, const glm::vec3& force, const glm::vec3& torque);
+		GLORY_JOLT_API void AddBodyForce(uint32_t bodyID, const glm::vec3& force);
+		GLORY_JOLT_API void AddBodyForce(uint32_t bodyID, const glm::vec3& force, const glm::vec3& point);
+		GLORY_JOLT_API void AddBodyTorque(uint32_t bodyID, const glm::vec3& torque);
+		GLORY_JOLT_API void AddBodyForceAndTorque(uint32_t bodyID, const glm::vec3& force, const glm::vec3& torque);
 
 		/* Impulses */
-		GLORY_API void AddBodyImpulse(uint32_t bodyID, const glm::vec3& impulse);
-		GLORY_API void AddBodyImpulse(uint32_t bodyID, const glm::vec3& impulse, const glm::vec3& point);
-		GLORY_API void AddBodyAngularImpulse(uint32_t bodyID, const glm::vec3& angularImpulse);
+		GLORY_JOLT_API void AddBodyImpulse(uint32_t bodyID, const glm::vec3& impulse);
+		GLORY_JOLT_API void AddBodyImpulse(uint32_t bodyID, const glm::vec3& impulse, const glm::vec3& point);
+		GLORY_JOLT_API void AddBodyAngularImpulse(uint32_t bodyID, const glm::vec3& angularImpulse);
 
 		/* Layer */
-		GLORY_API void SetBodyObjectLayer(uint32_t bodyID, const uint16_t layerIndex);
-		GLORY_API const uint16_t GetBodyObjectLayer(uint32_t bodyID) const;
+		GLORY_JOLT_API void SetBodyObjectLayer(uint32_t bodyID, const uint16_t layerIndex);
+		GLORY_JOLT_API const uint16_t GetBodyObjectLayer(uint32_t bodyID) const;
 
 		/* RayCast */
-		GLORY_API bool CastRay(const Ray& ray, RayCastResult& result, float maxDistance, const LayerMask& layerMask, const std::vector<uint32_t>& ignoreBodyIDs) const;
+		GLORY_JOLT_API bool CastRay(const Ray& ray, RayCastResult& result, float maxDistance, const LayerMask& layerMask, const std::vector<uint32_t>& ignoreBodyIDs) const;
 
-		GLORY_API BPLayerInterfaceImpl& BPLayerImpl();
-		GLORY_API ObjectVsBroadPhaseLayerFilterImpl& BPCollisionFilter();
+		GLORY_JOLT_API BPLayerInterfaceImpl& BPLayerImpl();
+		GLORY_JOLT_API ObjectVsBroadPhaseLayerFilterImpl& BPCollisionFilter();
 
-		GLORY_API void TriggerLateActivationCallback(ActivationCallback callbackType, uint32_t bodyID);
-		GLORY_API void TriggerLateContactCallback(ContactCallback callbackType, uint32_t body1ID, uint32_t body2ID);
+		GLORY_JOLT_API void TriggerLateActivationCallback(ActivationCallback callbackType, uint32_t bodyID);
+		GLORY_JOLT_API void TriggerLateContactCallback(ContactCallback callbackType, uint32_t body1ID, uint32_t body2ID);
 
-		GLORY_API JoltCharacterManager* GetCharacterManager();
-		GLORY_API JoltShapeManager* GetShapeManager();
+		GLORY_JOLT_API JoltCharacterManager* GetCharacterManager();
+		GLORY_JOLT_API JoltShapeManager* GetShapeManager();
 
 		/* Gravity */
-		GLORY_API void SetGravity(const glm::vec3& gravity);
-		GLORY_API const glm::vec3 GetGravity() const;
+		GLORY_JOLT_API void SetGravity(const glm::vec3& gravity);
+		GLORY_JOLT_API const glm::vec3 GetGravity() const;
 
-		GLORY_API void CleanupPhysics();
-		GLORY_API void SetupPhysics();
+		GLORY_JOLT_API void CleanupPhysics();
+		GLORY_JOLT_API void SetupPhysics();
 
-		GLORY_API void SetCollisionMatrix(std::vector<std::vector<bool>>&& matrix);
-		GLORY_API bool ShouldCollide(uint16_t layer1, uint16_t layer2) const;
+		GLORY_JOLT_API void SetCollisionMatrix(std::vector<std::vector<bool>>&& matrix);
+		GLORY_JOLT_API bool ShouldCollide(uint16_t layer1, uint16_t layer2) const;
 
-		GLORY_API void RegisterContactCallback(ContactCallback callbackType, std::function<void(JoltPhysicsModule*, uint32_t, uint32_t)> callback);
-		GLORY_API void RegisterActivationCallback(ActivationCallback callbackType, std::function<void(JoltPhysicsModule*, uint32_t)> callback);
+		GLORY_JOLT_API void RegisterContactCallback(ContactCallback callbackType, std::function<void(JoltPhysicsModule*, uint32_t, uint32_t)> callback);
+		GLORY_JOLT_API void RegisterActivationCallback(ActivationCallback callbackType, std::function<void(JoltPhysicsModule*, uint32_t)> callback);
 
-		GLORY_API void TriggerContactCallback(ContactCallback callbackType, uint32_t bodyID1, uint32_t bodyID2);
-		GLORY_API void TriggerActivationCallback(ActivationCallback callbackType, uint32_t bodyID);
+		GLORY_JOLT_API void TriggerContactCallback(ContactCallback callbackType, uint32_t bodyID1, uint32_t bodyID2);
+		GLORY_JOLT_API void TriggerActivationCallback(ActivationCallback callbackType, uint32_t bodyID);
 
 		/*
 

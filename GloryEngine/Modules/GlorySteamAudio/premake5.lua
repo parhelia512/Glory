@@ -78,7 +78,7 @@ project "GlorySteamAudio"
 
 	defines
 	{
-		"GLORY_EXPORTS"
+		"GLORY_STEAM_AUDIO_EXPORTS"
 	}
 
 	postbuildcommands

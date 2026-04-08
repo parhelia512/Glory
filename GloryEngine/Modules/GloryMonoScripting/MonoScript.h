@@ -1,8 +1,9 @@
 #pragma once
+#include "mono_visibility.h"
+
 #include "ScriptProperty.h"
 
 #include <FileData.h>
-#include <Glory.h>
 
 #include <mono/metadata/object-forward.h>
 #include <mono/metadata/class.h>
@@ -20,17 +21,17 @@ namespace Glory
     class MonoScript : public FileData
     {
     public:
-        GLORY_API MonoScript();
-        GLORY_API MonoScript(FileData* pFileData, std::vector<std::string>&& classes);
-        GLORY_API MonoScript(std::vector<char>&& data);
-        GLORY_API virtual ~MonoScript();
+        GLORY_MONO_API MonoScript();
+        GLORY_MONO_API MonoScript(FileData* pFileData, std::vector<std::string>&& classes);
+        GLORY_MONO_API MonoScript(std::vector<char>&& data);
+        GLORY_MONO_API virtual ~MonoScript();
 
-        GLORY_API void Serialize(Utils::BinaryStream & container) const override {};
-        GLORY_API void Deserialize(Utils::BinaryStream& container) override {};
+        GLORY_MONO_API void Serialize(Utils::BinaryStream & container) const override {};
+        GLORY_MONO_API void Deserialize(Utils::BinaryStream& container) override {};
 
-        GLORY_API bool HasClass(std::string_view name) const;
-        GLORY_API std::string_view ClassName(size_t index) const;
-        GLORY_API size_t ClassCount() const;
+        GLORY_MONO_API bool HasClass(std::string_view name) const;
+        GLORY_MONO_API std::string_view ClassName(size_t index) const;
+        GLORY_MONO_API size_t ClassCount() const;
 
     private:
         virtual void References(IEngine*, std::vector<UUID>&) const override {}

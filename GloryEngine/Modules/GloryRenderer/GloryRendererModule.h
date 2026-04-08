@@ -1,12 +1,15 @@
 #pragma once
+#include "renderer_visibility.h"
+
 #include "GloryRenderer.h"
 #include "GloryRendererData.h"
 
+#include <Version.h>
 #include <Module.h>
 
 #include <glm/glm.hpp>
 
-GLORY_MODULE_H
+GLORY_MODULE_H(GLORY_RENDERER_API)
 
 namespace Glory
 {

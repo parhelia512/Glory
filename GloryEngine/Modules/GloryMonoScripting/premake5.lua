@@ -83,8 +83,7 @@ project "GloryMonoScripting"
 
 	defines
 	{
-		"GLORY_EXPORTS",
-		"GLORY_UUID_DEFINED"
+		"GLORY_MONO_EXPORTS"
 	}
 
 	postbuildcommands

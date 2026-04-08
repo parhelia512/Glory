@@ -1,17 +1,19 @@
 #pragma once
+#include "mono_visibility.h"
+
+#include "ScriptExtensions.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <vector>
-#include <Glory.h>
-#include "ScriptExtensions.h"
 
 namespace Glory
 {
 	struct Vec2Wrapper
 	{
-		GLORY_API Vec2Wrapper();
-		GLORY_API Vec2Wrapper(const glm::vec2& v);
-		GLORY_API Vec2Wrapper(float _x, float _y);
+		GLORY_MONO_API Vec2Wrapper();
+		GLORY_MONO_API Vec2Wrapper(const glm::vec2& v);
+		GLORY_MONO_API Vec2Wrapper(float _x, float _y);
 
 		float x;
 		float y;
@@ -19,9 +21,9 @@ namespace Glory
 
 	struct Vec3Wrapper
 	{
-		GLORY_API Vec3Wrapper();
-		GLORY_API Vec3Wrapper(const glm::vec3& v);
-		GLORY_API Vec3Wrapper(float _x, float _y, float _z);
+		GLORY_MONO_API Vec3Wrapper();
+		GLORY_MONO_API Vec3Wrapper(const glm::vec3& v);
+		GLORY_MONO_API Vec3Wrapper(float _x, float _y, float _z);
 
 		float x;
 		float y;
@@ -38,8 +40,8 @@ namespace Glory
 
 	struct QuatWrapper
 	{
-		GLORY_API QuatWrapper(const glm::quat& q);
-		GLORY_API QuatWrapper(float _x, float _y, float _z, float _w);
+		GLORY_MONO_API QuatWrapper(const glm::quat& q);
+		GLORY_MONO_API QuatWrapper(float _x, float _y, float _z, float _w);
 
 		float x;
 		float y;
@@ -54,7 +56,7 @@ namespace Glory
 		Vec4Wrapper Vec3;
 		Vec4Wrapper Vec4;
 
-		GLORY_API Mat4Wrapper(const Vec4Wrapper& v1, const Vec4Wrapper& v2, const Vec4Wrapper& v3, const Vec4Wrapper& v4)
+		GLORY_MONO_API Mat4Wrapper(const Vec4Wrapper& v1, const Vec4Wrapper& v2, const Vec4Wrapper& v3, const Vec4Wrapper& v4)
 		{
 			Vec1 = v1;
 			Vec2 = v2;
@@ -63,16 +65,16 @@ namespace Glory
 		}
 	};
 
-	GLORY_API glm::vec2 ToGLMVec2(const Vec2Wrapper& v);
-	GLORY_API Vec2Wrapper ToVec2Wrapper(const glm::vec2& v);
-	GLORY_API glm::vec3 ToGLMVec3(const Vec3Wrapper& v);
-	GLORY_API Vec3Wrapper ToVec3Wrapper(const glm::vec3& v);
-	GLORY_API glm::vec4 ToGLMVec4(const Vec4Wrapper& v);
-	GLORY_API Vec4Wrapper ToVec4Wrapper(const glm::vec4& v);
-	GLORY_API glm::quat ToGLMQuat(const QuatWrapper& q);
-	GLORY_API QuatWrapper ToQuatWrapper(const glm::quat& q);
-	GLORY_API glm::mat4 ToGLMMat4(const Mat4Wrapper& m);
-	GLORY_API Mat4Wrapper ToMat4Wrapper(const glm::mat4& m);
+	GLORY_MONO_API glm::vec2 ToGLMVec2(const Vec2Wrapper& v);
+	GLORY_MONO_API Vec2Wrapper ToVec2Wrapper(const glm::vec2& v);
+	GLORY_MONO_API glm::vec3 ToGLMVec3(const Vec3Wrapper& v);
+	GLORY_MONO_API Vec3Wrapper ToVec3Wrapper(const glm::vec3& v);
+	GLORY_MONO_API glm::vec4 ToGLMVec4(const Vec4Wrapper& v);
+	GLORY_MONO_API Vec4Wrapper ToVec4Wrapper(const glm::vec4& v);
+	GLORY_MONO_API glm::quat ToGLMQuat(const QuatWrapper& q);
+	GLORY_MONO_API QuatWrapper ToQuatWrapper(const glm::quat& q);
+	GLORY_MONO_API glm::mat4 ToGLMMat4(const Mat4Wrapper& m);
+	GLORY_MONO_API Mat4Wrapper ToMat4Wrapper(const glm::mat4& m);
 
 	class MathCSAPI
 	{

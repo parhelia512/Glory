@@ -13,28 +13,28 @@ namespace Glory
 	class MonoManager
 	{
 	public:
-		GLORY_API void InitialLoad();
+		GLORY_MONO_API void InitialLoad();
 
-		GLORY_API void AddLib(const ScriptingLib& lib);
+		GLORY_MONO_API void AddLib(const ScriptingLib& lib);
 
-		GLORY_API GloryMonoScipting* Module() const;
-		GLORY_API CoreLibManager* GetCoreLibManager() const;
-		GLORY_API ScriptingMethodsHelper* GetMethodsHelper() const;
-		GLORY_API bool ScriptExecutionAllowed() const;
+		GLORY_MONO_API GloryMonoScipting* Module() const;
+		GLORY_MONO_API CoreLibManager* GetCoreLibManager() const;
+		GLORY_MONO_API ScriptingMethodsHelper* GetMethodsHelper() const;
+		GLORY_MONO_API bool ScriptExecutionAllowed() const;
 
-		GLORY_API AssemblyDomain* AppDomain();
+		GLORY_MONO_API AssemblyDomain* AppDomain();
 
-		GLORY_API void Reload();
+		GLORY_MONO_API void Reload();
 
-		GLORY_API void CollectGC();
-		GLORY_API void CollectGC(int32_t generation);
-		GLORY_API void WaitForPendingFinalizers();
-		GLORY_API void Reset(IEngine* pEngine);
-		GLORY_API bool DebuggingEnabled() const;
+		GLORY_MONO_API void CollectGC();
+		GLORY_MONO_API void CollectGC(int32_t generation);
+		GLORY_MONO_API void WaitForPendingFinalizers();
+		GLORY_MONO_API void Reset(IEngine* pEngine);
+		GLORY_MONO_API bool DebuggingEnabled() const;
 
-		static GLORY_API MonoManager* Instance();
+		static GLORY_MONO_API MonoManager* Instance();
 
-		GLORY_API GloryMonoScipting* Module();
+		GLORY_MONO_API GloryMonoScipting* Module();
 
 	private:
 		void Initialize(const std::string& assemblyDir = ".", const std::string& configDir = "");

@@ -1,8 +1,9 @@
 #pragma once
+#include "vulkan_visibility.h"
+
 #include "DescriptorAllocator.h"
 #include "CommandBufferAllocator.h"
 
-#include <Glory.h>
 #include <GraphicsDevice.h>
 #include <GraphicsEnums.h>
 
@@ -190,7 +191,7 @@ namespace Glory
         VulkanDevice(VulkanGraphicsModule* pModule, vk::PhysicalDevice physicalDevice);
         virtual ~VulkanDevice();
 
-        GLORY_API VulkanGraphicsModule* GraphicsModule();
+        GLORY_VULKAN_API VulkanGraphicsModule* GraphicsModule();
 
         void LoadData();
         void CheckSupport(std::vector<const char*> extensions);
@@ -200,22 +201,22 @@ namespace Glory
         void AllocateFreeCommandBuffers(size_t numBuffers);
         uint32_t GetSupportedMemoryIndex(uint32_t typeFilter, vk::MemoryPropertyFlags propertyFlags);
 
-        GLORY_API uint32_t GraphicsFamily() const { return m_GraphicsAndComputeFamily.value(); }
-        GLORY_API uint32_t PresentFamily() const { return m_PresentFamily.value(); }
+        GLORY_VULKAN_API uint32_t GraphicsFamily() const { return m_GraphicsAndComputeFamily.value(); }
+        GLORY_VULKAN_API uint32_t PresentFamily() const { return m_PresentFamily.value(); }
 
-        GLORY_API vk::PhysicalDevice PhysicalDevice() { return m_VKDevice; }
-        GLORY_API vk::Device LogicalDevice() { return m_LogicalDevice; }
-        GLORY_API vk::Queue GraphicsQueue() { return m_GraphicsAndComputeQueue; }
-        GLORY_API vk::Queue PresentQueue() { return m_PresentQueue; }
+        GLORY_VULKAN_API vk::PhysicalDevice PhysicalDevice() { return m_VKDevice; }
+        GLORY_VULKAN_API vk::Device LogicalDevice() { return m_LogicalDevice; }
+        GLORY_VULKAN_API vk::Queue GraphicsQueue() { return m_GraphicsAndComputeQueue; }
+        GLORY_VULKAN_API vk::Queue PresentQueue() { return m_PresentQueue; }
 
-        GLORY_API void CreateGraphicsCommandPool();
-        GLORY_API vk::CommandPool GetGraphicsCommandPool();
+        GLORY_VULKAN_API void CreateGraphicsCommandPool();
+        GLORY_VULKAN_API vk::CommandPool GetGraphicsCommandPool();
 
-        GLORY_API vk::ImageView GetVKImageView(TextureHandle texture);
-        GLORY_API vk::Sampler GetVKSampler(TextureHandle texture);
-        GLORY_API bool TextureHasImage(TextureHandle texture);
+        GLORY_VULKAN_API vk::ImageView GetVKImageView(TextureHandle texture);
+        GLORY_VULKAN_API vk::Sampler GetVKSampler(TextureHandle texture);
+        GLORY_VULKAN_API bool TextureHasImage(TextureHandle texture);
 
-        GLORY_API virtual ViewportOrigin GetViewportOrigin() const { return ViewportOrigin::TopLeft; }
+        GLORY_VULKAN_API virtual ViewportOrigin GetViewportOrigin() const { return ViewportOrigin::TopLeft; }
 
     private: /* Render commands */
         virtual CommandBufferHandle CreateCommandBuffer() override;

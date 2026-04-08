@@ -78,7 +78,7 @@ project "GlorySDLAudio"
 
 	defines
 	{
-		"GLORY_EXPORTS"
+		"GLORY_SDL_AUDIO_EXPORTS"
 	}
 
 	postbuildcommands

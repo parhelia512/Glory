@@ -1,6 +1,7 @@
 #pragma once
+#include "ogl_visibility.h"
+
 #include <GraphicsDevice.h>
-#include <Glory.h>
 
 #include <BitSet.h>
 
@@ -136,7 +137,7 @@ namespace Glory
 
         OpenGLGraphicsModule* GraphicsModule();
 
-        GLORY_API uint32_t GetGLTextureID(TextureHandle texture);
+        GLORY_OGL_API uint32_t GetGLTextureID(TextureHandle texture);
 
     private: /* Render commands */
         virtual CommandBufferHandle CreateCommandBuffer() override;

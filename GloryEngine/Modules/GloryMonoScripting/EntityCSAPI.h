@@ -1,7 +1,9 @@
 #pragma once
+#include "mono_visibility.h"
+
+#include <string>
 #include <cstdint>
 #include <vector>
-#include <Glory.h>
 
 namespace Glory
 {
@@ -9,8 +11,8 @@ namespace Glory
 	class IEngine;
 	class GScene;
 
-	GLORY_API uint32_t GetComponentHash(const std::string& name);
-	GLORY_API GScene* GetEntityScene(uint64_t sceneID);
+	GLORY_MONO_API uint32_t GetComponentHash(const std::string& name);
+	GLORY_MONO_API GScene* GetEntityScene(uint64_t sceneID);
 
 	class EntityCSAPI
 	{

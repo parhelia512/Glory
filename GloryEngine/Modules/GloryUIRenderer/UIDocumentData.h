@@ -1,6 +1,7 @@
 #pragma once
+#include "ui_renderer_visibility.h"
+
 #include <Resource.h>
-#include <Glory.h>
 #include <EntityRegistry.h>
 #include <TypeData.h>
 
@@ -25,8 +26,8 @@ namespace Glory
     class UIDocumentData : public Resource
     {
     public:
-        GLORY_API UIDocumentData();
-        GLORY_API virtual ~UIDocumentData();
+        GLORY_UI_RENDERER_API UIDocumentData();
+        GLORY_UI_RENDERER_API virtual ~UIDocumentData();
 
         template<typename T>
         UIEntity Create(UUID uuid = UUID())
@@ -39,14 +40,14 @@ namespace Glory
             return uiEntity;
         }
 
-        GLORY_API Utils::ECS::EntityRegistry& GetRegistry();
-        GLORY_API const std::string& Name(Utils::ECS::EntityID entity) const;
-        GLORY_API Utils::ECS::EntityID CreateEmptyEntity(std::string_view name, UUID uuid = UUID());
-        GLORY_API Utils::ECS::EntityID CreateEntity(std::string_view name, UUID uuid = UUID());
+        GLORY_UI_RENDERER_API Utils::ECS::EntityRegistry& GetRegistry();
+        GLORY_UI_RENDERER_API const std::string& Name(Utils::ECS::EntityID entity) const;
+        GLORY_UI_RENDERER_API Utils::ECS::EntityID CreateEmptyEntity(std::string_view name, UUID uuid = UUID());
+        GLORY_UI_RENDERER_API Utils::ECS::EntityID CreateEntity(std::string_view name, UUID uuid = UUID());
 
-        GLORY_API UUID EntityUUID(Utils::ECS::EntityID entity) const;
-        GLORY_API Utils::ECS::EntityID EntityID(UUID uuid) const;
-        GLORY_API void Reset();
+        GLORY_UI_RENDERER_API UUID EntityUUID(Utils::ECS::EntityID entity) const;
+        GLORY_UI_RENDERER_API Utils::ECS::EntityID EntityID(UUID uuid) const;
+        GLORY_UI_RENDERER_API void Reset();
 
     private:
         void Serialize(Utils::BinaryStream& container) const override;

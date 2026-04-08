@@ -1,9 +1,10 @@
 #pragma once
+#include "mono_visibility.h"
+
 #include "IMonoLibManager.h"
 #include "MonoScriptManager.h"
 
 #include <UUID.h>
-#include <Glory.h>
 #include <mono/metadata/object-forward.h>
 
 namespace Glory
@@ -13,14 +14,14 @@ namespace Glory
     class CoreLibManager : public IMonoLibManager
     {
     public:
-        GLORY_API CoreLibManager(MonoManager* pMonoManager);
-        GLORY_API Assembly* GetAssemblyBinding() const;
-        GLORY_API MonoObject* GetScriptDummy(MonoClass* pClass);
-        GLORY_API MonoObject* CreateScript(size_t typeIndex, UUID sceneID, UUID objectID, UUID componentID);
-        GLORY_API MonoObject* GetScript(UUID sceneID, UUID objectID, UUID componentID);
-        GLORY_API const MonoScriptManager& ScriptManager() const;
-        GLORY_API MonoScriptManager& ScriptManager();
-        GLORY_API MonoObject* GetEngine();
+        GLORY_MONO_API CoreLibManager(MonoManager* pMonoManager);
+        GLORY_MONO_API Assembly* GetAssemblyBinding() const;
+        GLORY_MONO_API MonoObject* GetScriptDummy(MonoClass* pClass);
+        GLORY_MONO_API MonoObject* CreateScript(size_t typeIndex, UUID sceneID, UUID objectID, UUID componentID);
+        GLORY_MONO_API MonoObject* GetScript(UUID sceneID, UUID objectID, UUID componentID);
+        GLORY_MONO_API const MonoScriptManager& ScriptManager() const;
+        GLORY_MONO_API MonoScriptManager& ScriptManager();
+        GLORY_MONO_API MonoObject* GetEngine();
 
     public:
         virtual void CollectTypes(IEngine*, Assembly*) override;

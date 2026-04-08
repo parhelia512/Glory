@@ -1,5 +1,6 @@
 #pragma once
-#include <Glory.h>
+#include "mono_visibility.h"
+
 #include <GloryEngine.h>
 
 namespace Glory
@@ -12,10 +13,10 @@ namespace Glory
 	class ScriptingExtender
 	{
 	public:
-		GLORY_API void RegisterExtender(IScriptExtender* pExtender);
-		GLORY_API void AddInternalLib(const std::string& location, const std::string& name, void* data);
-		GLORY_API size_t InternalLibCount() const;
-		GLORY_API const ScriptingLib& GetInternalLib(size_t index) const;
+		GLORY_MONO_API void RegisterExtender(IScriptExtender* pExtender);
+		GLORY_MONO_API void AddInternalLib(const std::string& location, const std::string& name, void* data);
+		GLORY_MONO_API size_t InternalLibCount() const;
+		GLORY_MONO_API const ScriptingLib& GetInternalLib(size_t index) const;
 
 	private:
 		friend class GloryMonoScipting;

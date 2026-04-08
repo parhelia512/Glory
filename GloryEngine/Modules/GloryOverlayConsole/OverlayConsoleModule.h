@@ -1,7 +1,9 @@
 #pragma once
+#include "overlay_console_visibility.h"
+
 #include <IConsole.h>
+#include <Version.h>
 #include <Module.h>
-#include <Glory.h>
 #include <KeyEnums.h>
 #include <GraphicsHandles.h>
 #include <IWindowInputOverrideHandler.h>
@@ -21,21 +23,21 @@ namespace Glory
 	{
 	public:
 		/** @brief Constructor */
-		GLORY_API OverlayConsoleModule();
+		GLORY_OVERLAY_CONSOLE_API OverlayConsoleModule();
 		/** @brief Destructor */
-		GLORY_API virtual ~OverlayConsoleModule();
+		GLORY_OVERLAY_CONSOLE_API virtual ~OverlayConsoleModule();
 
 		/** @brief Collect references to assets used by this module */
-		GLORY_API virtual void CollectReferences(std::vector<UUID>& references) override;
+		GLORY_OVERLAY_CONSOLE_API virtual void CollectReferences(std::vector<UUID>& references) override;
 
 		/** @brief Module type OverlayConsoleModule */
-		GLORY_API virtual const std::type_info& GetModuleType() override;
+		GLORY_OVERLAY_CONSOLE_API virtual const std::type_info& GetModuleType() override;
 
 		/** @brief Redirect input from main window to this module when console is open */
-		GLORY_API bool OnOverrideInputEvent(InputEvent& e) override;
-		GLORY_API bool OnOverrideTextEvent(TextEvent& e) override;
+		GLORY_OVERLAY_CONSOLE_API bool OnOverrideInputEvent(InputEvent& e) override;
+		GLORY_OVERLAY_CONSOLE_API bool OnOverrideTextEvent(TextEvent& e) override;
 
-		GLORY_MODULE_VERSION_H(0,1,0);
+		GLORY_MODULE_VERSION_H(0, 2, 0);
 
 	private:
 		virtual void Initialize() override;

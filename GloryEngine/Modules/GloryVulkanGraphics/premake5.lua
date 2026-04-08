@@ -68,7 +68,7 @@ project "GloryVulkanGraphics"
 
 	defines
 	{
-		"GLORY_EXPORTS",
+		"GLORY_VULKAN_EXPORTS",
 		"GLM_FORCE_RADIANS",
 		"GLM_FORCE_DEPTH_ZERO_TO_ONE"
 	}

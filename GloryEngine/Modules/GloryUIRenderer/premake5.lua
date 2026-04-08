@@ -71,7 +71,7 @@ project "GloryUIRenderer"
 
 	defines
 	{
-		"GLORY_EXPORTS"
+		"GLORY_UI_RENDERER_EXPORTS"
 	}
 
 	postbuildcommands

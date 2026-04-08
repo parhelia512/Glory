@@ -1,6 +1,7 @@
 #include "Constraints.h"
 
 #include <Hash.h>
+#include <CommonMacros.h>
 
 namespace Glory
 {

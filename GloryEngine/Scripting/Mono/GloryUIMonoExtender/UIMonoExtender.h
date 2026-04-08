@@ -1,6 +1,7 @@
 #pragma once
+#include "ui_mono_visibility.h"
+
 #include <IScriptExtender.h>
-#include <Glory.h>
 #include <IMonoLibManager.h>
 
 namespace Glory
@@ -8,7 +9,7 @@ namespace Glory
 	class IEngine;
 	class Module;
 
-	extern "C" GLORY_API bool OnLoadExtra(const char* path, Module* pModule, Module* pRequiredModule);
+	extern "C" GLORY_UI_MONO_API bool OnLoadExtra(const char* path, Module* pModule, Module* pRequiredModule);
 
 	class UILibManager : public IMonoLibManager
 	{

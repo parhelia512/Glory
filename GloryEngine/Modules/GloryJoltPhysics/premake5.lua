@@ -82,7 +82,7 @@ project "GloryJoltPhysics"
 
 	defines
 	{
-		"GLORY_EXPORTS",
+		"GLORY_JOLT_EXPORTS",
 	}
 
 	postbuildcommands

@@ -11,6 +11,8 @@
 #include "AssetCompiler.h"
 #include "Selection.h"
 
+#include <GloryVersion.h>
+
 #include <DND.h>
 #include <Undo.h>
 

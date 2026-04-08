@@ -79,10 +79,7 @@ project "GenericAudioImporter"
 
 	defines
 	{
-		"GLORY_EXPORTS",
-		"GLORY_EDITOR_EXPORTS",
-		"GLORY_EDITOR_EXTENSION_EXPORTS",
-		"GLORY_UUID_DEFINED",
+		"GLORY_AUDIO_EXTENSION_EXPORTS"
 	}
 
 	filter "system:windows"

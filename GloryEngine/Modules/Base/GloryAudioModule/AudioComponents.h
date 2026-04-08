@@ -1,6 +1,4 @@
 #pragma once
-#include <Glory.h>
-
 #include <AssetReference.h>
 #include <Reflection.h>
 #include <AudioData.h>
@@ -14,7 +12,7 @@ namespace Glory
 {
 	struct AttenuationSettings
 	{
-		GLORY_API AttenuationSettings() :
+		AttenuationSettings():
 			m_Enable(true), m_MinDistance(100.0f)
 		{}
 
@@ -26,7 +24,7 @@ namespace Glory
 
 	struct SpatializationSettings
 	{
-		GLORY_API SpatializationSettings() :
+		SpatializationSettings():
 			m_Enable(true), m_Mode(SpatializationMode::Binaural),
 			m_AmbisonicsOrder(AmbisonicsOrder::Second), m_SpatialBlend(1.0f)
 		{}
@@ -42,7 +40,7 @@ namespace Glory
 
 	struct AirAbsorptionSettings
 	{
-		GLORY_API AirAbsorptionSettings() :
+		AirAbsorptionSettings():
 			m_Enable(true), m_Type(AirAbsorptionType::Default),
 			m_LowCoefficient(1.0f), m_MidCoefficient(1.0f), m_HighCoefficient(1.0f)
 		{}
@@ -58,7 +56,7 @@ namespace Glory
 
 	struct DirectivitySettings
 	{
-		GLORY_API DirectivitySettings() :
+		DirectivitySettings():
 			m_Enable(true), m_DipoleWeight(0.5f), m_DipolePower(1.0f)
 		{}
 
@@ -71,7 +69,7 @@ namespace Glory
 
 	struct OcclusionSettings
 	{
-		GLORY_API OcclusionSettings() :
+		OcclusionSettings():
 			m_Enable(true), m_Type(OcclusionType::Raycast),
 			m_VolumetricRadius(10.0f), m_VolumetricSamples(10)
 		{}
@@ -86,7 +84,7 @@ namespace Glory
 
 	struct TransmissionSettings
 	{
-		GLORY_API TransmissionSettings() :
+		TransmissionSettings():
 			m_Enable(true), m_TransmissionRays(3), m_FrequencyDependant(true)
 		{}
 
@@ -99,7 +97,7 @@ namespace Glory
 
 	struct DirectSimulationSettings
 	{
-		GLORY_API DirectSimulationSettings() :
+		DirectSimulationSettings():
 			m_Enable(true)
 		{}
 
@@ -115,7 +113,7 @@ namespace Glory
 
 	struct ReflectionSimulationSettings
 	{
-		GLORY_API ReflectionSimulationSettings() :
+		ReflectionSimulationSettings():
 			m_Enable(false), m_ReverbScale1(1.0f), 
 			m_ReverbScale2(1.0f), m_ReverbScale3(1.0f),
 			m_HybridReverbTransitionTime(1.0f),
@@ -134,7 +132,7 @@ namespace Glory
 
 	struct PathingSimulationSettings
 	{
-		GLORY_API PathingSimulationSettings() :
+		PathingSimulationSettings():
 			m_Enable(false), m_VisRadius(1.0f), m_PathingOrder(0),
 			m_Validation(true), m_FindAlternativePaths(true)
 		{}
@@ -150,7 +148,7 @@ namespace Glory
 
 	struct AudioSourceSimulationSettings
 	{
-		GLORY_API AudioSourceSimulationSettings() :
+		AudioSourceSimulationSettings():
 			m_Enable(true)
 		{}
 
@@ -164,7 +162,7 @@ namespace Glory
 
 	struct AudioSource
 	{
-		GLORY_API AudioSource():
+		AudioSource():
 			m_AsMusic(false), m_AutoPlay(false), m_Loops(0), m_Volume(1.0f), m_Enable3D(true) {}
 
 		REFLECTABLE(AudioSource,
@@ -183,7 +181,7 @@ namespace Glory
 
 	struct AudioSimulationSettings
 	{
-		GLORY_API AudioSimulationSettings():
+		AudioSimulationSettings():
 			m_Enable(true), m_Direct(true), m_Reflection(false), m_Pathing(false) {}
 
 		REFLECTABLE(AudioSimulationSettings,
@@ -196,7 +194,7 @@ namespace Glory
 
 	struct AudioListener
 	{
-		GLORY_API AudioListener():
+		AudioListener():
 			m_Enable(true) {}
 
 		REFLECTABLE(AudioListener,

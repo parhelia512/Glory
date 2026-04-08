@@ -68,8 +68,7 @@ project "GloryUIMonoExtender"
 
 	defines
 	{
-		"GLORY_EXPORTS",
-		"GLORY_UUID_DEFINED"
+		"GLORY_UI_MONO_EXPORTS"
 	}
 
 	filter "system:windows"
