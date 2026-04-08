@@ -1,10 +1,10 @@
 #include "DefaultComponentEditor.h"
+#include "PropertyDrawer.h"
+#include "Undo.h"
+#include "EditorUI.h"
 
 #include <imgui.h>
-#include <PropertyDrawer.h>
-#include <Undo.h>
 #include <TypeData.h>
-#include <EditorUI.h>
 
 namespace Glory::Editor
 {

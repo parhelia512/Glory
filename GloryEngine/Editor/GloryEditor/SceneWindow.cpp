@@ -8,6 +8,10 @@
 #include "EditableEntity.h"
 #include "EntityEditor.h"
 #include "EditorAssetDatabase.h"
+#include "EditorUI.h"
+#include "Shortcuts.h"
+#include "Dispatcher.h"
+#include "ImGuiHelpers.h"
 
 #include <TransformManager.h>
 #include <CameraManager.h>
@@ -18,10 +22,6 @@
 #include <Renderer.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <imgui_internal.h>
-#include <EditorUI.h>
-#include <Shortcuts.h>
-#include <Dispatcher.h>
-#include <ImGuiHelpers.h>
 #include <Components.h>
 #include <GraphicsDevice.h>
 

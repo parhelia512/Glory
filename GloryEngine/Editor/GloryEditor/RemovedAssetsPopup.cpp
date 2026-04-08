@@ -1,8 +1,8 @@
 #include "RemovedAssetsPopup.h"
 #include "AssetLocation.h"
+#include "ProjectSpace.h"
 
 #include <imgui.h>
-#include <ProjectSpace.h>
 
 #include <IconsFontAwesome6.h>
 

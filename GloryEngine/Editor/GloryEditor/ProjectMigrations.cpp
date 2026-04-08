@@ -4,13 +4,13 @@
 #include "EditorApplication.h"
 #include "EditorResourceManager.h"
 #include "EditableResource.h"
+#include "JSONRef.h"
 
 #include <TextureData.h>
 #include <MaterialData.h>
 #include <Debug.h>
 #include <PrefabData.h>
 
-#include <JSONRef.h>
 #include <NodeRef.h>
 #include <YAML_GLM.h>
 

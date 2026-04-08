@@ -24,20 +24,9 @@ project "GloryJobs"
 		"%{GloryIncludeDir.threads}",
 	}
 
-	defines
-	{
-		"GLORY_EXPORTS",
-		"GLORY_CORE_EXPORTS",
-	}
-
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

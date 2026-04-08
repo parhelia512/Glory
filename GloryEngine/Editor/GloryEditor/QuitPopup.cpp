@@ -1,6 +1,7 @@
 #include "QuitPopup.h"
+#include "EditorApplication.h"
+
 #include <imgui.h>
-#include <EditorApplication.h>
 
 namespace Glory::Editor
 {

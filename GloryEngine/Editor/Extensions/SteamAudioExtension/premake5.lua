@@ -21,29 +21,26 @@ project "SteamAudioExtension"
 	includedirs
 	{
 		"%{DepsIncludeDir}",
+
 		"%{BaseIncludeDir.audio}",
 		"%{BaseIncludeDir.audio3d}",
 		"%{BaseIncludeDir.physics}",
 
-		"%{IncludeDir.glm}",
-
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.serialization}",
 		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.jobs}",
 		"%{GloryIncludeDir.steamaudio}",
 		"%{GloryIncludeDir.editor}",
-		"%{GloryIncludeDir.ImGui}",
 
-		"%{IncludeDir.FA}",
-
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
+		"%{IncludeDir.FA}",
 
 		"%{rapidjson}",
 	}
@@ -53,7 +50,6 @@ project "SteamAudioExtension"
 		"%{DepsLibDir}",
 
 		"%{LibDirs.ImGui}",
-		"%{LibDirs.implot}",
 		"%{LibDirs.glory}",
 		"%{LibDirs.yaml_cpp}",
 
@@ -70,24 +66,13 @@ project "SteamAudioExtension"
 		"GloryPhysicsModule",
 		"GloryEditor",
 		"GloryEditorSerialization",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
-		"ImGui",
-		"ImGuizmo",
-		"implot",
-		"yaml-cpp",
-
-		"phonon",
-
 		"GloryECS",
 		"GloryReflect",
 		"GloryUtilsVersion",
 
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-		"GloryUtils",
+		"ImGui",
+		"yaml-cpp",
+		"phonon",
 	}
 
 	defines
@@ -98,11 +83,6 @@ project "SteamAudioExtension"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

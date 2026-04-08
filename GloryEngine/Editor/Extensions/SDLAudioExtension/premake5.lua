@@ -21,28 +21,25 @@ project "SDLAudioExtension"
 	includedirs
 	{
 		"%{DepsIncludeDir}",
+
 		"%{BaseIncludeDir.audio}",
 		"%{BaseIncludeDir.audio3d}",
 
-		"%{IncludeDir.glm}",
-
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.serialization}",
 		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.jobs}",
 		"%{GloryIncludeDir.sdlaudio}",
 		"%{GloryIncludeDir.editor}",
-		"%{GloryIncludeDir.ImGui}",
 
-		"%{IncludeDir.FA}",
-
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
+		"%{IncludeDir.FA}",
 
 		"%{rapidjson}",
 	}
@@ -69,22 +66,12 @@ project "SDLAudioExtension"
 		"GlorySDLAudio",
 		"GloryEditor",
 		"GloryEditorSerialization",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
-		"ImGui",
-		"ImGuizmo",
-		"implot",
-		"yaml-cpp",
-
 		"GloryECS",
 		"GloryReflect",
 		"GloryUtilsVersion",
 
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-		"GloryUtils",
+		"ImGui",
+		"yaml-cpp",
 	}
 
 	defines
@@ -95,11 +82,6 @@ project "SDLAudioExtension"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

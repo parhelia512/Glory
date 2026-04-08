@@ -1,10 +1,10 @@
 #include "ProjectSettings.h"
 #include "EditorApplication.h"
+#include "EditorPlatform.h"
+#include "PropertyDrawer.h"
 
 #include <imgui.h>
 #include <IEngine.h>
-#include <EditorPlatform.h>
-#include <PropertyDrawer.h>
 #include <PropertySerializer.h>
 #include <fstream>
 

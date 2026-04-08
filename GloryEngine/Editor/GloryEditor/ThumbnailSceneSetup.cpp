@@ -3,13 +3,13 @@
 #include "EditorApplication.h"
 #include "EditorMaterialManager.h"
 #include "EditorAssetManager.h"
+#include "EditorAssetDatabase.h"
 
 #include <TransformManager.h>
 #include <MeshRenderManager.h>
 
 #include <GScene.h>
 #include <Components.h>
-#include <EditorAssetDatabase.h>
 
 namespace Glory::Editor
 {

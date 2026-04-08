@@ -1,6 +1,7 @@
 #pragma once
+#include "GloryEditor.h"
+
 #include <UUID.h>
-#include <GloryEditor.h>
 #include <MaterialManager.h>
 
 #include <map>

@@ -1,9 +1,9 @@
 #include "ProjectSettings.h"
 #include "EditorUI.h"
 #include "EditorApplication.h"
+#include "Undo.h"
 
 #include <LayerManager.h>
-#include <Undo.h>
 #include <BinaryStream.h>
 
 namespace Glory::Editor

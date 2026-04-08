@@ -1,11 +1,11 @@
 #include "Importer.h"
 #include "EditorApplication.h"
 #include "EditorAssetDatabase.h"
+#include "EditableResource.h"
 
 #include <Debug.h>
 #include <sstream>
 #include <Resource.h>
-#include <EditableResource.h>
 
 namespace Glory::Editor
 {

@@ -2,12 +2,12 @@
 #include "EditableEntity.h"
 #include "EntityEditor.h"
 #include "EditorApplication.h"
+#include "EditorSceneManager.h"
+#include "CreateObjectAction.h"
 
 #include <MeshRenderManager.h>
 #include <SceneManager.h>
 #include <IEngine.h>
-#include <EditorSceneManager.h>
-#include <CreateObjectAction.h>
 #include <Components.h>
 
 namespace Glory::Editor

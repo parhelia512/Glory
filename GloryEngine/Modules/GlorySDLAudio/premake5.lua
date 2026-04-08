@@ -25,19 +25,18 @@ project "GlorySDLAudio"
 	includedirs
 	{
 		"%{DepsIncludeDir}",
+
 		"%{BaseIncludeDir.audio}",
 
-		"%{IncludeDir.glm}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
+
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.ECS}",
-
 		"%{IncludeDir.yaml_cpp}",
-
-		"%{DepIncludesDir}",
 	}
 
 	libdirs
@@ -45,7 +44,6 @@ project "GlorySDLAudio"
 		"%{DepsLibDir}",
 
 		"%{LibDirs.glory}",
-
 		"%{LibDirs.yaml_cpp}",
 
 		"{moduleBaseOutDir}",
@@ -62,17 +60,9 @@ project "GlorySDLAudio"
 		"GloryReflect",
 		"GloryECS",
 
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
 		"yaml-cpp",
 
 		"GloryUtilsVersion",
-		"GloryUtils",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
 		"GloryUtils",
 	}
 
@@ -91,37 +81,12 @@ project "GlorySDLAudio"
 		systemversion "latest"
 		toolset "v143"
 
-		defines
-		{
-			"_LIB"
-		}
-
 	filter "platforms:Win32"
 		architecture "x86"
 		defines "WIN32"
 
-		libdirs
-		{
-			--"%{vulkanDir}/Third-Party/Bin32"
-		}
-
-		postbuildcommands
-		{
-			--("{COPY} %{vulkanDir}/Third-Party/Bin32/*.dll %{moduleOutDir}/Dependencies")
-		}
-
 	filter "platforms:x64"
 		architecture "x64"
-
-		libdirs
-		{
-			--"%{vulkanDir}/Third-Party/Bin"
-		}
-
-		postbuildcommands
-		{
-			--("{COPY} %{vulkanDir}/Third-Party/Bin/*.dll %{moduleOutDir}/Dependencies")
-		}
 
 	filter "configurations:Debug"
 		runtime "Debug"

@@ -22,16 +22,6 @@ project "MonoEditorExtension"
 	{
 		"%{DepsIncludeDir}",
 
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.Utils}",
-		"%{IncludeDir.Utils}",
-		"%{IncludeDir.ECS}",
-		"%{IncludeDir.Version}",
-		"%{IncludeDir.Reflect}",
-		"%{IncludeDir.FA}",
-
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.serialization}",
@@ -39,6 +29,15 @@ project "MonoEditorExtension"
 		"%{GloryIncludeDir.jobs}",
 		"%{GloryIncludeDir.editor}",
 		"%{GloryIncludeDir.mono}",
+
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.Utils}",
+		"%{IncludeDir.ECS}",
+		"%{IncludeDir.Version}",
+		"%{IncludeDir.Reflect}",
+		"%{IncludeDir.FA}",
 
 		"%{rapidjson}",
 
@@ -52,8 +51,9 @@ project "MonoEditorExtension"
 		"%{LibDirs.ImGui}",
 		"%{LibDirs.implot}",
 		"%{LibDirs.glory}",
-		"%{modulesDir}/GloryMonoScripting",
 		"%{LibDirs.yaml_cpp}",
+
+		"%{modulesDir}/GloryMonoScripting",
 	}
 
 	links
@@ -63,25 +63,16 @@ project "MonoEditorExtension"
 		"GloryEditor",
 		"GloryEditorSerialization",
 		"GloryMonoScripting",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
-		"ImGui",
-		"ImGuizmo",
-		"implot",
-		"yaml-cpp",
-		"mono-2.0-sgen",
-		"MonoPosixHelper",
-		"tinyfiledialogs",
 		"GloryECS",
 		"GloryReflect",
 		"GloryUtils",
 		"GloryUtilsVersion",
 
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-		"GloryUtils",
+		"ImGui",
+		"yaml-cpp",
+		"mono-2.0-sgen",
+		"MonoPosixHelper",
+		"tinyfiledialogs",
 	}
 
 	defines
@@ -93,11 +84,6 @@ project "MonoEditorExtension"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"
@@ -113,14 +99,6 @@ project "MonoEditorExtension"
 
 		links
 		{
-			"spirv-cross-cd",
-			"spirv-cross-cored",
-			"spirv-cross-cppd",
-			"spirv-cross-glsld",
-			"spirv-cross-hlsld",
-			"spirv-cross-msld",
-			"spirv-cross-reflectd",
-			"spirv-cross-utild",
 			"efsw-static-debug"
 		}
 
@@ -131,13 +109,5 @@ project "MonoEditorExtension"
 
 		links
 		{
-			"spirv-cross-c",
-			"spirv-cross-core",
-			"spirv-cross-cpp",
-			"spirv-cross-glsl",
-			"spirv-cross-hlsl",
-			"spirv-cross-msl",
-			"spirv-cross-reflect",
-			"spirv-cross-util",
 			"efsw-static-release"
 		}

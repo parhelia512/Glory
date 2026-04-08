@@ -1,13 +1,13 @@
 #pragma once
 #include "Editor.h"
+#include "PropertyDrawer.h"
+#include "EditorUI.h"
 
 #include <ComponentManager.h>
 
 #include <Object.h>
 #include <EntityComponentObject.h>
-#include <PropertyDrawer.h>
 #include <TypeData.h>
-#include <EditorUI.h>
 
 namespace Glory::Editor
 {

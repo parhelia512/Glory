@@ -1,4 +1,7 @@
 #include "AddUIElementAction.h"
+#include "UIMainWindow.h"
+#include "SetUIParentAction.h"
+#include "UIDocumentImporter.h"
 
 #include <UUIDRemapper.h>
 #include <UIDocumentData.h>
@@ -7,16 +10,13 @@
 #include <GameTime.h>
 
 #include <EditorApplication.h>
-#include <UIMainWindow.h>
 #include <EditableResource.h>
 #include <EditorResourceManager.h>
-#include <SetUIParentAction.h>
 
 /* TEMP */
-#include <UIComponents.h>
+//#include <UIComponents.h>
 
 #include <yaml-cpp/yaml.h>
-#include <UIDocumentImporter.h>
 
 namespace Glory::Editor
 {

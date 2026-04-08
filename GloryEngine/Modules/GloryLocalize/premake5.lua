@@ -24,24 +24,20 @@ project "GloryLocalize"
 	includedirs
 	{
 		"%{BaseIncludeDir.localize}",
-		"%{DepsIncludeDir}",
-		"%{IncludeDir.glm}",
 
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
-
 		"%{IncludeDir.yaml_cpp}",
 	}
 
 	libdirs
 	{
-		"%{DepsLibDir}",
-
 		"%{LibDirs.glory}",
 		"%{LibDirs.yaml_cpp}",
 	}
@@ -54,17 +50,10 @@ project "GloryLocalize"
 		"GloryReflect",
 		"GloryECS",
 
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
 		"yaml-cpp",
 
 		"GloryUtils",
 		"GloryUtilsVersion",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
 	}
 
 	defines
@@ -81,11 +70,6 @@ project "GloryLocalize"
 		systemversion "latest"
 		toolset "v143"
 
-		defines
-		{
-			"_LIB"
-		}
-
 	filter "platforms:Win32"
 		architecture "x86"
 		defines "WIN32"
@@ -95,11 +79,6 @@ project "GloryLocalize"
 
 	filter "configurations:Debug"
 		runtime "Debug"
-		defines
-		{
-			"_DEBUG",
-			"JPH_DEBUG_RENDERER"
-		}
 		symbols "On"
 
 	filter "configurations:Release"

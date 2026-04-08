@@ -21,6 +21,7 @@ project "GloryAPI"
 	includedirs
 	{
 		"%{DepsIncludeDir}",
+
 		"%{IncludeDir.Version}",
 
 		"%{rapidjson}"
@@ -52,11 +53,6 @@ project "GloryAPI"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

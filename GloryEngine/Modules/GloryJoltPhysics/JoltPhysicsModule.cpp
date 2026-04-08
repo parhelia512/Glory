@@ -8,6 +8,7 @@
 #include "JoltCharacterManager.h"
 #include "JoltShapeManager.h"
 #include "BroadPhaseImpl.h"
+#include "JoltDebugRenderer.h"
 
 #include <Jolt/Jolt.h>
 #include <Jolt/Core/TempAllocator.h>
@@ -32,7 +33,6 @@
 #include <LayerRef.h>
 #include <GLORY_YAML.h>
 
-#include <JoltDebugRenderer.h>
 #include <GameTime.h>
 #include <IEngine.h>
 #include <SceneManager.h>

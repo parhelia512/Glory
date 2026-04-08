@@ -26,10 +26,6 @@ project "GloryEngine.Core"
 	}
 
 	filter "system:windows"
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:x64"
 		architecture "x64"

@@ -50,28 +50,24 @@ project "GloryEditor"
 	{
 		"%{DepsIncludeDir}",
 
-		"%{IncludeDir.glm}",
-
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.ImGuizmo}",
-		"%{IncludeDir.implot}",
-		"%{IncludeDir.yaml_cpp}",
-
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.serialization}",
 		"%{GloryIncludeDir.threads}",
 		"%{GloryIncludeDir.jobs}",
-		"%{GloryIncludeDir.ImGui}",
 		"%{GloryIncludeDir.api}",
 		"%{GloryIncludeDir.RenderDoc}",
 
-		"%{IncludeDir.FA}",
-
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.implot}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.ECS}",
+		"%{IncludeDir.FA}",
 
 		"%{rapidjson}",
 
@@ -97,21 +93,21 @@ project "GloryEditor"
 		"GloryJobs",
 		"GloryThreads",
 		"GloryAPI",
-		"yaml-cpp",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
-		"ImGui",
-		"ImGuizmo",
-		"implot",
-
-		"RenderDocAPI",
-
 		"GloryReflect",
 		"GloryUtils",
 		"GloryECS",
 		"GloryUtilsVersion",
+
+		"RenderDocAPI",
+
+		"shaderc",
+		"shaderc_combined",
+		"shaderc_shared",
+		"yaml-cpp",
 		"tinyfiledialogs",
+		"ImGui",
+		"ImGuizmo",
+		"implot",
 	}
 
 	defines
@@ -125,11 +121,6 @@ project "GloryEditor"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

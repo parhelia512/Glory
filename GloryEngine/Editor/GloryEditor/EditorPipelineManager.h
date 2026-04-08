@@ -1,10 +1,11 @@
 #pragma once
+#include "GloryEditor.h"
+
 #include <PipelineManager.h>
 #include <UUID.h>
 #include <GraphicsEnums.h>
 #include <ThreadedVar.h>
 #include <NodeRef.h>
-#include <GloryEditor.h>
 
 #include <map>
 #include <set>

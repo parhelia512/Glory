@@ -10,12 +10,10 @@
 #include "EditableResource.h"
 #include "Dispatcher.h"
 #include "SystemTools.h"
+#include "ShaderSourceData.h"
 
 #include <JobManager.h>
-
-#include <ShaderSourceData.h>
 #include <GScene.h>
-
 #include <IEngine.h>
 #include <Debug.h>
 #include <AssetDatabase.h>

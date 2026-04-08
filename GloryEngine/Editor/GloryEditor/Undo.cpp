@@ -1,8 +1,7 @@
 #include "Undo.h"
 #include "Debug.h"
 #include "EditorApplication.h"
-
-#include <YAMLAction.h>
+#include "YAMLAction.h"
 
 namespace Glory::Editor
 {

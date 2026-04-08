@@ -24,14 +24,15 @@ project "GloryLocalizeMonoExtender"
 	{
 		"%{DepsIncludeDir}",
 
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.yaml_cpp}",
+		"%{BaseIncludeDir.localize}",
+
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.Localize}",
 		"%{GloryIncludeDir.mono}",
-		"%{BaseIncludeDir.localize}",
 
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
@@ -59,10 +60,6 @@ project "GloryLocalizeMonoExtender"
 		"GloryReflect",
 		"GloryUtilsVersion",
 		"GloryUtils",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
 	}
 
 	defines
@@ -73,11 +70,6 @@ project "GloryLocalizeMonoExtender"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

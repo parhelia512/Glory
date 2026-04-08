@@ -21,6 +21,7 @@ project "GloryECS"
 	includedirs
 	{
 		"%{GloryIncludeDir.enginecore}",
+
 		"%{IncludeDir.Utils}",
 	}
 
@@ -33,11 +34,6 @@ project "GloryECS"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

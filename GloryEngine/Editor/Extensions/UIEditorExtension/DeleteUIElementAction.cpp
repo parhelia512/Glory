@@ -1,10 +1,10 @@
 #include "DeleteUIElementAction.h"
 #include "UIDocumentImporter.h"
 #include "SetUIParentAction.h"
+#include "UIMainWindow.h"
 
 #include <UIDocument.h>
 #include <EditorApplication.h>
-#include <UIMainWindow.h>
 #include <EditorResourceManager.h>
 
 namespace Glory::Editor

@@ -1,8 +1,8 @@
 #pragma once
 #include "EntityComponentPopup.h"
 #include "EditableEntity.h"
+#include "Editor.h"
 
-#include <Editor.h>
 #include <EntityComponentObject.h>
 #include <filesystem>
 

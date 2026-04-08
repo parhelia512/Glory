@@ -23,28 +23,21 @@ project "FreeTypeFontImporter"
 		"%{DepsIncludeDir}",
 		"%{DepsIncludeDir}/freetype2",
 
-		"%{IncludeDir.glm}",
-
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
-		"%{GloryIncludeDir.ui}",
 		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.jobs}",
 		"%{GloryIncludeDir.editor}",
-		"%{GloryIncludeDir.ImGui}",
 
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.Utils}",
+		"%{IncludeDir.Reflect}",
+		"%{IncludeDir.ECS}",
+		"%{IncludeDir.Version}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.FA}",
 
-		"%{IncludeDir.ECS}",
-		"%{IncludeDir.Reflect}",
-		"%{IncludeDir.Version}",
-		"%{IncludeDir.Utils}",
-
 		"%{rapidjson}",
-
-		"%{DepIncludesDir}",
 	}
 
 	libdirs
@@ -52,9 +45,7 @@ project "FreeTypeFontImporter"
 		"%{DepsLibDir}",
 
 		"%{LibDirs.ImGui}",
-		"%{LibDirs.implot}",
 		"%{LibDirs.glory}",
-		"%{LibDirs.yaml_cpp}",
 	}
 
 	links
@@ -62,22 +53,8 @@ project "FreeTypeFontImporter"
 		"GloryEngineCore",
 		"GloryEngine",
 		"GloryEditor",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
+
 		"ImGui",
-		"ImGuizmo",
-		"implot",
-		"yaml-cpp",
-
-		"GloryECS",
-		"GloryReflect",
-		"GloryUtils",
-		"GloryUtilsVersion",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
 	}
 
 	defines
@@ -88,11 +65,6 @@ project "FreeTypeFontImporter"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

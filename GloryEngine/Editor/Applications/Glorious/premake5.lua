@@ -23,21 +23,13 @@ project "Glorious"
 
 	includedirs
 	{
-		"%{DepsIncludeDir}",
+		"%{GloryIncludeDir.enginecore}",
+		"%{GloryIncludeDir.engine}",
+		"%{GloryIncludeDir.editor}",
 
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.ImGuizmo}",
-		"%{IncludeDir.implot}",
-
-		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.engine}",
-		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.editor}",
-
-		"%{IncludeDir.FA}",
-
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
@@ -49,37 +41,21 @@ project "Glorious"
 
 	libdirs
 	{
-		"%{DepsLibDir}",
-
 		"%{LibDirs.glory}",
-		"%{LibDirs.ImGui}",
-		"%{LibDirs.ImGuizmo}",
-		"%{LibDirs.implot}",
-		"%{LibDirs.yaml_cpp}",
 	}
 
 	links
 	{
 		"GloryEngineCore",
 		"GloryEngine",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
-		"ImGui",
-		"ImGuizmo",
-		"implot",
-		"yaml-cpp",
 		"GloryEditor",
 		"GloryReflect",
-
-		"GloryECS",
 		"GloryUtils",
 		"GloryUtilsVersion",
 		"GloryCommandLine",
 
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
+		"ImGui",
+		"yaml-cpp",
 	}
 
 	dependson
@@ -168,11 +144,6 @@ project "Glorious"
 		files { 'windows.rc', '../Icon/windows.ico' }
 		vpaths { ['Resources/*'] = { 'windows.rc', '../Icon/windows.ico' } }
 
-		defines
-		{
-			"_CONSOLE"
-		}
-
 	filter "platforms:Win32"
 		architecture "x86"
 		defines "WIN32"
@@ -200,32 +171,8 @@ project "Glorious"
 		debugdir "%{engineOutDir}"
 		debugargs { "-projectPath=\"%{demosDir}/Sponza/Sponza.gproj\"" }
 
-		links
-		{
-			"spirv-cross-cd",
-			"spirv-cross-cored",
-			"spirv-cross-cppd",
-			"spirv-cross-glsld",
-			"spirv-cross-hlsld",
-			"spirv-cross-msld",
-			"spirv-cross-reflectd",
-			"spirv-cross-utild",
-		}
-
 	filter "configurations:Release"
 		kind "ConsoleApp"
 		runtime "Release"
 		defines "NDEBUG"
 		optimize "On"
-
-		links
-		{
-			"spirv-cross-c",
-			"spirv-cross-core",
-			"spirv-cross-cpp",
-			"spirv-cross-glsl",
-			"spirv-cross-hlsl",
-			"spirv-cross-msl",
-			"spirv-cross-reflect",
-			"spirv-cross-util",
-		}

@@ -1,7 +1,6 @@
 #pragma once
 #include "ImporterTemplate.h"
-
-#include <ShaderSourceData.h>
+#include "ShaderSourceData.h"
 
 namespace Glory::Editor
 {

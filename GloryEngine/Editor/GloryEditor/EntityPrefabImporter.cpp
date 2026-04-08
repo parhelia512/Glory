@@ -1,8 +1,8 @@
 #include "EntityPrefabImporter.h"
 #include "EditorSceneSerializer.h"
+#include "EditorApplication.h"
 
 #include <fstream>
-#include <EditorApplication.h>
 
 namespace Glory::Editor
 {

@@ -22,24 +22,20 @@ project "STBImageImporter"
 	{
 		"%{DepsIncludeDir}",
 
-		"%{IncludeDir.glm}",
-
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.jobs}",
 		"%{GloryIncludeDir.editor}",
-		"%{GloryIncludeDir.ImGui}",
 
-		"%{IncludeDir.FA}",
-
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.HdriToCubemap}",
+		"%{IncludeDir.FA}",
 
 		"%{stb_image}/..",
 		"%{rapidjson}",
@@ -50,7 +46,6 @@ project "STBImageImporter"
 		"%{DepsLibDir}",
 
 		"%{LibDirs.ImGui}",
-		"%{LibDirs.implot}",
 		"%{LibDirs.glory}",
 		"%{LibDirs.yaml_cpp}",
 	}
@@ -60,23 +55,13 @@ project "STBImageImporter"
 		"GloryEngineCore",
 		"GloryEngine",
 		"GloryEditor",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
-		"ImGui",
-		"ImGuizmo",
-		"implot",
-		"yaml-cpp",
-
 		"GloryECS",
 		"GloryReflect",
 		"GloryUtils",
 		"GloryUtilsVersion",
 
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-		"GloryUtils",
+		"ImGui",
+		"yaml-cpp",
 	}
 
 	defines
@@ -90,11 +75,6 @@ project "STBImageImporter"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

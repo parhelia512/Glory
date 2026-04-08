@@ -6,11 +6,11 @@
 #include "Selection.h"
 #include "EditorResourceManager.h"
 #include "EditableResource.h"
+#include "EditorUI.h"
+#include "ProjectSpace.h"
+#include "EditorAssetCallbacks.h"
 
-#include <EditorUI.h>
 #include <StringUtils.h>
-#include <ProjectSpace.h>
-#include <EditorAssetCallbacks.h>
 
 #include <PrefabData.h>
 #include <ResourceType.h>

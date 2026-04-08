@@ -7,17 +7,17 @@
 #include "EditorApplication.h"
 #include "EntityEditor.h"
 #include "AssetCompiler.h"
+#include "TitleBar.h"
+#include "ProjectSpace.h"
+#include "Dispatcher.h"
 
 #include <Debug.h>
 #include <UUIDRemapper.h>
 #include <IEngine.h>
 #include <AssetDatabase.h>
 #include <SceneManager.h>
-#include <TitleBar.h>
 #include <tinyfiledialogs.h>
-#include <ProjectSpace.h>
 #include <GScene.h>
-#include <Dispatcher.h>
 
 namespace Glory::Editor
 {

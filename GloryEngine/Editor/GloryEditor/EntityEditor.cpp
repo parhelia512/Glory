@@ -2,13 +2,13 @@
 #include "EditableEntity.h"
 #include "EditorApplication.h"
 #include "Selection.h"
+#include "EditorSceneManager.h"
 
 #include <GScene.h>
 #include <ObjectManager.h>
 #include <map>
 #include <vector>
 #include <memory>
-#include <EditorSceneManager.h>
 
 namespace Glory::Editor
 {

@@ -25,19 +25,15 @@ project "GloriousLauncher"
 		"%{DepsIncludeDir}",
 
 		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.api}",
+
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.FA}",
 		"%{IncludeDir.Utils}",
-		"%{IncludeDir.ECS}",
-		"%{rapidjson}",
 
-		"%{IncludeDir.glm}",
-		"%{DepIncludesDir}",
+		"%{rapidjson}",
 
 		"%{rootDir}/third-party/tinyfiledialogs"
 	}
@@ -47,7 +43,6 @@ project "GloriousLauncher"
 		"%{DepsLibDir}",
 
 		"%{LibDirs.glory}",
-
 		"%{LibDirs.ImGui}",
 		"%{LibDirs.yaml_cpp}",
 	}
@@ -55,20 +50,13 @@ project "GloriousLauncher"
 	links
 	{
 		"GloryEngineCore",
-		"GloryEngine",
 		"GloryAPI",
+		"GloryUtilsVersion",
+		"GloryUtils",
+
 		"ImGui",
 		"yaml-cpp",
 		"tinyfiledialogs",
-		"GloryReflect",
-		"GloryUtilsVersion",
-		"GloryUtils",
-		"GloryECS",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-		"GloryUtils",
 		"SDL2",
 	}
 
@@ -103,37 +91,12 @@ project "GloriousLauncher"
 		files { 'windows.rc', '../Icon/windows.ico' }
 		vpaths { ['Resources/*'] = { 'windows.rc', '../Icon/windows.ico' } }
 
-		defines
-		{
-			"_CONSOLE"
-		}
-
 	filter "platforms:Win32"
 		architecture "x86"
 		defines "WIN32"
 
-		libdirs
-		{
-			--"%{vulkanDir}/Third-Party/Bin32"
-		}
-
-		postbuildcommands
-		{
-			--("{COPY} %{vulkanDir}/Third-Party/Bin32/*.dll %{buildDir}/Launcher")
-		}
-
 	filter "platforms:x64"
 		architecture "x64"
-
-		libdirs
-		{
-			--"%{vulkanDir}/Third-Party/Bin"
-		}
-
-		postbuildcommands
-		{
-			--("{COPY} %{vulkanDir}/Third-Party/Bin/*.dll %{buildDir}/Launcher")
-		}
 
 	filter "configurations:Debug"
 		kind "ConsoleApp"

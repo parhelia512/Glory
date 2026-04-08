@@ -1,10 +1,10 @@
 #pragma once
 #include "Importer.h"
+#include "EditableResource.h"
 
 #include <ResourceType.h>
 #include <string>
 #include <Resource.h>
-#include <EditableResource.h>
 
 namespace Glory::Editor
 {

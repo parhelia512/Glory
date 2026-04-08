@@ -1,7 +1,6 @@
 #pragma once
 #include <AssetManager.h>
 #include <ThreadedVar.h>
-#include <JobManager.h>
 
 namespace Glory
 {

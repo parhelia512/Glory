@@ -10,12 +10,10 @@
 #include "EditorApplication.h"
 #include "AssetCompiler.h"
 #include "Selection.h"
+#include "DND.h"
+#include "Undo.h"
 
 #include <GloryVersion.h>
-
-#include <DND.h>
-#include <Undo.h>
-
 #include <PipelineData.h>
 
 #include <imgui.h>

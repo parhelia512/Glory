@@ -24,13 +24,12 @@ project "GloryVulkanGraphics"
 	{
 		"%{vulkanDir}/include",
 		"%{vulkanDir}/third-party/include",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.shaderc}",
-		"%{IncludeDir.spirv_cross}",
+
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
@@ -40,8 +39,6 @@ project "GloryVulkanGraphics"
 	libdirs
 	{
 		"%{LibDirs.glory}",
-		"%{LibDirs.shaderc}",
-		"%{LibDirs.spirv_cross}",
 		"%{LibDirs.yaml_cpp}",
 
 		"%{LibDirs.GloryECS}",
@@ -52,18 +49,12 @@ project "GloryVulkanGraphics"
 		"vulkan-1",
 		"GloryEngineCore",
 		"GloryEngine",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
 		"yaml-cpp",
 
 		"GloryReflect",
 		"GloryUtilsVersion",
 		"GloryUtils",
 		"GloryECS",
-
-		"GloryJobs",
-		"GloryThreads",
 	}
 
 	defines
@@ -81,11 +72,6 @@ project "GloryVulkanGraphics"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

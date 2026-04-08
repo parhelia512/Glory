@@ -1,7 +1,8 @@
 #pragma once
+#include "Gizmos.h"
 #include "EntityComponentEditor.h"
+
 #include <Components.h>
-#include <Gizmos.h>
 
 namespace Glory::Editor
 {
