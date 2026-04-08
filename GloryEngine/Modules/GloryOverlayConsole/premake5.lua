@@ -24,16 +24,11 @@ project "GloryOverlayConsole"
 
 	includedirs
 	{
-		"%{DepsIncludeDir}",
+		"%{GloryIncludeDir.enginecore}",
+		"%{GloryIncludeDir.engine}",
 
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",
-
-		"%{GloryIncludeDir.enginecore}",
-		"%{GloryIncludeDir.engine}",
-		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.jobs}",
-
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.ECS}",
@@ -42,8 +37,6 @@ project "GloryOverlayConsole"
 
 	libdirs
 	{
-		"%{DepsLibDir}",
-
 		"%{LibDirs.glory}",
 		"%{LibDirs.yaml_cpp}",
 	}
@@ -52,19 +45,13 @@ project "GloryOverlayConsole"
 	{
 		"GloryEngineCore",
 		"GloryEngine",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
+
 		"yaml-cpp",
 
 		"GloryReflect",
 		"GloryECS",
 		"GloryUtilsVersion",
 		"GloryUtils",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
 	}
 
 	defines
@@ -83,11 +70,6 @@ project "GloryOverlayConsole"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

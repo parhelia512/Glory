@@ -5,10 +5,10 @@
 #include "AssetPicker.h"
 #include "EditorAssetDatabase.h"
 #include "EditorPipelineManager.h"
+#include "EditorUI.h"
+#include "ShaderSourceData.h"
 
 #include <GraphicsEnums.h>
-#include <EditorUI.h>
-#include <ShaderSourceData.h>
 #include <GLORY_YAML.h>
 #include <YAML_GLM.h>
 

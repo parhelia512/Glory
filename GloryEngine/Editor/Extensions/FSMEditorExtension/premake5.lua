@@ -22,25 +22,21 @@ project "FSMEditorExtension"
 	{
 		"%{DepsIncludeDir}",
 
-		"%{IncludeDir.glm}",
-
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.serialization}",
 		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.jobs}",
 		"%{GloryIncludeDir.editor}",
-		"%{GloryIncludeDir.ImGui}",
 		"%{GloryIncludeDir.FSM}",
 
-		"%{IncludeDir.FA}",
-
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
+		"%{IncludeDir.FA}",
 
 		"%{rapidjson}",
 	}
@@ -61,22 +57,14 @@ project "FSMEditorExtension"
 		"GloryEngine",
 		"GloryEditor",
 		"GloryFSM",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
-		"ImGui",
-		"ImGuizmo",
-		"implot",
-		"yaml-cpp",
 
 		"GloryECS",
 		"GloryReflect",
 		"GloryUtils",
 		"GloryUtilsVersion",
 
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
+		"ImGui",
+		"yaml-cpp",
 	}
 
 	defines
@@ -87,11 +75,6 @@ project "FSMEditorExtension"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

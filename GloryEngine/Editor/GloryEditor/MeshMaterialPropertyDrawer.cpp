@@ -1,5 +1,5 @@
-#include <AssetPicker.h>
-#include <PropertyDrawer.h>
+#include "AssetPicker.h"
+#include "PropertyDrawer.h"
 #include <Components.h>
 
 namespace Glory::Editor

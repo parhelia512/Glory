@@ -3,11 +3,10 @@
 #include "AssetCompiler.h"
 #include "EditableResource.h"
 #include "ProjectSpace.h"
+#include "Importer.h"
 
 #include <IEngine.h>
 #include <AssetManager.h>
-#include <Importer.h>
-//#include <AssetLoader.h>
 
 namespace Glory::Editor
 {

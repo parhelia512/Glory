@@ -21,26 +21,24 @@ project "JoltEditorExtension"
 	includedirs
 	{
 		"%{DepsIncludeDir}",
+
 		"%{BaseIncludeDir.physics}",
 
-		"%{IncludeDir.glm}",
-
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.serialization}",
 		"%{GloryIncludeDir.editor}",
-		"%{GloryIncludeDir.ImGui}",
 		"%{GloryIncludeDir.jolt}",
 		"%{GloryIncludeDir.threads}",
 
-		"%{IncludeDir.FA}",
-
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
+		"%{IncludeDir.FA}",
 
 		"%{rootDir}/submodules/JoltPhysics",
 
@@ -54,8 +52,9 @@ project "JoltEditorExtension"
 		"%{LibDirs.ImGui}",
 		"%{LibDirs.implot}",
 		"%{LibDirs.glory}",
-		"%{modulesDir}/GloryJoltPhysics",
 		"%{LibDirs.yaml_cpp}",
+
+		"%{modulesDir}/GloryJoltPhysics",
 	}
 
 	links
@@ -65,23 +64,14 @@ project "JoltEditorExtension"
 		"GloryEditor",
 		"GloryEditorSerialization",
 		"GloryJoltPhysics",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
-		"ImGui",
-		"ImGuizmo",
-		"implot",
-		"yaml-cpp",
 
 		"GloryECS",
 		"GloryReflect",
 		"GloryUtilsVersion",
 		"GloryUtils",
 
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-		"GloryUtils",
+		"ImGui",
+		"yaml-cpp",
 	}
 
 	defines
@@ -93,11 +83,6 @@ project "JoltEditorExtension"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

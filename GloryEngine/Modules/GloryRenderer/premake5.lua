@@ -24,26 +24,19 @@ project "GloryRenderer"
 
 	includedirs
 	{
-		"%{DepsIncludeDir}",
-
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.yaml_cpp}",
-
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
-		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.jobs}",
 
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Utils}",
+		"%{IncludeDir.yaml_cpp}",
 	}
 
 	libdirs
 	{
-		"%{DepsLibDir}",
-
 		"%{LibDirs.glory}",
 		"%{LibDirs.yaml_cpp}",
 	}
@@ -52,19 +45,12 @@ project "GloryRenderer"
 	{
 		"GloryEngineCore",
 		"GloryEngine",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
+
 		"yaml-cpp",
 
 		"GloryReflect",
 		"GloryECS",
 		"GloryUtilsVersion",
-		"GloryUtils",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
 		"GloryUtils",
 	}
 
@@ -85,11 +71,6 @@ project "GloryRenderer"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

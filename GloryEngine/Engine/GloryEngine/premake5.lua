@@ -42,12 +42,11 @@ project "GloryEngine"
 
 	includedirs
 	{
-		"%{GloryIncludeDir.enginecore}",
+		"%{DepsIncludeDir}",
 
+		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.threads}",
 		"%{GloryIncludeDir.jobs}",
-
-		"%{DepsIncludeDir}",
 
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",
@@ -57,6 +56,7 @@ project "GloryEngine"
 
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.ECS}",
+
 		"%{stb_image}/..",
 	}
 
@@ -87,7 +87,6 @@ project "GloryEngine"
 
 	defines
 	{
-		"GLORY_EXPORTS",
 		"GLORY_ENGINE_EXPORTS",
 		"GLORY_CORE_EXPORTS",
 		"GLM_FORCE_RADIANS",
@@ -98,11 +97,6 @@ project "GloryEngine"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

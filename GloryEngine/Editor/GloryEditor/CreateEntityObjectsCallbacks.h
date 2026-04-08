@@ -1,6 +1,7 @@
 #pragma once
-#include <GloryEditor.h>
-#include <ObjectMenu.h>
+#include "GloryEditor.h"
+#include "ObjectMenu.h"
+
 #include <Entity.h>
 
 #define CREATE_OBJECT_CALLBACK_API_H(api, name) api void Create##name(Object* pObject, const ObjectMenuType& currentMenu);

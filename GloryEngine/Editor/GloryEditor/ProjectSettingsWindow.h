@@ -1,7 +1,8 @@
 #pragma once
 #include "EditorWindow.h"
+#include "ProjectSettings.h"
+
 #include <yaml-cpp/yaml.h>
-#include <ProjectSettings.h>
 
 namespace Glory::Editor
 {

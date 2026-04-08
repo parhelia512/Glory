@@ -27,31 +27,23 @@ project "GloryJoltPhysics"
 
 	includedirs
 	{
-		"%{rootDir}/submodules/JoltPhysics",
-
-		"%{DepsIncludeDir}",
-		"%{IncludeDir.glm}",
 		"%{BaseIncludeDir.physics}",
+		"%{rootDir}/submodules/JoltPhysics",
 
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
-
 		"%{IncludeDir.yaml_cpp}",
-
-		"%{DepIncludesDir}",
 	}
 
 	libdirs
 	{
-		"%{DepsLibDir}",
-
 		"%{LibDirs.glory}",
-
 		"%{LibDirs.yaml_cpp}",
 
 		"{moduleBaseOutDir}",
@@ -65,19 +57,10 @@ project "GloryJoltPhysics"
 		"GloryReflect",
 		"GloryECS",
 
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
 		"yaml-cpp",
 
 		"GloryUtils",
 		"GloryUtilsVersion",
-		"GloryUtils",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-		"GloryUtils",
 	}
 
 	defines
@@ -94,11 +77,6 @@ project "GloryJoltPhysics"
 		systemversion "latest"
 		toolset "v143"
 
-		defines
-		{
-			"_LIB"
-		}
-
 	filter "platforms:Win32"
 		architecture "x86"
 		defines "WIN32"
@@ -108,12 +86,13 @@ project "GloryJoltPhysics"
 
 	filter "configurations:Debug"
 		runtime "Debug"
+		symbols "On"
+
 		defines
 		{
 			"_DEBUG",
 			"JPH_DEBUG_RENDERER"
 		}
-		symbols "On"
 
 	filter "configurations:Release"
 		runtime "Release"

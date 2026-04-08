@@ -1,12 +1,12 @@
 #pragma once
-#include "UUID.h"
-#include "ResourceMeta.h"
-#include "Resource.h"
+#include "GloryEditor.h"
 
+#include <UUID.h>
+#include <ResourceMeta.h>
+#include <Resource.h>
 #include <ThreadedVar.h>
 #include <functional>
 #include <vector>
-#include <GloryEditor.h>
 
 namespace Glory:: Editor
 {

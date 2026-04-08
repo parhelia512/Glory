@@ -8,21 +8,21 @@
 #include "EditorMaterialManager.h"
 #include "EditorPipelineManager.h"
 #include "EditorResourceManager.h"
+#include "ShaderSourceData.h"
+#include "EditorUI.h"
+#include "ThumbnailManager.h"
+#include "FileBrowser.h"
 
 #include <imgui.h>
 #include <ResourceType.h>
 #include <PropertySerializer.h>
-#include <ShaderSourceData.h>
 #include <GLORY_YAML.h>
 #include <AssetDatabase.h>
 #include <AssetManager.h>
-#include <EditorUI.h>
 #include <PipelineData.h>
 
 #include <IconsFontAwesome6.h>
 #include <PropertyFlags.h>
-#include <ThumbnailManager.h>
-#include <FileBrowser.h>
 
 namespace Glory::Editor
 {

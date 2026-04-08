@@ -1,5 +1,8 @@
 #include "JoltEditorExtension.h"
 #include "PhysicsSettings.h"
+#include "PhysicsBodyEditor.h"
+#include "AllowedDOFsPropertyDrawer.h"
+#include "CharacterControllerEditor.h"
 
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhase.h>
@@ -15,9 +18,6 @@
 #include <Serializers.h>
 #include <PropertySerializer.h>
 
-#include <PhysicsBodyEditor.h>
-#include <AllowedDOFsPropertyDrawer.h>
-#include <CharacterControllerEditor.h>
 #include <ObjectMenu.h>
 #include <EntitySceneObjectEditor.h>
 #include <CreateObjectAction.h>

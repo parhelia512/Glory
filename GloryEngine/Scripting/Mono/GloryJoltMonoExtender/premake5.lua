@@ -23,15 +23,16 @@ project "GloryJoltMonoExtender"
 	includedirs
 	{
 		"%{DepsIncludeDir}",
+
 		"%{BaseIncludeDir.physics}",
 
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.jolt}",
 		"%{GloryIncludeDir.mono}",
 
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
@@ -59,11 +60,6 @@ project "GloryJoltMonoExtender"
 		"GloryReflect",
 		"GloryUtilsVersion",
 		"GloryUtils",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-		"GloryUtils",
 	}
 
 	defines
@@ -74,11 +70,6 @@ project "GloryJoltMonoExtender"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

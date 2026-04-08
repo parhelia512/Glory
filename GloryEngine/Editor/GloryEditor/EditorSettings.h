@@ -1,7 +1,8 @@
 #pragma once
+#include "GloryEditor.h"
+
 #include <IEngine.h>
 #include <NodeRef.h>
-#include <GloryEditor.h>
 
 namespace Glory::Editor
 {

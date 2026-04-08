@@ -24,20 +24,19 @@ project "GlorySteamAudio"
 	includedirs
 	{
 		"%{DepsIncludeDir}",
+
 		"%{BaseIncludeDir.audio}",
 		"%{BaseIncludeDir.audio3d}",
 
-		"%{IncludeDir.glm}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
+
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.ECS}",
-
 		"%{IncludeDir.yaml_cpp}",
-
-		"%{DepIncludesDir}",
 	}
 
 	libdirs
@@ -45,7 +44,6 @@ project "GlorySteamAudio"
 		"%{DepsLibDir}",
 
 		"%{LibDirs.glory}",
-
 		"%{LibDirs.yaml_cpp}",
 
 		"{moduleBaseOutDir}",
@@ -62,17 +60,9 @@ project "GlorySteamAudio"
 
 		"phonon",
 
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
 		"yaml-cpp",
 
 		"GloryUtilsVersion",
-		"GloryUtils",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
 		"GloryUtils",
 	}
 
@@ -92,11 +82,6 @@ project "GlorySteamAudio"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

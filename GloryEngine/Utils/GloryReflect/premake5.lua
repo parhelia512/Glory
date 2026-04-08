@@ -23,11 +23,6 @@ project "GloryReflect"
 		systemversion "latest"
 		toolset "v143"
 
-		defines
-		{
-			"_LIB"
-		}
-
 	filter "platforms:Win32"
 		architecture "x86"
 		defines "WIN32"

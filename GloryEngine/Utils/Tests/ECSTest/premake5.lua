@@ -38,11 +38,6 @@ project "ECSTest"
 		systemversion "latest"
 		toolset "v143"
 
-		defines
-		{
-			"_CONSOLE"
-		}
-
 	filter "platforms:Win32"
 		architecture "x86"
 		defines "WIN32"

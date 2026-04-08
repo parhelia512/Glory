@@ -21,34 +21,19 @@ project "GloryAudioModule"
 
 	includedirs
 	{
-		"%{DepsIncludeDir}",
-
-		"%{IncludeDir.glm}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
+		
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.Reflect}",
-		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.ECS}",
-
 		"%{IncludeDir.yaml_cpp}",
-
-		"%{DepIncludesDir}",
-	}
-
-	defines
-	{
-		"GLORY_EXPORTS"
 	}
 
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

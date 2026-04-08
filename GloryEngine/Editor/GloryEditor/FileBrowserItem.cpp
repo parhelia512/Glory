@@ -11,6 +11,9 @@
 #include "EditableEntity.h"
 #include "EditorResourceManager.h"
 #include "EditableResource.h"
+#include "DND.h"
+#include "PopupManager.h"
+#include "Dispatcher.h"
 
 #include <stack>
 #include <imgui.h>
@@ -19,9 +22,6 @@
 #include <GameTime.h>
 #include <AssetManager.h>
 #include <StringUtils.h>
-#include <DND.h>
-#include <PopupManager.h>
-#include <Dispatcher.h>
 
 #include <IconsFontAwesome6.h>
 

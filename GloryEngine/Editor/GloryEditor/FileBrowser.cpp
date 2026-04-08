@@ -9,14 +9,14 @@
 #include "EditableEntity.h"
 #include "EntityEditor.h"
 #include "Package.h"
+#include "Dispatcher.h"
+#include "EditorAssetCallbacks.h"
+#include "EditorAssetsWatcher.h"
+#include "EditorAssetDatabase.h"
 
 #include <Debug.h>
 
 #include <imgui.h>
-#include <EditorAssetCallbacks.h>
-#include <EditorAssetDatabase.h>
-#include <EditorAssetsWatcher.h>
-#include <Dispatcher.h>
 
 #include <IconsFontAwesome6.h>
 

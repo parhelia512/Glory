@@ -25,16 +25,13 @@ project "GloryEditorSerialization"
 
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",
-
 		"%{IncludeDir.Reflect}",
-
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.ECS}",
 	}
 
 	defines
 	{
-		"GLORY_EXPORTS",
 		"GLORY_CORE_EXPORTS",
 		"GLM_FORCE_RADIANS",
 		"GLM_FORCE_DEPTH_ZERO_TO_ONE"
@@ -43,11 +40,6 @@ project "GloryEditorSerialization"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

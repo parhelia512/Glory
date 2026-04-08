@@ -1,12 +1,12 @@
 #include "EditorSettings.h"
 #include "EditorApplication.h"
+#include "Shortcuts.h"
 
 #include <Debug.h>
 #include <WindowModule.h>
 #include <WindowData.h>
 
 #include <YAML_GLM.h>
-#include <Shortcuts.h>
 
 #include <yaml-cpp/yaml.h>
 #include <fstream>

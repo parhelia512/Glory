@@ -1,9 +1,9 @@
 #include "ImportedResource.h"
 #include "EditorAssetDatabase.h"
+#include "EditorApplication.h"
 
 #include <Debug.h>
 #include <Resource.h>
-#include <EditorApplication.h>
 
 namespace Glory::Editor
 {

@@ -2,12 +2,12 @@
 #include "Shortcuts.h"
 #include "AssetManager.h"
 #include "EditableEntity.h"
+#include "FileBrowserItem.h"
 
 #include <ResourceType.h>
 #include <GScene.h>
 #include <algorithm>
 #include <imgui.h>
-#include <FileBrowserItem.h>
 
 namespace Glory::Editor
 {

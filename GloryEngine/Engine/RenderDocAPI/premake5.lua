@@ -21,21 +21,13 @@ project "RenderDocAPI"
 	includedirs
 	{
 		"%{DepsIncludeDir}",
-		"%{IncludeDir.RenderDoc}",
-	}
 
-	defines
-	{
+		"%{IncludeDir.RenderDoc}",
 	}
 
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

@@ -1,12 +1,12 @@
 #include "TransformEditor.h"
 #include "Undo.h"
 #include "GizmoAction.h"
+#include "EditorUI.h"
 
 #include <IEngine.h>
 #include <GScene.h>
 #include <glm/gtx/quaternion.hpp>
 #include <TypeData.h>
-#include <EditorUI.h>
 #include <glm/gtx/matrix_decompose.hpp>
 
 namespace Glory::Editor

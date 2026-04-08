@@ -5,10 +5,10 @@
 #include "EditorAssetDatabase.h"
 #include "TextureImporter.h"
 #include "ThumbnailManager.h"
+#include "Undo.h"
 
 #include <IEngine.h>
 #include <AssetDatabase.h>
-#include <Undo.h>
 
 namespace Glory::Editor
 {

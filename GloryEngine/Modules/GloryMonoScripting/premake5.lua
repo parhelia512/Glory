@@ -28,16 +28,14 @@ project "GloryMonoScripting"
 	includedirs
 	{
 		"%{DepsIncludeDir}",
+
 		"%{BaseIncludeDir.audio}",
 
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.yaml_cpp}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 
-		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.jobs}",
-
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
@@ -59,9 +57,7 @@ project "GloryMonoScripting"
 		"GloryEngineCore",
 		"GloryEngine",
 		"GloryAudioModule",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
+
 		"yaml-cpp",
 		"mono-2.0-sgen",
 		"MonoPosixHelper",
@@ -70,15 +66,6 @@ project "GloryMonoScripting"
 		"GloryReflect",
 		"GloryUtilsVersion",
 		"GloryUtils",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-	}
-
-	dependson
-	{
-
 	}
 
 	defines
@@ -99,11 +86,6 @@ project "GloryMonoScripting"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

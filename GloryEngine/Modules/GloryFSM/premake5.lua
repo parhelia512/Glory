@@ -22,17 +22,12 @@ project "GloryFSM"
 
 	includedirs
 	{
-		"%{DepsIncludeDir}",
-		"%{IncludeDir.glm}",
-
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 
-		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
-
 		"%{IncludeDir.yaml_cpp}",
 	}
 
@@ -49,19 +44,11 @@ project "GloryFSM"
 		"GloryEngineCore",
 		"GloryEngine",
 		"GloryReflect",
-		"GloryECS",
 
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
 		"yaml-cpp",
 
 		"GloryUtils",
 		"GloryUtilsVersion",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
 	}
 
 	defines
@@ -77,11 +64,6 @@ project "GloryFSM"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

@@ -1,5 +1,5 @@
 #pragma once
-#include <GloryEditor.h>
+#include "GloryEditor.h"
 
 #include <functional>
 

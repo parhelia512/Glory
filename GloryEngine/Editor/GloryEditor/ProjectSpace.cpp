@@ -9,12 +9,12 @@
 #include "ProjectMigrations.h"
 #include "PopupManager.h"
 #include "RemovedAssetsPopup.h"
+#include "Dispatcher.h"
 
 #include <Debug.h>
 #include <filesystem>
 #include <fstream>
 #include <AssetDatabase.h>
-#include <Dispatcher.h>
 
 namespace Glory::Editor
 {

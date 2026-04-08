@@ -4,10 +4,10 @@
 #include "ThumbnailManager.h"
 #include "EditorApplication.h"
 #include "FileBrowser.h"
+#include "EditorAssetDatabase.h"
 
 #include <imgui.h>
 #include <algorithm>
-#include <EditorAssetDatabase.h>
 #include <IEngine.h>
 #include <WindowModule.h>
 #include <SerializedTypes.h>

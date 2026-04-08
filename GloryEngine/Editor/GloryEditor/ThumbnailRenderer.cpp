@@ -1,21 +1,21 @@
 #include "ThumbnailRenderer.h"
 #include "Importer.h"
+#include "EditorMaterialManager.h"
+#include "EditorPipelineManager.h"
+#include "EditorApplication.h"
+#include "EditorAssetDatabase.h"
 
 #include <IEngine.h>
 #include <InternalTexture.h>
 #include <GraphicsDevice.h>
 #include <Components.h>
 #include <AssetManager.h>
-#include <EditorMaterialManager.h>
-#include <EditorPipelineManager.h>
 #include <GScene.h>
 #include <TextureData.h>
 #include <MeshData.h>
 #include <MaterialData.h>
 #include <PipelineData.h>
 #include <Renderer.h>
-#include <EditorApplication.h>
-#include <EditorAssetDatabase.h>
 #include <CameraComponentManager.h>
 
 namespace Glory::Editor

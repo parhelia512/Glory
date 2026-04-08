@@ -24,14 +24,15 @@ project "GloryUIMonoExtender"
 	{
 		"%{DepsIncludeDir}",
 
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.yaml_cpp}",
+		"%{BaseIncludeDir.localize}",
+
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.ui}",
 		"%{GloryIncludeDir.mono}",
-		"%{BaseIncludeDir.localize}",
 
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
@@ -59,11 +60,6 @@ project "GloryUIMonoExtender"
 		"GloryReflect",
 		"GloryUtilsVersion",
 		"GloryUtils",
-
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-		"GloryUtils",
 	}
 
 	defines
@@ -74,11 +70,6 @@ project "GloryUIMonoExtender"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

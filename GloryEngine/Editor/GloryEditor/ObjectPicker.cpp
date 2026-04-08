@@ -3,15 +3,15 @@
 #include "DND.h"
 #include "EditableEntity.h"
 #include "EditorApplication.h"
+#include "EditorAssetDatabase.h"
+#include "EditorSceneManager.h"
 
 #include <WindowModule.h>
 #include <IEngine.h>
 #include <imgui.h>
 #include <algorithm>
-#include <EditorAssetDatabase.h>
 
 #include <IconsFontAwesome6.h>
-#include <EditorSceneManager.h>
 
 namespace Glory::Editor
 {

@@ -7,16 +7,16 @@
 #include "RemovedAssetsPopup.h"
 #include "ThumbnailManager.h"
 #include "Dispatcher.h"
+#include "Importer.h"
+#include "ProjectSpace.h"
 
 #include <Debug.h>
 #include <AssetDatabase.h>
 #include <JobManager.h>
 #include <AssetManager.h>
-#include <Importer.h>
 #include <BinaryStream.h>
 #include <PipelineData.h>
 #include <AssetArchive.h>
-#include <ProjectSpace.h>
 
 namespace Glory::Editor
 {

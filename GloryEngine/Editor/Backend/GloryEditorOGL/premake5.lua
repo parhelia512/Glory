@@ -25,20 +25,20 @@ project "GloryEditorOGL"
 	{
 		"%{DepsIncludeDir}",
 
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGui}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.opengl}",
 		"%{GloryIncludeDir.editor}",
 		"%{GloryIncludeDir.threads}",
 
-		"%{IncludeDir.FA}",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.ECS}",
+		"%{IncludeDir.FA}",
 
 		"%{SubmodoleDirs.ImGui}/backends/",
 
@@ -52,8 +52,6 @@ project "GloryEditorOGL"
 		"%{LibDirs.glory}",
 		"%{LibDirs.glory}/Modules/GloryOpenGLGraphics",
 		"%{LibDirs.ImGui}",
-		"%{LibDirs.ImGuizmo}",
-		"%{LibDirs.implot}",
 		"%{LibDirs.yaml_cpp}",
 	}
 
@@ -61,25 +59,15 @@ project "GloryEditorOGL"
 	{
 		"GloryEngineCore",
 		"GloryEngine",
-		"yaml-cpp",
 		"GloryEditor",
 		"GloryOpenGLGraphics",
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
-		"ImGui",
-		"ImGuizmo",
-		"implot",
-
 		"GloryECS",
 		"GloryReflect",
 		"GloryUtilsVersion",
 		"GloryUtils",
 
-		--todo: When asset management is contained in its own lib these links are no more needed
-		"GloryJobs",
-		"GloryThreads",
-		"GloryUtils",
+		"yaml-cpp",
+		"ImGui",
 	}
 
 	defines
@@ -92,11 +80,6 @@ project "GloryEditorOGL"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"
@@ -117,12 +100,7 @@ project "GloryEditorOGL"
 			"glew32d",
 			"spirv-cross-cd",
 			"spirv-cross-cored",
-			--"spirv-cross-cppd",
 			"spirv-cross-glsld",
-			--"spirv-cross-hlsld",
-			--"spirv-cross-msld",
-			--"spirv-cross-reflectd",
-			--"spirv-cross-utild",
 		}
 
 	filter "configurations:Release"
@@ -135,10 +113,5 @@ project "GloryEditorOGL"
 			"glew32",
 			"spirv-cross-c",
 			"spirv-cross-core",
-			--"spirv-cross-cpp",
 			"spirv-cross-glsl",
-			--"spirv-cross-hlsl",
-			--"spirv-cross-msl",
-			--"spirv-cross-reflect",
-			--"spirv-cross-util",
 		}

@@ -24,13 +24,11 @@ project "GloryRuntime"
 	{
 		"%{DepsIncludeDir}",
 
-		"%{IncludeDir.glm}",
-
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.jobs}",
 
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
@@ -52,15 +50,14 @@ project "GloryRuntime"
 	{
 		"GloryEngineCore",
 		"GloryEngine",
-		"GloryJobs",
-		"GloryThreads",
+
+		"yaml-cpp",
 
 		"GloryReflect",
-		"GloryUtils",
 		"GloryECS",
+		"GloryUtils",
 		"GloryUtilsVersion",
 		"GloryCommandLine",
-		"yaml-cpp",
 	}
 
 	defines
@@ -78,11 +75,6 @@ project "GloryRuntime"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_LIB"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

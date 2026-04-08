@@ -1,6 +1,7 @@
 #pragma once
+#include "GloryEditor.h"
+
 #include <SceneManager.h>
-#include <GloryEditor.h>
 #include <Entity.h>
 #include <GraphicsHandles.h>
 

@@ -1,11 +1,12 @@
 #pragma once
-#include <vector>
+#include "SoundMaterialData.h"
 
 #include <UUID.h>
 #include <AssetReference.h>
-#include <SoundMaterialData.h>
 #include <BitSet.h>
 #include <Resource.h>
+
+#include <vector>
 
 namespace Glory::Utils
 {

@@ -4,16 +4,16 @@
 #include "EditorSceneManager.h"
 #include "EditorAssetDatabase.h"
 #include "FileBrowser.h"
+#include "SceneObjectNameAction.h"
+#include "EnableObjectAction.h"
+#include "Undo.h"
+#include "EditorUI.h"
 
 #include <imgui.h>
 #include <string>
 
 #include <ObjectManager.h>
-#include <SceneObjectNameAction.h>
-#include <EnableObjectAction.h>
-#include <Undo.h>
 #include <algorithm>
-#include <EditorUI.h>
 #include <string_view>
 #include <ResourceType.h>
 #include <Components.h>

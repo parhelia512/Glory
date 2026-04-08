@@ -25,23 +25,20 @@ project "GloryEditorSDL"
 		"%{DepsIncludeDir}",
 		"%{DepsIncludeDir}/SDL2",
 
-		"%{IncludeDir.glm}",
-
-		"%{DepIncludesDir}",
-
-		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGui}",
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.editor}",
 		"%{GloryIncludeDir.sdlwindow}",
 		"%{GloryIncludeDir.threads}",
 
-		"%{IncludeDir.FA}",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.Reflect}",
 		"%{IncludeDir.Version}",
 		"%{IncludeDir.ECS}",
 		"%{IncludeDir.Utils}",
+		"%{IncludeDir.FA}",
 
 		"%{SubmodoleDirs.ImGui}/backends/",
 
@@ -65,16 +62,13 @@ project "GloryEditorSDL"
 		"GloryReflect",
 		"GloryECS",
 		"GlorySDLWindow",
-
-		"yaml-cpp",
-		"ImGui",
 		"GloryEditor",
 		"GloryUtilsVersion",
 		"GloryUtils",
-		"SDL2",
 
-		"GloryJobs",
-		"GloryThreads",
+		"SDL2",
+		"yaml-cpp",
+		"ImGui",
 	}
 
 	defines
@@ -88,27 +82,12 @@ project "GloryEditorSDL"
 		systemversion "latest"
 		toolset "v143"
 
-		defines
-		{
-			"_LIB"
-		}
-
 	filter "platforms:Win32"
 		architecture "x86"
 		defines "WIN32"
 
-		libdirs
-		{
-			--"%{vulkanDir}/Third-Party/Bin32"
-		}
-
 	filter "platforms:x64"
 		architecture "x64"
-
-		libdirs
-		{
-			--"%{vulkanDir}/Third-Party/Bin"
-		}
 
 	filter "configurations:Debug"
 		runtime "Debug"

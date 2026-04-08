@@ -23,13 +23,9 @@ project "GloryRuntimeApplication"
 
 	includedirs
 	{
-		"%{DepsIncludeDir}",
-
 		"%{GloryIncludeDir.enginecore}",
 		"%{GloryIncludeDir.engine}",
 		"%{GloryIncludeDir.runtime}",
-		"%{GloryIncludeDir.threads}",
-		"%{GloryIncludeDir.jobs}",
 
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.Reflect}",
@@ -42,8 +38,6 @@ project "GloryRuntimeApplication"
 
 	libdirs
 	{
-		"%{DepsLibDir}",
-
 		"%{LibDirs.glory}",
 		"%{LibDirs.yaml_cpp}",
 	}
@@ -54,14 +48,13 @@ project "GloryRuntimeApplication"
 		"GloryEngine",
 		"GloryReflect",
 		"GloryRuntime",
-		"GloryJobs",
-		"GloryThreads",
+
+		"yaml-cpp",
 
 		"GloryECS",
 		"GloryUtils",
 		"GloryUtilsVersion",
 		"GloryCommandLine",
-		"yaml-cpp",
 	}
 
 	dependson
@@ -96,11 +89,6 @@ project "GloryRuntimeApplication"
 	filter "system:windows"
 		systemversion "latest"
 		toolset "v143"
-
-		defines
-		{
-			"_CONSOLE"
-		}
 
 	filter "platforms:Win32"
 		architecture "x86"

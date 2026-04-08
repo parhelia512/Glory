@@ -1,10 +1,10 @@
 #include "SceneViewCamera.h"
 #include "EditorApplication.h"
+#include "Shortcuts.h"
 
 #include <CameraManager.h>
 #include <ImGuizmo.h>
 #include <glm/gtx/matrix_decompose.hpp>
-#include <Shortcuts.h>
 
 namespace Glory::Editor
 {
