@@ -9,6 +9,7 @@
 #include <AssetManager.h>
 #include <SceneManager.h>
 #include <GScene.h>
+#include <Resources.h>
 
 #include <EntityRegistry.h>
 #include <BinaryStream.h>
@@ -223,8 +224,8 @@ namespace Glory
 	void LocalizeModule::Initialize()
 	{
 		Reflect::SetReflectInstance(&m_pEngine->Reflection());
-		m_pEngine->GetResourceTypes().RegisterResource<StringTable>("");
-		m_pEngine->GetResourceTypes().RegisterResource<StringsOverrideTable>("");
+		m_pEngine->GetResources().RegisterResource<StringTable>();
+		m_pEngine->GetResources().RegisterResource<StringsOverrideTable>();
 
 		Reflect::RegisterType<StringTableRef>();
 		Reflect::RegisterType<StringTableLoader>();

@@ -22,6 +22,7 @@
 #include <MaterialData.h>
 #include <SceneManager.h>
 #include <LocalizeModuleBase.h>
+#include <Resources.h>
 
 #include <DistributedRandom.h>
 
@@ -392,7 +393,10 @@ namespace Glory
 				manager->m_pInput = m_pEngine->GetModule<InputModule>();
 				manager->m_pLayers = &m_pEngine->GetLayerManager();
 			});
-		m_pEngine->GetResourceTypes().RegisterResource<UIDocumentData>("");
+		m_pEngine->GetResources().RegisterResource<UIDocumentData>(
+			[this](UIDocumentData* pNewDocument) {
+				m_RegistryFactory.PopulateRegisry(pNewDocument->GetRegistry());
+			});
 
 		/* Register the UI components with a different component types instance */
 		m_RegistryFactory.RegisterComponentManager<UITransformManager>();

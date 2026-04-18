@@ -690,7 +690,10 @@ namespace Glory
 		m_ResourceTypes->RegisterType<SceneObjectRef>();
 		m_ResourceTypes->RegisterType<ShapeProperty>();
 
-		m_ResourceTypes->RegisterResource<PrefabData>("");
+		m_Resources->RegisterResource<PrefabData>(
+			[this](PrefabData* pPrefab) {
+				m_pSceneManager->GetRegistryFactory().PopulateRegisry(pPrefab->GetRegistry());
+			});
 		m_Resources->RegisterResource<PipelineData>();
 		m_Resources->RegisterResource<MaterialData>();
 		m_Resources->RegisterResource<MeshData>();

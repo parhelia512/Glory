@@ -23,6 +23,10 @@ namespace Glory
     public:
         GLORY_MONO_API MonoScript();
         GLORY_MONO_API MonoScript(FileData* pFileData, std::vector<std::string>&& classes);
+        /** @overload */
+        GLORY_MONO_API MonoScript(MonoScript&&) noexcept = default;
+        /** @brief Move assignment operator */
+        GLORY_MONO_API MonoScript& operator=(MonoScript&&) noexcept = default;
         GLORY_MONO_API MonoScript(std::vector<char>&& data);
         GLORY_MONO_API virtual ~MonoScript();
 

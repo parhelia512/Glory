@@ -25,13 +25,11 @@ namespace Glory
 		APPEND_TYPE(Resource);
 	}
 
-	Resource::Resource(Resource&& other) noexcept : Object(), m_IsDirty(true)
+	Resource::Resource(Resource&& other) noexcept: Object(), m_IsDirty(true)
 	{
 		m_Inheritence = std::move(other.m_Inheritence);
 		m_ID = other.m_ID;
 		m_Name = std::move(other.m_Name);
-
-		APPEND_TYPE(Resource);
 	}
 
 	Resource& Resource::operator=(Resource&& other) noexcept

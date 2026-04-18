@@ -27,6 +27,10 @@ namespace Glory
     {
     public:
         GLORY_UI_RENDERER_API UIDocumentData();
+        /** @overload */
+        GLORY_UI_RENDERER_API UIDocumentData(UIDocumentData&&) noexcept = default;
+        /** @brief Move assignment operator */
+        GLORY_UI_RENDERER_API UIDocumentData& operator=(UIDocumentData&&) noexcept = default;
         GLORY_UI_RENDERER_API virtual ~UIDocumentData();
 
         template<typename T>

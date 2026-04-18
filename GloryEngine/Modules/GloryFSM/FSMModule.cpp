@@ -2,7 +2,7 @@
 #include "FSM.h"
 
 #include <IEngine.h>
-#include <ResourceType.h>
+#include <Resources.h>
 
 namespace Glory
 {
@@ -80,7 +80,7 @@ namespace Glory
 		Reflect::RegisterType<FSMNode>();
 		Reflect::RegisterType<FSMTransition>();
 		Reflect::RegisterType<FSMProperty>();
-		m_pEngine->GetResourceTypes().RegisterResource<FSMData>("");
+		m_pEngine->GetResources().RegisterResource<FSMData>();
 	}
 
 	void FSMModule::PostInitialize()

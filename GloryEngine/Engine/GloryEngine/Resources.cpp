@@ -1,6 +1,7 @@
 #include "Resources.h"
 #include "Debug.h"
 #include "ResourceReferencing.h"
+#include "AssetDatabase.h"
 
 #include <Hash.h>
 #include <GloryAssert.h>

@@ -1,5 +1,5 @@
 #pragma once
-#include "Object.h"
+#include "Resource.h"
 
 #include <engine_visibility.h>
 
@@ -8,6 +8,7 @@
 #include <typeindex>
 #include <vector>
 #include <unordered_map>
+#include <functional>
 
 namespace Glory
 {
@@ -32,10 +33,18 @@ namespace Glory
 	class ResourceFactoryTemplate : public ResourceFactory
 	{
 	public:
+		ResourceFactoryTemplate(std::function<void(R*)>&& handler):
+			m_CreationHandler(std::move(handler)) {}
+
 		inline virtual Resource* Create() const override
 		{
-			return (Resource*)new R();
+			R* pNewResource = new R();
+			if (m_CreationHandler) m_CreationHandler(pNewResource);
+			return (Resource*)pNewResource;
 		}
+
+	private:
+		std::function<void(R*)> m_CreationHandler = NULL;
 	};
 
 	class ResourceType
@@ -66,9 +75,9 @@ namespace Glory
 	{
 	public:
 		template<class T>
-		inline void RegisterResource(const std::string& extensions)
+		inline void RegisterResource(const std::string& extensions, std::function<void(T*)>&& handler=NULL)
 		{
-			ResourceFactory* pFactory = new ResourceFactoryTemplate<T>();
+			ResourceFactory* pFactory = new ResourceFactoryTemplate<T>(std::move(handler));
 			ResourceType* pResourceType = RegisterResource(typeid(T), extensions, pFactory);
 			T t = T();
 			for (size_t i = 0; i < t.TypeCount(); i++)

@@ -2,7 +2,6 @@
 #include "engine_visibility.h"
 
 #include "ResourceManager.h"
-#include "AssetDatabase.h"
 
 #include <set>
 #include <functional>
@@ -10,6 +9,7 @@
 namespace Glory
 {
 	class Debug;
+	class AssetDatabase;
 
 	class Resources
 	{
@@ -20,9 +20,9 @@ namespace Glory
 	public:
 		template<typename R>
 		requires ResourceCompatible<R>
-		inline void RegisterResource()
+		inline void RegisterResource(std::function<void(R*)>&& handler=NULL)
 		{
-			m_pResourceTypes->RegisterResource<R>("");
+			m_pResourceTypes->RegisterResource<R>("", std::move(handler));
 			const size_t managerIndex = m_Managers.size();
 			ResourceManager<R>* pManager = new ResourceManager<R>(this);
 			m_HashToManagerIndex.emplace(pManager->TypeHash, managerIndex);

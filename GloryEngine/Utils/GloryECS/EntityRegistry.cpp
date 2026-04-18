@@ -17,6 +17,56 @@ namespace Glory::Utils::ECS
 		m_EntityComponentOrder.resize(reserveEntities);
 	}
 
+	EntityRegistry::EntityRegistry(EntityRegistry&& other) noexcept:
+		m_ComponentManagers(std::move(other.m_ComponentManagers)),
+		m_HashToComponentManagerIndex(std::move(other.m_HashToComponentManagerIndex)),
+		m_ComponentOrderDirty(std::move(other.m_ComponentOrderDirty)),
+		m_EntityAlive(std::move(other.m_EntityAlive)),
+		m_EntityActiveSelf(std::move(other.m_EntityActiveSelf)),
+		m_EntityActiveHierarchy(std::move(other.m_EntityActiveHierarchy)),
+		m_EntityDirty(std::move(other.m_EntityDirty)),
+		m_EntityTrees(std::move(other.m_EntityTrees)),
+		m_Parents(std::move(other.m_Parents)),
+		m_HasComponent(std::move(other.m_HasComponent)),
+		m_EntityComponentOrder(std::move(other.m_EntityComponentOrder)),
+		m_NextEntityID(other.m_NextEntityID),
+		m_AliveCount(other.m_AliveCount),
+		m_EnabledCalls(std::move(other.m_EnabledCalls)),
+		m_pUserData(other.m_pUserData),
+		m_CallsEnabled(other.m_CallsEnabled)
+	{
+		other.m_NextEntityID = 0;
+		other.m_AliveCount = 0;
+		other.m_pUserData = nullptr;
+		other.m_CallsEnabled = false;
+	}
+
+	EntityRegistry& EntityRegistry::operator=(EntityRegistry&& other) noexcept
+	{
+		m_ComponentManagers = std::move(other.m_ComponentManagers);
+		m_HashToComponentManagerIndex = std::move(other.m_HashToComponentManagerIndex);
+		m_ComponentOrderDirty = std::move(other.m_ComponentOrderDirty);
+		m_EntityAlive = std::move(other.m_EntityAlive);
+		m_EntityActiveSelf = std::move(other.m_EntityActiveSelf);
+		m_EntityActiveHierarchy = std::move(other.m_EntityActiveHierarchy);
+		m_EntityDirty = std::move(other.m_EntityDirty);
+		m_EntityTrees = std::move(other.m_EntityTrees);
+		m_Parents = std::move(other.m_Parents);
+		m_HasComponent = std::move(other.m_HasComponent);
+		m_EntityComponentOrder = std::move(other.m_EntityComponentOrder);
+		m_NextEntityID = other.m_NextEntityID;
+		m_AliveCount = other.m_AliveCount;
+		m_EnabledCalls = std::move(other.m_EnabledCalls);
+		m_pUserData = other.m_pUserData;
+		m_CallsEnabled = other.m_CallsEnabled;
+
+		other.m_NextEntityID = 0;
+		other.m_AliveCount = 0;
+		other.m_pUserData = nullptr;
+		other.m_CallsEnabled = false;
+		return *this;
+	}
+
 	EntityRegistry::~EntityRegistry()
 	{
 		m_HashToComponentManagerIndex.clear();
