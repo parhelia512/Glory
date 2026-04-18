@@ -22,18 +22,6 @@ namespace Glory
 		SetBlendEnabled(false);
 	}
 
-	//PipelineData::PipelineData(PipelineData&& other) noexcept:
-	//	m_TotalPropertiesByteSize(0), Resource(std::move(other))
-	//{
-	//	APPEND_TYPE(PipelineData);
-	//}
-	//
-	//PipelineData& PipelineData::operator=(PipelineData&& other) noexcept
-	//{
-	//	Resource::operator=(std::move(other));
-	//	return *this;
-	//}
-
 	PipelineData::~PipelineData()
 	{
 	}

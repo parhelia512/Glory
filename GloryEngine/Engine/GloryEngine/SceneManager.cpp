@@ -174,7 +174,6 @@ namespace Glory
 		/* Register component types */
 		Reflect::RegisterEnum<CameraPerspective>();
 		Reflect::RegisterEnum<CameraOutputMode>();
-		//Reflect::RegisterType<MeshMaterial>();
 		Reflect::RegisterType<ShadowSettings>();
 
 		/* Register engine component managers */

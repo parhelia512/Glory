@@ -555,7 +555,6 @@ namespace Glory::Editor
 		PropertyDrawer::RegisterPropertyDrawer<PropertyDrawerTemplate<SceneObjectRef>>();
 		PropertyDrawer::RegisterPropertyDrawer<SceneObjectRedirectPropertyDrawer>();
 		PropertyDrawer::RegisterPropertyDrawer<ShapePropertyDrawer>();
-		//PropertyDrawer::RegisterPropertyDrawer<SimplePropertyDrawerTemplate<MeshMaterial>>();
 		PropertyDrawer::RegisterPropertyDrawer<BufferPropertyDrawer>();
 	}
 
