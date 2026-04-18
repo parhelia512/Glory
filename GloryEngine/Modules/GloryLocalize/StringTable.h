@@ -11,6 +11,10 @@ namespace Glory
 	public:
 		/** @brief Constructor */
 		GLORY_LOCALIZE_API StringTable();
+		/** @overload */
+		GLORY_LOCALIZE_API StringTable(StringTable&&) noexcept = default;
+		/** @brief Move assignment operator */
+		GLORY_LOCALIZE_API StringTable& operator=(StringTable&&) noexcept = default;
 		/** @brief Destructor */
 		GLORY_LOCALIZE_API virtual ~StringTable();
 

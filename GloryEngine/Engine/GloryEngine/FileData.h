@@ -15,6 +15,8 @@ namespace Glory
         GLORY_ENGINE_API FileData(std::vector<char>&& data);
         GLORY_ENGINE_API FileData(const std::vector<char>& data);
         GLORY_ENGINE_API FileData(std::string_view data);
+        GLORY_ENGINE_API FileData(FileData&&) noexcept = default;
+        GLORY_ENGINE_API FileData& operator=(FileData&&) noexcept = default;
         GLORY_ENGINE_API virtual ~FileData();
 
         GLORY_ENGINE_API size_t Size() const;

@@ -91,6 +91,10 @@ namespace Glory
 	public:
 		/** @brief Constructor */
 		GLORY_FSM_API FSMData();
+		/** @overload */
+		GLORY_FSM_API FSMData(FSMData&&) noexcept = default;
+		/** @brief Move assignment operator */
+		GLORY_FSM_API FSMData& operator=(FSMData&&) noexcept = default;
 		/** @brief Destructor */
 		GLORY_FSM_API virtual ~FSMData();
 

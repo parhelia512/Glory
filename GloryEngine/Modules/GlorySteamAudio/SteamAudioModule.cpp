@@ -10,6 +10,7 @@
 #include <GScene.h>
 #include <Entity.h>
 #include <Components.h>
+#include <Resources.h>
 
 #include <AudioModule.h>
 #include <AudioComponentManager.h>
@@ -203,8 +204,8 @@ namespace Glory
 		Reflect::SetReflectInstance(&m_pEngine->Reflection());
 
 		m_pEngine->Reflection().RegisterType<SoundMaterial>();
-		m_pEngine->GetResourceTypes().RegisterResource<SoundMaterialData>(".gsmat");
-		m_pEngine->GetResourceTypes().RegisterResource<AudioSceneData>("");
+		m_pEngine->GetResources().RegisterResource<SoundMaterialData>();
+		m_pEngine->GetResources().RegisterResource<AudioSceneData>();
 
 		m_pEngine->GetSceneManager()->RegisterComponentManager<Utils::ECS::ComponentManager<SoundOccluder>, SoundOccluder>();
 

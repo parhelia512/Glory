@@ -24,8 +24,10 @@ namespace Glory
         };
 
     public:
-        GLORY_ENGINE_API ImageData(uint32_t w, uint32_t h, PixelFormat internalFormat, PixelFormat format, uint8_t bytesPerPixel, char*&& pPixels, size_t dataSize, bool compressed=false, DataType dataType=DataType::DT_UByte);
         GLORY_ENGINE_API ImageData();
+        GLORY_ENGINE_API ImageData(uint32_t w, uint32_t h, PixelFormat internalFormat, PixelFormat format, uint8_t bytesPerPixel, char*&& pPixels, size_t dataSize, bool compressed=false, DataType dataType=DataType::DT_UByte);
+        GLORY_ENGINE_API ImageData(ImageData&& other) noexcept;
+        GLORY_ENGINE_API ImageData& operator=(ImageData&& other) noexcept;
         GLORY_ENGINE_API virtual ~ImageData();
 
         GLORY_ENGINE_API uint32_t GetWidth() const;

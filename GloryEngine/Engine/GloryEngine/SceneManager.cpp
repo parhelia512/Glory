@@ -12,6 +12,7 @@
 #include "CameraComponentManager.h"
 #include "LightManager.h"
 #include "TextManager.h"
+#include "Resources.h"
 
 #include <Reflection.h>
 
@@ -173,7 +174,6 @@ namespace Glory
 		/* Register component types */
 		Reflect::RegisterEnum<CameraPerspective>();
 		Reflect::RegisterEnum<CameraOutputMode>();
-		Reflect::RegisterType<MeshMaterial>();
 		Reflect::RegisterType<ShadowSettings>();
 
 		/* Register engine component managers */
@@ -212,7 +212,7 @@ namespace Glory
 		pColorField = LightComponent::GetTypeData()->GetFieldData(0);
 		Reflect::SetFieldFlags(pColorField, PropertyFlags::Color);
 
-		m_pEngine->GetResourceTypes().RegisterResource<GScene>(".gscene");
+		m_pEngine->GetResourceTypes().RegisterResource<GScene>("");
 
 		OnInitialize();
 	}

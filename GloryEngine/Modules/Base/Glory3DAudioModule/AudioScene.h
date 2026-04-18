@@ -116,6 +116,10 @@ namespace Glory
 		AudioSceneData();
 		/** @overload */
 		AudioSceneData(AudioScene&& audioScene);
+		/** @overload */
+		AudioSceneData(AudioSceneData&&) noexcept = default;
+		/** @brief Move assignment operator */
+		AudioSceneData& operator=(AudioSceneData&&) noexcept = default;
 		/** @brief Destructor */
 		virtual ~AudioSceneData() {}
 

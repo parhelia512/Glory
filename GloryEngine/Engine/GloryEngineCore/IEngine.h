@@ -25,6 +25,9 @@ namespace Glory
 	class GraphicsDevice;
 	class Renderer;
 
+	class Resources;
+	class ResourceLoader;
+
 	struct WindowCreateInfo;
 	struct Version;
 	struct UUIDRemapper;
@@ -120,6 +123,8 @@ namespace Glory
 		virtual void Cleanup() = 0;
 		virtual void Draw() = 0;
 
+		virtual Resources& GetResources() = 0;
+
 		virtual ThreadManager& Threads() = 0;
 		virtual Jobs::JobManager& Jobs() = 0;
 		virtual Console& GetConsole() = 0;
@@ -140,6 +145,7 @@ namespace Glory
 		virtual void SetSceneManager(SceneManager* pManager) = 0;
 		virtual void SetMaterialManager(MaterialManager* pManager) = 0;
 		virtual void SetPipelineManager(PipelineManager* pManager) = 0;
+		virtual void SetResourceLoader(ResourceLoader* pLoader) = 0;
 
 		virtual void AddUserContext(uint32_t hash, void* pUserContext) = 0;
 		virtual void* GetUserContext(uint32_t hash) = 0;

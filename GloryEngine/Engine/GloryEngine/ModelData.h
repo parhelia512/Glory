@@ -12,6 +12,8 @@ namespace Glory
 	{
 	public:
 		GLORY_ENGINE_API ModelData();
+		GLORY_ENGINE_API ModelData(ModelData&&) noexcept = default;
+		GLORY_ENGINE_API ModelData& operator=(ModelData&&) noexcept = default;
 		GLORY_ENGINE_API virtual ~ModelData();
 
 	private:

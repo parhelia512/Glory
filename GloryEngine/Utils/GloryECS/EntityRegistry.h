@@ -27,6 +27,10 @@ namespace Glory::Utils::ECS
 	{
 	public:
 		EntityRegistry(void* userData=nullptr, size_t reserveComponentManagers=1, size_t reserveEntities=100);
+		/** @overload */
+		EntityRegistry(EntityRegistry&& other) noexcept;
+		/** @brief Move assignment operator */
+		EntityRegistry& operator=(EntityRegistry&& other) noexcept;
 		virtual ~EntityRegistry();
 
 		EntityID CreateEntity();

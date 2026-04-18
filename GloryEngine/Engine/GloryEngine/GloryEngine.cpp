@@ -10,13 +10,18 @@
 #include "LightData.h"
 #include "Input.h"
 
+#include "PrefabData.h"
 #include "PipelineData.h"
 #include "MaterialData.h"
-#include "PrefabData.h"
+#include "MeshData.h"
+#include "ModelData.h"
+#include "ImageData.h"
 #include "AudioData.h"
 #include "FontData.h"
 #include "CubemapData.h"
 #include "TextFileData.h"
+#include "TextureData.h"
+#include "FileData.h"
 
 #include "Debug.h"
 #include "AssetDatabase.h"
@@ -27,6 +32,9 @@
 #include "RenderData.h"
 #include "GraphicsDevice.h"
 #include "Renderer.h"
+
+#include "Resources.h"
+#include "ResourceLoader.h"
 
 #include "IModuleLoopHandler.h"
 #include "ResourceLoaderModule.h"
@@ -206,11 +214,15 @@ namespace Glory
 		: m_ActiveGraphicsDevice(0), m_ActiveRenderer(0), m_pSceneManager(createInfo.pSceneManager),
 		m_ThreadManager(new ThreadManager()), m_JobManager(new Jobs::JobManager(m_ThreadManager.get())),
 		m_Reflection(new Reflect), m_CreateInfo(createInfo), m_ResourceTypes(new ResourceTypes),
-		m_Time(new GameTime(this)), m_Debug(createInfo.m_pDebug), m_LayerManager(new LayerManager(this)),
-		m_pAssetsManager(createInfo.pAssetManager), m_Console(createInfo.m_pConsole), m_Profiler(new EngineProfiler()),
-		m_CameraManager(new CameraManager(this)), m_pMaterialManager(createInfo.pMaterialManager),
-		m_AssetDatabase(new AssetDatabase), m_ObjectManager(new ObjectManager), m_RootPath("./")
+		m_Time(new GameTime(this)), m_Debug(createInfo.m_pDebug),
+		m_LayerManager(new LayerManager(this)), m_pAssetsManager(createInfo.pAssetManager), m_Console(createInfo.m_pConsole),
+		m_Profiler(new EngineProfiler()), m_CameraManager(new CameraManager(this)), m_pMaterialManager(createInfo.pMaterialManager),
+		m_pResourceLoader(createInfo.pResourceLoader), m_AssetDatabase(new AssetDatabase),
+		m_ObjectManager(new ObjectManager), m_RootPath("./")
 	{
+		m_Resources.reset(new Resources(m_AssetDatabase.get(), m_ResourceTypes.get(), m_Debug));
+		if (m_pResourceLoader) m_pResourceLoader->SetResources(m_Resources.get());
+
 		/* Copy main modules */
 		m_pMainModules.resize(createInfo.MainModuleCount);
 		m_pAllModules.resize(createInfo.MainModuleCount);
@@ -465,6 +477,12 @@ namespace Glory
 		m_pPipelineManager = pManager;
 	}
 
+	void GloryEngine::SetResourceLoader(ResourceLoader* pLoader)
+	{
+		m_pResourceLoader = pLoader;
+		m_pResourceLoader->SetResources(m_Resources.get());
+	}
+
 	Debug& GloryEngine::GetDebug()
 	{
 		return *m_Debug;
@@ -650,6 +668,11 @@ namespace Glory
 		return m_UUIDRemapper;
 	}
 
+	Resources& GloryEngine::GetResources()
+	{
+		return *m_Resources;
+	}
+
 	void GloryEngine::RegisterBasicTypes()
 	{
 		Reflect::SetReflectInstance(m_Reflection.get());
@@ -666,16 +689,22 @@ namespace Glory
 		m_ResourceTypes->RegisterType<LayerMask>();
 		m_ResourceTypes->RegisterType<SceneObjectRef>();
 		m_ResourceTypes->RegisterType<ShapeProperty>();
-		m_ResourceTypes->RegisterResource<PrefabData>("");
-		m_ResourceTypes->RegisterResource<PipelineData>("");
-		m_ResourceTypes->RegisterResource<MaterialData>("");
-		m_ResourceTypes->RegisterResource<MeshData>("");
-		m_ResourceTypes->RegisterResource<ModelData>("");
-		m_ResourceTypes->RegisterResource<ImageData>("");
-		m_ResourceTypes->RegisterResource<AudioData>("");
-		m_ResourceTypes->RegisterResource<FontData>("");
-		m_ResourceTypes->RegisterResource<CubemapData>("");
-		m_ResourceTypes->RegisterResource<TextFileData>("");
+
+		m_Resources->RegisterResource<PrefabData>(
+			[this](PrefabData* pPrefab) {
+				m_pSceneManager->GetRegistryFactory().PopulateRegisry(pPrefab->GetRegistry());
+			});
+		m_Resources->RegisterResource<PipelineData>();
+		m_Resources->RegisterResource<MaterialData>();
+		m_Resources->RegisterResource<MeshData>();
+		m_Resources->RegisterResource<ModelData>();
+		m_Resources->RegisterResource<ImageData>();
+		m_Resources->RegisterResource<AudioData>();
+		m_Resources->RegisterResource<FontData>();
+		m_Resources->RegisterResource<CubemapData>();
+		m_Resources->RegisterResource<TextFileData>();
+		m_Resources->RegisterResource<TextureData>();
+		m_Resources->RegisterResource<FileData>();
 
 		Reflect::RegisterBasicType<glm::vec2>("vec2");
 		Reflect::RegisterBasicType<glm::vec3>("vec3");
@@ -712,14 +741,15 @@ namespace Glory
 		Reflect::RegisterType<TaperedCapsule>();
 		Reflect::RegisterType<ShapeProperty>();
 
-		Reflect::RegisterBasicType<TextureData>("TextureData");
-		Reflect::RegisterBasicType<FontData>("FontData");
+		//Reflect::RegisterBasicType<TextureData>("TextureData");
+		//Reflect::RegisterBasicType<FontData>("FontData");
 		Reflect::RegisterTemplatedType("AssetReference,Glory::AssetReference,class Glory::AssetReference", ST_Asset, sizeof(UUID));
 	}
 
 	void GloryEngine::Update()
 	{
 		BeginFrame();
+		m_pResourceLoader->Update();
 		m_Console->Update();
 		WindowModule* pWindows = IEngine::GetMainModule<WindowModule>();
 		if (pWindows) pWindows->PollEvents();

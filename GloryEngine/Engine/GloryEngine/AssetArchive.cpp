@@ -79,19 +79,24 @@ namespace Glory
 
 	void AssetArchive::Deserialize(IEngine* pEngine)
 	{
+		Deserialize(&pEngine->GetDebug(), &pEngine->GetResourceTypes());
+	}
+
+	void AssetArchive::Deserialize(Debug* pDebug, ResourceTypes* pResourceTypes)
+	{
 		if (!VerifyVersion())
 		{
 			std::string versionStr;
 			m_Version.GetVersionString(versionStr);
 			std::stringstream str;
 			str << "Compiled asset archive was built with a different core/runtime version (" << versionStr << ") than the current version " << GloryCoreVersion;
-			pEngine->GetDebug().LogFatalError(str.str());
+			pDebug->LogFatalError(str.str());
 			return;
 		}
 
 		while (!m_pStream->Eof())
 		{
-			ReadResource(pEngine);
+			ReadResource(pResourceTypes);
 		}
 
 		m_Owned.Reserve(m_pResources.size());
@@ -105,9 +110,14 @@ namespace Glory
 
 	Resource* AssetArchive::Get(IEngine* pEngine, size_t index) const
 	{
+		return Get(&pEngine->GetDebug(), index);
+	}
+
+	Resource* AssetArchive::Get(Debug* pDebug, size_t index) const
+	{
 		if (!m_Owned.IsSet(index))
 		{
-			pEngine->GetDebug().LogError("Resource already claimed!");
+			pDebug->LogError("Resource already claimed!");
 			return nullptr;
 		}
 		m_Owned.UnSet(index);
@@ -124,14 +134,14 @@ namespace Glory
 		m_pStream->Read(m_Version);
 	}
 
-	Resource* AssetArchive::ReadResource(IEngine* pEngine)
+	Resource* AssetArchive::ReadResource(ResourceTypes* pResourceTypes)
 	{
 		std::string name;
 		uint32_t typeHash = 0;
 		UUID uuid = 0;
 		m_pStream->Read(uuid).Read(name).Read(typeHash);
 
-		const ResourceType* pType = pEngine->GetResourceTypes().GetResourceType(typeHash);
+		const ResourceType* pType = pResourceTypes->GetResourceType(typeHash);
 		if (!pType)
 		{
 			throw new std::exception("Non existing resource type");

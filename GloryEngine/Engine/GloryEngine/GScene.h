@@ -44,6 +44,10 @@ namespace Glory
 		GLORY_ENGINE_API GScene(const std::string& sceneName = "New Scene");
 		/** @overload */
 		GLORY_ENGINE_API GScene(const std::string& sceneName, UUID uuid);
+		/** @overload */
+		GLORY_ENGINE_API GScene(GScene&& other) noexcept;
+		/** @brief Move assignment operator */
+		GLORY_ENGINE_API GScene& operator=(GScene&& other) noexcept;
 		/** @brief Destructor */
 		GLORY_ENGINE_API virtual ~GScene();
 

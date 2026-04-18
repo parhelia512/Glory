@@ -10,6 +10,8 @@ namespace Glory
 	public:
 		GLORY_ENGINE_API AudioData();
 		GLORY_ENGINE_API AudioData(std::vector<char>&& data);
+		GLORY_ENGINE_API AudioData(AudioData&&) noexcept = default;
+		GLORY_ENGINE_API AudioData& operator=(AudioData&&) noexcept = default;
 		virtual ~AudioData() = default;
 
 		GLORY_ENGINE_API const char* Data() const;

@@ -27,6 +27,39 @@ namespace Glory
 	{
 		APPEND_TYPE(GScene);
 	}
+
+	GScene::GScene(GScene&& other) noexcept: Resource(std::move(other)),
+		m_Ids(std::move(other.m_Ids)),
+		m_UUIds(std::move(other.m_UUIds)),
+		m_Names(std::move(other.m_Names)),
+		m_ActivePrefabs(std::move(other.m_ActivePrefabs)),
+		m_ActivePrefabChildren(std::move(other.m_ActivePrefabChildren)),
+		m_Registry(std::move(other.m_Registry)),
+		m_DelayedParents(std::move(other.m_DelayedParents)),
+		m_Settings(std::move(other.m_Settings)),
+		m_pManager(other.m_pManager),
+		m_MarkedForDestruct(false),
+		m_Starting(false)
+	{
+		other.m_pManager = nullptr;
+	}
+
+	GScene& GScene::operator=(GScene&& other) noexcept
+	{
+		m_Ids = std::move(other.m_Ids);
+		m_UUIds = std::move(other.m_UUIds);
+		m_Names = std::move(other.m_Names);
+		m_ActivePrefabs = std::move(other.m_ActivePrefabs);
+		m_ActivePrefabChildren = std::move(other.m_ActivePrefabChildren);
+		m_Registry = std::move(other.m_Registry);
+		m_DelayedParents = std::move(other.m_DelayedParents);
+		m_Settings = std::move(other.m_Settings);
+		m_pManager = other.m_pManager;
+		other.m_pManager = nullptr;
+		m_MarkedForDestruct = false;
+		m_Starting = false;
+		return *this;
+	}
 		
 	GScene::~GScene()
 	{

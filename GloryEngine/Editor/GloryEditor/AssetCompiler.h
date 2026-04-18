@@ -46,6 +46,7 @@ namespace Glory::Editor
 		GLORY_EDITOR_API static void RemoveDeletedAssets();
 		GLORY_EDITOR_API static void Update();
 		GLORY_EDITOR_API static AssetCompilerEventDispatcher& GetAssetCompilerEventDispatcher();
+		GLORY_EDITOR_API static std::filesystem::path GenerateCompiledResourcePath(const UUID uuid);
 
 		struct AssetData
 		{
@@ -62,6 +63,5 @@ namespace Glory::Editor
 	private:
 		static void DispatchCompilationJob(const AssetData& asset);
 		static bool CompileJob(const AssetData asset);
-		static std::filesystem::path GenerateCompiledAssetPath(const UUID uuid);
 	};
 }

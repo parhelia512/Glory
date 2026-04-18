@@ -1,0 +1,114 @@
+#pragma once
+#include "engine_visibility.h"
+
+#include "ResourceManager.h"
+
+#include <set>
+#include <functional>
+
+namespace Glory
+{
+	class Debug;
+	class AssetDatabase;
+
+	/** @brief Global resource manager */
+	class Resources
+	{
+	public:
+		/** @brief Constructor
+		 * @param pDatabase Asset database
+		 * @param pResourceTypes Resource types manager
+		 * @param pDebug Debug logging instance
+		 */
+		Resources(AssetDatabase* pDatabase, ResourceTypes* pResourceTypes, Debug* pDebug);
+		/** @brief Destructor */
+		~Resources() = default;
+
+	public:
+		/** @brief Register a resource type and create a manager for it
+		 * @param handler Callback that must be called when a resource of this type is created by a resource factory
+		 */
+		template<typename R>
+		requires ResourceCompatible<R>
+		inline void RegisterResource(std::function<void(R*)>&& handler=NULL)
+		{
+			m_pResourceTypes->RegisterResource<R>("", std::move(handler));
+			const size_t managerIndex = m_Managers.size();
+			ResourceManager<R>* pManager = new ResourceManager<R>(this);
+			m_HashToManagerIndex.emplace(pManager->TypeHash, managerIndex);
+			m_Managers.emplace_back(pManager);
+		}
+
+		/** @brief Add a resource to a compatible manager
+		 * @param pResource Resource to add
+		 * @returns @cpp true @ce if the resource was succesfully moved to a compatible manager
+		 *
+		 * Note that the original resource will be deleted as its data will be moved to the manager,
+		 * and the pointer will be set to the new resource.
+		 * If no compatible manager is found, the resource is not deleted.
+		 */
+		template<typename R>
+		requires ResourceCompatible<R>
+		inline bool AddResource(R** pResource)
+		{
+			return static_cast<R*>(AddResource(static_cast<Resource**>(pResource)));
+		}
+
+		/** @overload */
+		GLORY_ENGINE_API bool AddResource(Resource** pResource);
+		/** @brief Find a resource by ID and return it
+		 * @param id ID of the resource to find
+		 * @returns Pointer to the resource if found, otherwise nullptr
+		 *
+		 * Uses a cache to speed up in which manager to find the resource.
+		 */
+		GLORY_ENGINE_API Resource* GetResource(UUID id);
+		/** @brief Get the @ref ResourceTypes instance attached to this resource manager */
+		GLORY_ENGINE_API ResourceTypes* GetResourceTypes();
+
+		/** @brief Increment the reference counter for a resource by ID
+		 * @param id ID of the resource
+		 *
+		 * If the counter was 0, then this will queue the resource for loading.
+		 */
+		void AddReference(UUID id);
+		/** @brief Decrement the reference counter for a resource by ID
+		 * @param id ID of the resource
+		 *
+		 * If the counter becomes 0 after decrementing, then this will queue the resource for unloading.
+		 */
+		void RemoveReference(UUID id);
+
+		/** @brief Run a callback on each queued for loading resource ID, then clear the queue.
+		 * @param callback Function to call on each resource ID.
+		 */
+		void HandleToLoad(std::function<void(UUID)> callback);
+		/** @brief Run a callback on each queued for unloading resource ID, then clear the queue.
+		 * @param callback Function to call on each resource ID.
+		 */
+		void HandleToUnload(std::function<void(UUID)> callback);
+
+		/** @brief Remove a resource from its resource manager.
+		 * @param id ID of the resource to remove.
+		 *
+		 * Just like @ref GetResource() this uses a cache to speed up finding the manager.
+		 * It should be noted that a removed resource is simply moved to the end of the array,
+		 * once the manager grows to that size it is replaced by the new resource.
+		 * This means unloading is fast and memory efficient.
+		 */
+		GLORY_ENGINE_API void UnloadResource(UUID id);
+
+	private:
+		std::vector<std::unique_ptr<IResourceManager>> m_Managers;
+		std::map<uint32_t, size_t> m_HashToManagerIndex;
+		std::map<UUID, size_t> m_ResourceIDToManagerIndex;
+		std::map<UUID, size_t> m_ReferenceCounter;
+
+		std::set<UUID> m_ToLoadResources;
+		std::set<UUID> m_ToUnloadResources;
+
+		AssetDatabase* m_pDatabase;
+		ResourceTypes* m_pResourceTypes;
+		Debug* m_pDebug;
+	};
+}

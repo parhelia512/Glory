@@ -31,6 +31,10 @@ namespace Glory
     public:
         SoundMaterialData();
         SoundMaterialData(SoundMaterial&& material);
+        /** @overload */
+        SoundMaterialData(SoundMaterialData&&) noexcept = default;
+        /** @brief Move assignment operator */
+        SoundMaterialData& operator=(SoundMaterialData&&) noexcept = default;
         virtual ~SoundMaterialData();
 
         /** @brief Get the attached material */

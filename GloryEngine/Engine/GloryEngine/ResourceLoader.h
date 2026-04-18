@@ -1,0 +1,38 @@
+#pragma once
+#include <engine_visibility.h>
+
+#include <atomic>
+
+#include <UUID.h>
+
+namespace Glory
+{
+	class Resources;
+
+	/** @brief Resource loader base class. */
+	class ResourceLoader
+	{
+	public:
+		/** @brief Constructor */
+		GLORY_ENGINE_API ResourceLoader();
+		/** @brief Destructor */
+		GLORY_ENGINE_API virtual ~ResourceLoader();
+
+		/** @brief Iterate over all queued for loading and unloading resources and
+		 * call the loading and unloading implementations. */
+		GLORY_ENGINE_API void Update();
+		/** @brief Set @ref Resources instance. */
+		GLORY_ENGINE_API void SetResources(Resources* pResources);
+
+	protected:
+		/** @brief Override to add loading implementation. */
+		virtual void QueueLoad(UUID id) = 0;
+		/** @brief Override to add unloading implementation. */
+		virtual void QueueUnload(UUID id) = 0;
+		/** @brief Override to do custom processing. */
+		virtual void OnUpdate() = 0;
+
+	protected:
+		Resources* m_pResources = nullptr;
+	};
+}

@@ -72,7 +72,7 @@ namespace Glory::Editor
 
 			AssetLocation location = data.Location;
 			location.Index = 0;
-			location.Path = GenerateCompiledAssetPath(id).string();
+			location.Path = GenerateCompiledResourcePath(id).string();
 			assetDatabase.SetAsset(location, data.Meta);
 		}
 	}
@@ -84,7 +84,7 @@ namespace Glory::Editor
 
 		for (UUID id : ids)
 		{
-			const std::filesystem::path path = GenerateCompiledAssetPath(id);
+			const std::filesystem::path path = GenerateCompiledResourcePath(id);
 			const bool exists = std::filesystem::exists(path.string());
 			if (exists) continue;
 			newIDs.push_back(id);
@@ -249,12 +249,12 @@ namespace Glory::Editor
 
 	void AssetCompiler::DispatchCompilationJob(const AssetData& asset)
 	{
-		if (m_CompilingAssets.Contains(asset.Meta.ID())) return;
-		/* Don't compile scenes */
-		if (asset.Meta.Extension() == ".gscene") return;
+		//if (m_CompilingAssets.Contains(asset.Meta.ID())) return;
+		///* Don't compile scenes */
+		//if (asset.Meta.Extension() == ".gscene") return;
 
-		m_CompilingAssets.push_back(asset.Meta.ID());
-		CompilationJobPool->QueueJob(CompileJob, asset);
+		//m_CompilingAssets.push_back(asset.Meta.ID());
+		//CompilationJobPool->QueueJob(CompileJob, asset);
 	}
 
 	void ImportIfNew(ImportedResource& resource)
@@ -349,10 +349,10 @@ namespace Glory::Editor
 		return true;
 	}
 
-	std::filesystem::path AssetCompiler::GenerateCompiledAssetPath(const UUID uuid)
+	std::filesystem::path AssetCompiler::GenerateCompiledResourcePath(const UUID uuid)
 	{
 		std::filesystem::path compiledPath = ProjectSpace::GetOpenProject()->CachePath();
-		compiledPath.append("CompiledAssets").append(std::to_string(uuid)).replace_extension(".gcag");
+		compiledPath.append("CompiledResources").append(std::to_string(uuid)).replace_extension(".gcag");
 		return compiledPath;
 	}
 }

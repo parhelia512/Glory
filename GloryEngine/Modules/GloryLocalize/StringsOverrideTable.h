@@ -8,6 +8,10 @@ namespace Glory
 	public:
 		/** @brief Constructor */
 		GLORY_LOCALIZE_API StringsOverrideTable();
+		/** @overload */
+		GLORY_LOCALIZE_API StringsOverrideTable(StringsOverrideTable&&) noexcept = default;
+		/** @brief Move assignment operator */
+		GLORY_LOCALIZE_API StringsOverrideTable& operator=(StringsOverrideTable&&) noexcept = default;
 		/** @override */
 		GLORY_LOCALIZE_API StringsOverrideTable(UUID baseTableID, std::string&& language);
 		/** @brief Destructor */

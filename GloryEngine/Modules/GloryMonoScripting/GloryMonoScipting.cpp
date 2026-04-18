@@ -15,6 +15,7 @@
 #include <SceneManager.h>
 #include <IEngine.h>
 #include <BinaryStream.h>
+#include <Resources.h>
 
 #include <EntityRegistry.h>
 
@@ -82,7 +83,7 @@ namespace Glory
 				manager->m_pCoreLibManager = m_pMonoManager->m_pCoreLibManager;
 				manager->m_pScriptManager = &m_pMonoManager->m_pCoreLibManager->ScriptManager();
 			});
-		m_pEngine->GetResourceTypes().RegisterResource<MonoScript>(".cs");
+		m_pEngine->GetResources().RegisterResource<MonoScript>();
 
 		m_pEngine->AddLoaderModule(new MonoScriptLoader());
 

@@ -11,6 +11,8 @@ namespace Glory
         GLORY_ENGINE_API CubemapData();
         GLORY_ENGINE_API CubemapData(UUID right, UUID left, UUID down, UUID up, UUID front, UUID back);
         GLORY_ENGINE_API CubemapData(ImageData* pRight, ImageData* pLeft, ImageData* pDown, ImageData* pUp, ImageData* pFront, ImageData* pBack);
+        GLORY_ENGINE_API CubemapData(CubemapData&&) noexcept = default;
+        GLORY_ENGINE_API CubemapData& operator=(CubemapData&&) noexcept = default;
         GLORY_ENGINE_API virtual ~CubemapData();
 
         GLORY_ENGINE_API virtual ImageData* GetImageData(AssetManager* pAssetManager, size_t face);

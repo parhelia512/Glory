@@ -15,6 +15,10 @@ namespace Glory
     {
     public:
         GLORY_ENGINE_API PrefabData();
+        /** @overload */
+        GLORY_ENGINE_API PrefabData(PrefabData&&) noexcept = default;
+        /** @brief Move assignment operator */
+        GLORY_ENGINE_API PrefabData& operator=(PrefabData&&) noexcept = default;
         GLORY_ENGINE_API virtual ~PrefabData() = default;
         GLORY_ENGINE_API static PrefabData* CreateFromEntity(GScene* pScene, Utils::ECS::EntityID entity);
 

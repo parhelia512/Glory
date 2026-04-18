@@ -46,26 +46,6 @@ namespace Glory
 		glm::mat4 MatTransform;
 	};
 
-	struct MeshMaterial
-	{
-		GLORY_ENGINE_API MeshMaterial() : m_MaterialReference(0ull) {}
-		GLORY_ENGINE_API MeshMaterial(UUID uuid) : m_MaterialReference(uuid) {}
-
-		inline bool operator==(const MeshMaterial&& other)
-		{
-			return other.m_MaterialReference.AssetUUID() == other.m_MaterialReference.AssetUUID();
-		}
-
-		inline bool operator==(MeshMaterial& other)
-		{
-			return other.m_MaterialReference.AssetUUID() == other.m_MaterialReference.AssetUUID();
-		}
-
-		REFLECTABLE(MeshMaterial,
-			(AssetReference<MaterialData>) (m_MaterialReference)
-		)
-	};
-
 	struct MeshRenderer
 	{
 		GLORY_ENGINE_API MeshRenderer(MeshData* pMesh, MaterialData* pMaterial)
