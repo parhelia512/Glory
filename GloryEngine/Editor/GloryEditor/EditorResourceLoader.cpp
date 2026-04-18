@@ -32,6 +32,7 @@ namespace Glory::Editor
 		/* Go over all cached resources and check if they are outdated */
 		const std::filesystem::path cachePath = AssetCompiler::GenerateCompiledResourcePath(0ull).parent_path();
 		/* @todo */
+		throw std::exception("Not yet implemented!");
 	}
 
 	void EditorResourceLoader::QueueLoad(UUID id)
@@ -58,8 +59,8 @@ namespace Glory::Editor
 		m_AlreadyCompilingPaths.emplace(assetPath, 0);
 
 		/* Compile the asset */
-		ResourceLoaderJobPool->QueueSingleJob([this](UUID id, std::filesystem::path assetPath, Resource*)
-			{ return CompileJob(id, assetPath); }, id, assetPath, nullptr);
+		ResourceLoaderJobPool->QueueSingleJob([this](UUID, std::filesystem::path assetPath, Resource*)
+			{ return CompileJob(assetPath); }, id, assetPath, nullptr);
 	}
 
 	void EditorResourceLoader::QueueUnload(UUID id)
@@ -96,7 +97,7 @@ namespace Glory::Editor
 		return cacheWriteTime >= assetWriteTime;
 	}
 
-	bool EditorResourceLoader::CompileJob(UUID id, const std::filesystem::path& assetPath)
+	bool EditorResourceLoader::CompileJob(const std::filesystem::path& assetPath)
 	{
 		/* Import the resource */
 		ImportedResource resource = Importer::Import(assetPath);
@@ -234,7 +235,7 @@ namespace Glory::Editor
 	{
 		if (m_ToUnload.empty()) return;
 
-		static constexpr size_t maxUnloadsInSingleFrame = 100;
+		static constexpr size_t maxUnloadsInSingleFrame = 1000;
 		std::array<UUID, maxUnloadsInSingleFrame> toUnload;
 		size_t currentUnloadCount = 0;
 
