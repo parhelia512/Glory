@@ -35,6 +35,7 @@ namespace Editor
 	class EditorResourceManager;
 	class EditorPipelineManager;
 	class EditorMaterialManager;
+	class EditorResourceLoader;
 	class ThumbnailManager;
 
 	class EditorApplication : public ICaptureHandler
@@ -108,6 +109,7 @@ namespace Editor
 		std::unique_ptr<EditorResourceManager> m_ResourceManager;
 		std::unique_ptr<EditorPipelineManager> m_PipelineManager;
 		std::unique_ptr<EditorMaterialManager> m_MaterialManager;
+		std::unique_ptr<EditorResourceLoader> m_ResourceLoader;
 		std::unique_ptr<ThumbnailManager> m_ThumbnailManager;
 		std::unique_ptr<Serializers> m_Serializers;
 		efsw::FileWatcher* m_pFileWatcher;

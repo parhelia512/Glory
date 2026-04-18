@@ -21,6 +21,10 @@ namespace Glory
 		GLORY_ENGINE_API MeshData(uint32_t vertexCount, uint32_t vertexSize, const float* vertices, uint32_t indexCount,
 			const uint32_t* indices, const std::vector<AttributeType>& attributes);
 		GLORY_ENGINE_API MeshData(uint32_t vertexCount, uint32_t vertexSize, const float* vertices, const std::vector<AttributeType>& attributes);
+
+		GLORY_ENGINE_API MeshData(MeshData&&) noexcept = default;
+		GLORY_ENGINE_API MeshData& operator=(MeshData&&) noexcept = default;
+
 		GLORY_ENGINE_API virtual ~MeshData();
 
 		GLORY_ENGINE_API const uint32_t VertexCount() const;

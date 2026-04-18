@@ -17,6 +17,13 @@ namespace Glory
 	public:
 		GLORY_ENGINE_API AssetReferenceBase();
 		GLORY_ENGINE_API AssetReferenceBase(UUID uuid);
+
+		GLORY_ENGINE_API AssetReferenceBase(const AssetReferenceBase& other);
+		GLORY_ENGINE_API AssetReferenceBase& operator=(const AssetReferenceBase& other);
+
+		GLORY_ENGINE_API AssetReferenceBase(AssetReferenceBase&& other) noexcept;
+		GLORY_ENGINE_API AssetReferenceBase& operator=(AssetReferenceBase&& other) noexcept;
+
 		GLORY_ENGINE_API virtual ~AssetReferenceBase();
 
 		GLORY_ENGINE_API const UUID AssetUUID() const;
@@ -32,7 +39,8 @@ namespace Glory
 		GLORY_ENGINE_API operator bool() const;
 
 	protected:
-		REFLECTABLE(AssetReferenceBase, (UUID) (m_AssetUUID))
+		REFLECTABLE(AssetReferenceBase, (UUID) (m_AssetUUID));
+		//mutable bool m_Moved = false;
 	};
 
 	template<class T>
@@ -43,6 +51,13 @@ namespace Glory
 		AssetReference(UUID uuid) : AssetReferenceBase(uuid) {}
 		AssetReference(uint64_t id) : AssetReferenceBase(id) {}
 		AssetReference(T* pAsset) : AssetReferenceBase(pAsset ? pAsset->GetUUID() : UUID(0ull)) {}
+
+		AssetReference(const AssetReference&) = default;
+		AssetReference& operator=(const AssetReference&) = default;
+
+		AssetReference(AssetReference&&) = default;
+		AssetReference& operator=(AssetReference&&) = default;
+
 		virtual ~AssetReference() {}
 
 		virtual const uint32_t TypeHash() override

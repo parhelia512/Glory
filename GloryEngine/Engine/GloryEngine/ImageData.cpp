@@ -15,6 +15,21 @@ namespace Glory
 		APPEND_TYPE(ImageData);
 	}
 
+	ImageData::ImageData(ImageData&& other) noexcept: Resource(std::move(other)),
+		m_Header{ std::move(other.m_Header) }, m_pPixels(other.m_pPixels)
+	{
+		other.m_pPixels = nullptr;
+	}
+
+	ImageData& ImageData::operator=(ImageData&& other) noexcept
+	{
+		Resource::operator=(std::move(other));
+		m_Header = std::move(other.m_Header);
+		m_pPixels = other.m_pPixels;
+		other.m_pPixels = nullptr;
+		return *this;
+	}
+
 	ImageData::ImageData() : m_Header{}, m_pPixels(nullptr)
 	{
 		APPEND_TYPE(ImageData);
@@ -22,6 +37,7 @@ namespace Glory
 
 	ImageData::~ImageData()
 	{
+		if (!m_pPixels) return;
 		delete[] m_pPixels;
 		m_pPixels = nullptr;
 	}

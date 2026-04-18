@@ -92,7 +92,7 @@ namespace Glory::Editor
 					ImGui::Indent(5.0f);
 					for (size_t i = 0; i < iter->MeshCount(); ++i)
 					{
-						MeshData mesh = iter->Mesh(i);
+						MeshData& mesh = iter->Mesh(i);
 
 						ImGui::PushID(i);
 						EditorUI::LabelText("Mesh " + std::to_string(i), std::to_string(mesh.VertexCount()));

@@ -22,6 +22,7 @@
 #include "SceneObjectRefSerializer.h"
 #include "ShapePropertySerializer.h"
 #include "Serializers.h"
+#include "EditorResourceLoader.h"
 
 #include <Debug.h>
 #include <Console.h>
@@ -56,6 +57,7 @@ namespace Glory::Editor
 		m_ResourceManager(new EditorResourceManager(createInfo.pEngine)),
 		m_PipelineManager(new EditorPipelineManager(createInfo.pEngine)),
 		m_MaterialManager(new EditorMaterialManager(this)),
+		m_ResourceLoader(new EditorResourceLoader(&createInfo.pEngine->Jobs(), &createInfo.pEngine->GetDebug())),
 		m_ThumbnailManager(new ThumbnailManager(this)),
 		m_pFileWatcher(new efsw::FileWatcher()),
 		m_Serializers(new Serializers(createInfo.pEngine))
@@ -74,6 +76,7 @@ namespace Glory::Editor
 		m_pEngine->SetSceneManager(m_SceneManager.get());
 		m_pEngine->SetMaterialManager(m_MaterialManager.get());
 		m_pEngine->SetPipelineManager(m_PipelineManager.get());
+		m_pEngine->SetResourceLoader(m_ResourceLoader.get());
 
 		Instance = this;
 	}
@@ -265,6 +268,8 @@ namespace Glory::Editor
 				// Update asset database
 				EditorAssetDatabase::Update();
 
+				m_ResourceLoader->Update();
+
 				/* Update editor extensions */
 				UpdateExtensions();
 
@@ -310,6 +315,8 @@ namespace Glory::Editor
 
 			// Update asset database
 			EditorAssetDatabase::Update();
+
+			m_ResourceLoader->Update();
 
 			/* Update editor extensions */
 			UpdateExtensions();

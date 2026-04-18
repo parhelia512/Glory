@@ -229,7 +229,7 @@ namespace Glory::Editor
 		CreateFolder("Cache");
 		CreateFolder("Cache/CompiledPipelines");
 		CreateFolder("Modules");
-		CreateFolder("Cache/CompiledAssets");
+		CreateFolder("Cache/CompiledResources");
 
 		std::filesystem::path assetPath = m_ProjectFilePath;
 		assetPath = assetPath.parent_path();

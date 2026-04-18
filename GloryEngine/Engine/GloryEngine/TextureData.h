@@ -14,6 +14,8 @@ namespace Glory
     public:
         GLORY_ENGINE_API TextureData();
         GLORY_ENGINE_API TextureData(ImageData* pImageData);
+        GLORY_ENGINE_API TextureData(TextureData&&) noexcept = default;
+        GLORY_ENGINE_API TextureData& operator=(TextureData&&) noexcept = default;
         GLORY_ENGINE_API virtual ~TextureData();
 
         GLORY_ENGINE_API virtual ImageData* GetImageData(AssetManager* pAssetManager);

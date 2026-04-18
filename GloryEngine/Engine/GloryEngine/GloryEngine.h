@@ -45,6 +45,9 @@ namespace Utils::Reflect
 	class GameTime;
 	class EngineProfiler;
 
+	class Resources;
+	class ResourceLoader;
+
 	namespace Jobs
 	{
 		class JobManager;
@@ -58,6 +61,7 @@ namespace Utils::Reflect
 		SceneManager* pSceneManager = nullptr;
 		MaterialManager* pMaterialManager = nullptr;
 		PipelineManager* pPipelineManager = nullptr;
+		ResourceLoader* pResourceLoader = nullptr;
 
 		uint32_t MainModuleCount;
 		/* Order should be: 
@@ -123,6 +127,8 @@ namespace Utils::Reflect
 		GLORY_ENGINE_API void Cleanup() override;
 		GLORY_ENGINE_API void Draw() override;
 
+		GLORY_ENGINE_API Resources& GetResources() override;
+
 		GLORY_ENGINE_API ThreadManager& Threads() override;
 		GLORY_ENGINE_API Jobs::JobManager& Jobs() override;
 		GLORY_ENGINE_API Console& GetConsole() override;
@@ -143,6 +149,7 @@ namespace Utils::Reflect
 		GLORY_ENGINE_API void SetSceneManager(SceneManager* pManager) override;
 		GLORY_ENGINE_API void SetMaterialManager(MaterialManager* pManager) override;
 		GLORY_ENGINE_API void SetPipelineManager(PipelineManager* pManager) override;
+		GLORY_ENGINE_API void SetResourceLoader(ResourceLoader* pLoader) override;
 
 		GLORY_ENGINE_API void AddUserContext(uint32_t hash, void* pUserContext) override;
 		GLORY_ENGINE_API void* GetUserContext(uint32_t hash) override;
@@ -241,11 +248,13 @@ namespace Utils::Reflect
 		AssetManager* m_pAssetsManager;
 		MaterialManager* m_pMaterialManager;
 		PipelineManager* m_pPipelineManager;
+		ResourceLoader* m_pResourceLoader;
 
 		bool m_Quit{ false };
 		bool m_Initialized{ false };
 
 		/* Owned objects */
+		std::unique_ptr<Resources> m_Resources;
 		std::unique_ptr<GameTime> m_Time;
 		std::unique_ptr<CameraManager> m_CameraManager;
 		std::unique_ptr<AssetDatabase> m_AssetDatabase;

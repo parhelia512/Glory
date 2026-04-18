@@ -15,6 +15,8 @@ namespace Glory
 {
 	class Resource;
 	class IEngine;
+	class Debug;
+	class ResourceTypes;
 
 	enum AssetArchiveFlags
 	{
@@ -37,15 +39,17 @@ namespace Glory
 		GLORY_ENGINE_API void Serialize(Resource* pResource) const;
 		GLORY_ENGINE_API void Serialize(const Resource* pResource) const;
 		GLORY_ENGINE_API void Deserialize(IEngine* pEngine);
+		GLORY_ENGINE_API void Deserialize(Debug* pDebug, ResourceTypes* pResourceTypes);
 
 		GLORY_ENGINE_API size_t Size() const;
 		GLORY_ENGINE_API Resource* Get(IEngine* pEngine, size_t index) const;
+		GLORY_ENGINE_API Resource* Get(Debug* pDebug, size_t index) const;
 
 	private:
 		void WriteVersion();
 		void ReadVersion();
 
-		Resource* ReadResource(IEngine* pEngine);
+		Resource* ReadResource(ResourceTypes* pResourceTypes);
 
 		Utils::BinaryStream* m_pStream;
 		Version m_Version;

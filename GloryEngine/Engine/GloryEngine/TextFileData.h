@@ -12,6 +12,8 @@ namespace Glory
         GLORY_ENGINE_API TextFileData(FileData* pFileData);
         GLORY_ENGINE_API TextFileData(std::vector<char>&& data);
         GLORY_ENGINE_API TextFileData(std::string_view data);
+        GLORY_ENGINE_API TextFileData(TextFileData&&) noexcept = default;
+        GLORY_ENGINE_API TextFileData& operator=(TextFileData&&) noexcept = default;
         virtual ~TextFileData() = default;
     };
 }

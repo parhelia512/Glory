@@ -29,6 +29,11 @@ namespace Glory
         GLORY_ENGINE_API Resource(const std::string& name);
         /** @overload */
         GLORY_ENGINE_API Resource(UUID uuid, const std::string& name);
+        /** @overload */
+        GLORY_ENGINE_API Resource(Resource&& other) noexcept;
+        /** @brief Move assignment operator */
+        GLORY_ENGINE_API Resource& operator=(Resource&& other) noexcept;
+
         /** @brief Destructor */
         GLORY_ENGINE_API virtual ~Resource();
 

@@ -21,6 +21,8 @@ namespace Glory
     {
     public:
         GLORY_ENGINE_API MaterialData();
+        GLORY_ENGINE_API MaterialData(MaterialData&&) noexcept = default;
+        GLORY_ENGINE_API MaterialData& operator=(MaterialData&&) noexcept = default;
         GLORY_ENGINE_API virtual ~MaterialData();
 
         GLORY_ENGINE_API void AddProperty(const std::string& displayName, const std::string& shaderName,
@@ -103,7 +105,5 @@ namespace Glory
         std::vector<std::vector<size_t>> m_TextureTypeIndices;
 
         size_t m_CurrentOffset;
-
-        std::mutex m_PropertiesAccessMutex;
     };
 }

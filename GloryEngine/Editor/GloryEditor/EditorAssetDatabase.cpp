@@ -316,7 +316,8 @@ namespace Glory::Editor
 		return ImportAsset(path, resource);
 	}
 
-	UUID EditorAssetDatabase::ImportAsset(const std::string& path, ImportedResource& loadedResource, std::filesystem::path subPath, UUID forceUUID)
+	UUID EditorAssetDatabase::ImportAsset(const std::string& path, ImportedResource& loadedResource,
+		std::filesystem::path subPath, UUID forceUUID, bool addToManager)
 	{
 		std::filesystem::path filePath = path;
 		std::filesystem::path extension = filePath.extension();
@@ -381,7 +382,7 @@ namespace Glory::Editor
 		Resource* pResource = *loadedResource;
 		assetDatabase.SetIDAndName(pResource, meta.ID(), meta.Name());
 		std::filesystem::path relativePath = filePath.lexically_relative(assetPath);
-		assetManager.AddLoadedResource(pResource);
+		if (addToManager) assetManager.AddLoadedResource(pResource);
 
 		AssetLocation location{ relativePath.empty() ? path : relativePath.string(), subPath.string() };
 		InsertAsset(location, meta);

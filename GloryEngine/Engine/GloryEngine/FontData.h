@@ -15,6 +15,8 @@ namespace Glory
         GLORY_ENGINE_API FontData();
         GLORY_ENGINE_API FontData(uint32_t height, std::vector<uint64_t>&& characterCodes,
             std::vector<GlyphData>&& chars);
+        GLORY_ENGINE_API FontData(FontData&&) noexcept = default;
+        GLORY_ENGINE_API FontData& operator=(FontData&&) noexcept = default;
         GLORY_ENGINE_API virtual ~FontData();
 
         GLORY_ENGINE_API uint32_t FontHeight() const;
