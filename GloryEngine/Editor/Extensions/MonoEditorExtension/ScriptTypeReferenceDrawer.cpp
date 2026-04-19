@@ -5,7 +5,7 @@
 #include <EditorUI.h>
 #include <DND.h>
 #include <EditorAssetDatabase.h>
-#include <EditorAssetManager.h>
+#include <Resources.h>
 
 #include <GloryMonoScipting.h>
 #include <WindowModule.h>
@@ -25,7 +25,7 @@ namespace Glory::Editor
 	{
 		EditorApplication* pApp = EditorApplication::GetInstance();
 		GloryMonoScipting* pScripting = pApp->GetEngine()->GetOptionalModule<GloryMonoScipting>();
-		EditorAssetManager& assets = pApp->GetAssetManager();
+		Resources& resources = pApp->GetEngine()->GetResources();
 		const MonoScriptManager& scriptManager = pScripting->GetMonoManager()->GetCoreLibManager()->ScriptManager();
 		const int typeIndex = scriptManager.TypeIndexFromHash(data->m_Hash);
 		size_t index = typeIndex + 1;
@@ -56,7 +56,7 @@ namespace Glory::Editor
 			else uuid = *(const UUID*)payload->Data;
 
 			if (uuid == 0) return;
-			Resource* pResource = assets.GetAssetImmediate(uuid);
+			Resource* pResource = resources.GetResource(uuid);
 			if (!pResource) return;
 			MonoScript* pScript = static_cast<MonoScript*>(pResource);
 			for (size_t i = 0; i < pScript->ClassCount(); i++)

@@ -9,7 +9,7 @@
 #include <Shortcuts.h>
 
 #include <FSM.h>
-#include <AssetManager.h>
+#include <Resources.h>
 
 namespace Glory::Editor
 {
@@ -129,7 +129,7 @@ namespace Glory::Editor
 	{
 		const UUID fsmID = EditorAssetDatabase::FindAssetUUID(path.string());
 		if (!fsmID) return nullptr;
-		Resource* pResource = pEngine->GetAssetManager().FindResource(fsmID);
+		Resource* pResource = pEngine->GetResources().GetResource(fsmID);
 		if (!pResource) return nullptr;
 		FSMData* pFSM = static_cast<FSMData*>(pResource);
 		return pFSM;
@@ -307,7 +307,7 @@ namespace Glory::Editor
 			YAMLResource<FSMData>* pDocumentData = static_cast<YAMLResource<FSMData>*>(pResource);
 			pDocumentData->Save();
 
-			Resource* pFSMResource = pEngine->GetAssetManager().FindResource(m_EditingFSM);
+			Resource* pFSMResource = pEngine->GetResources().GetResource(m_EditingFSM);
 			if (!pResource) return;
 			FSMData* pFSM = static_cast<FSMData*>(pFSMResource);
 			pFSM->Clear();

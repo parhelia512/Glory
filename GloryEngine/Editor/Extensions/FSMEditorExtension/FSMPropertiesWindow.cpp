@@ -10,7 +10,7 @@
 #include <IEngine.h>
 #include <FSM.h>
 #include <FSMModule.h>
-#include <AssetManager.h>
+#include <Resources.h>
 
 #include <StringUtils.h>
 
@@ -112,7 +112,7 @@ namespace Glory::Editor
 
 		if (debuggingState)
 		{
-			Resource* pResource = pEngine->GetAssetManager().FindResource(fsmID);
+			Resource* pResource = pEngine->GetResources().GetResource(fsmID);
 			if (pResource) debuggingFSM = static_cast<FSMData*>(pResource);
 		}
 

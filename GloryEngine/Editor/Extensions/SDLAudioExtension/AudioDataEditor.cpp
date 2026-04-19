@@ -1,7 +1,7 @@
 #include "AudioDataEditor.h"
 
 #include <SDLAudioModule.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <Debug.h>
 
 #include <EditorUI.h>
@@ -30,7 +30,7 @@ namespace Glory::Editor
 		const float buttonSize = 32.0f;
 		if (ImGui::Button(ICON_FA_PLAY, { buttonSize, buttonSize }))
 		{
-			Resource* pResource = pEngine->GetAssetManager().FindResource(pAudioData->GetUUID());
+			Resource* pResource = pEngine->GetResources().GetResource(pAudioData->GetUUID());
 			if (!pResource)
 			{
 				pEngine->GetDebug().LogError("Could not preview audio file because it is not yet loaded.");

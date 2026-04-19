@@ -4,12 +4,12 @@
 #include "AddUIElementAction.h"
 
 #include <EditorResourceManager.h>
-#include <EditorAssetManager.h>
+#include <EditorResourceLoader.h>
 #include <EditableResource.h>
 #include <EditorApplication.h>
 #include <EditorAssetDatabase.h>
 #include <Undo.h>
-#include <AssetCompiler.h>
+#include <Resources.h>
 #include <Dispatcher.h>
 
 #include <IEngine.h>
@@ -277,7 +277,7 @@ namespace Glory::Editor
 			pDocumentData->Save();
 		});
 
-		AssetCompiler::GetAssetCompilerEventDispatcher().AddListener([this](const AssetCompilerEvent&) {
+		EditorResourceLoader::GetAssetCompilerEventDispatcher().AddListener([this](const AssetCompilerEvent&) {
 			UIDocument* pDocument = CurrentDocument();
 			if (!pDocument) return;
 			pDocument->SetDrawDirty();
@@ -315,7 +315,7 @@ namespace Glory::Editor
 			if (pResource->WasSaved())
 			{
 				pResource->WasSaved() = false;
-				Resource* pDocumentResource = pApp->GetAssetManager().FindResource(docID);
+				Resource* pDocumentResource = pApp->GetEngine()->GetResources().GetResource(docID);
 				if (!pDocumentResource) return;
 				UIDocumentData* pUIDcoumentData = static_cast<UIDocumentData*>(pDocumentResource);
 

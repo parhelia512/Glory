@@ -1,7 +1,5 @@
 #include "SoundOccluderEditor.h"
 
-#include <AssetManager.h>
-
 #include <EditorApplication.h>
 #include <EditorResourceManager.h>
 

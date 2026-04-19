@@ -4,7 +4,7 @@
 #include <EditorUI.h>
 
 #include <FSMModule.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <FSM.h>
 #include <WindowModule.h>
 
@@ -51,7 +51,7 @@ namespace Glory::Editor
 			else
 			{
 				const UUID fsmID = state->OriginalFSMID();
-				Resource* pResource = pEngine->GetAssetManager().FindResource(fsmID);
+				Resource* pResource = pEngine->GetResources().GetResource(fsmID);
 				currentSelectedInstanceName = (pResource ? pResource->Name() + " - Instance ID: " : std::string("?Missing FSM? - Instance ID"))
 					+ std::to_string(debuggingInstance);
 			}
@@ -88,7 +88,7 @@ namespace Glory::Editor
 				{
 					const FSMState& state = pFSMModule->FSMInstance(i);
 					const UUID fsmID = state.OriginalFSMID();
-					Resource* pResource = pEngine->GetAssetManager().FindResource(fsmID);
+					Resource* pResource = pEngine->GetResources().GetResource(fsmID);
 					const std::string name = (pResource ? pResource->Name() + " - Instance ID: " : std::string("?Missing FSM? - Instance ID: "))
 						+ std::to_string(debuggingInstance);
 					if (!search.empty() && Utils::CaseInsensitiveSearch(search, name) != std::string::npos) continue;
@@ -133,7 +133,7 @@ namespace Glory::Editor
 						GetMainWindow()->SetFSM(fsmID);
 						ImGui::CloseCurrentPopup();
 					}
-					Resource* pResource = pEngine->GetAssetManager().FindResource(fsmID);
+					Resource* pResource = pEngine->GetResources().GetResource(fsmID);
 					const std::string name = (pResource ? pResource->Name() + " - Instance ID: " : std::string("?Missing FSM? - Instance ID: "))
 						+ std::to_string(debuggingInstance);
 

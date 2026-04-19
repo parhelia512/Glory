@@ -1,7 +1,7 @@
 #include "MonoScriptComponentEditor.h"
 #include "MonoEditorExtension.h"
 
-#include <AssetManager.h>
+#include <Resources.h>
 #include <MonoManager.h>
 #include <CoreLibManager.h>
 #include <GloryMonoScipting.h>
@@ -68,7 +68,7 @@ namespace Glory::Editor
 			return change;
 		}
 		GloryMonoScipting* pScripting = EditorApplication::GetInstance()->GetEngine()->GetOptionalModule<GloryMonoScipting>();
-		AssetManager& assets = EditorApplication::GetInstance()->GetEngine()->GetAssetManager();
+		Resources& resources = EditorApplication::GetInstance()->GetEngine()->GetResources();
 		const MonoScriptManager& scriptManager = pScripting->GetMonoManager()->GetCoreLibManager()->ScriptManager();
 		const int typeIndex = scriptManager.TypeIndexFromHash(scriptComponent.m_ScriptType.m_Hash);
 
@@ -83,7 +83,7 @@ namespace Glory::Editor
 			for (size_t i = 0; i < scripts.size(); ++i)
 			{
 				const UUID scriptID = scripts[i];
-				Resource* pResource = assets.FindResource(scriptID);
+				Resource* pResource = resources.GetResource(scriptID);
 				if (pResource)
 				{
 					MonoScript* pScript = static_cast<MonoScript*>(pResource);
