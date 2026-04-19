@@ -10,55 +10,73 @@
 namespace Glory
 {
 	class Resource;
-	class AssetManager;
+	class Resources;
 
-	class AssetReferenceBase
+	class ResourceReferenceBase
 	{
 	public:
-		GLORY_ENGINE_API AssetReferenceBase();
-		GLORY_ENGINE_API AssetReferenceBase(UUID uuid);
+		GLORY_ENGINE_API ResourceReferenceBase();
+		GLORY_ENGINE_API ResourceReferenceBase(UUID uuid);
 
-		GLORY_ENGINE_API AssetReferenceBase(const AssetReferenceBase& other);
-		GLORY_ENGINE_API AssetReferenceBase& operator=(const AssetReferenceBase& other);
+		GLORY_ENGINE_API ResourceReferenceBase(const ResourceReferenceBase& other);
+		GLORY_ENGINE_API ResourceReferenceBase& operator=(const ResourceReferenceBase& other);
 
-		GLORY_ENGINE_API AssetReferenceBase(AssetReferenceBase&& other) noexcept;
-		GLORY_ENGINE_API AssetReferenceBase& operator=(AssetReferenceBase&& other) noexcept;
+		GLORY_ENGINE_API ResourceReferenceBase(ResourceReferenceBase&& other) noexcept;
+		GLORY_ENGINE_API ResourceReferenceBase& operator=(ResourceReferenceBase&& other) noexcept;
 
-		GLORY_ENGINE_API virtual ~AssetReferenceBase();
+		GLORY_ENGINE_API virtual ~ResourceReferenceBase();
 
-		GLORY_ENGINE_API const UUID AssetUUID() const;
-		GLORY_ENGINE_API UUID* AssetUUIDMember();
+		GLORY_ENGINE_API const UUID GetUUID() const;
 		GLORY_ENGINE_API void SetUUID(UUID uuid);
-		GLORY_ENGINE_API Resource* GetResource(AssetManager* pAssets) const;
-		GLORY_ENGINE_API Resource* GetResourceImmediate(AssetManager* pAssets) const;
+		GLORY_ENGINE_API Resource* GetResource(Resources* pResources) const;
 
 		virtual const uint32_t TypeHash() { return 0; };
 
-		virtual AssetReferenceBase* CreateCopy() { return new AssetReferenceBase(m_AssetUUID); };
+		virtual ResourceReferenceBase* CreateCopy() { return new ResourceReferenceBase(m_AssetUUID); };
 
 		GLORY_ENGINE_API operator bool() const;
 
 	protected:
-		REFLECTABLE(AssetReferenceBase, (UUID) (m_AssetUUID));
-		//mutable bool m_Moved = false;
+		REFLECTABLE(ResourceReferenceBase, (UUID) (m_AssetUUID));
+	};
+
+	class WeakResourceReference
+	{
+	public:
+		GLORY_ENGINE_API WeakResourceReference();
+		GLORY_ENGINE_API WeakResourceReference(UUID uuid);
+		GLORY_ENGINE_API WeakResourceReference(const ResourceReferenceBase& other);
+
+		GLORY_ENGINE_API WeakResourceReference(const WeakResourceReference&) noexcept = default;
+		GLORY_ENGINE_API WeakResourceReference& operator=(const WeakResourceReference&) noexcept = default;
+
+		GLORY_ENGINE_API virtual ~WeakResourceReference();
+
+		GLORY_ENGINE_API const UUID GetUUID() const;
+		GLORY_ENGINE_API Resource* GetResource(Resources* pResources) const;
+
+		GLORY_ENGINE_API operator bool() const;
+
+	protected:
+		REFLECTABLE(WeakResourceReference, (UUID)(m_AssetUUID));
 	};
 
 	template<class T>
-	class AssetReference : public AssetReferenceBase
+	class ResourceReference : public ResourceReferenceBase
 	{
 	public:
-		AssetReference() : AssetReferenceBase() {}
-		AssetReference(UUID uuid) : AssetReferenceBase(uuid) {}
-		AssetReference(uint64_t id) : AssetReferenceBase(id) {}
-		AssetReference(T* pAsset) : AssetReferenceBase(pAsset ? pAsset->GetUUID() : UUID(0ull)) {}
+		ResourceReference() : ResourceReferenceBase() {}
+		ResourceReference(UUID uuid) : ResourceReferenceBase(uuid) {}
+		ResourceReference(uint64_t id) : ResourceReferenceBase(id) {}
+		ResourceReference(T* pAsset) : ResourceReferenceBase(pAsset ? pAsset->GetUUID() : UUID(0ull)) {}
 
-		AssetReference(const AssetReference&) = default;
-		AssetReference& operator=(const AssetReference&) = default;
+		ResourceReference(const ResourceReference&) = default;
+		ResourceReference& operator=(const ResourceReference&) = default;
 
-		AssetReference(AssetReference&&) = default;
-		AssetReference& operator=(AssetReference&&) = default;
+		ResourceReference(ResourceReference&&) = default;
+		ResourceReference& operator=(ResourceReference&&) = default;
 
-		virtual ~AssetReference() {}
+		virtual ~ResourceReference() {}
 
 		virtual const uint32_t TypeHash() override
 		{
@@ -66,20 +84,14 @@ namespace Glory
 			return typeHash;
 		}
 
-		AssetReferenceBase* CreateCopy() override
+		ResourceReferenceBase* CreateCopy() override
 		{
-			return new AssetReference<T>(m_AssetUUID);
+			return new ResourceReference<T>(m_AssetUUID);
 		}
 
-		T* Get(AssetManager* pManager) const
+		T* Get(Resources* pResources) const
 		{
-			Resource* pResource = GetResource(pManager);
-			return pResource ? dynamic_cast<T*>(pResource) : nullptr;
-		}
-
-		T* GetImmediate(AssetManager* pManager) const
-		{
-			Resource* pResource = GetResourceImmediate(pManager);
+			Resource* pResource = GetResource(pResources);
 			return pResource ? dynamic_cast<T*>(pResource) : nullptr;
 		}
 	};

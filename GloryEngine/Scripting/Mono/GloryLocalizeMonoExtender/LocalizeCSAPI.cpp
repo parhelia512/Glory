@@ -9,7 +9,7 @@
 #include <Debug.h>
 #include <IEngine.h>
 #include <GScene.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <Localize.h>
 #include <LocalizeModule.h>
 #include <Components.h>
@@ -99,7 +99,7 @@ namespace Glory
 	uint64_t StringTableLoader_GetTableToLoadID(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
 	{
 		StringTableLoader& tableLoader = GetComponent<StringTableLoader>(sceneID, objectID, componentID);
-		return tableLoader.m_StringTable.AssetUUID();
+		return tableLoader.m_StringTable.GetUUID();
 	}
 
 	void StringTableLoader_SetTableToLoadID(uint64_t sceneID, uint64_t objectID, uint64_t componentID, uint64_t tableID)
@@ -127,7 +127,7 @@ namespace Glory
 	MonoArray* StringTable_FindKeys(uint64_t tableID, MonoString* path)
 	{
 		const std::string pathStr = mono_string_to_utf8(path);
-		Resource* pTableResource = Localize_EngineInstance->GetAssetManager().FindResource(tableID);
+		Resource* pTableResource = Localize_EngineInstance->GetResources().GetResource(tableID);
 		if (!pTableResource) return nullptr;
 		StringTable* pTable = static_cast<StringTable*>(pTableResource);
 		std::vector<std::string>* keys = pTable->FindKeys(pathStr);
@@ -146,7 +146,7 @@ namespace Glory
 	uint32_t StringTable_FindKeysNoAlloc(uint64_t tableID, MonoString* path, MonoArray* pArray, uint32_t maxKeys)
 	{
 		const std::string pathStr = mono_string_to_utf8(path);
-		Resource* pTableResource = Localize_EngineInstance->GetAssetManager().FindResource(tableID);
+		Resource* pTableResource = Localize_EngineInstance->GetResources().GetResource(tableID);
 		if (!pTableResource) return 0;
 		StringTable* pTable = static_cast<StringTable*>(pTableResource);
 		std::vector<std::string>* keys = pTable->FindKeys(pathStr);
@@ -164,7 +164,7 @@ namespace Glory
 	MonoArray* StringTable_FindKeysRecursive(uint64_t tableID, MonoString* path)
 	{
 		const std::string pathStr = mono_string_to_utf8(path);
-		Resource* pTableResource = Localize_EngineInstance->GetAssetManager().FindResource(tableID);
+		Resource* pTableResource = Localize_EngineInstance->GetResources().GetResource(tableID);
 		if (!pTableResource) return nullptr;
 		StringTable* pTable = static_cast<StringTable*>(pTableResource);
 		std::vector<std::string> keys;
@@ -184,7 +184,7 @@ namespace Glory
 	uint32_t StringTable_FindKeysRecursiveNoAlloc(uint64_t tableID, MonoString* path, MonoArray* pArray, uint32_t maxKeys)
 	{
 		const std::string pathStr = mono_string_to_utf8(path);
-		Resource* pTableResource = Localize_EngineInstance->GetAssetManager().FindResource(tableID);
+		Resource* pTableResource = Localize_EngineInstance->GetResources().GetResource(tableID);
 		if (!pTableResource) return 0;
 		StringTable* pTable = static_cast<StringTable*>(pTableResource);
 		std::vector<std::string> keys;
@@ -203,7 +203,7 @@ namespace Glory
 	MonoArray* StringTable_FindSubgroups(uint64_t tableID, MonoString* path)
 	{
 		const std::string pathStr = mono_string_to_utf8(path);
-		Resource* pTableResource = Localize_EngineInstance->GetAssetManager().FindResource(tableID);
+		Resource* pTableResource = Localize_EngineInstance->GetResources().GetResource(tableID);
 		if (!pTableResource) return nullptr;
 		StringTable* pTable = static_cast<StringTable*>(pTableResource);
 		std::vector<std::string_view> groups;
@@ -223,7 +223,7 @@ namespace Glory
 	uint32_t StringTable_FindSubgroupsNoAlloc(uint64_t tableID, MonoString* path, MonoArray* pArray, uint32_t maxGroups)
 	{
 		const std::string pathStr = mono_string_to_utf8(path);
-		Resource* pTableResource = Localize_EngineInstance->GetAssetManager().FindResource(tableID);
+		Resource* pTableResource = Localize_EngineInstance->GetResources().GetResource(tableID);
 		if (!pTableResource) return 0;
 		StringTable* pTable = static_cast<StringTable*>(pTableResource);
 		std::vector<std::string_view> groups;

@@ -3,6 +3,8 @@
 
 #include "ResourceManager.h"
 
+#include <GloryAssert.h>
+
 #include <set>
 #include <functional>
 
@@ -51,14 +53,30 @@ namespace Glory
 		requires ResourceCompatible<R>
 		inline bool AddResource(R** pResource)
 		{
-			return static_cast<R*>(AddResource(static_cast<Resource**>(pResource)));
+			return AddResource((Resource**)(pResource));
+		}
+
+		/** @brief Find a resource by ID and return it.
+		 * @param id ID of the resource to find.
+		 * @returns Pointer to the resource if found, otherwise nullptr.
+		 *
+		 * Will throw if the asset is loaded under a different type.
+		 */
+		template<typename R>
+		requires ResourceCompatible<R>
+		inline R* GetResource(UUID id)
+		{
+			auto iter = m_ResourceIDToManagerIndex.find(id);
+			if (iter == m_ResourceIDToManagerIndex.end()) return nullptr;
+			const uint32_t hash = ResourceTypes::GetHash<R>();
+			GLORY_ASSERT(hash == iter->second, "Resource type hash mismatch.");
+			ResourceManager<R>* manager = static_cast<ResourceManager<R>*>(m_Managers.at(iter->second).get());
+			return manager->GetDirect(id);
 		}
 
 		/** @overload */
 		GLORY_ENGINE_API bool AddResource(Resource** pResource);
-		/** @brief Find a resource by ID and return it
-		 * @param id ID of the resource to find
-		 * @returns Pointer to the resource if found, otherwise nullptr
+		/** @overload
 		 *
 		 * Uses a cache to speed up in which manager to find the resource.
 		 */

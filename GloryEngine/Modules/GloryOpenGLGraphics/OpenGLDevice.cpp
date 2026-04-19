@@ -1179,7 +1179,7 @@ namespace Glory
 
 	TextureHandle OpenGLDevice::CreateTexture(TextureData* pTexture)
 	{
-		ImageData* pImageData = pTexture->GetImageData(&m_pModule->GetEngine()->GetAssetManager());
+		ImageData* pImageData = pTexture->GetImageData(&m_pModule->GetEngine()->GetResources());
 		if (!pImageData) return NULL;
 
 		TextureHandle handle;
@@ -1251,7 +1251,7 @@ namespace Glory
 
 	TextureHandle OpenGLDevice::CreateTexture(CubemapData* pCubemap)
 	{
-		ImageData* pImageData = pCubemap->GetImageData(&m_pModule->GetEngine()->GetAssetManager(), 0);
+		ImageData* pImageData = pCubemap->GetImageData(&m_pModule->GetEngine()->GetResources(), 0);
 		if (!pImageData) return NULL;
 
 		TextureHandle handle;
@@ -1283,7 +1283,7 @@ namespace Glory
 
 		for (unsigned int i = 0; i < 6; ++i)
 		{
-			ImageData* pImageData = pCubemap->GetImageData(&m_pModule->GetEngine()->GetAssetManager(), i);
+			ImageData* pImageData = pCubemap->GetImageData(&m_pModule->GetEngine()->GetResources(), i);
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, texture.m_GLInternalFormat,
 				(GLsizei)pImageData->GetWidth(), (GLsizei)pImageData->GetHeight(), 0, texture.m_GLFormat, texture.m_GLDataType, pImageData->GetPixels());
 			OpenGLGraphicsModule::LogGLError(glGetError());

@@ -170,9 +170,9 @@ namespace Glory
 				if (properties[i].m_TypeHash != ST_Asset) continue;
 				const size_t offset = properties[i].m_RelativeOffset;
 				if (offset + sizeof(uint64_t) >= scriptComponent.m_ScriptData.m_Buffer.size()) continue;
-				const AssetReferenceBase* pReferenceMember =
-					reinterpret_cast<const AssetReferenceBase*>(&scriptComponent.m_ScriptData.m_Buffer[offset]);
-				if (pReferenceMember->AssetUUID()) references.push_back(pReferenceMember->AssetUUID());
+				const ResourceReferenceBase* pReferenceMember =
+					reinterpret_cast<const ResourceReferenceBase*>(&scriptComponent.m_ScriptData.m_Buffer[offset]);
+				if (pReferenceMember->GetUUID()) references.push_back(pReferenceMember->GetUUID());
 			}
 		}
 	}

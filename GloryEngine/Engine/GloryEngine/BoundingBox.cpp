@@ -2,7 +2,7 @@
 #include "Components.h"
 
 #include "IEngine.h"
-#include "AssetManager.h"
+#include "Resources.h"
 
 #include "TransformManager.h"
 
@@ -85,7 +85,7 @@ namespace Glory
 		{
 			MeshRenderer& mesh = entity.GetComponent<MeshRenderer>();
 			const glm::mat4& world = entity.GetComponent<Transform>().MatTransform;
-			Resource* pResource = pEngine->GetAssetManager().FindResource(mesh.m_Mesh.AssetUUID());
+			Resource* pResource = pEngine->GetResources().GetResource(mesh.m_Mesh.GetUUID());
 			if (pResource)
 			{
 				MeshData* pMesh = static_cast<MeshData*>(pResource);
@@ -110,7 +110,7 @@ namespace Glory
 		{
 			MeshRenderer& mesh = entity.GetComponent<MeshRenderer>();
 			const glm::mat4& world = entity.GetComponent<Transform>().MatTransform;
-			Resource* pResource = pEngine->GetAssetManager().FindResource(mesh.m_Mesh.AssetUUID());
+			Resource* pResource = pEngine->GetResources().GetResource(mesh.m_Mesh.GetUUID());
 			if (pResource)
 			{
 				MeshData* pMesh = static_cast<MeshData*>(pResource);

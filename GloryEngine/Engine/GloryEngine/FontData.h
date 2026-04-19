@@ -6,7 +6,7 @@
 
 namespace Glory
 {
-    class AssetManager;
+    class Resources;
     class TextureData;
 
     class FontData : public Resource
@@ -22,7 +22,7 @@ namespace Glory
         GLORY_ENGINE_API uint32_t FontHeight() const;
         GLORY_ENGINE_API size_t GetGlyphIndex(uint64_t c) const;
         GLORY_ENGINE_API const GlyphData* GetGlyph(size_t index) const;
-        GLORY_ENGINE_API TextureData* GetGlyphTexture(AssetManager& assets) const;
+        GLORY_ENGINE_API TextureData* GetGlyphTexture(Resources& assets) const;
         GLORY_ENGINE_API void SetTexture(UUID texture);
         GLORY_ENGINE_API void SetMaterial(UUID material);
         GLORY_ENGINE_API UUID Texture();

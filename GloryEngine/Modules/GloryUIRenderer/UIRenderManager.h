@@ -6,7 +6,7 @@
 namespace Glory
 {
 	class UIRendererModule;
-	class AssetManager;
+	class Resources;
 	class Debug;
 	class InputModule;
 	class LayerManager;
@@ -29,7 +29,7 @@ namespace Glory
 	private:
 		friend class UIRendererModule;
 		UIRendererModule* m_pModule;
-		AssetManager* m_pAssetManager;
+		Resources* m_pResources;
 		Debug* m_pDebug;
 		InputModule* m_pInput;
 		LayerManager* m_pLayers;

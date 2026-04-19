@@ -41,7 +41,7 @@ namespace Glory
 	uint64_t UIRenderer_GetDocumentID(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
 	{
 		UIRenderer& uiComp = GetComponent<UIRenderer>(sceneID, objectID, componentID);
-		return uiComp.m_Document.AssetUUID();
+		return uiComp.m_Document.GetUUID();
 	}
 
 	void UIRenderer_SetDocumentID(uint64_t sceneID, uint64_t objectID, uint64_t componentID, uint64_t documentID)
@@ -102,7 +102,7 @@ namespace Glory
 	uint64_t UIRenderer_GetWorldMaterialID(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
 	{
 		UIRenderer& uiComp = GetComponent<UIRenderer>(sceneID, objectID, componentID);
-		return uiComp.m_WorldMaterial.AssetUUID();
+		return uiComp.m_WorldMaterial.GetUUID();
 	}
 
 	void UIRenderer_SetWorldMaterialID(uint64_t sceneID, uint64_t objectID, uint64_t componentID, uint64_t materialID)
@@ -297,7 +297,7 @@ namespace Glory
 		if (!pDocument) return 0;
 		const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
 		UIText& uiText = pDocument->Registry().GetComponent<UIText>(entity);
-		return uiText.m_Font.AssetUUID();
+		return uiText.m_Font.GetUUID();
 	}
 
 	void UIText_SetFont(uint64_t sceneID, uint64_t objectID, uint64_t componentID, uint64_t fontID)
@@ -438,7 +438,7 @@ namespace Glory
 		if (!pDocument) return 0;
 		const Utils::ECS::EntityID entity = pDocument->EntityID(objectID);
 		UIImage& uiImage = pDocument->Registry().GetComponent<UIImage>(entity);
-		return uiImage.m_Image.AssetUUID();
+		return uiImage.m_Image.GetUUID();
 	}
 
 	void UIImage_SetImage(uint64_t sceneID, uint64_t objectID, uint64_t componentID, uint64_t imageID)

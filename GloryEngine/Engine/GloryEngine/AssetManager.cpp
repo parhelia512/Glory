@@ -1,4 +1,4 @@
-#include "AssetManager.h"
+#include "Resources.h"
 #include "AssetDatabase.h"
 #include "IEngine.h"
 #include "Debug.h"
@@ -9,10 +9,10 @@
 
 namespace Glory
 {
-	AssetManager::AssetManager(IEngine* pEngine) : m_pEngine(pEngine) {}
+	/*Resources::Resources(IEngine* pEngine) : m_pEngine(pEngine) {}
 
-	AssetManager::~AssetManager()
+	Resources::~Resources()
 	{
 		m_pEngine = nullptr;
-	}
+	}*/
 }

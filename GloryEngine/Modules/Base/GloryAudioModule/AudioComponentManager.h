@@ -8,7 +8,7 @@ namespace Glory
     struct AudioSource;
     struct AudioListener;
     class AudioModule;
-    class AssetManager;
+    class Resources;
 
     class AudioSourceManager : public Utils::ECS::ComponentManager<AudioSource>
     {
@@ -37,7 +37,7 @@ namespace Glory
     private:
         friend class AudioModule;
         AudioModule* m_pAudioModule;
-        AssetManager* m_pAssetManager;
+        Resources* m_pResources;
     };
 
     class AudioListenerManager : public Utils::ECS::ComponentManager<AudioListener>

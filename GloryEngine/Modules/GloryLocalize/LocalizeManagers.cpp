@@ -19,13 +19,13 @@ namespace Glory
 
 	void StringTableLoaderManager::OnValidateImpl(Utils::ECS::EntityID entity, StringTableLoader& pComponent)
 	{
-		m_pModule->LoadStringTable(pComponent.m_StringTable.AssetUUID());
+		m_pModule->LoadStringTable(pComponent.m_StringTable.GetUUID());
 	}
 
 	void StringTableLoaderManager::OnStopImpl(Utils::ECS::EntityID entity, StringTableLoader& pComponent)
 	{
 		if (pComponent.m_KeepLoaded) return;
-		m_pModule->UnloadStringTable(pComponent.m_StringTable.AssetUUID());
+		m_pModule->UnloadStringTable(pComponent.m_StringTable.GetUUID());
 	}
 
 	void StringTableLoaderManager::GetReferencesImpl(std::vector<UUID>& references) const
@@ -33,7 +33,7 @@ namespace Glory
 		for (size_t i = 0; i < Size(); ++i)
 		{
 			const StringTableLoader& localizeComponent = GetAt(i);
-			const UUID id = localizeComponent.m_StringTable.AssetUUID();
+			const UUID id = localizeComponent.m_StringTable.GetUUID();
 			if (!id) continue;
 			references.push_back(id);
 		}

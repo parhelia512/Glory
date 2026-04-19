@@ -4,7 +4,7 @@
 #include <GloryMonoScipting.h>
 #include <Debug.h>
 #include <IEngine.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <FSM.h>
 #include <FSMModule.h>
 
@@ -17,7 +17,7 @@ namespace Glory
 
 	uint64_t FSMTemplate_CreateInstance(uint64_t fsmId)
 	{
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(fsmId);
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(fsmId);
 		if (!pFSMResource) return 0;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const UUID stateID = FSM_MODULE->CreateFSMState(pFSMData);
@@ -26,7 +26,7 @@ namespace Glory
 
 	uint64_t FSMTemplate_FindNode(uint64_t fsmId, MonoString* name)
 	{
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(fsmId);
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(fsmId);
 		if (!pFSMResource) return 0;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const std::string_view nameStr = mono_string_to_utf8(name);
@@ -36,7 +36,7 @@ namespace Glory
 	
 	bool FSMTemplate_NodeExists(uint64_t fsmId, uint64_t nodeId)
 	{
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(fsmId);
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(fsmId);
 		if (!pFSMResource) return 0;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const FSMNode* node = pFSMData->FindNode(nodeId);
@@ -58,7 +58,7 @@ namespace Glory
 
 	unsigned int FSMNode_GetTransitionCount(uint64_t fsmId, uint64_t nodeId)
 	{
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(fsmId);
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(fsmId);
 		if (!pFSMResource) return 0;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const FSMNode* node = pFSMData->Node((UUID)nodeId);
@@ -68,7 +68,7 @@ namespace Glory
 
 	uint64_t FSMNode_FindTransitionID(uint64_t fsmId, uint64_t nodeId, MonoString* name)
 	{
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(fsmId);
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(fsmId);
 		if (!pFSMResource) return 0;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const FSMNode* node = pFSMData->Node((UUID)nodeId);
@@ -88,7 +88,7 @@ namespace Glory
 
 	uint64_t FSMNode_GetTransitionID(uint64_t fsmId, uint64_t nodeId, unsigned int index)
 	{
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(fsmId);
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(fsmId);
 		if (!pFSMResource) return 0;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const FSMNode* node = pFSMData->Node((UUID)nodeId);
@@ -100,7 +100,7 @@ namespace Glory
 	
 	MonoString* FSMNode_GetName(uint64_t fsmId, uint64_t nodeId)
 	{
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(fsmId);
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(fsmId);
 		if (!pFSMResource) return 0;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const FSMNode* node = pFSMData->Node((UUID)nodeId);
@@ -116,7 +116,7 @@ namespace Glory
 	{
 		FSMState* state = FSM_MODULE->GetFSMState(stateId);
 		if (!state) return;
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(state->OriginalFSMID());
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(state->OriginalFSMID());
 		if (!pFSMResource) return;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const FSMNode* node = pFSMData->Node(UUID(nodeId));
@@ -129,7 +129,7 @@ namespace Glory
 	{
 		FSMState* state = FSM_MODULE->GetFSMState(stateId);
 		if (!state) return 0;
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(state->OriginalFSMID());
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(state->OriginalFSMID());
 		if (!pFSMResource) return 0;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const FSMNode* node = pFSMData->Node(state->CurrentState());
@@ -140,7 +140,7 @@ namespace Glory
 	{
 		FSMState* state = FSM_MODULE->GetFSMState(stateId);
 		if (!state) return;
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(state->OriginalFSMID());
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(state->OriginalFSMID());
 		if (!pFSMResource) return;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const std::string_view nameStr = mono_string_to_utf8(name);
@@ -153,7 +153,7 @@ namespace Glory
 	{
 		FSMState* state = FSM_MODULE->GetFSMState(stateId);
 		if (!state) return;
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(state->OriginalFSMID());
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(state->OriginalFSMID());
 		if (!pFSMResource) return;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const std::string_view nameStr = mono_string_to_utf8(name);
@@ -165,7 +165,7 @@ namespace Glory
 	{
 		FSMState* state = FSM_MODULE->GetFSMState(stateId);
 		if (!state) return;
-		Resource* pFSMResource = FSM_EngineInstance->GetAssetManager().FindResource(state->OriginalFSMID());
+		Resource* pFSMResource = FSM_EngineInstance->GetResources().GetResource(state->OriginalFSMID());
 		if (!pFSMResource) return;
 		FSMData* pFSMData = static_cast<FSMData*>(pFSMResource);
 		const std::string_view nameStr = mono_string_to_utf8(name);

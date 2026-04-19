@@ -16,7 +16,7 @@ project "GloryEngine"
 
 	vpaths
 	{
-		["Asset Management"] = { "BinaryStream.*", "AssetArchive.*", "AssetDatabase.*", "AssetLocation.*", "AssetManager.*", "ResourceMeta.*", "ResourceType.*" },
+		["Asset Management"] = { "BinaryStream.*", "AssetArchive.*", "AssetDatabase.*", "AssetLocation.*", "Resources.*", "ResourceMeta.*", "ResourceType.*" },
 		["Resources"] = { "PrefabData.*", "MaterialData.*", "MaterialPropertyInfo.*", "TextureData.*", "MeshData.*", "ModelData.*", "ImageData.*", "FileData.*", "CubemapData.*", "FontData.*", "FontDataStructs.*", "PipelineData.*" },
 		["Console"] = { "Logs.*", "Commands.*", "Console.*", "Debug.*", "DebugConsoleInput.*", "IConsole.*", "WindowsDebugConsole.*" },
 		["Core"] = { "TypeFlags.*", "GloryContext.*", "BuiltInModules.*", "GloryEngine.*", "Glory.*", "GameTime.*" },

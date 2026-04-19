@@ -11,7 +11,7 @@ namespace Glory
 		SoundOccluder() {}
 
 		REFLECTABLE(SoundOccluder,
-			(AssetReference<SoundMaterialData>)(m_MaterialAsset),
+			(ResourceReference<SoundMaterialData>)(m_MaterialAsset),
 			(SoundMaterial)(m_Material)
 		);
 	};

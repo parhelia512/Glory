@@ -2,7 +2,7 @@
 #include "FSMModule.h"
 
 #include <BinaryStream.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <IEngine.h>
 
 namespace Glory
@@ -355,9 +355,9 @@ namespace Glory
 		if (!m_PropertyDataChanged) return;
 		if (m_CurrentState == 0) return;
 
-		AssetManager& assets = m_pModule->GetEngine()->GetAssetManager();
+		Resources& resources = m_pModule->GetEngine()->GetResources();
 
-		Resource* pFSMResource = assets.FindResource(m_OriginalFSMID);
+		Resource* pFSMResource = resources.GetResource(m_OriginalFSMID);
 		if (!pFSMResource) return;
 		FSMData* pFSM = static_cast<FSMData*>(pFSMResource);
 

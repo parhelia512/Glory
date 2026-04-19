@@ -1,6 +1,6 @@
 #include "GloryEngine.h"
 #include "Console.h"
-#include "AssetManager.h"
+#include "Resources.h"
 #include "LayerRef.h"
 #include "SceneObjectRef.h"
 #include "ShapeProperty.h"
@@ -301,7 +301,6 @@ namespace Glory
 		}
 
 		m_AssetDatabase->Initialize();
-		m_pAssetsManager->Initialize();
 
 		/* Run Post Initialize */
 		for (size_t i = 0; i < m_pAllModules.size(); i++)
@@ -402,11 +401,6 @@ namespace Glory
 		return *m_AssetDatabase;
 	}
 
-	AssetManager& GloryEngine::GetAssetManager()
-	{
-		return *m_pAssetsManager;
-	}
-
 	ResourceTypes& GloryEngine::GetResourceTypes()
 	{
 		return *m_ResourceTypes;
@@ -455,11 +449,6 @@ namespace Glory
 	Jobs::JobManager& GloryEngine::Jobs()
 	{
 		return *m_JobManager;
-	}
-
-	void GloryEngine::SetAssetManager(AssetManager* pManager)
-	{
-		m_pAssetsManager = pManager;
 	}
 
 	void GloryEngine::SetSceneManager(SceneManager* pManager)
@@ -743,7 +732,7 @@ namespace Glory
 
 		//Reflect::RegisterBasicType<TextureData>("TextureData");
 		//Reflect::RegisterBasicType<FontData>("FontData");
-		Reflect::RegisterTemplatedType("AssetReference,Glory::AssetReference,class Glory::AssetReference", ST_Asset, sizeof(UUID));
+		Reflect::RegisterTemplatedType("ResourceReference,Glory::ResourceReference,class Glory::ResourceReference", ST_Asset, sizeof(UUID));
 	}
 
 	void GloryEngine::Update()

@@ -18,12 +18,12 @@ namespace Glory
 	{
 	}
 
-	ImageData* TextureData::GetImageData(AssetManager* pAssetManager)
+	ImageData* TextureData::GetImageData(Resources* pResources)
 	{
-		return Image() ? Image().Get(pAssetManager) : nullptr;
+		return Image() ? Image().Get(pResources) : nullptr;
 	}
 
-	AssetReference<ImageData>& TextureData::Image()
+	ResourceReference<ImageData>& TextureData::Image()
 	{
 		return m_Image;
 	}
@@ -36,16 +36,18 @@ namespace Glory
 	void TextureData::Serialize(Utils::BinaryStream& container) const
 	{
 		/* Write image ID */
-		container.Write(m_Image.AssetUUID()).Write(m_SamplerSettings);
+		container.Write(m_Image.GetUUID()).Write(m_SamplerSettings);
 	}
 
 	void TextureData::Deserialize(Utils::BinaryStream& container)
 	{
-		container.Read(*m_Image.AssetUUIDMember()).Read(m_SamplerSettings);
+		UUID imageID;
+		container.Read(imageID).Read(m_SamplerSettings);
+		m_Image.SetUUID(imageID);
 	}
 
 	void TextureData::References(IEngine*, std::vector<UUID>& references) const
 	{
-		if (m_Image.AssetUUID()) references.push_back(m_Image.AssetUUID());
+		if (m_Image.GetUUID()) references.push_back(m_Image.GetUUID());
 	}
 }

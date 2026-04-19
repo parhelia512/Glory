@@ -1651,7 +1651,7 @@ namespace Glory
 	TextureHandle VulkanDevice::CreateTexture(TextureData* pTexture)
 	{
 		ProfileSample s{ &Profiler(), "VulkanDevice::CreateTexture" };
-		ImageData* pImage = pTexture->GetImageData(&m_pModule->GetEngine()->GetAssetManager());
+		ImageData* pImage = pTexture->GetImageData(&m_pModule->GetEngine()->GetResources());
 
 		TextureHandle handle;
 		VK_Texture& texture = m_Textures.Emplace(handle, VK_Texture());
@@ -1683,7 +1683,7 @@ namespace Glory
 	TextureHandle VulkanDevice::CreateTexture(CubemapData* pCubemap)
 	{
 		ProfileSample s{ &Profiler(), "VulkanDevice::CreateTexture(CubemapData)" };
-		ImageData* pFaceImage = pCubemap->GetImageData(&m_pModule->GetEngine()->GetAssetManager(), 0);
+		ImageData* pFaceImage = pCubemap->GetImageData(&m_pModule->GetEngine()->GetResources(), 0);
 		if (!pFaceImage)
 		{
 			Debug().LogError("VulkanDevice::CreateTexture(TextureData): Could not get ImageData.");
@@ -1709,7 +1709,7 @@ namespace Glory
 
 		for (size_t i = 0; i < 6; ++i)
 		{
-			pFaceImage = pCubemap->GetImageData(&m_pModule->GetEngine()->GetAssetManager(), i);
+			pFaceImage = pCubemap->GetImageData(&m_pModule->GetEngine()->GetResources(), i);
 			std::memcpy(&pixels[i*faceDataSize], pFaceImage->GetPixels(), faceDataSize);
 		}
 
@@ -1773,7 +1773,7 @@ namespace Glory
 
 		ImageHandle oldImage = vkTexture->m_Image;
 		VK_Image* vkOldImage = m_Images.Find(oldImage);
-		ImageData* pImage = pTextureData->GetImageData(&m_pModule->GetEngine()->GetAssetManager());
+		ImageData* pImage = pTextureData->GetImageData(&m_pModule->GetEngine()->GetResources());
 		vkTexture->m_Image = GetCachedImage(pImage);
 		VK_Image* vkNewImage = m_Images.Find(vkTexture->m_Image);
 

@@ -7,7 +7,7 @@
 #include <BinaryStream.h>
 
 #include <PipelineManager.h>
-#include <AssetManager.h>
+#include <Resources.h>
 
 #include <PipelineData.h>
 
@@ -52,7 +52,7 @@ namespace Glory
 		{
 			if (!newReferences[i]) continue;
 			references.push_back(newReferences[i]);
-			Resource* pPipelineResource = m_pEngine->GetAssetManager().GetAssetImmediate(newReferences[i]);
+			Resource* pPipelineResource = m_pEngine->GetResources().GetResource(newReferences[i]);
 			if (!pPipelineResource) continue;
 			PipelineData* pPipelineData = static_cast<PipelineData*>(pPipelineResource);
 			for (size_t i = 0; i < pPipelineData->ShaderCount(); ++i)

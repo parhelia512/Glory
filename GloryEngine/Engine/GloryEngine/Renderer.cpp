@@ -1,7 +1,7 @@
 #include "Renderer.h"
 #include "EngineProfiler.h"
 #include "IEngine.h"
-#include "AssetManager.h"
+#include "Resources.h"
 #include "MaterialData.h"
 #include "GPUTextureAtlas.h"
 
@@ -31,7 +31,7 @@ namespace Glory
 	{
 		ProfileSample sample{ &m_pModule->GetEngine()->Profiler(), "Renderer::SubmitStatic" };
 
-		Resource* pMaterialResource = m_pModule->GetEngine()->GetAssetManager().FindResource(renderData.m_MaterialID);
+		Resource* pMaterialResource = m_pModule->GetEngine()->GetResources().GetResource(renderData.m_MaterialID);
 		if (!pMaterialResource)
 		{
 			/* We'll have to process it some other time */
@@ -120,7 +120,7 @@ namespace Glory
 	{
 		ProfileSample s{ &m_pModule->GetEngine()->Profiler(), "Renderer::SubmitDynamic" };
 
-		Resource* pMaterialResource = m_pModule->GetEngine()->GetAssetManager().FindResource(renderData.m_MaterialID);
+		Resource* pMaterialResource = m_pModule->GetEngine()->GetResources().GetResource(renderData.m_MaterialID);
 		if (!pMaterialResource) return;
 
 		MaterialData* pMaterial = static_cast<MaterialData*>(pMaterialResource);
@@ -163,7 +163,7 @@ namespace Glory
 	{
 		ProfileSample s{ &m_pModule->GetEngine()->Profiler(), "Renderer::SubmitLate" };
 
-		Resource* pMaterialResource = m_pModule->GetEngine()->GetAssetManager().FindResource(renderData.m_MaterialID);
+		Resource* pMaterialResource = m_pModule->GetEngine()->GetResources().GetResource(renderData.m_MaterialID);
 		if (!pMaterialResource) return;
 
 		MaterialData* pMaterial = static_cast<MaterialData*>(pMaterialResource);

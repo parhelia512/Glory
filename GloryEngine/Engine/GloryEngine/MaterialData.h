@@ -43,7 +43,7 @@ namespace Glory
         GLORY_ENGINE_API bool GetPropertyInfoIndex(const std::string& name, size_t& index) const;
         GLORY_ENGINE_API bool GetPropertyInfoIndex(TextureType textureType, size_t texIndex, size_t& index) const;
         GLORY_ENGINE_API [[nodiscard]]size_t ResourceCount() const;
-        GLORY_ENGINE_API AssetReference<TextureData>* GetResourceUUIDPointer(size_t index);
+        GLORY_ENGINE_API ResourceReference<TextureData>* GetResourceUUIDPointer(size_t index);
         GLORY_ENGINE_API [[nodiscard]]virtual size_t GetResourcePropertyCount() const;
         GLORY_ENGINE_API MaterialPropertyInfo* GetResourcePropertyInfo(size_t index);
         GLORY_ENGINE_API [[nodiscard]]virtual size_t GetPropertyIndexFromResourceIndex(size_t index) const;
@@ -87,7 +87,7 @@ namespace Glory
         GLORY_ENGINE_API void SetTexture(const std::string& name, TextureData* value);
         GLORY_ENGINE_API void SetTexture(const std::string& name, UUID uuid);
         GLORY_ENGINE_API void SetTexture(TextureType textureType, size_t texIndex, UUID uuid);
-        GLORY_ENGINE_API bool GetTexture(const std::string& name, TextureData** value, AssetManager* pManager);
+        GLORY_ENGINE_API bool GetTexture(const std::string& name, TextureData** value, Resources* pResources);
         GLORY_ENGINE_API bool GetTexture(const std::string& name, UUID* texID);
 
     protected:
@@ -98,7 +98,7 @@ namespace Glory
         std::vector<char> m_PropertyBuffer;
 
         std::vector<size_t> m_ResourcePropertyInfoIndices;
-        std::vector<AssetReference<TextureData>> m_Resources;
+        std::vector<ResourceReference<TextureData>> m_Resources;
         uint32_t m_TextureSetBits;
         std::unordered_map<uint32_t, size_t> m_HashToPropertyInfoIndex;
 

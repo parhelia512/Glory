@@ -6,7 +6,7 @@
 #include "IEngine.h"
 #include "VertexHelpers.h"
 #include "RenderData.h"
-#include "AssetManager.h"
+#include "Resources.h"
 
 #include <EntityRegistry.h>
 
@@ -14,7 +14,7 @@ namespace Glory
 {
 	TextManager::TextManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
 		ComponentManager(pRegistry, capacity), m_pSceneManager(nullptr),
-		m_pAssetManager(nullptr), m_pLayerManager(nullptr)
+		m_pResources(nullptr), m_pLayerManager(nullptr)
 	{
 	}
 
@@ -30,7 +30,7 @@ namespace Glory
 		Renderer* pRenderer = m_pSceneManager->GetRenderer();
 		if (!pRenderer) return;
 
-		FontData* pFont = pComponent.m_Font.Get(m_pAssetManager);
+		FontData* pFont = pComponent.m_Font.Get(m_pResources);
 		if (!pFont) return;
 
 		Transform& transform = m_pRegistry->GetComponent<Transform>(entity);
@@ -42,7 +42,7 @@ namespace Glory
 			mask = layer.m_Layer.Layer(m_pLayerManager) != nullptr ? layer.m_Layer.Layer(m_pLayerManager)->m_Mask : LayerMask(0ull);
 		}
 
-		const UUID fontID = pComponent.m_Font.AssetUUID();
+		const UUID fontID = pComponent.m_Font.GetUUID();
 
 		TextData textData;
 		textData.m_Text = pComponent.m_Text;
@@ -61,13 +61,13 @@ namespace Glory
 		renderData.m_MeshID = renderData.m_ObjectID;
 		renderData.m_MaterialID = pFont->Material();
 
-		Resource* pMeshResource = m_pAssetManager->FindResource(renderData.m_MeshID);
+		Resource* pMeshResource = m_pResources->GetResource<MeshData>(renderData.m_MeshID);
 		if (!pMeshResource)
 		{
 			pMeshResource = new MeshData(uint32_t(textData.m_Text.size()*4), sizeof(VertexPosColorTex),
 				{ AttributeType::Float2, AttributeType::Float3, AttributeType::Float2 });
 			pMeshResource->SetResourceUUID(renderData.m_MeshID);
-			m_pAssetManager->AddLoadedResource(pMeshResource);
+			m_pResources->AddResource(&pMeshResource);
 			textData.m_TextDirty = true;
 		}
 
@@ -86,7 +86,7 @@ namespace Glory
 		for (size_t i = 0; i < Size(); ++i)
 		{
 			const TextComponent& text = GetAt(i);
-			const UUID font = text.m_Font.AssetUUID();
+			const UUID font = text.m_Font.GetUUID();
 			if (font) references.push_back(font);
 		}
 	}

@@ -55,8 +55,8 @@ namespace Glory
 			: m_Mesh(0ull), m_Material(0ull), m_RenderStatic(false), m_WasSubmittedForStatic(false) {}
 
 		REFLECTABLE(MeshRenderer,
-			(AssetReference<MeshData>)(m_Mesh),
-			(AssetReference<MaterialData>)(m_Material),
+			(ResourceReference<MeshData>)(m_Mesh),
+			(ResourceReference<MaterialData>)(m_Material),
 			(bool)(m_RenderStatic)
 		);
 
@@ -134,7 +134,7 @@ namespace Glory
 			m_Color(1.0f, 1.0f, 1.0f, 1.0f), m_Alignment(Alignment::Left), m_WrapWidth(0.0f), m_Dirty(true) {}
 
 		REFLECTABLE(TextComponent,
-			(AssetReference<FontData>)(m_Font),
+			(ResourceReference<FontData>)(m_Font),
 			(std::string)(m_Text),
 			(float)(m_Scale),
 			(glm::vec4)(m_Color),

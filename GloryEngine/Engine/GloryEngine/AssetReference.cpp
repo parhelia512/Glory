@@ -1,27 +1,27 @@
 #include "AssetReference.h"
-#include "AssetManager.h"
+#include "Resources.h"
 
 #include "ResourceReferencing.h"
 
 namespace Glory
 {
-	AssetReferenceBase::AssetReferenceBase() : m_AssetUUID(0)
+	ResourceReferenceBase::ResourceReferenceBase(): m_AssetUUID(0)
 	{
 	}
 
-	AssetReferenceBase::AssetReferenceBase(UUID uuid) : m_AssetUUID(uuid)
+	ResourceReferenceBase::ResourceReferenceBase(UUID uuid): m_AssetUUID(uuid)
 	{
 		if (uuid)
 			AddResourceReference(uuid);
 	}
 
-	AssetReferenceBase::AssetReferenceBase(const AssetReferenceBase& other): m_AssetUUID(other.m_AssetUUID)
+	ResourceReferenceBase::ResourceReferenceBase(const ResourceReferenceBase& other): m_AssetUUID(other.m_AssetUUID)
 	{
 		if (m_AssetUUID)
 			AddResourceReference(m_AssetUUID);
 	}
 
-	AssetReferenceBase& AssetReferenceBase::operator=(const AssetReferenceBase& other)
+	ResourceReferenceBase& ResourceReferenceBase::operator=(const ResourceReferenceBase& other)
 	{
 		m_AssetUUID = other.m_AssetUUID;
 		if (m_AssetUUID)
@@ -29,36 +29,31 @@ namespace Glory
 		return *this;
 	}
 
-	AssetReferenceBase::AssetReferenceBase(AssetReferenceBase&& other) noexcept: m_AssetUUID(other.m_AssetUUID)
+	ResourceReferenceBase::ResourceReferenceBase(ResourceReferenceBase&& other) noexcept: m_AssetUUID(other.m_AssetUUID)
 	{
 		other.m_AssetUUID = 0;
 	}
 
-	AssetReferenceBase& AssetReferenceBase::operator=(AssetReferenceBase&& other) noexcept
+	ResourceReferenceBase& ResourceReferenceBase::operator=(ResourceReferenceBase&& other) noexcept
 	{
 		m_AssetUUID = other.m_AssetUUID;
 		other.m_AssetUUID = 0;
 		return *this;
 	}
 
-	AssetReferenceBase::~AssetReferenceBase()
+	ResourceReferenceBase::~ResourceReferenceBase()
 	{
 		if (m_AssetUUID)
 			RemoveResourceReference(m_AssetUUID);
 		m_AssetUUID = 0;
 	}
 
-	const UUID AssetReferenceBase::AssetUUID() const
+	const UUID ResourceReferenceBase::GetUUID() const
 	{
 		return m_AssetUUID;
 	}
 
-	UUID* AssetReferenceBase::AssetUUIDMember()
-	{
-		return &m_AssetUUID;
-	}
-
-	void AssetReferenceBase::SetUUID(UUID uuid)
+	void ResourceReferenceBase::SetUUID(UUID uuid)
 	{
 		if (m_AssetUUID)
 			RemoveResourceReference(m_AssetUUID);
@@ -67,17 +62,44 @@ namespace Glory
 			AddResourceReference(uuid);
 	}
 
-	Resource* AssetReferenceBase::GetResource(AssetManager* pAssets) const
+	Resource* ResourceReferenceBase::GetResource(Resources* pResources) const
 	{
-		return pAssets->GetOrLoadAsset(m_AssetUUID);
-	}
-
-	Resource* AssetReferenceBase::GetResourceImmediate(AssetManager* pAssets) const
-	{
-		return pAssets->GetAssetImmediate(m_AssetUUID);
+		return pResources->GetResource(m_AssetUUID);
 	}
 	
-	AssetReferenceBase::operator bool() const
+	ResourceReferenceBase::operator bool() const
+	{
+		return m_AssetUUID;
+	}
+
+	WeakResourceReference::WeakResourceReference(): m_AssetUUID(0)
+	{
+	}
+
+	WeakResourceReference::WeakResourceReference(UUID uuid): m_AssetUUID(uuid)
+	{
+	}
+
+	WeakResourceReference::WeakResourceReference(const ResourceReferenceBase& other): m_AssetUUID(other.GetUUID())
+	{
+	}
+
+	WeakResourceReference::~WeakResourceReference()
+	{
+		m_AssetUUID = 0ull;
+	}
+
+	const UUID WeakResourceReference::GetUUID() const
+	{
+		return m_AssetUUID;
+	}
+
+	Resource* WeakResourceReference::GetResource(Resources* pResources) const
+	{
+		return pResources->GetResource(m_AssetUUID);
+	}
+
+	WeakResourceReference::operator bool() const
 	{
 		return m_AssetUUID;
 	}

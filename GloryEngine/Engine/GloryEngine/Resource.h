@@ -58,7 +58,7 @@ namespace Glory
         virtual void References(IEngine* pEngine, std::vector<UUID>& references) const = 0;
 
     private:
-        friend class AssetManager;
+        friend class Resources;
         friend class AssetDatabase;
         friend class LoaderModule;
 

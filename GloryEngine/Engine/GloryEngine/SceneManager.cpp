@@ -187,7 +187,7 @@ namespace Glory
 		RegisterComponentManager<MeshRenderManager, MeshRenderer>(
 			[this](Utils::ECS::EntityRegistry*, MeshRenderManager* manager) {
 				manager->m_pSceneManager = this;
-				manager->m_pAssetManager = &m_pEngine->GetAssetManager();
+				manager->m_pResources = &m_pEngine->GetResources();
 				manager->m_pMaterialManager = &m_pEngine->GetMaterialManager();
 				manager->m_pAssetDatabase = &m_pEngine->GetAssetDatabase();
 				manager->m_pLayerManager = &m_pEngine->GetLayerManager();
@@ -200,7 +200,7 @@ namespace Glory
 		RegisterComponentManager<TextManager, TextComponent>(
 			[this](Utils::ECS::EntityRegistry*, TextManager* manager) {
 				manager->m_pSceneManager = this;
-				manager->m_pAssetManager = &m_pEngine->GetAssetManager();
+				manager->m_pResources = &m_pEngine->GetResources();
 				manager->m_pLayerManager = &m_pEngine->GetLayerManager();
 			});
 

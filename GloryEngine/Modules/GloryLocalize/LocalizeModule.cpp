@@ -36,7 +36,7 @@ namespace Glory
 	{
 		if (std::find(m_LoadedTableIDs.begin(), m_LoadedTableIDs.end(), tableID) != m_LoadedTableIDs.end()) return;
 
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(tableID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(tableID);
 		if (!pResource) return;
 
 		StringTable* pTable = static_cast<StringTable*>(pResource);
@@ -56,7 +56,7 @@ namespace Glory
 			if (localeData.m_BaseTableID != tableID) continue;
 			auto baseTableIter = std::find(m_LoadedTableIDs.begin(), m_LoadedTableIDs.end(), localeData.m_BaseTableID);
 			if (baseTableIter == m_LoadedTableIDs.end()) continue;
-			Resource* pResource = m_pEngine->GetAssetManager().FindResource(localeData.m_OverrideTableID);
+			Resource* pResource = m_pEngine->GetResources().GetResource(localeData.m_OverrideTableID);
 			if (!pResource)
 			{
 				/* Must load it in */
@@ -77,7 +77,7 @@ namespace Glory
 
 	void LocalizeModule::LoadStringOverrideTable(StringsOverrideTable* pTable)
 	{
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(pTable->BaseTableID());
+		Resource* pResource = m_pEngine->GetResources().GetResource(pTable->BaseTableID());
 		if (!pResource) return;
 
 		StringTable* pBaseTable = static_cast<StringTable*>(pResource);
@@ -187,7 +187,7 @@ namespace Glory
 			if (localeData.m_Language != language) continue;
 			auto baseTableIter = std::find(m_LoadedTableIDs.begin(), m_LoadedTableIDs.end(), localeData.m_BaseTableID);
 			if (baseTableIter == m_LoadedTableIDs.end()) continue;
-			Resource* pResource = m_pEngine->GetAssetManager().FindResource(localeData.m_OverrideTableID);
+			Resource* pResource = m_pEngine->GetResources().GetResource(localeData.m_OverrideTableID);
 			if (!pResource)
 			{
 				/* Must load it in */

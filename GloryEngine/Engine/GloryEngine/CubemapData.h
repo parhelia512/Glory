@@ -15,8 +15,8 @@ namespace Glory
         GLORY_ENGINE_API CubemapData& operator=(CubemapData&&) noexcept = default;
         GLORY_ENGINE_API virtual ~CubemapData();
 
-        GLORY_ENGINE_API virtual ImageData* GetImageData(AssetManager* pAssetManager, size_t face);
-        GLORY_ENGINE_API AssetReference<ImageData>& Image(size_t face);
+        GLORY_ENGINE_API virtual ImageData* GetImageData(Resources* pResources, size_t face);
+        GLORY_ENGINE_API ResourceReference<ImageData>& Image(size_t face);
         GLORY_ENGINE_API SamplerSettings& GetSamplerSettings();
 
         GLORY_ENGINE_API void Serialize(Utils::BinaryStream& container) const override;
@@ -27,7 +27,7 @@ namespace Glory
     private:
         friend class TextureDataLoaderModule;
         friend class ImageLoaderModule;
-        AssetReference<ImageData> m_Faces[6];
+        ResourceReference<ImageData> m_Faces[6];
         SamplerSettings m_SamplerSettings;
 	};
 }

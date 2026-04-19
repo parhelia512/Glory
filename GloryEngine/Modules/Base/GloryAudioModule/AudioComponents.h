@@ -166,7 +166,7 @@ namespace Glory
 			m_AsMusic(false), m_AutoPlay(false), m_Loops(0), m_Volume(1.0f), m_Enable3D(true) {}
 
 		REFLECTABLE(AudioSource,
-			(AssetReference<AudioData>)(m_Audio),
+			(ResourceReference<AudioData>)(m_Audio),
 			(bool)(m_AsMusic),
 			(bool)(m_AutoPlay),
 			(uint32_t)(m_Loops),
