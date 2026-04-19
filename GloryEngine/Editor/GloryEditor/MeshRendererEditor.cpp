@@ -1,9 +1,9 @@
 #include "MeshRendererEditor.h"
 #include "EditorApplication.h"
-#include "EditorAssetManager.h"
 
 #include <IEngine.h>
 #include <Renderer.h>
+#include <Resources.h>
 #include <Components.h>
 
 namespace Glory::Editor

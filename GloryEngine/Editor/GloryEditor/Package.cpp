@@ -5,8 +5,8 @@
 #include "EditorPipelineManager.h"
 #include "EditorSceneManager.h"
 #include "EditorApplication.h"
+#include "EditorResourceLoader.h"
 #include "EditorResourceManager.h"
-#include "AssetCompiler.h"
 #include "EditableResource.h"
 #include "Dispatcher.h"
 #include "SystemTools.h"
@@ -793,7 +793,7 @@ namespace Glory::Editor
 
 	void StartPackage(IEngine* pEngine)
 	{
-		if (AssetCompiler::IsBusy())
+		if (EditorApplication::GetInstance()->GetResourceLoader().IsBusy())
 		{
 			pEngine->GetDebug().LogError("Cannot package while assets are compiling");
 			return;

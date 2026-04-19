@@ -6,7 +6,6 @@
 #include <GScene.h>
 #include <IEngine.h>
 #include <SceneManager.h>
-#include <AssetManager.h>
 #include <Debug.h>
 #include <UUIDRemapper.h>
 #include <SceneObjectRef.h>

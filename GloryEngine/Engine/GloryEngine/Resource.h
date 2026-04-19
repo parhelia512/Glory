@@ -46,6 +46,8 @@ namespace Glory
         virtual void Serialize(Utils::BinaryStream& container) const {};
         virtual void Deserialize(Utils::BinaryStream& container) {};
 
+        inline virtual bool CanBeCached() const { return true; }
+
         /** @brief Change the UUID of this resource
          * @param uuid The new UUID of this resource
          *

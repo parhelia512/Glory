@@ -4,7 +4,6 @@
 #include "EditorApplication.h"
 #include "ProjectSettings.h"
 #include "EditorAssetDatabase.h"
-#include "AssetCompiler.h"
 #include "TitleBar.h"
 #include "ProjectMigrations.h"
 #include "PopupManager.h"

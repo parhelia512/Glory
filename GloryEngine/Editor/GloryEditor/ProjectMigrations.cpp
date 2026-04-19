@@ -1,6 +1,5 @@
 #include "ProjectMigrations.h"
 #include "EditorAssetDatabase.h"
-#include "AssetCompiler.h"
 #include "EditorApplication.h"
 #include "EditorResourceManager.h"
 #include "EditableResource.h"

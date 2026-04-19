@@ -2,7 +2,6 @@
 #include "EditorAssetDatabase.h"
 #include "ThumbnailManager.h"
 #include "EditorApplication.h"
-#include "EditorAssetManager.h"
 #include "Selection.h"
 #include "EditorResourceManager.h"
 #include "EditableResource.h"
@@ -13,6 +12,7 @@
 #include <StringUtils.h>
 
 #include <PrefabData.h>
+#include <Resources.h>
 #include <ResourceType.h>
 
 #include <IconsFontAwesome6.h>

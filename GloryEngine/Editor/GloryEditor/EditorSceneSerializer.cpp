@@ -1,7 +1,7 @@
 #include "EditorSceneSerializer.h"
-#include "AssetCompiler.h"
 #include "EditorSceneManager.h"
 #include "EditorApplication.h"
+#include "EditorResourceLoader.h"
 #include "Resources.h"
 
 #include <Serializers.h>
@@ -107,7 +107,7 @@ namespace Glory::Editor
 		Utils::ECS::EntityRegistry& registry = pScene->GetRegistry();
 		registry.Validate();
 
-		AssetCompiler::CompileSceneSettings(pScene, node);
+		EditorApplication::GetInstance()->GetResourceLoader().CompileSceneSettings(pScene, node);
 	}
 
 	void EditorSceneSerializer::SerializeEntity(EditorApplication* pApp, GScene* pScene, Utils::ECS::EntityID entity, Utils::NodeValueRef entityNode)

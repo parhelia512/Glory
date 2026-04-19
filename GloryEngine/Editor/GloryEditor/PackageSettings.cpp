@@ -6,7 +6,7 @@
 #include "EditorAssetDatabase.h"
 #include "Package.h"
 #include "EditorApplication.h"
-#include "AssetCompiler.h"
+#include "EditorResourceLoader.h"
 
 #include <imgui.h>
 #include <Reflection.h>
@@ -21,7 +21,9 @@ namespace Glory::Editor
 
 	bool PackageSettings::OnGui()
 	{
-		ImGui::BeginDisabled(AssetCompiler::IsBusy());
+		EditorApplication* pApp = EditorApplication::GetInstance();
+
+		ImGui::BeginDisabled(pApp->GetResourceLoader().IsBusy());
 		if (ImGui::Button("Package"))
 		{
 			StartPackage(EditorApplication::GetInstance()->GetEngine());

@@ -2,7 +2,6 @@
 #include "ThumbnailRenderer.h"
 #include "EditorApplication.h"
 #include "EditorMaterialManager.h"
-#include "EditorAssetManager.h"
 #include "EditorAssetDatabase.h"
 
 #include <TransformManager.h>
@@ -10,6 +9,7 @@
 
 #include <GScene.h>
 #include <Components.h>
+#include <Resources.h>
 
 namespace Glory::Editor
 {

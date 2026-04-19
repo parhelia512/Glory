@@ -69,8 +69,10 @@ namespace Glory
 			auto iter = m_ResourceIDToManagerIndex.find(id);
 			if (iter == m_ResourceIDToManagerIndex.end()) return nullptr;
 			const uint32_t hash = ResourceTypes::GetHash<R>();
-			GLORY_ASSERT(hash == iter->second, "Resource type hash mismatch.");
-			ResourceManager<R>* manager = static_cast<ResourceManager<R>*>(m_Managers.at(iter->second).get());
+			auto& managerInterface = m_Managers.at(iter->second);
+			const uint32_t actualType = managerInterface->Type();
+			GLORY_ASSERT(hash == actualType, "Resource type hash mismatch.");
+			ResourceManager<R>* manager = static_cast<ResourceManager<R>*>(managerInterface.get());
 			return manager->GetDirect(id);
 		}
 
@@ -89,13 +91,13 @@ namespace Glory
 		 *
 		 * If the counter was 0, then this will queue the resource for loading.
 		 */
-		void AddReference(UUID id);
+		GLORY_ENGINE_API void AddReference(UUID id);
 		/** @brief Decrement the reference counter for a resource by ID
 		 * @param id ID of the resource
 		 *
 		 * If the counter becomes 0 after decrementing, then this will queue the resource for unloading.
 		 */
-		void RemoveReference(UUID id);
+		GLORY_ENGINE_API void RemoveReference(UUID id);
 
 		/** @brief Run a callback on each queued for loading resource ID, then clear the queue.
 		 * @param callback Function to call on each resource ID.

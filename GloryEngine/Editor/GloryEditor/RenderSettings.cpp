@@ -8,7 +8,6 @@
 #include "EditorResourceManager.h"
 #include "EditableResource.h"
 #include "EditorApplication.h"
-#include "AssetCompiler.h"
 #include "Selection.h"
 #include "DND.h"
 #include "Undo.h"
@@ -70,7 +69,6 @@ namespace Glory::Editor
 		static const uint32_t pipelineHash = ResourceTypes::GetHash<PipelineData>();
 
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
-		EditorAssetManager& assetManager = EditorApplication::GetInstance()->GetResources();
 		EditorPipelineManager& pipelines = EditorApplication::GetInstance()->GetPipelineManager();
 		ResourceTypes& resourceTypes = pEngine->GetResourceTypes();
 		const ResourceType* pPipelineType = resourceTypes.GetResourceType(pipelineHash);

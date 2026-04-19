@@ -6,11 +6,9 @@
 #include "EditorResourceManager.h"
 #include "EditorSceneManager.h"
 #include "ProjectSpace.h"
-#include "EditorAssetManager.h"
 #include "EditorPipelineManager.h"
 #include "EditorMaterialManager.h"
 #include "ThumbnailManager.h"
-#include "AssetCompiler.h"
 #include "FileBrowser.h"
 #include "ProjectSettings.h"
 
@@ -52,12 +50,11 @@ namespace Glory::Editor
 	EditorApplication::EditorApplication(const EditorCreateInfo& createInfo):
 		m_pEngine(createInfo.pEngine),
 		m_Platform(createInfo.pWindowImpl, createInfo.pRenderImpl),
-		m_AssetManager(new EditorAssetManager(this)),
 		m_SceneManager(new EditorSceneManager(this)),
 		m_ResourceManager(new EditorResourceManager(createInfo.pEngine)),
 		m_PipelineManager(new EditorPipelineManager(createInfo.pEngine)),
 		m_MaterialManager(new EditorMaterialManager(this)),
-		m_ResourceLoader(new EditorResourceLoader(&createInfo.pEngine->Jobs(), &createInfo.pEngine->GetDebug())),
+		m_ResourceLoader(new EditorResourceLoader(this, &createInfo.pEngine->Jobs(), &createInfo.pEngine->GetDebug())),
 		m_ThumbnailManager(new ThumbnailManager(this)),
 		m_pFileWatcher(new efsw::FileWatcher()),
 		m_Serializers(new Serializers(createInfo.pEngine))
@@ -253,7 +250,7 @@ namespace Glory::Editor
 				EditorAssetsWatcher::RunCallbacks();
 
 				/* Run asset callbacks */
-				m_AssetManager->RunCallbacks();
+				//m_AssetManager->RunCallbacks();
 
 				/* Run callbacks for compiled pipelines */
 				m_PipelineManager->RunCallbacks();
@@ -295,7 +292,7 @@ namespace Glory::Editor
 			EditorAssetsWatcher::RunCallbacks();
 
 			/* Run asset callbacks */
-			m_AssetManager->RunCallbacks();
+			// m_AssetManager->RunCallbacks();
 
 			/* Run callbacks for compiled pipeline */
 			m_PipelineManager->RunCallbacks();
@@ -505,13 +502,13 @@ namespace Glory::Editor
 		m_StartupStatus = "Compiling Asset Database...";
 		lock.unlock();
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		AssetCompiler::CompileAssetDatabase();
+		EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase();
 
 		lock.lock();
 		m_StartupStatus = "Compiling Pipelines...";
 		lock.unlock();
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		AssetCompiler::CompilePipelines();
+		EditorApplication::GetInstance()->GetResourceLoader().CompilePipelines();
 		EditorAssetDatabase::Update();
 		//EditorApplication::GetInstance()->GetPipelineManager().RunCallbacks();
 
@@ -529,9 +526,9 @@ namespace Glory::Editor
 		return m_pEngine;
 	}
 
-	EditorAssetManager& EditorApplication::GetResources()
+	EditorResourceLoader& EditorApplication::GetResourceLoader()
 	{
-		return *m_AssetManager;
+		return *m_ResourceLoader;
 	}
 
 	EditorSceneManager& EditorApplication::GetSceneManager()

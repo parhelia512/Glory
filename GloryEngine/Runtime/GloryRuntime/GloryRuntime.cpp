@@ -1,5 +1,5 @@
 #include "GloryRuntime.h"
-#include "RuntimeAssetManager.h"
+#include "RuntimeResourceLoader.h"
 #include "RuntimeSceneManager.h"
 #include "RuntimeMaterialManager.h"
 #include "RuntimePipelineManager.h"
@@ -10,13 +10,13 @@
 #include <Renderer.h>
 #include <GraphicsDevice.h>
 #include <WindowModule.h>
+#include <Resources.h>
 
 #include <Debug.h>
 #include <AssetArchive.h>
 #include <BinaryStream.h>
 #include <GScene.h>
 #include <SceneManager.h>
-#include <AssetManager.h>
 #include <AssetDatabase.h>
 
 #include <filesystem>
@@ -25,13 +25,14 @@
 namespace Glory
 {
 	GloryRuntime::GloryRuntime(IEngine* pEngine): m_pEngine(pEngine),
-		m_AssetManager(new RuntimeAssetManager(pEngine)),
+		m_ResourceLoader(new RuntimeResourceLoader()),
 		m_SceneManager(new RuntimeSceneManager(this)),
 		m_PipelineManager(new RuntimePipelineManager(pEngine)),
 		m_MaterialManager(new RuntimeMaterialManager(pEngine)),
 		m_pRenderer(nullptr), m_pWindows(nullptr),
 		m_LastRenderedFrame(std::chrono::system_clock::now())
 	{
+		m_ResourceLoader->SetResources(&m_pEngine->GetResources());
 	}
 
 	GloryRuntime::~GloryRuntime() = default;
@@ -77,7 +78,7 @@ namespace Glory
 		}
 
 		/* Initialize engine */
-		m_pEngine->SetAssetManager(m_AssetManager.get());
+		m_pEngine->SetResourceLoader(m_ResourceLoader.get());
 		m_pEngine->SetSceneManager(m_SceneManager.get());
 		m_pEngine->SetMaterialManager(m_MaterialManager.get());
 		m_pEngine->SetPipelineManager(m_PipelineManager.get());
@@ -216,7 +217,7 @@ namespace Glory
 		for (size_t i = 0; i < archive.Size(); ++i)
 		{
 			Resource* pResource = archive.Get(m_pEngine, i);
-			m_pEngine->GetAssetManager().AddLoadedResource(pResource);
+			m_pEngine->GetResources().AddResource(&pResource);
 		}
 	}
 

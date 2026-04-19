@@ -6,7 +6,6 @@
 
 #include <IEngine.h>
 #include <Console.h>
-#include <AssetManager.h>
 #include <SceneManager.h>
 #include <GScene.h>
 #include <Resources.h>

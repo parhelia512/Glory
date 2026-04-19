@@ -37,6 +37,7 @@ namespace Glory
     public:
         /** @brief Constructor */
         GLORY_ENGINE_API PipelineData();
+        /** @overload */
         GLORY_ENGINE_API PipelineData(PipelineData&&) noexcept = default;
         GLORY_ENGINE_API PipelineData& operator=(PipelineData&&) noexcept = default;
         /** @brief Destructor */
@@ -271,6 +272,8 @@ namespace Glory
 
     private:
         virtual void References(IEngine*, std::vector<UUID>&) const override {}
+
+        inline virtual bool CanBeCached() const override { return false; }
 
     protected:
         PipelineType m_Type = PT_Phong;

@@ -128,7 +128,6 @@ namespace Utils::Reflect
 		GLORY_ENGINE_API void Draw() override;
 
 		GLORY_ENGINE_API Resources& GetResources() override;
-
 		GLORY_ENGINE_API ThreadManager& Threads() override;
 		GLORY_ENGINE_API Jobs::JobManager& Jobs() override;
 		GLORY_ENGINE_API Console& GetConsole() override;
