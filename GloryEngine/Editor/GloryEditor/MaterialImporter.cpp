@@ -5,7 +5,7 @@
 #include "EditorResourceManager.h"
 
 #include <fstream>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <AssetDatabase.h>
 #include <PropertySerializer.h>
 
@@ -78,7 +78,7 @@ namespace Glory::Editor
 			{
 				size_t index = pMaterialData->GetPropertyIndexFromResourceIndex(resourceIndex);
 				++resourceIndex;
-				const uint64_t uuid = pMaterialData->GetResourceUUIDPointer(index)->AssetUUID();
+				const uint64_t uuid = pMaterialData->GetResourceUUIDPointer(index)->GetUUID();
 				property["Value"].Set(uuid);
 			}
 		}

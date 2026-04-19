@@ -46,13 +46,13 @@ namespace Glory::Editor
 		SoundOccluder& occluder = GetTargetComponent();
 		PropertyDrawer::DrawProperty(pMaterialAssetField, &occluder.m_MaterialAsset, 0);
 
-		const bool hasMaterialAsset = occluder.m_MaterialAsset.AssetUUID() != 0;
+		const bool hasMaterialAsset = occluder.m_MaterialAsset.GetUUID() != 0;
 		ImGui::BeginDisabled(hasMaterialAsset);
 		if (!hasMaterialAsset)
 			PropertyDrawer::DrawProperty(pMaterialField, &occluder.m_Material, 0);
 		else
 		{
-			EditableResource* pResource = EditorApplication::GetInstance()->GetResourceManager().GetEditableResource(occluder.m_MaterialAsset.AssetUUID());
+			EditableResource* pResource = EditorApplication::GetInstance()->GetResourceManager().GetEditableResource(occluder.m_MaterialAsset.GetUUID());
 
 			if (pResource)
 			{

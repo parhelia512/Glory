@@ -1,7 +1,7 @@
 #pragma once
 #include "GloryEditor.h"
 
-#include <AssetManager.h>
+#include <Resources.h>
 #include <ThreadedVar.h>
 #include <JobManager.h>
 
@@ -29,7 +29,7 @@ namespace Glory::Editor
 	};
 
 	/** @brief Editor asset mamager */
-	class EditorAssetManager : public AssetManager
+	class EditorAssetManager
 	{
 	public:
 		/** @brief Base class for asset management */
@@ -68,7 +68,7 @@ namespace Glory::Editor
 		 * @brief Find a loaded asset by ID
 		 * @param uuid ID of the asset
 		 */
-		GLORY_EDITOR_API Resource* FindResource(UUID uuid) override;
+		GLORY_EDITOR_API Resource* GetResource(UUID uuid) override;
 		/**
 		 * @brief Add a loaded asset to the manager
 		 * @param pResource Loaded asset to add

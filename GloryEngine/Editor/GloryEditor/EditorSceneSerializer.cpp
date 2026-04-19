@@ -2,7 +2,7 @@
 #include "AssetCompiler.h"
 #include "EditorSceneManager.h"
 #include "EditorApplication.h"
-#include "EditorAssetManager.h"
+#include "Resources.h"
 
 #include <Serializers.h>
 #include <PropertySerializer.h>
@@ -130,7 +130,7 @@ namespace Glory::Editor
 			entityNode["PrefabID"].Set(uint64_t(prefabID));
 		
 			/* Serialize ID remapping */
-			PrefabData* pPrefab = pApp->GetAssetManager().AssetManager::GetAssetImmediate<PrefabData>(prefabID);
+			PrefabData* pPrefab = pApp->GetEngine()->GetResources().GetResource<PrefabData>(prefabID);
 			const Utils::ECS::EntityID root = pPrefab->Child(0, 0);
 		
 			if (pPrefab->GetEntityUUID(root) != entityHandle.EntityUUID())
@@ -206,7 +206,7 @@ namespace Glory::Editor
 		if (!(flags & Flags::IgnorePrefabs) && prefabIDRef.Exists())
 		{
 			const UUID prefabID = prefabIDRef.As<uint64_t>();
-			PrefabData* pPrefab = pApp->GetAssetManager().AssetManager::GetAssetImmediate<PrefabData>(prefabID);
+			PrefabData* pPrefab = pApp->GetEngine()->GetResources().GetResource<PrefabData>(prefabID);
 			if (pPrefab)
 			{
 				Utils::NodeValueRef idsRemapValue = node["IDRemap"];

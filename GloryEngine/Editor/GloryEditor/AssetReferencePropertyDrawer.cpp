@@ -10,11 +10,13 @@ namespace Glory::Editor
 {
 	bool AssetReferencePropertyDrawer::Draw(const std::string& label, void* data, uint32_t typeHash, uint32_t flags) const
 	{
-		AssetReferenceBase* pReferenceMember = (AssetReferenceBase*)data;
-		AssetReferenceBase oldValue{ pReferenceMember->AssetUUID() };
-		bool change = AssetPicker::ResourceDropdown(label, typeHash ? typeHash : pReferenceMember->TypeHash(), pReferenceMember->AssetUUIDMember());
+		ResourceReferenceBase* pReferenceMember = (ResourceReferenceBase*)data;
+		WeakResourceReference oldValue{ *pReferenceMember };
+		UUID resourceID;
+		const bool change = AssetPicker::ResourceDropdown(label, typeHash ? typeHash : pReferenceMember->TypeHash(), &resourceID);
 		if (change)
 		{
+			pReferenceMember->SetUUID(resourceID);
 			ValueChangeAction* pAction = new ValueChangeAction(PropertyDrawer::GetRootTypeData(), PropertyDrawer::GetCurrentPropertyPath());
 			pAction->SetOldValue(&oldValue);
 			pAction->SetNewValue(pReferenceMember);

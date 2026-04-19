@@ -11,7 +11,7 @@ namespace Glory::Editor
         GLORY_EDITOR_API EditorTextureData(ImageData* pImageData);
         GLORY_EDITOR_API virtual ~EditorTextureData();
 
-        GLORY_EDITOR_API virtual ImageData* GetImageData(AssetManager*) override;
+        GLORY_EDITOR_API virtual ImageData* GetImageData(Resources*) override;
 
     private:
         ImageData* m_pImageData;

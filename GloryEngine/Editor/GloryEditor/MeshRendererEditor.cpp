@@ -27,8 +27,8 @@ namespace Glory::Editor
 
 		Transform& transform = m_pComponentObject->GetRegistry()->GetComponent<Transform>(m_pComponentObject->EntityID());
 		MeshRenderer& meshRenderer = GetTargetComponent();
-		const UUID meshID = meshRenderer.m_Mesh.AssetUUID();
-		Resource* pMeshResource = pApp->GetAssetManager().FindResource(meshID);
+		const UUID meshID = meshRenderer.m_Mesh.GetUUID();
+		Resource* pMeshResource = pApp->GetEngine()->GetResources().GetResource(meshID);
 		if (pMeshResource)
 		{
 			MeshData* pMeshData = static_cast<MeshData*>(pMeshResource);

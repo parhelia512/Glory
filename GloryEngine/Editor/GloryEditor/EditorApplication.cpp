@@ -72,7 +72,6 @@ namespace Glory::Editor
 			}
 		}
 
-		m_pEngine->SetAssetManager(m_AssetManager.get());
 		m_pEngine->SetSceneManager(m_SceneManager.get());
 		m_pEngine->SetMaterialManager(m_MaterialManager.get());
 		m_pEngine->SetPipelineManager(m_PipelineManager.get());
@@ -516,11 +515,11 @@ namespace Glory::Editor
 		EditorAssetDatabase::Update();
 		//EditorApplication::GetInstance()->GetPipelineManager().RunCallbacks();
 
-		lock.lock();
-		m_StartupStatus = "Compiling new assets...";
-		lock.unlock();
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		AssetCompiler::CompileNewAssets();
+		//lock.lock();
+		//m_StartupStatus = "Compiling new assets...";
+		//lock.unlock();
+		//std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		//AssetCompiler::CompileNewAssets();
 
 		m_IsStarting = false;
 	}
@@ -530,7 +529,7 @@ namespace Glory::Editor
 		return m_pEngine;
 	}
 
-	EditorAssetManager& EditorApplication::GetAssetManager()
+	EditorAssetManager& EditorApplication::GetResources()
 	{
 		return *m_AssetManager;
 	}

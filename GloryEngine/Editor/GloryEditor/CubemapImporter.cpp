@@ -91,7 +91,7 @@ namespace Glory::Editor
 		for (size_t i = 0; i < 6; ++i)
 		{
 			auto face = faces[sides[i]];
-			face.Set(uint64_t(pResource->Image(i).AssetUUID()));
+			face.Set(uint64_t(pResource->Image(i).GetUUID()));
 		}
 
 		Utils::NodeValueRef sampler = root["Sampler"];

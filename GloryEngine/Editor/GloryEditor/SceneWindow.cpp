@@ -16,7 +16,7 @@
 #include <TransformManager.h>
 #include <CameraManager.h>
 #include <SceneManager.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <PrefabData.h>
 #include <IEngine.h>
 #include <Renderer.h>
@@ -332,7 +332,7 @@ namespace Glory::Editor
 				if (!pSubResourceType) continue;
 				if (pSubResourceType->Hash() != ResourceTypes::GetHash<PrefabData>()) continue;
 
-				pPrefab = pEngine->GetAssetManager().GetAssetImmediate<PrefabData>(uuid);
+				pPrefab = pEngine->GetResources().GetResource<PrefabData>(uuid);
 				found = true;
 				break;
 			}
@@ -342,14 +342,14 @@ namespace Glory::Editor
 				const UUID prefabID = EditorAssetDatabase::FindAssetUUID(path, subPath);
 				if (!prefabID)
 					return;
-				pPrefab = pEngine->GetAssetManager().GetAssetImmediate<PrefabData>(prefabID);
+				pPrefab = pEngine->GetResources().GetResource<PrefabData>(prefabID);
 				if (!pPrefab)
 					return;
 			}
 		}
 		else
 		{
-			pPrefab = pEngine->GetAssetManager().GetAssetImmediate<PrefabData>(uuid);
+			pPrefab = pEngine->GetResources().GetResource<PrefabData>(uuid);
 		}
 
 		if (!pPrefab) return;

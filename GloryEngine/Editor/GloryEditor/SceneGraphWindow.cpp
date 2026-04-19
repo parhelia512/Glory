@@ -20,7 +20,7 @@
 #include <IconsFontAwesome6.h>
 #include <StringUtils.h>
 #include <PrefabData.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <UUIDRemapper.h>
 #include <glm/ext/quaternion_float.hpp>
 
@@ -482,7 +482,7 @@ namespace Glory::Editor
 		const uint32_t prefabHash = ResourceTypes::GetHash<PrefabData>();
 
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
-		AssetManager& assetManager = pEngine->GetAssetManager();
+		Resources& resources = pEngine->GetResources();
 		if (dndHash == ST_Path)
 		{
 			std::string path = (const char*)pPayload->Data;
@@ -502,7 +502,7 @@ namespace Glory::Editor
 					if (!pSubResourceType) continue;
 					if (pSubResourceType->Hash() != ResourceTypes::GetHash<PrefabData>()) continue;
 
-					pPrefab = pEngine->GetAssetManager().GetAssetImmediate<PrefabData>(uuid);
+					pPrefab = pEngine->GetResources().GetResource<PrefabData>(uuid);
 					found = true;
 					break;
 				}
@@ -512,20 +512,20 @@ namespace Glory::Editor
 					const UUID prefabID = EditorAssetDatabase::FindAssetUUID(path, subPath);
 					if (!prefabID)
 						return false;
-					pPrefab = pEngine->GetAssetManager().GetAssetImmediate<PrefabData>(prefabID);
+					pPrefab = pEngine->GetResources().GetResource<PrefabData>(prefabID);
 					if (!pPrefab)
 						return false;
 				}
 			}
 			else
 			{
-				pPrefab = assetManager.GetAssetImmediate<PrefabData>(uuid);
+				pPrefab = resources.GetResource<PrefabData>(uuid);
 			}
 		}
 		else if (dndHash = ResourceTypes::GetHash<PrefabData>())
 		{
 			const UUID prefabID = *(const UUID*)pPayload->Data;
-			pPrefab = assetManager.GetAssetImmediate<PrefabData>(prefabID);
+			pPrefab = resources.GetResource<PrefabData>(prefabID);
 		}
 
 		if (!pPrefab) return false;

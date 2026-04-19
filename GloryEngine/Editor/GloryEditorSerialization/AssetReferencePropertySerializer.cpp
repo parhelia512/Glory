@@ -15,15 +15,15 @@ namespace Glory
 
 	void AssetReferencePropertySerializer::Serialize(void* data, uint32_t typeHash, Utils::NodeValueRef node)
 	{
-		const AssetReferenceBase* pReferenceMember = (AssetReferenceBase*)data;
-		const UUID uuid = pReferenceMember->AssetUUID();
+		const ResourceReferenceBase* pReferenceMember = (ResourceReferenceBase*)data;
+		const UUID uuid = pReferenceMember->GetUUID();
 		node.Set((uint64_t)uuid);
 	}
 
 	void AssetReferencePropertySerializer::Deserialize(void* data, uint32_t typeHash, Utils::NodeValueRef node)
 	{
 		if (!node.Exists() || !node.IsScalar()) return;
-		AssetReferenceBase* pReferenceMember = (AssetReferenceBase*)data;
+		ResourceReferenceBase* pReferenceMember = (ResourceReferenceBase*)data;
 		const UUID uuid = node.As<uint64_t>();
 		pReferenceMember->SetUUID(uuid);
 	}

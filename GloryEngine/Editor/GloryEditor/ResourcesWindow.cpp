@@ -152,7 +152,7 @@ namespace Glory::Editor
 		ImGuiListClipper clipper(m_SearchResultCache.size(), rowHeight + 2*ImGui::GetCurrentTable()->CellPaddingY);
 
 		IEngine* pEngine = pApp->GetEngine();
-		EditorAssetManager& assetManager = pApp->GetAssetManager();
+		Resources& resources = pEngine->GetResources();
 		ResourceTypes& resourceTypes = pEngine->GetResourceTypes();
 
 		auto itorStart = m_SearchResultCache.begin();
@@ -186,7 +186,7 @@ namespace Glory::Editor
 					if (ImGui::Selectable("##selectable", false, selectableFlags, ImVec2(0, rowHeight)))
 					{
 						Resource* pResource = pApp->GetResourceManager().GetEditableResource(uuid);
-						if (!pResource) pResource = pApp->GetAssetManager().FindResource(uuid);
+						if (!pResource) pResource = resources.GetResource(uuid);
 						Selection::SetActiveObject(pResource);
 					}
 
@@ -242,8 +242,8 @@ namespace Glory::Editor
 
 				if (ImGui::TableNextColumn())
 				{
-					const bool loaded = assetManager.FindResource(uuid) != nullptr;
-					ImGui::Text("%s", loaded ? "Yes" : assetManager.IsLoading(uuid) ? "Loading..." : "No");
+					const bool loaded = resources.GetResource(uuid) != nullptr;
+					//ImGui::Text("%s", loaded ? "Yes" : resources.IsLoading(uuid) ? "Loading..." : "No");
 				}
 
 				ImGui::PopID();
@@ -290,12 +290,12 @@ namespace Glory::Editor
 		m_SearchResultIndexCache.clear();
 
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
-		EditorAssetManager& assetManager = EditorApplication::GetInstance()->GetAssetManager();
+		Resources& resources = pEngine->GetResources();
 		ResourceTypes& resourceTypes = pEngine->GetResourceTypes();
 
 		if (TabBarIndex == 0)
 		{
-			assetManager.GetAllLoading(m_SearchResultCache);
+			//resources.GetAllLoading(m_SearchResultCache);
 			return;
 		}
 
@@ -313,8 +313,8 @@ namespace Glory::Editor
 				if (pType != pFilteredType) continue;
 			}
 
-			const bool loaded = assetManager.FindResource(allResources[i]) != nullptr;
-			const bool loading = assetManager.IsLoading(allResources[i]);
+			const bool loaded = resources.GetResource(allResources[i]) != nullptr;
+			const bool loading = false;//resources.IsLoading(allResources[i]);
 
 			switch (Filter)
 			{

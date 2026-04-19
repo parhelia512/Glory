@@ -56,7 +56,7 @@ namespace Glory::Editor
 	bool TextureImporter::SaveResource(const std::filesystem::path& path, TextureData* pResource) const
 	{
 		Utils::YAMLFileRef file{ path };
-		file["Image"].Set((uint64_t)pResource->Image().AssetUUID());
+		file["Image"].Set((uint64_t)pResource->Image().GetUUID());
 		Utils::NodeValueRef sampler = file["Sampler"];
 
 		sampler["MinFilter"].SetEnum<Filter>(pResource->GetSamplerSettings().MagFilter);

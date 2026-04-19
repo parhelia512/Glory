@@ -1,5 +1,5 @@
 #include "EditorAssetDatabase.h"
-#include "AssetManager.h"
+#include "Resources.h"
 #include "EditorAssetCallbacks.h"
 #include "ProjectSpace.h"
 #include "FileBrowser.h"
@@ -372,7 +372,7 @@ namespace Glory::Editor
 
 		// Generate a meta file
 		AssetDatabase& assetDatabase = DB_EngineInstance->GetAssetDatabase();
-		AssetManager& assetManager = DB_EngineInstance->GetAssetManager();
+		Resources& resources = DB_EngineInstance->GetResources();
 		const std::string_view assetPath = assetDatabase.GetAssetPath();
 
 		std::filesystem::path namePath = fileName;
@@ -382,7 +382,7 @@ namespace Glory::Editor
 		Resource* pResource = *loadedResource;
 		assetDatabase.SetIDAndName(pResource, meta.ID(), meta.Name());
 		std::filesystem::path relativePath = filePath.lexically_relative(assetPath);
-		if (addToManager) assetManager.AddLoadedResource(pResource);
+		if (addToManager) resources.AddResource(&pResource);
 
 		AssetLocation location{ relativePath.empty() ? path : relativePath.string(), subPath.string() };
 		InsertAsset(location, meta);
@@ -455,10 +455,10 @@ namespace Glory::Editor
 		ResourceMeta meta(extension.string(), fileName.string(), pScene->GetUUID(), pType->Hash());
 
 		AssetDatabase& assetDatabase = DB_EngineInstance->GetAssetDatabase();
-		AssetManager& assetManager = DB_EngineInstance->GetAssetManager();
 		assetDatabase.SetIDAndName(pScene, meta.ID(), fileName.string());
 		std::filesystem::path relativePath = filePath.lexically_relative(assetDatabase.GetAssetPath());
-		assetManager.AddLoadedResource(pScene);
+		//Resources& assetManager = DB_EngineInstance->GetResources();
+		//assetManager.AddResource(&pScene);
 		AssetLocation location{ relativePath.string() };
 		InsertAsset(location, meta);
 		m_PathToUUIDCache.Set(path, meta.ID());

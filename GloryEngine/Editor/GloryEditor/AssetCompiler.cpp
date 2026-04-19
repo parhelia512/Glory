@@ -13,7 +13,7 @@
 #include <Debug.h>
 #include <AssetDatabase.h>
 #include <JobManager.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <BinaryStream.h>
 #include <PipelineData.h>
 #include <AssetArchive.h>
@@ -26,13 +26,13 @@ namespace Glory::Editor
 	ThreadedUMap<std::filesystem::path, ImportedResource> ImportedResources;
 	ThreadedVector<UUID> AssetCompiler::m_CompletedAssets;
 
-	Jobs::JobWorkerPool<bool, const AssetCompiler::AssetData>* CompilationJobPool = nullptr;
-
 	void AssetCompiler::CompilePipelines()
 	{
 		std::vector<UUID> ids;
 		EditorAssetDatabase::GetAllAssetsOfType(ResourceTypes::GetHash<PipelineData>(), ids);
-		CompileAssetsImmediately(ids);
+		//CompileAssetsImmediately(ids);
+
+		throw "Get back here!";
 	}
 
 	void AssetCompiler::CompileAssetDatabase()
@@ -49,7 +49,7 @@ namespace Glory::Editor
 	{
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
 		AssetDatabase& assetDatabase = pEngine->GetAssetDatabase();
-		AssetManager& assetManager = pEngine->GetAssetManager();
+		Resources& assetManager = pEngine->GetResources();
 		AssetDatabase::WriteLock lock{ &assetDatabase };
 
 		for (UUID id : ids)
@@ -75,81 +75,6 @@ namespace Glory::Editor
 			location.Path = GenerateCompiledResourcePath(id).string();
 			assetDatabase.SetAsset(location, data.Meta);
 		}
-	}
-
-	void AssetCompiler::CompileNewAssets()
-	{
-		std::vector<UUID> ids = EditorAssetDatabase::UUIDs();
-		std::vector<UUID> newIDs;
-
-		for (UUID id : ids)
-		{
-			const std::filesystem::path path = GenerateCompiledResourcePath(id);
-			const bool exists = std::filesystem::exists(path.string());
-			if (exists) continue;
-			newIDs.push_back(id);
-		}
-
-		CompileAssets(newIDs);
-	}
-
-	void AssetCompiler::CompileAssets()
-	{
-		CompileAssets(EditorAssetDatabase::UUIDs());
-	}
-
-	void AssetCompiler::CompileAssets(const std::vector<UUID>& ids)
-	{
-		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
-
-		if (!CompilationJobPool)
-			CompilationJobPool = pEngine->Jobs().Run<bool, const AssetData>();
-
-		AssetDatabase& assetDatabase = pEngine->GetAssetDatabase();
-
-		CompilationJobPool->StartQueue();
-		for (UUID id : ids)
-		{
-			const AssetData& data = m_AssetDatas.at(id);
-
-			std::filesystem::path path = assetDatabase.GetAssetPath();
-			path.append(data.Location.Path);
-
-			if (!std::filesystem::exists(path))
-				path = data.Location.Path;
-
-			ImportedResources.Erase(path);
-
-			DispatchCompilationJob(data);
-		}
-		CompilationJobPool->EndQueue();
-	}
-
-	void AssetCompiler::CompileAssetsImmediately(const std::vector<UUID>& ids)
-	{
-		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
-		AssetDatabase& assetDatabase = pEngine->GetAssetDatabase();
-
-		for (UUID id : ids)
-		{
-			const AssetData& data = m_AssetDatas.at(id);
-
-			std::filesystem::path path = assetDatabase.GetAssetPath();
-			path.append(data.Location.Path);
-
-			if (!std::filesystem::exists(path))
-				path = data.Location.Path;
-
-			ImportedResources.Erase(path);
-
-			CompileJob(data);
-		}
-	}
-
-	bool AssetCompiler::IsBusy()
-	{
-		if (!CompilationJobPool) return false;
-		return CompilationJobPool->HasTasksInQueue() && m_CompilingAssets.Size();
 	}
 
 	bool AssetCompiler::IsCompilingAsset(UUID uuid)
@@ -245,108 +170,6 @@ namespace Glory::Editor
 	{
 		static AssetCompilerEventDispatcher dispatcher;
 		return dispatcher;
-	}
-
-	void AssetCompiler::DispatchCompilationJob(const AssetData& asset)
-	{
-		//if (m_CompilingAssets.Contains(asset.Meta.ID())) return;
-		///* Don't compile scenes */
-		//if (asset.Meta.Extension() == ".gscene") return;
-
-		//m_CompilingAssets.push_back(asset.Meta.ID());
-		//CompilationJobPool->QueueJob(CompileJob, asset);
-	}
-
-	void ImportIfNew(ImportedResource& resource)
-	{
-		if (resource.IsNew())
-			EditorAssetDatabase::ImportAsset(resource.Path().string(), resource, resource.SubPath());
-
-		for (size_t i = 0; i < resource.ChildCount(); ++i)
-			ImportIfNew(resource.Child(i));
-	}
-
-	bool AssetCompiler::CompileJob(const AssetData asset)
-	{
-		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
-		AssetDatabase& assetDatabase = pEngine->GetAssetDatabase();
-		AssetManager& assetManager = pEngine->GetAssetManager();
-
-		std::filesystem::path path = assetDatabase.GetAssetPath();
-		path.append(asset.Location.Path);
-
-		if (!std::filesystem::exists(path))
-			path = asset.Location.Path;
-
-		const UUID uuid = asset.Meta.ID();
-
-		/* Try get the asset if its already loaded */
-		Resource* pResource = assetManager.FindResource(uuid);
-		if (!pResource)
-		{
-			bool fail = false;
-			ImportedResources.Do([&path, &uuid, &fail, pEngine, &asset](std::unordered_map<std::filesystem::path, ImportedResource>& data) {
-				auto itor = data.find(path);
-				if (itor != data.end()) return;
-
-				/* Import the resource */
-				ImportedResource resource = Importer::Import(path);
-				if (!resource)
-				{
-					/* There was an error during importing */
-					fail = true;
-					return;
-				}
-
-				ImportIfNew(resource);
-				data.emplace(path, std::move(resource));
-			});
-
-			if (fail)
-			{
-				std::stringstream str;
-				str << "AssetCompiler: Failed to import asset at " << asset.Location.Path;
-				pEngine->GetDebug().LogError(str.str());
-				m_CompilingAssets.Erase(uuid);
-				return false;
-			}
-
-			ImportedResources.Do(path, [asset, &pResource](ImportedResource& resource) {
-				ImportedResource* pChild = resource.ChildFromPath(asset.Location.SubresourcePath);
-				if (!pChild) return;
-				pResource = **pChild;
-			});
-
-			if (!pResource)
-			{
-				/* Importing did not fail, the resource no longer exists */
-				m_CompilingAssets.Erase(uuid);
-				m_ToRemoveAssets.push_back(uuid);
-				return false;
-			}
-
-			/* Insert the loaded asset into the manager */
-			pResource->SetName(asset.Meta.Name());
-			assetManager.AddLoadedResource(pResource, uuid);
-		}
-
-		/* Serialize the resource into a binary file */
-		/* @todo: Disabled until asset loading works, so for now assets are recompiled every time */
-		//const std::filesystem::path compiledPath = GenerateCompiledAssetPath(uuid);
-		//{
-		//	BinaryFileStream stream{ compiledPath };
-		//	AssetArchive archive{ &stream };
-		//	archive.Serialize(pResource);
-		//}
-
-		std::stringstream str;
-		str << "AssetCompiler: Compiled asset " << uuid;
-		pEngine->GetDebug().LogInfo(str.str());
-
-		/* We're done here */
-		m_CompilingAssets.Erase(uuid);
-		m_CompletedAssets.push_back(uuid);
-		return true;
 	}
 
 	std::filesystem::path AssetCompiler::GenerateCompiledResourcePath(const UUID uuid)

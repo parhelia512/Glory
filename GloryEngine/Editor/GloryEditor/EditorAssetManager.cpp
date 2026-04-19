@@ -13,7 +13,7 @@
 namespace Glory::Editor
 {
 	EditorAssetManager::EditorAssetManager(EditorApplication* pApplication):
-		AssetManager(pApplication->GetEngine()), m_pApplication(pApplication), m_pResourceLoadingPool(nullptr)
+		m_pApplication(pApplication), m_pResourceLoadingPool(nullptr)
 	{
 	}
 
@@ -31,7 +31,7 @@ namespace Glory::Editor
 
 	void EditorAssetManager::GetAsset(UUID uuid, std::function<void(Resource*)> callback)
 	{
-		Resource* pResource = FindResource(uuid);
+		Resource* pResource = GetResource(uuid);
 		if (pResource)
 		{
 			callback(pResource);
@@ -58,7 +58,7 @@ namespace Glory::Editor
 	{
 		if (m_pLoadingAssets.Contains(uuid)) return nullptr;
 
-		Resource* pResource = FindResource(uuid);
+		Resource* pResource = GetResource(uuid);
 		if (pResource) return pResource;
 		if (m_AssetLoadedCallbacks.Contains(uuid)) return nullptr;
 		m_AssetLoadedCallbacks.Set(uuid, { [](Resource*) {} });
@@ -74,7 +74,7 @@ namespace Glory::Editor
 			if (lock.IsValid) break;
 		}
 
-		Resource* pResource = FindResource(uuid);
+		Resource* pResource = GetResource(uuid);
 		if (pResource) return pResource;
 		return LoadAsset(uuid);
 	}
@@ -94,7 +94,7 @@ namespace Glory::Editor
 		m_pLoadedAssets.DoErase(uuid, [](Resource** pResource) { if (*pResource) delete* pResource; });
 	}
 
-	Resource* EditorAssetManager::FindResource(UUID uuid)
+	Resource* EditorAssetManager::GetResource(UUID uuid)
 	{
 		if (!m_pLoadedAssets.Contains(uuid)) return nullptr;
 		return m_pLoadedAssets[uuid];
@@ -141,14 +141,14 @@ namespace Glory::Editor
 	{
 		if (!AssetCompiler::IsCompilingAsset(uuid))
 		{
-			return FindResource(uuid);
+			return GetResource(uuid);
 		}
 
 		while (true)
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			if (AssetCompiler::IsCompilingAsset(uuid)) continue;
-			return FindResource(uuid);
+			return GetResource(uuid);
 		}
 
 		return nullptr;
@@ -161,7 +161,7 @@ namespace Glory::Editor
 		Undo::RegisterChangeHandler(".gtex", "", [this](Utils::YAMLFileRef& file, const std::filesystem::path& path) {
 			const UUID uuid = EditorAssetDatabase::FindAssetUUID(file.Path().string());
 			if (uuid == 0) return;
-			Resource* pResource = FindResource(uuid);
+			Resource* pResource = GetResource(uuid);
 			if (!pResource) return;
 			TextureData* pTexture = static_cast<TextureData*>(pResource);
 			TextureImporter::LoadIntoTexture(file, pTexture);

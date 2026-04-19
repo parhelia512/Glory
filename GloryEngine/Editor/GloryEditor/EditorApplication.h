@@ -64,7 +64,7 @@ namespace Editor
 		GLORY_EDITOR_API void Quit();
 		GLORY_EDITOR_API void TryToQuit();
 		GLORY_EDITOR_API Glory::IEngine* GetEngine();
-		GLORY_EDITOR_API EditorAssetManager& GetAssetManager();
+		GLORY_EDITOR_API EditorAssetManager& GetResources();
 		GLORY_EDITOR_API EditorSceneManager& GetSceneManager();
 		GLORY_EDITOR_API EditorResourceManager& GetResourceManager();
 		GLORY_EDITOR_API EditorPipelineManager& GetPipelineManager();

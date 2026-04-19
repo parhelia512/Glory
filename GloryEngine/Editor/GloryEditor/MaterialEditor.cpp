@@ -18,7 +18,7 @@
 #include <PropertySerializer.h>
 #include <GLORY_YAML.h>
 #include <AssetDatabase.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <PipelineData.h>
 
 #include <IconsFontAwesome6.h>
@@ -391,8 +391,10 @@ namespace Glory::Editor
 				auto resourceId = pMaterialData->GetResourceUUIDPointer(pMaterialPropertyTwo->Offset());
 				ImGui::SameLine();
 				ImGui::PushID(sampler.data());
-				const bool textureChange = AssetPicker::ResourceThumbnailButton("value", 18.0f, start, totalWidth, textureDataHash, resourceId->AssetUUIDMember());
-				TextureHandle Thumbnail = pApp->GetThumbnailManager().GetThumbnail(resourceId->AssetUUID());
+				UUID textureID;
+				const bool textureChange = AssetPicker::ResourceThumbnailButton("value", 18.0f, start, totalWidth, textureDataHash, &textureID);
+				if (textureChange) resourceId->SetUUID(textureID);
+				TextureHandle Thumbnail = pApp->GetThumbnailManager().GetThumbnail(resourceId->GetUUID());
 				if (Thumbnail)
 					ImGui::Image(pRenderImpl->GetTextureID(Thumbnail), { ThumbnailSize, ThumbnailSize });
 				ImGui::PopID();
@@ -417,7 +419,7 @@ namespace Glory::Editor
 
 				ImGui::PushID(sampler.data());
 				pPropertyDrawer->Draw(pMaterialProperty->DisplayName(), resourceId, pMaterialProperty->TypeHash(), pMaterialProperty->Flags());
-				TextureHandle Thumbnail = pApp->GetThumbnailManager().GetThumbnail(resourceId->AssetUUID());
+				TextureHandle Thumbnail = pApp->GetThumbnailManager().GetThumbnail(resourceId->GetUUID());
 				if (Thumbnail)
 					ImGui::Image(pRenderImpl->GetTextureID(Thumbnail), { ThumbnailSize, ThumbnailSize });
 				ImGui::PopID();

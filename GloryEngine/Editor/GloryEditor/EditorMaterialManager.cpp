@@ -14,7 +14,7 @@
 #include <PipelineData.h>
 #include <Serializers.h>
 #include <AssetDatabase.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <MaterialData.h>
 #include <ResourceType.h>
 
@@ -59,7 +59,7 @@ namespace Glory::Editor
 
 	void EditorMaterialManager::SetMaterialPipeline(UUID materialID, UUID pipelineID) const
 	{
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(materialID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(materialID);
 		if (!pResource) return;
 		MaterialData* pMaterial = static_cast<MaterialData*>(pResource);
 		pMaterial->SetPipeline(pipelineID);
@@ -73,29 +73,29 @@ namespace Glory::Editor
 
 	MaterialData* EditorMaterialManager::GetMaterial(UUID materialID) const
 	{
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(materialID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(materialID);
 		if (!pResource) return nullptr;
 		return static_cast<MaterialData*>(pResource);
 	}
 
 	MaterialData* EditorMaterialManager::CreateRuntimeMaterial(UUID baseMaterial)
 	{
-		AssetManager& asset = m_pEngine->GetAssetManager();
-		Resource* pResource = asset.FindResource(baseMaterial);
+		Resources& asset = m_pEngine->GetResources();
+		Resource* pResource = asset.GetResource(baseMaterial);
 		if (!pResource) return nullptr;
 		MaterialData* pBaseMaterial = static_cast<MaterialData*>(pResource);
 		MaterialData* pMaterialData = pBaseMaterial->CreateCopy();
+		asset.AddResource(&pMaterialData);
 		m_RuntimeMaterials.push_back(pMaterialData->GetUUID());
-		asset.AddLoadedResource(pMaterialData);
 		return pMaterialData;
 	}
 
 	void EditorMaterialManager::DestroyRuntimeMaterials()
 	{
-		AssetManager& assets = m_pEngine->GetAssetManager();
+		Resources& resources = m_pEngine->GetResources();
 		for (auto materialID : m_RuntimeMaterials)
 		{
-			assets.UnloadAsset(materialID);
+			resources.UnloadResource(materialID);
 		}
 		m_RuntimeMaterials.clear();
 	}
@@ -129,7 +129,7 @@ namespace Glory::Editor
 		static const size_t materialDataHash = ResourceTypes::GetHash<MaterialData>();
 		if (typeHash != materialDataHash) return;
 
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(callback.m_UUID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(callback.m_UUID);
 		MaterialData* pMaterialData = nullptr;
 		if (!pResource)
 		{
@@ -143,11 +143,11 @@ namespace Glory::Editor
 			}
 		}
 
-		pMaterialData = static_cast<MaterialData*>(pResource);
-		pMaterialData->SetResourceUUID(callback.m_UUID);
+		pResource->SetResourceUUID(callback.m_UUID);
 		m_Materials.push_back(callback.m_UUID);
-		m_pEngine->GetAssetManager().AddLoadedResource(pResource);
+		m_pEngine->GetResources().AddResource(&pResource);
 
+		pMaterialData = static_cast<MaterialData*>(pResource);
 		EditableResource* pMaterialResource = resourceManager.GetEditableResource(callback.m_UUID);
 		YAMLResource<MaterialData>* pMaterial = static_cast<YAMLResource<MaterialData>*>(pMaterialResource);
 		LoadIntoMaterial(**pMaterial, pMaterialData);
@@ -166,7 +166,7 @@ namespace Glory::Editor
 	{
 		for (const UUID materialID : m_Materials)
 		{
-			Resource* pResource = m_pEngine->GetAssetManager().FindResource(materialID);
+			Resource* pResource = m_pEngine->GetResources().GetResource(materialID);
 			if (!pResource) continue;
 			MaterialData* pMaterial = static_cast<MaterialData*>(pResource);
 			if (pMaterial->GetPipelineID() != pPipeline->GetUUID()) continue;
@@ -232,7 +232,7 @@ namespace Glory::Editor
 			}
 			else
 			{
-				const UUID id = pMaterial->GetResourceUUIDPointer(propInfo->Offset())->AssetUUID();
+				const UUID id = pMaterial->GetResourceUUIDPointer(propInfo->Offset())->GetUUID();
 				value.Set(uint64_t(id));
 			}
 		}

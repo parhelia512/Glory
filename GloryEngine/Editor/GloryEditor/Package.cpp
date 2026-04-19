@@ -19,7 +19,7 @@
 #include <AssetDatabase.h>
 #include <AssetArchive.h>
 #include <BinaryStream.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <PipelineData.h>
 
 #include <filesystem>
@@ -140,7 +140,7 @@ namespace Glory::Editor
 		for (size_t i = count; i < assets.size(); ++i)
 		{
 			const UUID id = assets[i];
-			pResource = pEngine->GetAssetManager().GetAssetImmediate(id);
+			pResource = pEngine->GetResources().GetResource(id);
 			ScanForAssetsInResource(pEngine, pResource, assets);
 		}
 	}
@@ -181,7 +181,7 @@ namespace Glory::Editor
 					/* Add the parent asset */
 					const UUID parentID = EditorAssetDatabase::FindAssetUUID(location.Path);
 					assets.push_back(parentID);
-					Resource* pResource = pEngine->GetAssetManager().GetAssetImmediate(assetID);
+					Resource* pResource = pEngine->GetResources().GetResource(assetID);
 					if (!pResource) return;
 					ScanForAssetsInResource(pEngine, pResource, assets);
 				}
@@ -253,7 +253,7 @@ namespace Glory::Editor
 			if (meta.Hash() == ShaderSourceHash)
 				continue;
 
-			Resource* pResource = pEngine->GetAssetManager().FindResource(GlobalAssets[i]);
+			Resource* pResource = pEngine->GetResources().GetResource(GlobalAssets[i]);
 			if (!pResource) continue;
 
 			/* We need pipelines to figure out which shaders to package */
@@ -330,7 +330,7 @@ namespace Glory::Editor
 	//		task.m_SubTaskName = meta.Name();
 	//		PACKAGE_LAG
 
-	//		Resource* pResource = pEngine->GetAssetManager().FindResource(uuid);
+	//		Resource* pResource = pEngine->GetResources().GetResource(uuid);
 	//		if (!pResource)
 	//		{
 	//			task.m_SubTaskName = "";
@@ -419,7 +419,7 @@ namespace Glory::Editor
 					task.m_SubTaskName = meta.Name();
 					PACKAGE_LAG
 
-					Resource* pResource = pEngine->GetAssetManager().FindResource(assetID);
+					Resource* pResource = pEngine->GetResources().GetResource(assetID);
 					archive.Serialize(pResource);
 			
 					AssetLocations.push_back({ relativeScenePath.string(), "", j });
@@ -448,7 +448,7 @@ namespace Glory::Editor
 				task.m_SubTaskName = meta.Name();
 				PACKAGE_LAG
 
-				Resource* pResource = pEngine->GetAssetManager().FindResource(assetID);
+				Resource* pResource = pEngine->GetResources().GetResource(assetID);
 				archive.Serialize(pResource);
 
 				AssetLocations.push_back({ relativePath.string(), "", i });
