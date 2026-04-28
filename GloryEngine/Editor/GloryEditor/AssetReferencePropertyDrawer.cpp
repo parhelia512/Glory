@@ -12,7 +12,7 @@ namespace Glory::Editor
 	{
 		ResourceReferenceBase* pReferenceMember = (ResourceReferenceBase*)data;
 		WeakResourceReference oldValue{ *pReferenceMember };
-		UUID resourceID;
+		UUID resourceID = pReferenceMember->GetUUID();
 		const bool change = AssetPicker::ResourceDropdown(label, typeHash ? typeHash : pReferenceMember->TypeHash(), &resourceID);
 		if (change)
 		{

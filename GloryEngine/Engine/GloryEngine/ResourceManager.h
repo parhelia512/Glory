@@ -96,6 +96,7 @@ namespace Glory
 
 			m_Resources[index] = std::move(resource);
 			m_IDToResourceIndex.emplace(m_Resources[index].GetUUID(), index);
+			static_cast<Resource*>(&m_Resources[index])->OnAddedToManager(m_pResources);
 			return m_Resources[index];
 		}
 

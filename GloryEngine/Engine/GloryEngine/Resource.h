@@ -16,6 +16,7 @@ namespace Glory::Utils
 namespace Glory
 {
     class IEngine;
+    class Resources;
 
     /** @brief Resource */
     class Resource : public Object
@@ -58,6 +59,8 @@ namespace Glory
 
         /** @brief Get a vector containing other resources referenced by this resource */
         virtual void References(IEngine* pEngine, std::vector<UUID>& references) const = 0;
+
+        virtual void OnAddedToManager(Resources*) {};
 
     private:
         friend class Resources;

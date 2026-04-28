@@ -5,7 +5,7 @@
 #include <MonoManager.h>
 #include <CoreLibManager.h>
 #include <GloryMonoScipting.h>
-#include <AssetManager.h>
+#include <Resources.h>
 
 namespace Glory
 {

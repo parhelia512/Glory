@@ -11,20 +11,20 @@ namespace Glory
 
 	ResourceReferenceBase::ResourceReferenceBase(UUID uuid): m_AssetUUID(uuid)
 	{
-		if (uuid)
+		if (uuid && !IsDelayed())
 			AddResourceReference(uuid);
 	}
 
 	ResourceReferenceBase::ResourceReferenceBase(const ResourceReferenceBase& other): m_AssetUUID(other.m_AssetUUID)
 	{
-		if (m_AssetUUID)
+		if (m_AssetUUID && !IsDelayed())
 			AddResourceReference(m_AssetUUID);
 	}
 
 	ResourceReferenceBase& ResourceReferenceBase::operator=(const ResourceReferenceBase& other)
 	{
 		m_AssetUUID = other.m_AssetUUID;
-		if (m_AssetUUID)
+		if (m_AssetUUID && !IsDelayed())
 			AddResourceReference(m_AssetUUID);
 		return *this;
 	}
@@ -43,7 +43,7 @@ namespace Glory
 
 	ResourceReferenceBase::~ResourceReferenceBase()
 	{
-		if (m_AssetUUID)
+		if (m_AssetUUID && !IsDelayed())
 			RemoveResourceReference(m_AssetUUID);
 		m_AssetUUID = 0;
 	}
@@ -55,15 +55,18 @@ namespace Glory
 
 	void ResourceReferenceBase::SetUUID(UUID uuid)
 	{
-		if (m_AssetUUID)
+		if (m_AssetUUID && !IsDelayed())
 			RemoveResourceReference(m_AssetUUID);
 		m_AssetUUID = uuid;
-		if (uuid)
+		if (uuid && !IsDelayed())
 			AddResourceReference(uuid);
 	}
 
 	Resource* ResourceReferenceBase::GetResource(Resources* pResources) const
 	{
+		if (m_AssetUUID && IsDelayed())
+			AddResourceReference(m_AssetUUID);
+		OnRegister();
 		return pResources->GetResource(m_AssetUUID);
 	}
 	

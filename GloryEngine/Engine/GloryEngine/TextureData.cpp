@@ -23,7 +23,7 @@ namespace Glory
 		return Image() ? Image().Get(pResources) : nullptr;
 	}
 
-	ResourceReference<ImageData>& TextureData::Image()
+	ResourceReference<ImageData, true>& TextureData::Image()
 	{
 		return m_Image;
 	}
@@ -49,5 +49,10 @@ namespace Glory
 	void TextureData::References(IEngine*, std::vector<UUID>& references) const
 	{
 		if (m_Image.GetUUID()) references.push_back(m_Image.GetUUID());
+	}
+
+	void TextureData::OnAddedToManager(Resources* pResources)
+	{
+		m_Image.Get(pResources);
 	}
 }

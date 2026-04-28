@@ -70,7 +70,7 @@ namespace Glory::Editor
 		TextureData* pTextureData = (TextureData*)m_pTarget;
 
 		ImGui::BeginDisabled(true);
-		ResourceReference<ImageData>& imageRef = pTextureData->Image();
+		auto& imageRef = pTextureData->Image();
 		UUID assetID;
 		if (AssetPicker::ResourceDropdown("Image", ResourceTypes::GetHash<ImageData>(), &assetID))
 			imageRef.SetUUID(assetID);
