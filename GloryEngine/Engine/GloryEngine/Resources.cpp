@@ -48,6 +48,7 @@ namespace Glory
 
 	void Resources::AddReference(UUID id)
 	{
+		if (!m_ReferenceCountingAllowed) return;
 		size_t& counter = m_ReferenceCounter[id];
 		++counter;
 		if (counter != 1) return;
@@ -60,6 +61,7 @@ namespace Glory
 
 	void Resources::RemoveReference(UUID id)
 	{
+		if (!m_ReferenceCountingAllowed) return;
 		size_t& counter = m_ReferenceCounter[id];
 		GLORY_ASSERT(counter > 0, "Incorrect reference count!");
 		--counter;
@@ -87,5 +89,10 @@ namespace Glory
 		auto iter = m_ResourceIDToManagerIndex.find(id);
 		if (iter == m_ResourceIDToManagerIndex.end()) return;
 		m_Managers.at(iter->second)->Get(id);
+	}
+
+	void Resources::SetAllowReferenceCounting(bool allowed)
+	{
+		m_ReferenceCountingAllowed = allowed;
 	}
 }

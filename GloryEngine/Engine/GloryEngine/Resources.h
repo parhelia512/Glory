@@ -118,6 +118,9 @@ namespace Glory
 		 */
 		GLORY_ENGINE_API void UnloadResource(UUID id);
 
+		/** @brief Set whether reference counting should be blocked. */
+		GLORY_ENGINE_API void SetAllowReferenceCounting(bool allowed);
+
 	private:
 		std::vector<std::unique_ptr<IResourceManager>> m_Managers;
 		std::map<uint32_t, size_t> m_HashToManagerIndex;
@@ -130,5 +133,7 @@ namespace Glory
 		AssetDatabase* m_pDatabase;
 		ResourceTypes* m_pResourceTypes;
 		Debug* m_pDebug;
+
+		bool m_ReferenceCountingAllowed = true;
 	};
 }

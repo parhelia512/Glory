@@ -52,10 +52,50 @@ namespace Glory::Editor
 
 	void EditorResourceLoader::CheckResourceCache()
 	{
-		/* Go over all cached resources and check if they are outdated */
-		const std::filesystem::path cachePath = GenerateCompiledResourcePath(0ull).parent_path();
-		/* @todo */
-		throw std::exception("Not yet implemented!");
+		/* Ensures we release the resources once we are done with them instead of keeping them in memory */
+		m_BuildingResourceCache = true;
+
+		/* Block reference counting until we are done */
+		m_pResources->SetAllowReferenceCounting(false);
+
+		/* Go over all resources and check if they have a valid cache, if not it must be created now */
+		EditorAssetDatabase::ForEachResource([this](const UUID id) {
+			AssetLocation location;
+			ResourceMeta meta;
+			if (!EditorAssetDatabase::GetAssetLocation(id, location) || !EditorAssetDatabase::GetAssetMetadata(id, meta))
+			{
+				/* Corrupt entry in project file */
+				m_ToRemoveAssets.push_back(id);
+				return;
+			}
+
+			static const uint32_t pipelineHash = ResourceTypes::GetHash<PipelineData>();
+			static const uint32_t sceneHash = ResourceTypes::GetHash<GScene>();
+
+			/* Skip scenes and pipelines! */
+			if (meta.Hash() == sceneHash) return;
+
+			std::filesystem::path cachePath;
+			std::filesystem::path assetPath;
+			if (ResourceHasValidCache(id, cachePath, assetPath)) return;
+
+			m_ToCheckRemovedResources[assetPath].insert(id);
+
+			if (m_AlreadyCompilingPaths.contains(assetPath)) return;
+			m_AlreadyCompilingPaths.emplace(assetPath, 0);
+			m_CompilingAssets.insert(id);
+
+			/* Cache outdated or missing, we need to generate it to check for removed resources */
+			ResourceLoaderJobPool->QueueSingleJob([this](UUID, std::filesystem::path assetPath, Resource*)
+				{ return CompileJob(assetPath); }, id, assetPath, nullptr);
+		});
+
+		/* Keep updating until compilation is done */
+		while (IsBusy())
+			Update();
+
+		m_BuildingResourceCache = false;
+		m_pResources->SetAllowReferenceCounting(true);
 	}
 
 	void EditorResourceLoader::Initialize()
@@ -78,12 +118,17 @@ namespace Glory::Editor
 
 	bool EditorResourceLoader::IsBusy() const
 	{
-		return IsCompilingAssets();
+		return IsCompilingAssets() || IsCachingAssets();
 	}
 
 	bool EditorResourceLoader::IsCompilingAssets() const
 	{
 		return !m_CompilingAssets.empty();
+	}
+
+	bool EditorResourceLoader::IsCachingAssets() const
+	{
+		return !m_CachingItems.empty();
 	}
 
 	void EditorResourceLoader::CompilePipelines()
@@ -99,7 +144,7 @@ namespace Glory::Editor
 		Update();
 
 		/* Wait for compilation to become idle */
-		while (IsCompilingAssets())
+		while (IsBusy())
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			Update();
@@ -364,6 +409,9 @@ namespace Glory::Editor
 		m_CachedResources[index] = id;
 		m_CurrentCachedResourceCount.fetch_add(1);
 
+		if (m_BuildingResourceCache)
+			delete pResource;
+
 		return true;
 	}
 
@@ -410,6 +458,16 @@ namespace Glory::Editor
 		if (!resource) return;
 		ImportIfNew(resource);
 		ProcessImportedResource(resource);
+
+		/* Add missing resources to remove list */
+		for (size_t i = 0; m_BuildingResourceCache && i < m_ToCheckRemovedResources.at(resource.Path()).size(); ++i)
+		{
+			for (const auto id : m_ToCheckRemovedResources.at(resource.Path()))
+			{
+				m_ToRemoveAssets.emplace_back(id);
+			}
+		}
+
 		resource = nullptr;
 		m_AlreadyCompilingPaths.erase(path);
 	}
@@ -423,7 +481,12 @@ namespace Glory::Editor
 
 		Resource* pNewResource = *resource;
 		const UUID resourceID = pNewResource->GetUUID();
-		if (!m_pResources->AddResource(&pNewResource)) return;
+
+		if (m_BuildingResourceCache)
+			/* The resource exists so check if off the list */
+			m_ToCheckRemovedResources.at(resource.Path()).erase(resourceID);
+
+		if (!m_BuildingResourceCache && !m_pResources->AddResource(&pNewResource)) return;
 
 		if (pNewResource->CanBeCached())
 		{
@@ -454,7 +517,7 @@ namespace Glory::Editor
 			Resource*& pResource = m_LoadedResources[m_CurrentLoadedResourceReadIndex];
 			++m_CurrentLoadedResourceReadIndex;
 			m_CurrentLoadedResourceReadIndex = m_CurrentLoadedResourceReadIndex % LoadedResourcesRingBufferSize;
-			if (!pResource) return;
+			if (!pResource) continue;
 			if (!m_pResources->AddResource(&pResource))
 				delete pResource;
 			pResource = nullptr;

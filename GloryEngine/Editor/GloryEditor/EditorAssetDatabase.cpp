@@ -800,6 +800,20 @@ namespace Glory::Editor
 		return absolutePath;
 	}
 
+	void EditorAssetDatabase::ForEachResource(std::function<void(UUID)> callback)
+	{
+		ProjectSpace* pProject = ProjectSpace::GetOpenProject();
+		if (!pProject) return;
+		JSONFileRef& projectFile = pProject->ProjectFile();
+		JSONValueRef assetsNode = projectFile["Assets"];
+
+		for (rapidjson::Value::ConstMemberIterator itor = assetsNode.begin(); itor != assetsNode.end(); ++itor)
+		{
+			const UUID id = std::stoull(itor->name.GetString());
+			callback(id);
+		}
+	}
+
 	void EditorAssetDatabase::Initialize()
 	{
 		DB_EngineInstance = EditorApplication::GetInstance()->GetEngine();

@@ -511,13 +511,13 @@ namespace Glory::Editor
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		EditorApplication::GetInstance()->GetResourceLoader().CompilePipelines();
 		EditorAssetDatabase::Update();
-		//EditorApplication::GetInstance()->GetPipelineManager().RunCallbacks();
 
-		//lock.lock();
-		//m_StartupStatus = "Compiling new assets...";
-		//lock.unlock();
-		//std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		//AssetCompiler::CompileNewAssets();
+		lock.lock();
+		m_StartupStatus = "Building resource cache...";
+		lock.unlock();
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		EditorApplication::GetInstance()->GetResourceLoader().CheckResourceCache();
+		EditorAssetDatabase::Update();
 
 		m_IsStarting = false;
 	}

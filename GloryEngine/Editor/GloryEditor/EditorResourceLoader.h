@@ -76,6 +76,7 @@ namespace Glory::Editor
 
         GLORY_EDITOR_API bool IsBusy() const;
         GLORY_EDITOR_API bool IsCompilingAssets() const;
+        GLORY_EDITOR_API bool IsCachingAssets() const;
         GLORY_EDITOR_API void CompilePipelines();
         GLORY_EDITOR_API void CompileAssetDatabase();
         GLORY_EDITOR_API void CompileAssetDatabase(UUID id);
@@ -183,5 +184,8 @@ namespace Glory::Editor
 
         /* Some assets should not be compiled/loaded in a job, but immediately */
         std::set<uint32_t> m_TypesToLoadImmediately;
+
+        std::unordered_map<std::filesystem::path, std::set<UUID>> m_ToCheckRemovedResources;
+        bool m_BuildingResourceCache = false;
     };
 }
