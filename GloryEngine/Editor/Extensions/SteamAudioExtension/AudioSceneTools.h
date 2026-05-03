@@ -1,5 +1,5 @@
 #pragma once
-#include "GloryEditor.h"
+#include "steam_audio_extension_visibility.h"
 
 #include <AudioScene.h>
 
@@ -11,5 +11,6 @@ namespace Glory
 
 namespace Glory::Editor
 {
-	GLORY_EDITOR_API bool GenerateAudioScene(IEngine* pEngine, GScene* pScene, const SoundMaterial* defaultMaterial, AudioScene& audioScene);
+	GLORY_STEAM_AUDIO_EXTENSION_API bool GenerateAudioScene(IEngine* pEngine, GScene* pScene,
+		const SoundMaterial* defaultMaterial, AudioScene& audioScene);
 }

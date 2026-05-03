@@ -11,6 +11,7 @@
 
 #include <Debug.h>
 #include <JobManager.h>
+#include <ThreadManager.h>
 #include <JobWorkerPool.h>
 #include <Resources.h>
 #include <AssetDatabase.h>
@@ -18,6 +19,8 @@
 #include <BinaryStream.h>
 #include <TextureData.h>
 #include <PipelineData.h>
+#include <MaterialData.h>
+#include <PrefabData.h>
 
 #include <GloryAssert.h>
 
@@ -55,7 +58,7 @@ namespace Glory::Editor
 		throw std::exception("Not yet implemented!");
 	}
 
-	void EditorResourceLoader::InitializeChangeHandlers()
+	void EditorResourceLoader::Initialize()
 	{
 		Undo::RegisterChangeHandler(".gtex", "", [this](Utils::YAMLFileRef& file, const std::filesystem::path& path) {
 			const UUID uuid = EditorAssetDatabase::FindAssetUUID(file.Path().string());
@@ -66,6 +69,11 @@ namespace Glory::Editor
 			TextureImporter::LoadIntoTexture(file, pTexture);
 			m_pApplication->GetThumbnailManager().SetDirty(uuid);
 		});
+
+		AddTypeToLoadImmediately<PipelineData>();
+		AddTypeToLoadImmediately<MaterialData>();
+		AddTypeToLoadImmediately<TextureData>();
+		AddTypeToLoadImmediately<PrefabData>();
 	}
 
 	bool EditorResourceLoader::IsBusy() const
@@ -222,6 +230,16 @@ namespace Glory::Editor
 		RemovedAssetsPopup::AddRemovedAssets(std::move(removedLocations));
 	}
 
+	void EditorResourceLoader::AddTypeToLoadImmediately(const uint32_t type)
+	{
+		m_TypesToLoadImmediately.insert(type);
+	}
+
+	bool EditorResourceLoader::ShouldLoadImmediately(const uint32_t type) const
+	{
+		return m_TypesToLoadImmediately.find(type) != m_TypesToLoadImmediately.end();
+	}
+
 	AssetCompilerEventDispatcher& EditorResourceLoader::GetAssetCompilerEventDispatcher()
 	{
 		static AssetCompilerEventDispatcher dispatcher;
@@ -241,6 +259,11 @@ namespace Glory::Editor
 		std::filesystem::path cachePath;
 		std::filesystem::path assetPath;
 
+		ResourceMeta meta;
+		static const std::thread::id defaultThread = m_pApplication->GetEngine()->Threads().DefaultThreadID();
+		const bool shouldLoadImmediately = std::this_thread::get_id() != defaultThread ||
+			(EditorAssetDatabase::GetAssetMetadata(id, meta) && ShouldLoadImmediately(meta.Hash()));
+
 		const bool hasValidCache = ResourceHasValidCache(id, cachePath, assetPath);
 		if (hasValidCache)
 		{
@@ -248,6 +271,12 @@ namespace Glory::Editor
 			m_pDebug->LogInfo(std::format("EditorResourceLoader: Found valid cache for resource {}", uint64_t(id)));
 
 			/* Load the cache */
+			if (shouldLoadImmediately)
+			{
+				LoadCacheJob(id, cachePath);
+				return;
+			}
+
 			ResourceLoaderJobPool->QueueSingleJob([this](UUID id, std::filesystem::path cachePath, Resource*)
 				{ return LoadCacheJob(id, cachePath); }, id, cachePath, nullptr);
 
@@ -261,6 +290,12 @@ namespace Glory::Editor
 		m_CompilingAssets.insert(id);
 
 		/* Compile the asset */
+		if (shouldLoadImmediately)
+		{
+			CompileJob(assetPath);
+			return;
+		}
+
 		ResourceLoaderJobPool->QueueSingleJob([this](UUID, std::filesystem::path assetPath, Resource*)
 			{ return CompileJob(assetPath); }, id, assetPath, nullptr);
 	}

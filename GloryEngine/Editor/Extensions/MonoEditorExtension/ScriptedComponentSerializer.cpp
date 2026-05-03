@@ -68,7 +68,7 @@ namespace Glory
 		if (scriptNode.Exists())
 		{
 			const UUID scriptID = scriptNode.As<uint64_t>();
-			Resource* pScriptResource = MonoManager::Instance()->Module()->GetEngine()->GetAssetManager().GetAssetImmediate(scriptID);
+			Resource* pScriptResource = MonoManager::Instance()->Module()->GetEngine()->GetResources().GetResource(scriptID);
 			if (pScriptResource)
 			{
 				MonoScript* pScript = (MonoScript*)pScriptResource;

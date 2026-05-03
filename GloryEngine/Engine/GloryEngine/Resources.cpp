@@ -52,6 +52,8 @@ namespace Glory
 		++counter;
 		if (counter != 1) return;
 		if (!m_pDatabase->AssetExists(id)) return;
+		/* @todo: Check if current thread id is not the default thread and queue immedeitaly if it is not */
+
 		m_ToUnloadResources.erase(id);
 		m_ToLoadResources.insert(id);
 	}

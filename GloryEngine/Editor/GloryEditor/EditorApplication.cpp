@@ -89,6 +89,7 @@ namespace Glory::Editor
 	{
 		RegisterStandardSerializers();
 		m_pEngine->Initialize();
+		m_ResourceLoader->Initialize();
 
 		EditorAssetDatabase::Initialize();
 

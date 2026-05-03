@@ -28,6 +28,7 @@
 #include <MainEditor.h>
 #include <CreateEntityObjectsCallbacks.h>
 #include <EditorApplication.h>
+#include <EditorResourceLoader.h>
 #include <MenuBar.h>
 #include <CreateObjectAction.h>
 #include <EditableEntity.h>
@@ -167,6 +168,7 @@ namespace Glory::Editor
 	{
 		EditorApplication* pEditorApp = EditorApplication::GetInstance();
 		IEngine* pEngine = pEditorApp->GetEngine();
+		pEditorApp->GetResourceLoader().AddTypeToLoadImmediately<MonoScript>();
 
 		m_pMonoScriptingModule = pEngine->GetOptionalModule<GloryMonoScipting>();
 		Reflect::SetReflectInstance(&pEngine->Reflection());

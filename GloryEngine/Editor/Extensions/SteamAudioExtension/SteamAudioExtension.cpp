@@ -22,15 +22,13 @@
 #include <EntityEditor.h>
 #include <MainEditor.h>
 #include <EditorApplication.h>
+#include <EditorResourceLoader.h>
 #include <EditorSceneManager.h>
 #include <EditorAssetDatabase.h>
 #include <MenuBar.h>
 #include <Shortcuts.h>
 #include <Dispatcher.h>
 #include <Package.h>
-#include <EntitySceneObjectEditor.h>
-#include <CreateEntityObjectsCallbacks.h>
-#include <CreateObjectAction.h>
 
 #include <IconsFontAwesome6.h>
 
@@ -138,6 +136,7 @@ namespace Glory::Editor
 	{
 		EditorApplication* pApp = EditorApplication::GetInstance();
 		IEngine* pEngine = pApp->GetEngine();
+		pApp->GetResourceLoader().AddTypeToLoadImmediately<SoundMaterialData>();
 		Reflect::SetReflectInstance(&pEngine->Reflection());
 
 		EditorPlayer::RegisterLoopHandler(this);

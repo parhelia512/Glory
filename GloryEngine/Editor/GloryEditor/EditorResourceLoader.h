@@ -4,6 +4,7 @@
 #include <ResourceLoader.h>
 
 #include <NodeRef.h>
+#include <Hash.h>
 
 #include <filesystem>
 #include <unordered_map>
@@ -71,7 +72,7 @@ namespace Glory::Editor
          */
         void CheckResourceCache();
 
-        void InitializeChangeHandlers();
+        void Initialize();
 
         GLORY_EDITOR_API bool IsBusy() const;
         GLORY_EDITOR_API bool IsCompilingAssets() const;
@@ -82,6 +83,15 @@ namespace Glory::Editor
         GLORY_EDITOR_API bool CompileSceneSettings(UUID uuid);
         GLORY_EDITOR_API bool CompileSceneSettings(GScene* pScene, Utils::NodeValueRef root);
         GLORY_EDITOR_API void RemoveDeletedAssets();
+
+        template<typename T>
+        inline void AddTypeToLoadImmediately()
+        {
+            const uint32_t type = Hashing::Hash(typeid(T).name());
+            AddTypeToLoadImmediately(type);
+        }
+        GLORY_EDITOR_API void AddTypeToLoadImmediately(const uint32_t type);
+        GLORY_EDITOR_API bool ShouldLoadImmediately(const uint32_t type) const;
 
         GLORY_EDITOR_API static AssetCompilerEventDispatcher& GetAssetCompilerEventDispatcher();
         GLORY_EDITOR_API static std::filesystem::path GenerateCompiledResourcePath(const UUID uuid);
@@ -170,5 +180,8 @@ namespace Glory::Editor
 
         /* Other */
         std::vector<UUID> m_ToRemoveAssets;
+
+        /* Some assets should not be compiled/loaded in a job, but immediately */
+        std::set<uint32_t> m_TypesToLoadImmediately;
     };
 }
