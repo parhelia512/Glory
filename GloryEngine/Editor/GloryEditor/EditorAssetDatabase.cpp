@@ -668,25 +668,6 @@ namespace Glory::Editor
 
 		if (!m_PathToUUIDCache.Contains(absolutePath.string())) return 0;
 		return m_PathToUUIDCache[absolutePath.string()];
-
-		//for (YAML::const_iterator itor = m_Database.begin(); itor != m_Database.end(); ++itor)
-		//{
-		//	UUID uuid = itor->first.as<uint64_t>();
-		//	const std::string key = std::to_string(uuid);
-		//	YAML::Node assetNode = m_Database[key];
-		//
-		//	const AssetLocation location = assetNode["Location"].as<AssetLocation>();
-		//	std::filesystem::path absoluteAssetPath = location.Path;
-		//	if (!absoluteAssetPath.is_absolute() && location.Path[0] != '.')
-		//	{
-		//		absoluteAssetPath = DB_EngineInstance->GetAssetDatabase().GetAssetPath();
-		//		absoluteAssetPath.append(location.Path);
-		//	}
-		//	if (absoluteAssetPath.string().find(absolutePath.string()) == std::string::npos) continue;
-		//	return uuid;
-		//}
-
-		return 0;
 	}
 
 	UUID EditorAssetDatabase::FindAssetUUID(std::string& path, const std::filesystem::path& subPath)

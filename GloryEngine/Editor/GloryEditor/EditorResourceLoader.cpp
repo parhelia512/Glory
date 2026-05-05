@@ -69,11 +69,8 @@ namespace Glory::Editor
 				return;
 			}
 
-			static const uint32_t pipelineHash = ResourceTypes::GetHash<PipelineData>();
-			static const uint32_t sceneHash = ResourceTypes::GetHash<GScene>();
-
-			/* Skip scenes and pipelines! */
-			if (meta.Hash() == sceneHash) return;
+			/* Skip resources that can't be cached */
+			if (m_NonCachableResourceTypes.contains(meta.Hash())) return;
 
 			std::filesystem::path cachePath;
 			std::filesystem::path assetPath;
@@ -114,6 +111,10 @@ namespace Glory::Editor
 		AddTypeToLoadImmediately<MaterialData>();
 		AddTypeToLoadImmediately<TextureData>();
 		AddTypeToLoadImmediately<PrefabData>();
+
+		SetResourceNonCachable<MaterialData>();
+		SetResourceNonCachable<PipelineData>();
+		SetResourceNonCachable<GScene>();
 	}
 
 	bool EditorResourceLoader::IsBusy() const
@@ -296,6 +297,11 @@ namespace Glory::Editor
 		std::filesystem::path compiledPath = ProjectSpace::GetOpenProject()->CachePath();
 		compiledPath.append("CompiledResources").append(std::to_string(uuid)).replace_extension(".gcag");
 		return compiledPath;
+	}
+
+	void EditorResourceLoader::SetResourceNonCachable(const uint32_t type)
+	{
+		m_NonCachableResourceTypes.insert(type);
 	}
 
 	void EditorResourceLoader::QueueLoad(UUID id)
@@ -488,7 +494,12 @@ namespace Glory::Editor
 
 		if (!m_BuildingResourceCache && !m_pResources->AddResource(&pNewResource)) return;
 
-		if (pNewResource->CanBeCached())
+		std::type_index type = typeid(Resource);
+		pNewResource->GetType(0, type);
+
+		const uint32_t hash = Hashing::Hash(type.name());
+
+		if (!m_NonCachableResourceTypes.contains(hash))
 		{
 			const std::filesystem::path cachePath = GenerateCompiledResourcePath(resourceID);
 			m_CachingItems.insert(resourceID);

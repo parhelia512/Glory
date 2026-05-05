@@ -21,23 +21,20 @@
 namespace Glory::Editor
 {
 	EditorMaterialManager::EditorMaterialManager(EditorApplication* pApp):
-		m_pApplication(pApp), m_AssetRegisteredCallback(0), m_AssetUpdatedCallback(0),
+		m_pApplication(pApp), m_AssetRegisteredCallback(0),
 		m_PipelineUpdatedCallback(0), MaterialManager(pApp->GetEngine())
 	{
 	}
 
 	EditorMaterialManager::~EditorMaterialManager()
 	{
-		m_Materials.clear();
+		m_MaterialsPerPipeline.clear();
 	}
 
 	void EditorMaterialManager::Initialize()
 	{
 		m_AssetRegisteredCallback = EditorAssetCallbacks::RegisterCallback(AssetCallbackType::CT_AssetRegistered,
 			[this](const AssetCallbackData& callback) { AssetAddedCallback(callback); });
-		//m_AssetUpdatedCallback = EditorAssetCallbacks::RegisterCallback(AssetCallbackType::CT_AssetUpdated,
-			//[this](const AssetCallbackData& callback) { AssetUpdatedCallback(callback); });
-
 		m_PipelineUpdatedCallback = EditorApplication::GetInstance()->GetPipelineManager().PipelineUpdateEvents().AddListener([this](const PipelineUpdateEvent& e) {
 			PipelineUpdateCallback(e.pPipeline);
 		});
@@ -46,8 +43,6 @@ namespace Glory::Editor
 	void EditorMaterialManager::Cleanup()
 	{
 		EditorAssetCallbacks::RemoveCallback(AssetCallbackType::CT_AssetRegistered, m_AssetRegisteredCallback);
-		//EditorAssetCallbacks::RemoveCallback(AssetCallbackType::CT_AssetRegistered, m_AssetUpdatedCallback);
-
 		EditorApplication::GetInstance()->GetPipelineManager().PipelineUpdateEvents().RemoveListener(m_PipelineUpdatedCallback);
 	}
 
@@ -100,84 +95,9 @@ namespace Glory::Editor
 		m_RuntimeMaterials.clear();
 	}
 
-	void EditorMaterialManager::LoadMaterial(UUID materialID)
-	{
-		AssetCallbackData data;
-		data.m_UUID = materialID;
-		AssetAddedCallback(data);
-	}
-
-	void EditorMaterialManager::AssetAddedCallback(const AssetCallbackData& callback)
-	{
-		ResourceMeta meta;
-		if (!EditorAssetDatabase::GetAssetMetadata(callback.m_UUID, meta))
-			return;
-		AssetLocation location;
-		if (!EditorAssetDatabase::GetAssetLocation(callback.m_UUID, location))
-			return;
-
-		std::filesystem::path assetPath = ProjectSpace::GetOpenProject()->RootPath();
-		assetPath.append("Assets").append(location.Path);
-		if (!std::filesystem::exists(assetPath))
-		{
-			assetPath = location.Path;
-		}
-
-		EditorResourceManager& resourceManager = EditorApplication::GetInstance()->GetResourceManager();
-
-		const uint32_t typeHash = meta.Hash();
-		static const size_t materialDataHash = ResourceTypes::GetHash<MaterialData>();
-		if (typeHash != materialDataHash) return;
-
-		Resource* pResource = m_pEngine->GetResources().GetResource(callback.m_UUID);
-		MaterialData* pMaterialData = nullptr;
-		if (!pResource)
-		{
-			MaterialData* pMaterialData = new MaterialData();
-			pResource = pMaterialData;
-			pResource->SetResourceUUID(callback.m_UUID);
-			if (!location.SubresourcePath.empty())
-			{
-				delete pMaterialData;
-				return;
-			}
-		}
-
-		pResource->SetResourceUUID(callback.m_UUID);
-		m_Materials.push_back(callback.m_UUID);
-		m_pEngine->GetResources().AddResource(&pResource);
-
-		pMaterialData = static_cast<MaterialData*>(pResource);
-		EditableResource* pMaterialResource = resourceManager.GetEditableResource(callback.m_UUID);
-		YAMLResource<MaterialData>* pMaterial = static_cast<YAMLResource<MaterialData>*>(pMaterialResource);
-		LoadIntoMaterial(**pMaterial, pMaterialData);
-	}
-
-	void EditorMaterialManager::AssetUpdatedCallback(const AssetCallbackData& callback)
-	{
-		ResourceMeta meta;
-		EditorAssetDatabase::GetAssetMetadata(callback.m_UUID, meta);
-		const uint32_t typeHash = meta.Hash();
-		static const size_t shaderSourceDataHash = ResourceTypes::GetHash<MaterialData>();
-		if (typeHash != shaderSourceDataHash) return;
-	}
-
-	void EditorMaterialManager::PipelineUpdateCallback(PipelineData* pPipeline)
-	{
-		for (const UUID materialID : m_Materials)
-		{
-			Resource* pResource = m_pEngine->GetResources().GetResource(materialID);
-			if (!pResource) continue;
-			MaterialData* pMaterial = static_cast<MaterialData*>(pResource);
-			if (pMaterial->GetPipelineID() != pPipeline->GetUUID()) continue;
-			UpdateMaterial(pMaterial);
-		}
-	}
-
-	void EditorMaterialManager::ReadPropertiesInto(Utils::NodeValueRef properties, MaterialData* pMaterial, bool clearProperties) const
+	void EditorMaterialManager::ReadPropertiesInto(Utils::NodeValueRef properties, MaterialData* pMaterial) const
 	{
 		if (!properties.Exists() || !properties.IsMap()) return;
-		if (clearProperties) pMaterial->ClearProperties();
 
 		for (auto itor = properties.Begin(); itor != properties.End(); ++itor)
 		{
@@ -187,14 +107,14 @@ namespace Glory::Editor
 			const uint32_t type = prop["TypeHash"].As<uint32_t>();
 			auto value = prop["Value"];
 
+			size_t index = 0;
+			if (!pMaterial->GetPropertyInfoIndex(displayName, index)) continue;
+
 			const BasicTypeData* typeData = m_pEngine->GetResourceTypes().GetBasicTypeData(type);
 
 			bool isResource = m_pEngine->GetResourceTypes().IsResource(type);
 			if (!isResource)
 			{
-				pMaterial->AddProperty(displayName, name, type, typeData != nullptr ? typeData->m_Size : 4, 0);
-				size_t index = 0;
-				pMaterial->GetPropertyInfoIndex(displayName, index);
 				const size_t offset = pMaterial->GetPropertyInfoAt(index)->Offset();
 				m_pApplication->GetSerializers().DeserializeProperty(pMaterial->GetBufferReference(), type, offset, typeData != nullptr ? typeData->m_Size : 4, value);
 			}
@@ -238,6 +158,123 @@ namespace Glory::Editor
 		}
 	}
 
+	void EditorMaterialManager::AssetAddedCallback(const AssetCallbackData& callback)
+	{
+		ResourceMeta meta;
+		if (!EditorAssetDatabase::GetAssetMetadata(callback.m_UUID, meta))
+			return;
+		AssetLocation location;
+		if (!EditorAssetDatabase::GetAssetLocation(callback.m_UUID, location))
+			return;
+
+		if (!location.SubresourcePath.empty())
+		{
+			m_SubResourceMaterials.emplace_back(callback.m_UUID);
+			return;
+		}
+
+		std::filesystem::path assetPath = ProjectSpace::GetOpenProject()->RootPath();
+		assetPath.append("Assets").append(location.Path);
+		if (!std::filesystem::exists(assetPath))
+		{
+			assetPath = location.Path;
+		}
+
+		EditorResourceManager& resourceManager = EditorApplication::GetInstance()->GetResourceManager();
+
+		const uint32_t typeHash = meta.Hash();
+		static const size_t materialDataHash = ResourceTypes::GetHash<MaterialData>();
+		if (typeHash != materialDataHash) return;
+
+		EditableResource* pMaterialResource = resourceManager.GetEditableResource(callback.m_UUID);
+		YAMLResource<MaterialData>* pMaterial = static_cast<YAMLResource<MaterialData>*>(pMaterialResource);
+		auto file = **pMaterial;
+		const UUID pipelineID = file["Pipeline"].As<uint64_t>(0ull);
+		m_MaterialsPerPipeline[pipelineID].emplace_back(callback.m_UUID);
+	}
+
+	void EditorMaterialManager::PipelineUpdateCallback(PipelineData* pPipeline)
+	{
+		auto iter = m_MaterialsPerPipeline.find(pPipeline->GetUUID());
+		if (iter == m_MaterialsPerPipeline.end()) return;
+
+		EditorResourceManager& resourceManager = EditorApplication::GetInstance()->GetResourceManager();
+		Resources& resources = EditorApplication::GetInstance()->GetEngine()->GetResources();
+		for (auto materialID : iter->second)
+		{
+			EditableResource* pMaterialResource = resourceManager.GetEditableResource(materialID);
+			YAMLResource<MaterialData>* pMaterial = static_cast<YAMLResource<MaterialData>*>(pMaterialResource);
+			auto file = **pMaterial;
+
+			/* Store the original data in a temporary material,
+			 * store resources seperately because we dont want to invoke references. */
+			MaterialData tempMaterial;
+			std::vector<UUID> tempResources;
+			LoadTemporary(file["Properties"], &tempMaterial, tempResources);
+
+			/* Now we create a brand new material using the pipeline. */
+			MaterialData tempNewMaterial;
+			pPipeline->LoadIntoMaterial(&tempNewMaterial);
+
+			auto& sourceBuffer = tempMaterial.GetBufferReference();
+			auto& destinationBuffer = tempNewMaterial.GetBufferReference();
+
+			/* Overwrite the properties with the ones from the original material,
+			 * except resources because again, we don't want to invoke references. */
+			for (size_t i = 0; i < tempNewMaterial.PropertyInfoCount(); ++i)
+			{
+				const MaterialPropertyInfo* pPropInfo = tempNewMaterial.GetPropertyInfoAt(i);
+				if (pPropInfo->IsResource()) continue;
+				
+				/* Find same property in original material */
+				size_t index = 0;
+				if (!tempMaterial.GetPropertyInfoIndex(pPropInfo->DisplayName(), index)) continue;
+				const MaterialPropertyInfo* pOtherPropInfo = tempMaterial.GetPropertyInfoAt(index);
+				if (pPropInfo->TypeHash() != pOtherPropInfo->TypeHash()) continue;
+				std::memcpy(&destinationBuffer[pPropInfo->Offset()], &sourceBuffer[pOtherPropInfo->Offset()], pPropInfo->Size());
+			}
+
+			/* Overwrite YAML data */
+			WritePropertiesTo(file["Properties"], &tempNewMaterial);
+
+			/* Overwrite resources separately */
+			for (size_t i = 0; i < tempNewMaterial.GetResourcePropertyCount(); ++i)
+			{
+				const MaterialPropertyInfo* pPropInfo = tempNewMaterial.GetResourcePropertyInfo(i);
+
+				/* Find same property in original material */
+				size_t index = 0;
+				if (!tempMaterial.GetPropertyInfoIndex(pPropInfo->DisplayName(), index)) continue;
+				const MaterialPropertyInfo* pOtherPropInfo = tempMaterial.GetPropertyInfoAt(index);
+
+				const uint64_t resourceID = tempResources[pOtherPropInfo->Offset()];
+				if (!resourceID) continue;
+
+				file["Properties"][pPropInfo->DisplayName()]["Value"].Set(resourceID);
+			}
+
+			/* Update the material if it is in memory */
+			MaterialData* pMaterialData = resources.GetResource<MaterialData>(materialID);
+			if (!pMaterialData) continue;
+			ReadPropertiesInto(file["Properties"], pMaterialData);
+		}
+
+		/* Sub resources should be updated directly if they are in memory */
+		for (auto materialID : m_SubResourceMaterials)
+		{
+			MaterialData* pMaterialData = resources.GetResource<MaterialData>(materialID);
+			if (!pMaterialData || pMaterialData->GetPipelineID() != pPipeline->GetUUID()) continue;
+
+			/* Serialize the original materials properties */
+			Utils::InMemoryYAML data;
+			WritePropertiesTo(data, pMaterialData);
+
+			/* Reset material */
+			pPipeline->LoadIntoMaterial(pMaterialData);
+			ReadPropertiesInto(data, pMaterialData);
+		}
+	}
+
 	void EditorMaterialManager::UpdateMaterial(MaterialData* pMaterial) const
 	{
 		EditorApplication* pApplication = EditorApplication::GetInstance();
@@ -253,8 +290,42 @@ namespace Glory::Editor
 		YAMLResource<MaterialData>* pEditorMaterialData = static_cast<YAMLResource<MaterialData>*>(pResource);
 		Utils::NodeValueRef node = **pEditorMaterialData;
 
-		ReadPropertiesInto(node["Properties"], pMaterial, false);
+		ReadPropertiesInto(node["Properties"], pMaterial);
 		/* Update properties in YAML */
 		WritePropertiesTo(node["Properties"], pMaterial);
+	}
+
+	void EditorMaterialManager::LoadTemporary(Utils::NodeValueRef properties, MaterialData* pMaterial, std::vector<UUID>& resources) const
+	{
+		if (!properties.Exists() || !properties.IsMap()) return;
+
+		for (auto itor = properties.Begin(); itor != properties.End(); ++itor)
+		{
+			const std::string name = *itor;
+			auto prop = properties[name];
+			const std::string displayName = prop["DisplayName"].Exists() ? prop["DisplayName"].As<std::string>() : name;
+			const uint32_t type = prop["TypeHash"].As<uint32_t>();
+			auto value = prop["Value"];
+
+			const BasicTypeData* typeData = m_pEngine->GetResourceTypes().GetBasicTypeData(type);
+
+			bool isResource = m_pEngine->GetResourceTypes().IsResource(type);
+			if (!isResource)
+			{
+				pMaterial->AddProperty(displayName, name, type, typeData != nullptr ? typeData->m_Size : 4, 0);
+				size_t index = 0;
+				pMaterial->GetPropertyInfoIndex(displayName, index);
+				const size_t offset = pMaterial->GetPropertyInfoAt(index)->Offset();
+				m_pApplication->GetSerializers().DeserializeProperty(pMaterial->GetBufferReference(),
+					type, offset, typeData != nullptr ? typeData->m_Size : 4, value);
+			}
+			else
+			{
+				const TextureType textureType = EditorPipelineManager::ShaderNameToTextureType(name);
+				const UUID id = value.As<uint64_t>();
+				resources.emplace_back(id);
+				pMaterial->AddResourceProperty(displayName, name, type, 0ull, textureType);
+			}
+		}
 	}
 }

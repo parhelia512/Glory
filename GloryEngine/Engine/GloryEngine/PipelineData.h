@@ -273,8 +273,6 @@ namespace Glory
     private:
         virtual void References(IEngine*, std::vector<UUID>&) const override {}
 
-        inline virtual bool CanBeCached() const override { return false; }
-
     protected:
         PipelineType m_Type = PT_Phong;
         std::vector<UUID> m_Shaders;

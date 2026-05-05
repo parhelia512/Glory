@@ -94,6 +94,14 @@ namespace Glory::Editor
         GLORY_EDITOR_API void AddTypeToLoadImmediately(const uint32_t type);
         GLORY_EDITOR_API bool ShouldLoadImmediately(const uint32_t type) const;
 
+        template<typename T>
+        inline void SetResourceNonCachable()
+        {
+            const uint32_t type = Hashing::Hash(typeid(T).name());
+            SetResourceNonCachable(type);
+        }
+        GLORY_EDITOR_API void SetResourceNonCachable(const uint32_t type);
+
         GLORY_EDITOR_API static AssetCompilerEventDispatcher& GetAssetCompilerEventDispatcher();
         GLORY_EDITOR_API static std::filesystem::path GenerateCompiledResourcePath(const UUID uuid);
 
@@ -187,5 +195,7 @@ namespace Glory::Editor
 
         std::unordered_map<std::filesystem::path, std::set<UUID>> m_ToCheckRemovedResources;
         bool m_BuildingResourceCache = false;
+
+        std::set<uint32_t> m_NonCachableResourceTypes;
     };
 }

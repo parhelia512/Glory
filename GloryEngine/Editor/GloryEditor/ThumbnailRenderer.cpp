@@ -143,7 +143,6 @@ namespace Glory::Editor
 			PipelineData* pPipeline = pipelines.GetPipelineData(phongPipeline);
 			GreyMaterial->SetPipeline(phongPipeline);
 			pPipeline->LoadIntoMaterial(GreyMaterial);
-			materials.LoadMaterial(GreyMaterial->GetUUID());
 			GreyMaterial->Set<glm::vec4>("Color", glm::vec4(0.75f, 0.75f, 0.75f, 1.0f));
 			GreyMaterial->Set<float>("Shininess", 0.5f);
 		}
