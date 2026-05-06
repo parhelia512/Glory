@@ -87,6 +87,13 @@ namespace Glory
 		m_ToUnloadResources.insert(id);
 	}
 
+	uint64_t Resources::ReferenceCount(UUID id)
+	{
+		std::unique_lock lock{ m_ReferenceCounterLock };
+		auto iter = m_ReferenceCounter.find(id);
+		return iter != m_ReferenceCounter.end() ? iter->second.load() : 0ull;
+	}
+
 	void Resources::HandleToLoad(std::function<void(UUID)> callback)
 	{
 		m_AlreadyLoading = true;

@@ -127,7 +127,7 @@ namespace Glory::Editor
 
 	bool EditorResourceLoader::IsBusy() const
 	{
-		return IsCompilingAssets() || IsCachingAssets();
+		return IsCompilingAssets() || IsCachingAssets() || IsLoadingResources();
 	}
 
 	bool EditorResourceLoader::IsCompilingAssets() const
@@ -138,6 +138,11 @@ namespace Glory::Editor
 	bool EditorResourceLoader::IsCachingAssets() const
 	{
 		return !m_CachingItems.empty();
+	}
+
+	bool EditorResourceLoader::IsLoadingResources() const
+	{
+		return !m_LoadingResources.empty();
 	}
 
 	void EditorResourceLoader::CompilePipelines()
@@ -158,10 +163,6 @@ namespace Glory::Editor
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			Update();
 		}
-
-		/* Remove the reference */
-		//for (auto& id : ids)
-		//	m_pResources->RemoveReference(id);
 	}
 
 	void EditorResourceLoader::CompileAssetDatabase()
@@ -312,6 +313,19 @@ namespace Glory::Editor
 		m_NonCachableResourceTypes.insert(type);
 	}
 
+	EditorResourceLoader::ResourceState EditorResourceLoader::GetResourceState(const UUID uuid) const
+	{
+		if (m_CompilingAssets.contains(uuid))
+			return ResourceState::Compiling;
+		if (m_CachingItems.contains(uuid))
+			return ResourceState::Caching;
+		if (m_LoadingResources.contains(uuid))
+			return ResourceState::Loading;
+		if (m_pResources->GetResource(uuid))
+			return ResourceState::Loaded;
+		return ResourceState::Unloaded;
+	}
+
 	void EditorResourceLoader::QueueLoad(UUID id, bool immediate)
 	{
 		/* Does a valid cache for the resource exist? */
@@ -328,6 +342,8 @@ namespace Glory::Editor
 		{
 			/* Queue a cache load job instead */
 			m_pDebug->LogInfo(std::format("EditorResourceLoader: Found valid cache for resource {}", uint64_t(id)));
+
+			m_LoadingResources.insert(id);
 
 			/* Load the cache */
 			if (shouldLoadImmediately)
@@ -537,8 +553,10 @@ namespace Glory::Editor
 			++m_CurrentLoadedResourceReadIndex;
 			m_CurrentLoadedResourceReadIndex = m_CurrentLoadedResourceReadIndex % LoadedResourcesRingBufferSize;
 			if (!pResource) continue;
+			const UUID resourceID = pResource->GetUUID();
 			if (!m_pResources->AddResource(&pResource))
 				delete pResource;
+			m_LoadingResources.erase(resourceID);
 			pResource = nullptr;
 		}
 	}

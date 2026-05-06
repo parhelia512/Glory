@@ -77,6 +77,7 @@ namespace Glory::Editor
         GLORY_EDITOR_API bool IsBusy() const;
         GLORY_EDITOR_API bool IsCompilingAssets() const;
         GLORY_EDITOR_API bool IsCachingAssets() const;
+        GLORY_EDITOR_API bool IsLoadingResources() const;
         GLORY_EDITOR_API void CompilePipelines();
         GLORY_EDITOR_API void CompileAssetDatabase();
         GLORY_EDITOR_API void CompileAssetDatabase(UUID id);
@@ -104,6 +105,17 @@ namespace Glory::Editor
 
         GLORY_EDITOR_API static AssetCompilerEventDispatcher& GetAssetCompilerEventDispatcher();
         GLORY_EDITOR_API static std::filesystem::path GenerateCompiledResourcePath(const UUID uuid);
+
+        enum class ResourceState
+        {
+            Unloaded,
+            Loading,
+            Loaded,
+            Compiling,
+            Caching
+        };
+
+        GLORY_EDITOR_API ResourceState GetResourceState(const UUID uuid) const;
 
     private:
         /** @brief Loading implementation */
@@ -170,6 +182,7 @@ namespace Glory::Editor
         std::set<UUID> m_CompilingAssets;
 
         /* Cache loading jobs */
+        std::set<UUID> m_LoadingResources;
         uint32_t m_CurrentLoadedResourceReadIndex = 0;
         std::atomic_uint m_LoadedResourceWriteIndex = 0u;
         std::atomic_uint m_CurrentLoadedResourceCount = 0u;

@@ -8,6 +8,7 @@
 #include "EditorUI.h"
 #include "ProjectSpace.h"
 #include "EditorAssetCallbacks.h"
+#include "EditorResourceLoader.h"
 
 #include <StringUtils.h>
 
@@ -131,7 +132,7 @@ namespace Glory::Editor
 		if (needsFilter)
 			RunFilter();
 
-		if (!ImGui::BeginChild("ResourcesChild") || !ImGui::BeginTable("ResourcesTable", 8, flags))
+		if (!ImGui::BeginChild("ResourcesChild") || !ImGui::BeginTable("ResourcesTable", 9, flags))
 		{
 			ImGui::EndChild();
 			return;
@@ -144,7 +145,8 @@ namespace Glory::Editor
 		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHide, 0.2f, 4);
 		ImGui::TableSetupColumn("Source", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, 500.0f, 5);
 		ImGui::TableSetupColumn("Sub Path", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHide, 0.7f, 6);
-		ImGui::TableSetupColumn("Loaded?", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, rowHeight, 7);
+		ImGui::TableSetupColumn("Reference count", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, rowHeight, 7);
+		ImGui::TableSetupColumn("Loaded?", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, rowHeight, 8);
 
 		ImGui::TableSetupScrollFreeze(0, 1);
 		ImGui::TableHeadersRow();
@@ -154,6 +156,7 @@ namespace Glory::Editor
 		IEngine* pEngine = pApp->GetEngine();
 		Resources& resources = pEngine->GetResources();
 		ResourceTypes& resourceTypes = pEngine->GetResourceTypes();
+		EditorResourceLoader& resourceLoader = pApp->GetResourceLoader();
 
 		auto itorStart = m_SearchResultCache.begin();
 		while (clipper.Step()) {
@@ -242,8 +245,34 @@ namespace Glory::Editor
 
 				if (ImGui::TableNextColumn())
 				{
-					const bool loaded = resources.GetResource(uuid) != nullptr;
-					//ImGui::Text("%s", loaded ? "Yes" : resources.IsLoading(uuid) ? "Loading..." : "No");
+					const uint64_t count = resources.ReferenceCount(uuid);
+					ImGui::Text("%i", count);
+				}
+
+				if (ImGui::TableNextColumn())
+				{
+					const EditorResourceLoader::ResourceState state = resourceLoader.GetResourceState(uuid);
+					switch (state)
+					{
+					case EditorResourceLoader::ResourceState::Unloaded:
+						ImGui::TextUnformatted("No");
+						break;
+					case EditorResourceLoader::ResourceState::Loading:
+						ImGui::TextUnformatted("Loading...");
+						break;
+					case EditorResourceLoader::ResourceState::Loaded:
+						ImGui::TextUnformatted("Yes");
+						break;
+					case EditorResourceLoader::ResourceState::Compiling:
+						ImGui::TextUnformatted("Compiling...");
+						break;
+					case EditorResourceLoader::ResourceState::Caching:
+						ImGui::TextUnformatted("Caching...");
+						break;
+					default:
+						ImGui::TextUnformatted("?");
+						break;
+					}
 				}
 
 				ImGui::PopID();
@@ -292,19 +321,14 @@ namespace Glory::Editor
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
 		Resources& resources = pEngine->GetResources();
 		ResourceTypes& resourceTypes = pEngine->GetResourceTypes();
-
-		if (TabBarIndex == 0)
-		{
-			//resources.GetAllLoading(m_SearchResultCache);
-			return;
-		}
+		EditorResourceLoader& resourceLoader = EditorApplication::GetInstance()->GetResourceLoader();
 
 		std::string_view search{SearchBuffer};
 		const std::vector<UUID> allResources = EditorAssetDatabase::UUIDs();
 		for (size_t i = 0; i < allResources.size(); ++i)
 		{
 			const std::string name = EditorAssetDatabase::GetAssetName(allResources[i]);
-			if (TabBarIndex != 1)
+			if (TabBarIndex > 1)
 			{
 				const ResourceType* pFilteredType = AllResourceTypes[TabBarIndex - 2];
 				ResourceMeta meta;
@@ -313,22 +337,32 @@ namespace Glory::Editor
 				if (pType != pFilteredType) continue;
 			}
 
-			const bool loaded = resources.GetResource(allResources[i]) != nullptr;
-			const bool loading = false;//resources.IsLoading(allResources[i]);
+			const auto state = resourceLoader.GetResourceState(allResources[i]);
+			const bool loaded = state == EditorResourceLoader::ResourceState::Loaded;
+			const bool loading = state == EditorResourceLoader::ResourceState::Loading ||
+				state == EditorResourceLoader::ResourceState::Compiling ||
+				state == EditorResourceLoader::ResourceState::Caching;
 
-			switch (Filter)
+			if (TabBarIndex == 0)
 			{
-			case Glory::Editor::FO_Unloaded:
-				if (loaded) continue;
-				break;
-			case Glory::Editor::FO_Loaded:
-				if (!loaded) continue;
-				break;
-			case Glory::Editor::FO_Loading:
 				if (!loading) continue;
-				break;
-			default:
-				break;
+			}
+			else
+			{
+				switch (Filter)
+				{
+				case Glory::Editor::FO_Unloaded:
+					if (loaded) continue;
+					break;
+				case Glory::Editor::FO_Loaded:
+					if (!loaded) continue;
+					break;
+				case Glory::Editor::FO_Loading:
+					if (!loading) continue;
+					break;
+				default:
+					break;
+				}
 			}
 
 			if (!search.empty() && Utils::CaseInsensitiveSearch(name, search) == std::string::npos) continue;

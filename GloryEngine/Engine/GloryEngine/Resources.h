@@ -102,6 +102,9 @@ namespace Glory
 		 */
 		GLORY_ENGINE_API void RemoveReference(UUID id);
 
+		/** @brief Get the current reference count of a resource. */
+		GLORY_ENGINE_API uint64_t ReferenceCount(UUID resourceID);
+
 		/** @brief Run a callback on each queued for loading resource ID, then clear the queue.
 		 * @param callback Function to call on each resource ID.
 		 */
