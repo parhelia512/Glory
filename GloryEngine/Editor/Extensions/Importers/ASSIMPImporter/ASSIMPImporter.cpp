@@ -456,7 +456,7 @@ namespace Glory::Editor
                     Utils::NodeValueRef rootNode = **pYAMLResource;
                     auto properties = rootNode["Properties"];
                     if (properties.Exists())
-                        materials.LoadIntoMaterial(**pYAMLResource, pMaterial, false);
+                        materials.ReadPropertiesInto(**pYAMLResource, pMaterial);
                 }
 
                 resource.AddChild(pMaterial, pMaterial->Name());

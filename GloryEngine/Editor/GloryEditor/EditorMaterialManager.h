@@ -38,17 +38,12 @@ namespace Editor
 		/** @brief Unsubscribe asset events */
 		void Cleanup();
 
-		/** @brief Load editor property data from YAML into material
-		 * @param node The YAML node to read from
-		 * @param pMaterial Material to load the properties into
-		 */
-		GLORY_EDITOR_API void LoadIntoMaterial(Utils::NodeValueRef node, MaterialData* pMaterial, bool clearProperties=true) const;
-
 		/** @brief Set a materials pipeline and update its properties
+		 * @param pMaterial Material resource to update, set nullptr if not loaded
 		 * @param materialID ID of the material
 		 * @param pipelineID ID of the pipeline
 		 */
-		GLORY_EDITOR_API void SetMaterialPipeline(UUID materialID, UUID pipelineID) const;
+		GLORY_EDITOR_API void SetMaterialPipeline(MaterialData* pMaterial, UUID materialID, UUID pipelineID);
 
 		/** @brief Get a material or material instance by ID */
 		GLORY_EDITOR_API virtual MaterialData* GetMaterial(UUID materialID) const override;
@@ -60,7 +55,8 @@ namespace Editor
 		/** @brief Read properties into a material
 		 * @param properties Properties YAML data
 		 * @param pMaterial Material to read the properties to
-		 * @param clearProperties Whether to clear the property data of the material before reading
+		 *
+		 * @note Only updates properties that actually exist on the material
 		 */
 		GLORY_EDITOR_API void ReadPropertiesInto(Utils::NodeValueRef properties, MaterialData* pMaterial) const;
 		/** @brief Write properties to YAML
@@ -76,21 +72,15 @@ namespace Editor
 		/** @brief Callback for when a pipeline changes */
 		void PipelineUpdateCallback(PipelineData* pPipeline);
 
-		/** @brief Update a material by loading the properties of its attached shaders and reload the YAML data if possible
-		 * @param pMaterial Material to update
-		 */
-		void UpdateMaterial(MaterialData* pMaterial) const;
-
 		/** @brief Read properties into a temporary material
 		 * @param properties Properties YAML data
-		 * @param pMaterial Material to read the properties to
+		 * @param pMaterial Material to write the properties to
 		 * @param resources Where to store resource IDs
 		 */
 		void LoadTemporary(Utils::NodeValueRef properties, MaterialData* pMaterial, std::vector<UUID>& resources) const;
 
 	private:
 		std::unordered_map<UUID, std::vector<UUID>> m_MaterialsPerPipeline;
-
 		std::vector<UUID> m_SubResourceMaterials;
 		std::vector<UUID> m_RuntimeMaterials;
 

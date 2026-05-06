@@ -20,6 +20,7 @@
 #include <AssetDatabase.h>
 #include <Resources.h>
 #include <PipelineData.h>
+#include <ResourceReferencing.h>
 
 #include <IconsFontAwesome6.h>
 #include <PropertyFlags.h>
@@ -28,7 +29,19 @@ namespace Glory::Editor
 {
 	MaterialEditor::MaterialEditor() {}
 
-	MaterialEditor::~MaterialEditor() {}
+	MaterialEditor::~MaterialEditor()
+	{
+		YAMLResource<MaterialData>* pMaterial = (YAMLResource<MaterialData>*)m_pTarget;
+		if (!pMaterial->IsSectionedResource()) return;
+		RemoveResourceReference(pMaterial->GetUUID());
+	}
+
+	void MaterialEditor::Initialize()
+	{
+		YAMLResource<MaterialData>* pMaterial = (YAMLResource<MaterialData>*)m_pTarget;
+		if (!pMaterial->IsSectionedResource()) return;
+		AddResourceReference(pMaterial->GetUUID());
+	}
 
 	static constexpr float ThumbnailSize = 128.0f;
 
@@ -51,7 +64,7 @@ namespace Glory::Editor
 		bool change = false;
 		if (AssetPicker::ResourceDropdown("Pipeline", ResourceTypes::GetHash<PipelineData>(), &pipelineID))
 		{
-			pApplication->GetMaterialManager().SetMaterialPipeline(pMaterial->GetUUID(), pipelineID);
+			pApplication->GetMaterialManager().SetMaterialPipeline(pMaterialData, pMaterial->GetUUID(), pipelineID);
 			change = true;
 		}
 
@@ -66,7 +79,8 @@ namespace Glory::Editor
 		{
 			EditorAssetDatabase::SetAssetDirty(pMaterial);
 			pMaterial->SetDirty(true);
-			pMaterialData->SetDirty(true);
+			if (pMaterialData)
+				pMaterialData->SetDirty(true);
 			pApplication->GetThumbnailManager().SetDirty(pMaterial->GetUUID());
 		}
 		return change;
@@ -116,7 +130,7 @@ namespace Glory::Editor
 			}
 		}
 
-		if (!properties.Exists() || !prop.Exists())
+		if (!properties.Exists() || !prop.Exists() && pMaterialData)
 		{
 			const bool propertyChange = PropertyDrawer::DrawProperty(propInfo->DisplayName(),
 				pMaterialData->Address(propIndex), propInfo->TypeHash(), propInfo->Flags() | PropertyFlags::Color);

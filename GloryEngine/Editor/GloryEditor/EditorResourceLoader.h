@@ -197,5 +197,7 @@ namespace Glory::Editor
         bool m_BuildingResourceCache = false;
 
         std::set<uint32_t> m_NonCachableResourceTypes;
+
+        UUID m_AssetUpdatedCallback = 0ull;
     };
 }

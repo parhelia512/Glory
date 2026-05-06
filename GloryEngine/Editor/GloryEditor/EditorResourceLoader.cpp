@@ -8,6 +8,7 @@
 #include "Dispatcher.h"
 #include "RemovedAssetsPopup.h"
 #include "EditorSceneManager.h"
+#include "EditorAssetCallbacks.h"
 
 #include <Debug.h>
 #include <JobManager.h>
@@ -48,6 +49,7 @@ namespace Glory::Editor
 	EditorResourceLoader::~EditorResourceLoader()
 	{
 		ResourceLoaderJobPool = nullptr;
+		EditorAssetCallbacks::RemoveCallback(AssetCallbackType::CT_AssetUpdated, m_AssetUpdatedCallback);
 	}
 
 	void EditorResourceLoader::CheckResourceCache()
@@ -112,9 +114,15 @@ namespace Glory::Editor
 		AddTypeToLoadImmediately<TextureData>();
 		AddTypeToLoadImmediately<PrefabData>();
 
-		SetResourceNonCachable<MaterialData>();
 		SetResourceNonCachable<PipelineData>();
 		SetResourceNonCachable<GScene>();
+
+		m_AssetUpdatedCallback = EditorAssetCallbacks::RegisterCallback(AssetCallbackType::CT_AssetUpdated,
+			[this](const AssetCallbackData& callback) {
+				const std::filesystem::path cachePath = GenerateCompiledResourcePath(callback.m_UUID);
+				if (std::filesystem::exists(cachePath))
+					std::filesystem::remove(cachePath);
+			});
 	}
 
 	bool EditorResourceLoader::IsBusy() const
