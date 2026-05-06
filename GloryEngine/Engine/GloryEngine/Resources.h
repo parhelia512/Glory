@@ -5,13 +5,16 @@
 
 #include <GloryAssert.h>
 
+#include <array>
 #include <set>
 #include <functional>
+#include <mutex>
 
 namespace Glory
 {
 	class Debug;
 	class AssetDatabase;
+	class ThreadManager;
 
 	/** @brief Global resource manager */
 	class Resources
@@ -22,7 +25,7 @@ namespace Glory
 		 * @param pResourceTypes Resource types manager
 		 * @param pDebug Debug logging instance
 		 */
-		Resources(AssetDatabase* pDatabase, ResourceTypes* pResourceTypes, Debug* pDebug);
+		Resources(AssetDatabase* pDatabase, ResourceTypes* pResourceTypes, Debug* pDebug, ThreadManager* pThreads);
 		/** @brief Destructor */
 		~Resources() = default;
 
@@ -103,6 +106,10 @@ namespace Glory
 		 * @param callback Function to call on each resource ID.
 		 */
 		void HandleToLoad(std::function<void(UUID)> callback);
+		/** @brief Run a callback on each queued for immediate loading resource ID, then clear the queue.
+		 * @param callback Function to call on each resource ID.
+		 */
+		void HandleToLoadImmediately(std::function<void(UUID)> callback);
 		/** @brief Run a callback on each queued for unloading resource ID, then clear the queue.
 		 * @param callback Function to call on each resource ID.
 		 */
@@ -125,7 +132,16 @@ namespace Glory
 		std::vector<std::unique_ptr<IResourceManager>> m_Managers;
 		std::map<uint32_t, size_t> m_HashToManagerIndex;
 		std::map<UUID, size_t> m_ResourceIDToManagerIndex;
-		std::map<UUID, size_t> m_ReferenceCounter;
+
+		std::mutex m_ReferenceCounterLock;
+		std::map<UUID, std::atomic_uint64_t> m_ReferenceCounter;
+
+		uint32_t m_CurrentLoadImmediatelyReadIndex = 0;
+		std::atomic_uint64_t m_LoadImmediatelyWriteIndex = 0ull;
+		std::atomic_uint64_t m_CurrentLoadImmediatelyCount = 0ull;
+		static constexpr size_t LoadImmediatelyRingBufferSize = 1024;
+		std::array<UUID, LoadImmediatelyRingBufferSize> m_ToLoadImmediately;
+
 
 		std::set<UUID> m_ToLoadResources;
 		std::set<UUID> m_ToUnloadResources;
@@ -133,7 +149,9 @@ namespace Glory
 		AssetDatabase* m_pDatabase;
 		ResourceTypes* m_pResourceTypes;
 		Debug* m_pDebug;
+		ThreadManager* m_pThreads;
 
 		bool m_ReferenceCountingAllowed = true;
+		bool m_AlreadyLoading = true;
 	};
 }

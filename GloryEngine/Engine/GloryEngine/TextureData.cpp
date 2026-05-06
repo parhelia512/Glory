@@ -23,7 +23,7 @@ namespace Glory
 		return Image() ? Image().Get(pResources) : nullptr;
 	}
 
-	ResourceReference<ImageData, true>& TextureData::Image()
+	ResourceReference<ImageData>& TextureData::Image()
 	{
 		return m_Image;
 	}

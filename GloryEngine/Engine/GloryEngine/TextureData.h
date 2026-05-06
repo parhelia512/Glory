@@ -19,7 +19,7 @@ namespace Glory
         GLORY_ENGINE_API virtual ~TextureData();
 
         GLORY_ENGINE_API virtual ImageData* GetImageData(Resources* pResources);
-        GLORY_ENGINE_API ResourceReference<ImageData, true>& Image();
+        GLORY_ENGINE_API ResourceReference<ImageData>& Image();
         GLORY_ENGINE_API SamplerSettings& GetSamplerSettings();
 
         GLORY_ENGINE_API void Serialize(Utils::BinaryStream& container) const override;
@@ -33,7 +33,7 @@ namespace Glory
     private:
         friend class TextureDataLoaderModule;
         friend class ImageLoaderModule;
-        ResourceReference<ImageData, true> m_Image;
+        ResourceReference<ImageData> m_Image;
         SamplerSettings m_SamplerSettings;
 	};
 }

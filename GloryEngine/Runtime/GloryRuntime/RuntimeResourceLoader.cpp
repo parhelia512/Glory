@@ -10,7 +10,7 @@ namespace Glory
 	{
 	}
 
-	void RuntimeResourceLoader::QueueLoad(UUID id)
+	void RuntimeResourceLoader::QueueLoad(UUID id, bool immediate)
 	{
 	}
 

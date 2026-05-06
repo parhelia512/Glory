@@ -84,6 +84,8 @@ namespace Glory
 				if (indexIter->second < index) continue;
 				--indexIter->second;
 			}
+
+			m_Resources[m_Size] = R();
 		}
 
 		/** @overload */

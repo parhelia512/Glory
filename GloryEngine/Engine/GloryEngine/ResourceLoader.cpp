@@ -20,6 +20,9 @@ namespace Glory
 		m_pResources->HandleToLoad([this](UUID id) {
 			QueueLoad(id);
 		});
+		m_pResources->HandleToLoadImmediately([this](UUID id) {
+			QueueLoad(id);
+		});
 
 		OnUpdate();
 	}

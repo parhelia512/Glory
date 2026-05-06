@@ -312,7 +312,7 @@ namespace Glory::Editor
 		m_NonCachableResourceTypes.insert(type);
 	}
 
-	void EditorResourceLoader::QueueLoad(UUID id)
+	void EditorResourceLoader::QueueLoad(UUID id, bool immediate)
 	{
 		/* Does a valid cache for the resource exist? */
 		std::filesystem::path cachePath;
@@ -320,7 +320,7 @@ namespace Glory::Editor
 
 		ResourceMeta meta;
 		static const std::thread::id defaultThread = m_pApplication->GetEngine()->Threads().DefaultThreadID();
-		const bool shouldLoadImmediately = std::this_thread::get_id() != defaultThread ||
+		const bool shouldLoadImmediately = immediate || std::this_thread::get_id() != defaultThread ||
 			(EditorAssetDatabase::GetAssetMetadata(id, meta) && ShouldLoadImmediately(meta.Hash()));
 
 		const bool hasValidCache = ResourceHasValidCache(id, cachePath, assetPath);
@@ -419,7 +419,7 @@ namespace Glory::Editor
 			archive.Serialize(pResource);
 		}
 
-		const uint32_t index = m_NextCachedResourceWriteIndex.fetch_add(1);
+		const uint32_t index = m_NextCachedResourceWriteIndex.fetch_add(1) % CachedResourcesRingBufferSize;
 		m_CachedResources[index] = id;
 		m_CurrentCachedResourceCount.fetch_add(1);
 
@@ -439,7 +439,7 @@ namespace Glory::Editor
 			for (size_t i = 0; i < archive.Size(); ++i)
 			{
 				Resource* pNewResource = archive.Get(m_pDebug, i);
-				const uint32_t nextResourceIndex = m_LoadedResourceWriteIndex.fetch_add(1);
+				const uint32_t nextResourceIndex = m_LoadedResourceWriteIndex.fetch_add(1) % LoadedResourcesRingBufferSize;
 				m_LoadedResources[nextResourceIndex] = pNewResource;
 				m_CurrentLoadedResourceCount.fetch_add(1);
 			}

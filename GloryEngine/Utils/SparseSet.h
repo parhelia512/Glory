@@ -322,6 +322,8 @@ namespace Glory::Utils
 				Swap(i, i + 1);
 			OnRemove(sparseID, *index);
 			*index = InvalidIndex;
+
+			m_Dense[m_DenseSize] = Dense();
 		}
 
 		void Clear()

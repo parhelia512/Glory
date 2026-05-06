@@ -107,7 +107,7 @@ namespace Glory::Editor
 
     private:
         /** @brief Loading implementation */
-        virtual void QueueLoad(UUID id) override;
+        virtual void QueueLoad(UUID id, bool immediate=false) override;
         /** @brief Unloading implementation */
         virtual void QueueUnload(UUID id) override;
 

@@ -220,7 +220,7 @@ namespace Glory
 		m_pResourceLoader(createInfo.pResourceLoader), m_AssetDatabase(new AssetDatabase),
 		m_ObjectManager(new ObjectManager), m_RootPath("./")
 	{
-		m_Resources.reset(new Resources(m_AssetDatabase.get(), m_ResourceTypes.get(), m_Debug));
+		m_Resources.reset(new Resources(m_AssetDatabase.get(), m_ResourceTypes.get(), m_Debug, m_ThreadManager.get()));
 		if (m_pResourceLoader) m_pResourceLoader->SetResources(m_Resources.get());
 
 		/* Copy main modules */
