@@ -435,12 +435,12 @@ namespace Glory::Editor
 			archive.Serialize(pResource);
 		}
 
+		if (m_BuildingResourceCache)
+			delete pResource;
+
 		const uint32_t index = m_NextCachedResourceWriteIndex.fetch_add(1) % CachedResourcesRingBufferSize;
 		m_CachedResources[index] = id;
 		m_CurrentCachedResourceCount.fetch_add(1);
-
-		if (m_BuildingResourceCache)
-			delete pResource;
 
 		return true;
 	}
@@ -457,6 +457,7 @@ namespace Glory::Editor
 				Resource* pNewResource = archive.Get(m_pDebug, i);
 				const uint32_t nextResourceIndex = m_LoadedResourceWriteIndex.fetch_add(1) % LoadedResourcesRingBufferSize;
 				m_LoadedResources[nextResourceIndex] = pNewResource;
+				m_LoadedResourceIDs[nextResourceIndex] = id;
 				m_CurrentLoadedResourceCount.fetch_add(1);
 			}
 		}
@@ -550,11 +551,10 @@ namespace Glory::Editor
 		for (size_t i = 0; i < size; ++i)
 		{
 			Resource*& pResource = m_LoadedResources[m_CurrentLoadedResourceReadIndex];
+			UUID& resourceID = m_LoadedResourceIDs[m_CurrentLoadedResourceReadIndex];
 			++m_CurrentLoadedResourceReadIndex;
 			m_CurrentLoadedResourceReadIndex = m_CurrentLoadedResourceReadIndex % LoadedResourcesRingBufferSize;
-			if (!pResource) continue;
-			const UUID resourceID = pResource->GetUUID();
-			if (!m_pResources->AddResource(&pResource))
+			if (pResource && !m_pResources->AddResource(&pResource))
 				delete pResource;
 			m_LoadingResources.erase(resourceID);
 			pResource = nullptr;

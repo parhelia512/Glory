@@ -139,6 +139,7 @@ namespace Utils::Reflect
 		GLORY_ENGINE_API LayerManager& GetLayerManager() override;
 		GLORY_ENGINE_API MaterialManager& GetMaterialManager() override;
 		GLORY_ENGINE_API PipelineManager& GetPipelineManager() override;
+		GLORY_ENGINE_API ResourceLoader& GetResourceLoader() override;
 		GLORY_ENGINE_API Utils::Reflect::Reflect& Reflection() override;
 		GLORY_ENGINE_API ObjectManager& GetObjectManager() override;
 		GLORY_ENGINE_API EngineProfiler& Profiler() override;

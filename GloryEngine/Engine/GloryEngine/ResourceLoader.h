@@ -24,6 +24,8 @@ namespace Glory
 		/** @brief Set @ref Resources instance. */
 		GLORY_ENGINE_API void SetResources(Resources* pResources);
 
+		virtual bool IsBusy() const = 0;
+
 	protected:
 		/** @brief Override to add loading implementation. */
 		virtual void QueueLoad(UUID id, bool immediate=false) = 0;

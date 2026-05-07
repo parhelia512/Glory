@@ -21,6 +21,7 @@
 #include <BinaryStream.h>
 #include <Resources.h>
 #include <PipelineData.h>
+#include <AssetReference.h>
 
 #include <filesystem>
 #include <tchar.h>
@@ -50,6 +51,7 @@ namespace Glory::Editor
 	std::vector<UUID> ScenesToPackage;
 	std::vector<GScene*> LoadedScenesToPackage;
 
+	std::vector<ResourceReferenceBase> AssetReferences;
 	std::vector<UUID> GlobalAssets;
 	std::map<UUID, std::vector<UUID>> AssetsPerScene;
 	//std::map<UUID, std::vector<UUID>> ShadersPerScene;
@@ -225,6 +227,16 @@ namespace Glory::Editor
 
 #pragma region Tasks
 
+	bool WaitForAssetLoading(IEngine* pEngine, const std::filesystem::path&, PackageTaskState& task)
+	{
+		task.m_SubTaskName = "Loading assets";
+
+		while (pEngine->GetResourceLoader().IsBusy())
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+		return true;
+	}
+
 	bool CalculateAssetGroupsTask(IEngine* pEngine, const std::filesystem::path&, PackageTaskState& task)
 	{
 		task.m_SubTaskName = "Calculating";
@@ -253,8 +265,7 @@ namespace Glory::Editor
 			if (meta.Hash() == ShaderSourceHash)
 				continue;
 
-			Resource* pResource = pEngine->GetResources().GetResource(GlobalAssets[i]);
-			if (!pResource) continue;
+			if (!EditorAssetDatabase::AssetExists(GlobalAssets[i])) continue;
 
 			/* We need pipelines to figure out which shaders to package */
 			if (meta.Hash() == PipelineDataHash)
@@ -400,13 +411,20 @@ namespace Glory::Editor
 		{
 			std::filesystem::path relativeScenePath = relativeDataPath;
 			relativeScenePath.append(std::to_string(ScenesToPackage[i])).replace_extension("gcag");
+
+			const std::vector<UUID>& assets = AssetsPerScene[ScenesToPackage[i]];
+			for (size_t i = 0; i < assets.size(); ++i)
+				AssetReferences.emplace_back(assets[i]);
+
+			pEngine->GetResourceLoader().Update();
+
+			WaitForAssetLoading(pEngine, packageRoot, task);
+
 			{
 				std::filesystem::path path = packageRoot;
 				path.append(relativeScenePath.string());
 				Utils::BinaryFileStream sceneFile{ path };
 				AssetArchive archive{ &sceneFile, AssetArchiveFlags::WriteNew };
-
-				const std::vector<UUID>& assets = AssetsPerScene[ScenesToPackage[i]];
 				for (size_t j = 0; j < assets.size(); ++j)
 				{
 					const UUID assetID = assets[j];
@@ -428,6 +446,8 @@ namespace Glory::Editor
 					task.m_SubTaskName = "";
 				}
 			}
+
+			AssetReferences.clear();
 		}
 
 		if (!SharedAssets.empty())
@@ -436,10 +456,18 @@ namespace Glory::Editor
 			std::filesystem::path relativePath = "Data";
 			relativePath.append("Shared.gcag");
 
+			for (size_t i = 0; i < SharedAssets.size(); ++i)
+				AssetReferences.emplace_back(SharedAssets[i]);
+
+			pEngine->GetResourceLoader().Update();
+
+			WaitForAssetLoading(pEngine, packageRoot, task);
+
 			std::filesystem::path sharedAssetsPath = packageRoot;
 			sharedAssetsPath.append(relativePath.string());
 			Utils::BinaryFileStream sharedAssetsFile{ sharedAssetsPath };
 			AssetArchive archive{ &sharedAssetsFile, AssetArchiveFlags::WriteNew };
+
 			for (size_t i = 0; i < SharedAssets.size(); ++i)
 			{
 				const UUID assetID = SharedAssets[i];
@@ -456,6 +484,8 @@ namespace Glory::Editor
 				++task.m_ProcessedSubTasks;
 				task.m_SubTaskName = "";
 			}
+
+			AssetReferences.clear();
 		}
 
 		return true;
@@ -617,7 +647,13 @@ namespace Glory::Editor
 			task.m_SubTaskName = "";
 		}
 
-		/* Copy runtime and application */
+		/* Copy engine, runtime and application */
+		task.m_SubTaskName = "GloryEngine.dll";
+		PACKAGE_LAG
+		const std::filesystem::path enginePath = "./GloryEngine.dll";
+		std::filesystem::copy(enginePath, packageRoot, std::filesystem::copy_options::overwrite_existing);
+		++task.m_ProcessedSubTasks;
+
 		task.m_SubTaskName = "GloryRuntime.dll";
 		PACKAGE_LAG
 		std::filesystem::path runtimePath = "./EditorAssets/Runtime";
@@ -691,9 +727,10 @@ namespace Glory::Editor
 		std::ofstream configHeaderStream(configHeaderPath);
 		configHeaderStream << "#pragma once" << std::endl;
 		configHeaderStream << "#include \"RuntimeAPI.h\"" << std::endl << std::endl;
+		configHeaderStream << "#include <string_view>" << std::endl << std::endl;
 		configHeaderStream << "namespace Config" << std::endl;
 		configHeaderStream << "{" << std::endl;
-		configHeaderStream << "	constexpr char* AppName = \"" << appName << "\";" << std::endl;
+		configHeaderStream << "	constexpr std::string_view AppName = \"" << appName << "\";" << std::endl;
 		configHeaderStream << "}" << std::endl << std::endl << std::endl;
 		configHeaderStream << "inline void Exec()" << std::endl;
 		configHeaderStream << "{" << std::endl;
@@ -714,7 +751,7 @@ namespace Glory::Editor
 		luaStream << "	flags { \"MultiProcessorCompile\" }" << std::endl;
 		luaStream << "project \"" << projectName << "\"" << std::endl;
 		luaStream << "	language \"C++\"" << std::endl;
-		luaStream << "	cppdialect \"C++17\"" << std::endl;
+		luaStream << "	cppdialect \"C++20\"" << std::endl;
 		luaStream << "	staticruntime \"Off\"" << std::endl;
 		luaStream << "	targetdir (\"bin\")" << std::endl;
 		luaStream << "	objdir (\"bin/OBJ\")" << std::endl;
@@ -852,6 +889,13 @@ namespace Glory::Editor
 		//compileShadersTask.m_Callback = CompileShadersTask;
 		//PackagingTasks.push_back(std::move(compileShadersTask));
 
+		PackageTask assetLoadingTask;
+		assetLoadingTask.m_TaskID = "LoadAssets";
+		assetLoadingTask.m_TaskName = "Waiting for assets to load";
+		assetLoadingTask.m_TotalSubTasks = 1;
+		assetLoadingTask.m_Callback = WaitForAssetLoading;
+		PackagingTasks.push_back(std::move(assetLoadingTask));
+
 		PackageTask packageScenesTask;
 		packageScenesTask.m_TaskID = "PackageScenes";
 		packageScenesTask.m_TaskName = "Packaging scenes";
@@ -906,14 +950,27 @@ namespace Glory::Editor
 
 		GatherPackageTasksEvents().Dispatch({});
 
+		PackageTask cleanupTask;
+		cleanupTask.m_TaskID = "Cleanup";
+		cleanupTask.m_TaskName = "Cleaning up";
+		cleanupTask.m_TotalSubTasks = 1;
+		cleanupTask.m_Callback = [](IEngine*, const std::filesystem::path&, PackageTaskState&) {
+			AssetReferences.clear();
+
+			for (size_t i = 0; i < LoadedScenesToPackage.size(); ++i)
+				delete LoadedScenesToPackage[i];
+			LoadedScenesToPackage.clear();
+
+			return true;
+		};
+		PackagingTasks.push_back(std::move(cleanupTask));
+
 		m_TaskCount = PackagingTasks.size();
 
 		if (PackagingTasks.empty()) return;
 
 		for (size_t i = 0; i < LoadedScenesToPackage.size(); ++i)
-		{
 			delete LoadedScenesToPackage[i];
-		}
 		LoadedScenesToPackage.clear();
 
 		/* Preload the to package scenes because scenes must be loaded on the main thread */
@@ -1032,6 +1089,7 @@ namespace Glory::Editor
 		static EmptyDispatcher dispatcher;
 		return dispatcher;
 	}
+
 	EmptyDispatcher& PackagingEndedEvent()
 	{
 		static EmptyDispatcher dispatcher;

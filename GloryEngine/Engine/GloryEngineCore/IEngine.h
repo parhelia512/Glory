@@ -19,6 +19,7 @@ namespace Glory
 	class LayerManager;
 	class MaterialManager;
 	class PipelineManager;
+	class ResourceLoader;
 	class ObjectManager;
 	class EngineProfiler;
 	class GraphicsDevice;
@@ -135,6 +136,7 @@ namespace Glory
 		virtual LayerManager& GetLayerManager() = 0;
 		virtual MaterialManager& GetMaterialManager() = 0;
 		virtual PipelineManager& GetPipelineManager() = 0;
+		virtual ResourceLoader& GetResourceLoader() = 0;
 		virtual Utils::Reflect::Reflect& Reflection() = 0;
 		virtual ObjectManager& GetObjectManager() = 0;
 		virtual EngineProfiler& Profiler() = 0;

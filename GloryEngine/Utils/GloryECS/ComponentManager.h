@@ -148,9 +148,14 @@ namespace Glory::Utils::ECS
 
 		virtual void Serialize(BinaryStream& stream) const override
 		{
-			stream.Write(static_cast<const SparseSet<EntityID, Component>&>(*this));
-			stream.Write(m_ComponentActive).Write(m_ActiveSize);
-			OnSerialize(stream);
+			GrowableBinaryMemoryStream memoryStream;
+			BinaryStream* tempStream = &memoryStream;
+
+			tempStream->Write(static_cast<const SparseSet<EntityID, Component>&>(*this));
+			tempStream->Write(m_ComponentActive).Write(m_ActiveSize);
+			OnSerialize(*tempStream);
+
+			stream.Write(ComponentTypeHash).Write(memoryStream.Buffer());
 		}
 
 		virtual void Deserialize(BinaryStream& stream) override

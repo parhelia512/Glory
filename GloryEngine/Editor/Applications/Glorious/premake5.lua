@@ -107,6 +107,7 @@ project "Glorious"
 	{
 		("{COPY} %{modulesOutDir} %{editorBuildDir}/Modules"),
 		("{COPY} %{engineOutDir}/GloryEditor.dll %{editorBuildDir}"),
+		("{COPY} %{engineOutDir}/GloryEngine.dll %{editorBuildDir}"),
 		("{COPY} %{engineOutDir}/Extensions %{editorBuildDir}/Extensions"),
 		("{COPY} %{engineOutDir}/version.txt %{editorBuildDir}"),
 		("{COPY} %{engineOutDir}/Patchnotes %{editorBuildDir}/Patchnotes"),

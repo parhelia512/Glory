@@ -21,4 +21,9 @@ namespace Glory
 	void RuntimeResourceLoader::OnUpdate()
 	{
 	}
+
+	bool RuntimeResourceLoader::IsBusy() const
+	{
+		return false;
+	}
 }

@@ -74,7 +74,6 @@ namespace Glory::Editor
 
         void Initialize();
 
-        GLORY_EDITOR_API bool IsBusy() const;
         GLORY_EDITOR_API bool IsCompilingAssets() const;
         GLORY_EDITOR_API bool IsCachingAssets() const;
         GLORY_EDITOR_API bool IsLoadingResources() const;
@@ -116,6 +115,8 @@ namespace Glory::Editor
         };
 
         GLORY_EDITOR_API ResourceState GetResourceState(const UUID uuid) const;
+
+        GLORY_EDITOR_API virtual bool IsBusy() const override;
 
     private:
         /** @brief Loading implementation */
@@ -187,6 +188,7 @@ namespace Glory::Editor
         std::atomic_uint m_LoadedResourceWriteIndex = 0u;
         std::atomic_uint m_CurrentLoadedResourceCount = 0u;
         static const uint32_t LoadedResourcesRingBufferSize = 1024;
+        std::array<UUID, LoadedResourcesRingBufferSize> m_LoadedResourceIDs;
         std::array<Resource*, LoadedResourcesRingBufferSize> m_LoadedResources;
 
         /* Caching jobs */

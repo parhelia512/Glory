@@ -426,6 +426,11 @@ namespace Glory
 		return *m_pPipelineManager;
 	}
 
+	ResourceLoader& GloryEngine::GetResourceLoader()
+	{
+		return *m_pResourceLoader;
+	}
+
 	Utils::Reflect::Reflect& GloryEngine::Reflection()
 	{
 		return *m_Reflection;

@@ -175,10 +175,24 @@ namespace Glory::Utils
 		virtual BinaryStream& Read(char* out, size_t size) override;
 		virtual bool Eof() override;
 
-	private:
+	protected:
 		const char* m_Data;
 		size_t m_Size;
 		size_t m_Tell;
+	};
+
+	class GrowableBinaryMemoryStream : public BinaryMemoryStream
+	{
+	public:
+		GrowableBinaryMemoryStream();
+
+		virtual BinaryStream& Write(const char* data, size_t size) override;
+		void ResizeBuffer(size_t size);
+
+		const std::vector<char>& Buffer() const;
+
+	private:
+		std::vector<char> m_Buffer;
 	};
 
 	class BinaryFileStream : public BinaryStream

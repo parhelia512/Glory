@@ -17,5 +17,7 @@ namespace Glory
 
         /** @brief Custom processing update implementation */
         virtual void OnUpdate() override;
+
+        virtual bool IsBusy() const override;
 	};
 }

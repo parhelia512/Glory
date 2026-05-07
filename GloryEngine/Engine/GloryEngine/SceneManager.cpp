@@ -212,7 +212,9 @@ namespace Glory
 		pColorField = LightComponent::GetTypeData()->GetFieldData(0);
 		Reflect::SetFieldFlags(pColorField, PropertyFlags::Color);
 
-		m_pEngine->GetResourceTypes().RegisterResource<GScene>("");
+		m_pEngine->GetResourceTypes().RegisterResource<GScene>("", [this](GScene* pScene) {
+			m_RegistryFactory.PopulateRegisry(pScene->GetRegistry());
+		});
 
 		OnInitialize();
 	}
