@@ -189,11 +189,11 @@ unzip steamaudio_4.5.3.zip
 cd steamaudio
 
 cp -r include "../../../Dependencies/${CONFIG}/include/phonon"
-cp -r lib/windows-x64/phonon.lib "../../../Dependencies/${CONFIG}/lib"
-cp -r symbols/windows-x64/phonon.pdb "../../../Dependencies/${CONFIG}/lib"
-cp -r lib/windows-x64/GPUUtilities.dll "../../../Dependencies/${CONFIG}/bin"
-cp -r lib/windows-x64/phonon.dll "../../../Dependencies/${CONFIG}/bin"
-cp -r lib/windows-x64/TrueAudioNext.dll "../../../Dependencies/${CONFIG}/bin"
+cp -r lib/windows-x64/phonon.lib "../../../Dependencies/${CONFIG}/lib/phonon.lib"
+cp -r symbols/windows-x64/phonon.pdb "../../../Dependencies/${CONFIG}/lib/phonon.pdb"
+cp -r lib/windows-x64/GPUUtilities.dll "../../../Dependencies/${CONFIG}/bin/GPUUtilities.dll"
+cp -r lib/windows-x64/phonon.dll "../../../Dependencies/${CONFIG}/bin/phonon.dll"
+cp -r lib/windows-x64/TrueAudioNext.dll "../../../Dependencies/${CONFIG}/bin/TrueAudioNext.dll"
 
 # Build freetype
 cd ../../..
