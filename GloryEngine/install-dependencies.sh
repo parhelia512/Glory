@@ -16,7 +16,9 @@ elif [ "$OSTYPE" == "darwin" ]; then
     echo ""
 elif [ "$OSTYPE" == "cygwin" ]; then
     # POSIX compatibility layer and Linux environment emulation for Windows
-    echo ""
+	echo "Windows system detected"
+	echo ${PLAT=windows}
+	echo ${PLATFORM=x64}
 elif [ "$OSTYPE" == "msys" ]; then
     echo "Windows system detected"
 	echo ${PLAT=windows}
