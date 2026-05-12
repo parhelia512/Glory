@@ -155,7 +155,7 @@ namespace Glory::Utils::ECS
 			tempStream->Write(m_ComponentActive).Write(m_ActiveSize);
 			OnSerialize(*tempStream);
 
-			stream.Write(ComponentTypeHash).Write(memoryStream.Buffer());
+			stream.Write(ComponentTypeHash).Write(memoryStream.Tell()).Write(memoryStream.Buffer(), memoryStream.Tell());
 		}
 
 		virtual void Deserialize(BinaryStream& stream) override

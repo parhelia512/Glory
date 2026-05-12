@@ -220,7 +220,8 @@ namespace Glory::Utils
 		return m_Tell >= m_Size;
 	}
 
-	GrowableBinaryMemoryStream::GrowableBinaryMemoryStream(): BinaryMemoryStream(m_Buffer)
+	GrowableBinaryMemoryStream::GrowableBinaryMemoryStream(size_t capacity):
+		m_Buffer(new char[capacity]), BinaryMemoryStream(m_Buffer.get(), capacity)
 	{
 	}
 
@@ -228,7 +229,12 @@ namespace Glory::Utils
 	{
 		if (size == 0) return *this;
 		if (m_Tell + size >= m_Size)
-			ResizeBuffer(Tell() + size);
+		{
+			const size_t minimumSize = m_Size + size;
+			const size_t newSize = minimumSize + minimumSize/2;
+			ResizeBuffer(m_Size + size);
+		}
+
 		std::memcpy(&m_Buffer[m_Tell], data, size);
 		m_Tell = m_Tell + size;
 		return *this;
@@ -237,13 +243,16 @@ namespace Glory::Utils
 	void GrowableBinaryMemoryStream::ResizeBuffer(size_t size)
 	{
 		if (m_Size >= size) return;
-		m_Buffer.resize(size);
-		m_Data = m_Buffer.data();
+
+		char* newBuffer = new char[size];
+		std::memcpy(newBuffer, m_Buffer.get(), m_Size);
+		m_Buffer.reset(newBuffer);
+		m_Data = m_Buffer.get();
 		m_Size = size;
 	}
 
-	const std::vector<char>& GrowableBinaryMemoryStream::Buffer() const
+	const char* GrowableBinaryMemoryStream::Buffer() const
 	{
-		return m_Buffer;
+		return m_Buffer.get();
 	}
 }

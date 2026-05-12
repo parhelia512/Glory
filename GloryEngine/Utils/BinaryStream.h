@@ -184,15 +184,15 @@ namespace Glory::Utils
 	class GrowableBinaryMemoryStream : public BinaryMemoryStream
 	{
 	public:
-		GrowableBinaryMemoryStream();
+		GrowableBinaryMemoryStream(size_t capacity=1024);
 
 		virtual BinaryStream& Write(const char* data, size_t size) override;
 		void ResizeBuffer(size_t size);
 
-		const std::vector<char>& Buffer() const;
+		const char* Buffer() const;
 
 	private:
-		std::vector<char> m_Buffer;
+		std::unique_ptr<char[]> m_Buffer;
 	};
 
 	class BinaryFileStream : public BinaryStream
