@@ -18,8 +18,9 @@
 #include <PropertySerializer.h>
 #include <GLORY_YAML.h>
 #include <AssetDatabase.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <PipelineData.h>
+#include <ResourceReferencing.h>
 
 #include <IconsFontAwesome6.h>
 #include <PropertyFlags.h>
@@ -28,7 +29,19 @@ namespace Glory::Editor
 {
 	MaterialEditor::MaterialEditor() {}
 
-	MaterialEditor::~MaterialEditor() {}
+	MaterialEditor::~MaterialEditor()
+	{
+		YAMLResource<MaterialData>* pMaterial = (YAMLResource<MaterialData>*)m_pTarget;
+		if (!pMaterial->IsSectionedResource()) return;
+		RemoveResourceReference(pMaterial->GetUUID());
+	}
+
+	void MaterialEditor::Initialize()
+	{
+		YAMLResource<MaterialData>* pMaterial = (YAMLResource<MaterialData>*)m_pTarget;
+		if (!pMaterial->IsSectionedResource()) return;
+		AddResourceReference(pMaterial->GetUUID());
+	}
 
 	static constexpr float ThumbnailSize = 128.0f;
 
@@ -51,7 +64,7 @@ namespace Glory::Editor
 		bool change = false;
 		if (AssetPicker::ResourceDropdown("Pipeline", ResourceTypes::GetHash<PipelineData>(), &pipelineID))
 		{
-			pApplication->GetMaterialManager().SetMaterialPipeline(pMaterial->GetUUID(), pipelineID);
+			pApplication->GetMaterialManager().SetMaterialPipeline(pMaterialData, pMaterial->GetUUID(), pipelineID);
 			change = true;
 		}
 
@@ -66,7 +79,8 @@ namespace Glory::Editor
 		{
 			EditorAssetDatabase::SetAssetDirty(pMaterial);
 			pMaterial->SetDirty(true);
-			pMaterialData->SetDirty(true);
+			if (pMaterialData)
+				pMaterialData->SetDirty(true);
 			pApplication->GetThumbnailManager().SetDirty(pMaterial->GetUUID());
 		}
 		return change;
@@ -116,7 +130,7 @@ namespace Glory::Editor
 			}
 		}
 
-		if (!properties.Exists() || !prop.Exists())
+		if (!properties.Exists() || !prop.Exists() && pMaterialData)
 		{
 			const bool propertyChange = PropertyDrawer::DrawProperty(propInfo->DisplayName(),
 				pMaterialData->Address(propIndex), propInfo->TypeHash(), propInfo->Flags() | PropertyFlags::Color);
@@ -391,8 +405,10 @@ namespace Glory::Editor
 				auto resourceId = pMaterialData->GetResourceUUIDPointer(pMaterialPropertyTwo->Offset());
 				ImGui::SameLine();
 				ImGui::PushID(sampler.data());
-				const bool textureChange = AssetPicker::ResourceThumbnailButton("value", 18.0f, start, totalWidth, textureDataHash, resourceId->AssetUUIDMember());
-				TextureHandle Thumbnail = pApp->GetThumbnailManager().GetThumbnail(resourceId->AssetUUID());
+				UUID textureID;
+				const bool textureChange = AssetPicker::ResourceThumbnailButton("value", 18.0f, start, totalWidth, textureDataHash, &textureID);
+				if (textureChange) resourceId->SetUUID(textureID);
+				TextureHandle Thumbnail = pApp->GetThumbnailManager().GetThumbnail(resourceId->GetUUID());
 				if (Thumbnail)
 					ImGui::Image(pRenderImpl->GetTextureID(Thumbnail), { ThumbnailSize, ThumbnailSize });
 				ImGui::PopID();
@@ -417,7 +433,7 @@ namespace Glory::Editor
 
 				ImGui::PushID(sampler.data());
 				pPropertyDrawer->Draw(pMaterialProperty->DisplayName(), resourceId, pMaterialProperty->TypeHash(), pMaterialProperty->Flags());
-				TextureHandle Thumbnail = pApp->GetThumbnailManager().GetThumbnail(resourceId->AssetUUID());
+				TextureHandle Thumbnail = pApp->GetThumbnailManager().GetThumbnail(resourceId->GetUUID());
 				if (Thumbnail)
 					ImGui::Image(pRenderImpl->GetTextureID(Thumbnail), { ThumbnailSize, ThumbnailSize });
 				ImGui::PopID();

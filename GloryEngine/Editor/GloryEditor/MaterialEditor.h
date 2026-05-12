@@ -11,6 +11,7 @@ namespace Glory::Editor
 	public:
 		MaterialEditor();
 		virtual ~MaterialEditor();
+		virtual void Initialize() override;
 		virtual bool OnGUI() override;
 
 		static void GeneratePropertyPairs(PipelineData* pPipeline, std::vector<std::pair<size_t, size_t>>& propertyPairs);

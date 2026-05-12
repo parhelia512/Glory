@@ -21,7 +21,7 @@ namespace Glory
     private:
         friend class SceneManager;
         SceneManager* m_pSceneManager;
-        AssetManager* m_pAssetManager;
+        Resources* m_pResources;
         LayerManager* m_pLayerManager;
     };
 }

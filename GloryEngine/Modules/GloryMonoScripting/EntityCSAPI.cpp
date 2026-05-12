@@ -436,7 +436,7 @@ namespace Glory
 	uint64_t MeshRenderer_GetMaterial(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
 	{
 		MeshRenderer& meshRenderer = GetComponent<MeshRenderer>(sceneID, objectID, componentID);
-		return meshRenderer.m_Material.AssetUUID();
+		return meshRenderer.m_Material.GetUUID();
 	}
 
 	void MeshRenderer_SetMaterial(uint64_t sceneID, uint64_t objectID, uint64_t componentID, uint64_t materialID)
@@ -448,7 +448,7 @@ namespace Glory
 	uint64_t MeshRenderer_GetMesh(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
 	{
 		MeshRenderer& meshRenderer = GetComponent<MeshRenderer>(sceneID, objectID, componentID);
-		return meshRenderer.m_Mesh.AssetUUID();
+		return meshRenderer.m_Mesh.GetUUID();
 	}
 
 	void MeshRenderer_SetMesh(uint64_t sceneID, uint64_t objectID, uint64_t componentID, uint64_t meshID)
@@ -725,7 +725,7 @@ namespace Glory
 	uint64_t AudioSource_GetAudio(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
 	{
 		AudioSource& source = GetComponent<AudioSource>(sceneID, objectID, componentID);
-		return source.m_Audio.AssetUUID();
+		return source.m_Audio.GetUUID();
 	}
 
 	void AudioSource_SetAudio(uint64_t sceneID, uint64_t objectID, uint64_t componentID, uint64_t audioID)
@@ -963,7 +963,7 @@ namespace Glory
 	uint64_t TextComponent_GetFont(uint64_t sceneID, uint64_t objectID, uint64_t componentID)
 	{
 		TextComponent& text = GetComponent<TextComponent>(sceneID, objectID, componentID);
-		return text.m_Font.AssetUUID();
+		return text.m_Font.GetUUID();
 	}
 
 	void TextComponent_SetFont(uint64_t sceneID, uint64_t objectID, uint64_t componentID, uint64_t fontID)

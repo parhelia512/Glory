@@ -14,16 +14,16 @@ namespace Glory
 
 		bool operator==(const StringTableRef&& other)
 		{
-			return other.m_STReference.AssetUUID() == other.m_STReference.AssetUUID();
+			return other.m_STReference.GetUUID() == other.m_STReference.GetUUID();
 		}
 
 		bool operator==(StringTableRef& other)
 		{
-			return other.m_STReference.AssetUUID() == other.m_STReference.AssetUUID();
+			return other.m_STReference.GetUUID() == other.m_STReference.GetUUID();
 		}
 
 		REFLECTABLE(StringTableRef,
-			(AssetReference<StringTable>) (m_STReference)
+			(ResourceReference<StringTable>) (m_STReference)
 		)
 	};
 
@@ -33,7 +33,7 @@ namespace Glory
 		StringTableLoader() : m_StringTable(0ull), m_KeepLoaded(false) {}
 
 		REFLECTABLE(StringTableLoader,
-			(AssetReference<StringTable>)(m_StringTable),
+			(ResourceReference<StringTable>)(m_StringTable),
 			(bool)(m_KeepLoaded)
 		);
 	};

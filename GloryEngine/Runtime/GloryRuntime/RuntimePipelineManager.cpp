@@ -1,7 +1,7 @@
 #include "RuntimePipelineManager.h"
 
 #include <IEngine.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <PipelineData.h>
 
 namespace Glory
@@ -12,7 +12,7 @@ namespace Glory
 
 	PipelineData* RuntimePipelineManager::GetPipelineData(UUID pipelineID) const
 	{
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(pipelineID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(pipelineID);
 		if (!pResource) return nullptr;
 		PipelineData* pPipeline = static_cast<PipelineData*>(pResource);
 		return pPipeline;

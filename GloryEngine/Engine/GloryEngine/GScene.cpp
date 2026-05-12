@@ -7,7 +7,7 @@
 #include "SceneManager.h"
 #include "IEngine.h"
 #include "Debug.h"
-#include "AssetManager.h"
+#include "Resources.h"
 
 #include "TransformManager.h"
 
@@ -413,13 +413,13 @@ namespace Glory
 		if (m_Settings.m_LightingSettings.m_Skybox)
 		{
 			references.push_back(m_Settings.m_LightingSettings.m_Skybox);
-			Resource* pResource = pEngine->GetAssetManager().GetAssetImmediate(m_Settings.m_LightingSettings.m_Skybox);
+			Resource* pResource = pEngine->GetResources().GetResource(m_Settings.m_LightingSettings.m_Skybox);
 			if (pResource) pResource->References(pEngine, references);
 		}
 		if (m_Settings.m_LightingSettings.m_IrradianceMap)
 		{
 			references.push_back(m_Settings.m_LightingSettings.m_IrradianceMap);
-			Resource* pResource = pEngine->GetAssetManager().GetAssetImmediate(m_Settings.m_LightingSettings.m_IrradianceMap);
+			Resource* pResource = pEngine->GetResources().GetResource(m_Settings.m_LightingSettings.m_IrradianceMap);
 			if (pResource) pResource->References(pEngine, references);
 		}
 		m_Registry.GetReferences(references);

@@ -8,7 +8,7 @@
 #include <GloryMonoScipting.h>
 #include <Debug.h>
 #include <IEngine.h>
-#include <AssetManager.h>
+#include <Resources.h>
 
 namespace Glory
 {
@@ -53,7 +53,7 @@ namespace Glory
     {
         UIDocument* pDocument = UI_MODULE->FindDocument(sceneID);
         if (!pDocument) return 0;
-        Resource* pResource = UIScene_EngineInstance->GetAssetManager().FindResource(documentID);
+        Resource* pResource = UIScene_EngineInstance->GetResources().GetResource(documentID);
         if (!pResource) return 0;
         UIDocumentData* pDocumentData = static_cast<UIDocumentData*>(pResource);
         const UUID instantiated = pDocument->Instantiate(pDocumentData, parentID);

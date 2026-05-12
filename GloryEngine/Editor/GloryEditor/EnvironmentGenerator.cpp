@@ -7,7 +7,7 @@
 #include "EditorPipelineManager.h"
 #include "ShaderSourceData.h"
 
-#include <AssetManager.h>
+#include <Resources.h>
 #include <CubemapData.h>
 #include <GraphicsDevice.h>
 #include <InternalPipeline.h>
@@ -66,7 +66,7 @@ namespace Glory::Editor
 	{
 		EnvironmentPass();
 
-		AssetManager& assets = EditorApplication::GetInstance()->GetEngine()->GetAssetManager();
+		Resources& assets = EditorApplication::GetInstance()->GetEngine()->GetResources();
 		if (AssetPicker::ResourceDropdown("Cubemap", ResourceTypes::GetHash<CubemapData>(), &m_CurrentCubemap))
 		{
 			AssetLocation location;
@@ -78,7 +78,7 @@ namespace Glory::Editor
 			}
 		}
 
-		Resource* pResource = m_CurrentCubemap ? assets.FindResource(m_CurrentCubemap) : nullptr;
+		Resource* pResource = m_CurrentCubemap ? assets.GetResource(m_CurrentCubemap) : nullptr;
 		CubemapData* pCubemap = pResource ? static_cast<CubemapData*>(pResource) : nullptr;
 
 		if (m_CurrentCubemap != 0 && !pCubemap)
@@ -170,9 +170,9 @@ namespace Glory::Editor
 
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
 		GraphicsDevice* pDevice = pEngine->ActiveGraphicsDevice();
-		AssetManager& assets = pEngine->GetAssetManager();
+		Resources& assets = pEngine->GetResources();
 
-		Resource* pResource = m_CurrentCubemap ? assets.FindResource(m_CurrentCubemap) : nullptr;
+		Resource* pResource = m_CurrentCubemap ? assets.GetResource(m_CurrentCubemap) : nullptr;
 		CubemapData* pCubemap = pResource ? static_cast<CubemapData*>(pResource) : nullptr;
 
 		if (!pCubemap)

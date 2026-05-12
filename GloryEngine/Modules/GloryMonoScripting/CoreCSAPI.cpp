@@ -13,7 +13,7 @@
 #include <LayerManager.h>
 #include <EngineProfiler.h>
 #include <AssetDatabase.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <ObjectManager.h>
 #include <WindowModule.h>
 
@@ -191,14 +191,14 @@ namespace Glory
 
 	MonoString* Resource_GetName(uint64_t uuid)
 	{
-		Resource* pResource = Core_EngineInstance->GetAssetManager().GetAssetImmediate(uuid);
+		Resource* pResource = Core_EngineInstance->GetResources().GetResource(uuid);
 		if (!pResource) return nullptr;
 		return mono_string_new(mono_domain_get(), pResource->Name().c_str());
 	}
 
 	void Resource_SetName(uint64_t uuid, MonoString* name)
 	{
-		Resource* pResource = Core_EngineInstance->GetAssetManager().GetAssetImmediate(uuid);
+		Resource* pResource = Core_EngineInstance->GetResources().GetResource(uuid);
 		if (!pResource) return;
 		const std::string nameStr = mono_string_to_utf8(name);
 		pResource->SetName(nameStr);
@@ -211,7 +211,7 @@ namespace Glory
 	template<typename T>
 	void Material_Set(uint64_t matID, MonoString* propName, T value)
 	{
-		MaterialData* pMaterial = Core_EngineInstance->GetAssetManager().GetAssetImmediate<MaterialData>(matID);
+		MaterialData* pMaterial = Core_EngineInstance->GetResources().GetResource<MaterialData>(matID);
 		if (!pMaterial)
 		{
 			Core_EngineInstance->GetDebug().LogError("Material does not exist!");
@@ -225,7 +225,7 @@ namespace Glory
 	template<typename T>
 	bool Material_Get(uint64_t matID, MonoString* propName, T value)
 	{
-		MaterialData* pMaterial = Core_EngineInstance->GetAssetManager().GetAssetImmediate<MaterialData>(matID);
+		MaterialData* pMaterial = Core_EngineInstance->GetResources().GetResource<MaterialData>(matID);
 		if (!pMaterial)
 		{
 			Core_EngineInstance->GetDebug().LogError("Material does not exist!");
@@ -237,22 +237,22 @@ namespace Glory
 
 	void Material_SetTexture(uint64_t matID, MonoString* propName, uint64_t value)
 	{
-		const auto pMaterial = Core_EngineInstance->GetAssetManager().GetAssetImmediate<MaterialData>(matID);
+		const auto pMaterial = Core_EngineInstance->GetResources().GetResource<MaterialData>(matID);
 		if (!pMaterial)
 		{
 			Core_EngineInstance->GetDebug().LogError("Material does not exist!");
 			return;
 		}
 		const std::string propNameStr = mono_string_to_utf8(propName);
-		TextureData* pImage = value ? Core_EngineInstance->GetAssetManager().GetAssetImmediate<TextureData>(value) : nullptr;
+		TextureData* pImage = value ? Core_EngineInstance->GetResources().GetResource<TextureData>(value) : nullptr;
 		pMaterial->SetTexture(propNameStr, pImage);
 		pMaterial->SetDirty(true);
 	}
 
 	bool Material_GetTexture(uint64_t matID, MonoString* propName, uint64_t& value)
 	{
-		AssetManager& pManager = Core_EngineInstance->GetAssetManager();
-		const auto pMaterial = pManager.GetAssetImmediate<MaterialData>(matID);
+		Resources& resources = Core_EngineInstance->GetResources();
+		const auto pMaterial = resources.GetResource<MaterialData>(matID);
 		if (!pMaterial)
 		{
 			Core_EngineInstance->GetDebug().LogError("Material does not exist!");
@@ -260,16 +260,16 @@ namespace Glory
 		}
 		const std::string propNameStr = mono_string_to_utf8(propName);
 		TextureData* pImage = nullptr;
-		if (!pMaterial->GetTexture(propNameStr, &pImage, &pManager)) return false;
+		if (!pMaterial->GetTexture(propNameStr, &pImage, &resources)) return false;
 		value = pImage ? pImage->GetUUID() : UUID(0ull);
 		return true;
 	}
 	
 	uint64_t Material_CreateCopy(uint64_t matID)
 	{
-		AssetManager& pManager = Core_EngineInstance->GetAssetManager();
+		Resources& resources = Core_EngineInstance->GetResources();
 		MaterialManager& materials = Core_EngineInstance->GetMaterialManager();
-		auto pMaterial = pManager.GetAssetImmediate<MaterialData>(matID);
+		const auto pMaterial = resources.GetResource<MaterialData>(matID);
 		if (!pMaterial)
 		{
 			Core_EngineInstance->GetDebug().LogError("Material does not exist!");
@@ -285,8 +285,8 @@ namespace Glory
 
 	MonoString* TextFile_GetFullBody(uint64_t textID)
 	{
-		AssetManager& pManager = Core_EngineInstance->GetAssetManager();
-		auto pFile = pManager.GetAssetImmediate<TextFileData>(textID);
+		Resources& resources = Core_EngineInstance->GetResources();
+		const auto pFile = resources.GetResource<TextFileData>(textID);
 		if (!pFile)
 		{
 			Core_EngineInstance->GetDebug().LogError("Text file does not exist!");
@@ -336,7 +336,7 @@ namespace Glory
 
 	uint64_t Scene_InstantiatePrefab(uint64_t sceneID, uint64_t prefabID, Vec3Wrapper position, QuatWrapper rotation, Vec3Wrapper scale, uint64_t parentID)
 	{
-		PrefabData* pPrefab = Core_EngineInstance->GetAssetManager().GetAssetImmediate<PrefabData>(prefabID);
+		PrefabData* pPrefab = Core_EngineInstance->GetResources().GetResource<PrefabData>(prefabID);
 		if (!pPrefab) return 0;
 		GScene* pScene = Core_EngineInstance->GetSceneManager()->GetOpenScene(UUID(sceneID));
 		if (!pScene) return 0;

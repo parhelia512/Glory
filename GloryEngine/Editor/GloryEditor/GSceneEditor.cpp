@@ -2,7 +2,6 @@
 #include "EditorApplication.h"
 #include "EditorSceneManager.h"
 #include "EditorUI.h"
-#include "AssetCompiler.h"
 #include "AssetPicker.h"
 #include "Undo.h"
 

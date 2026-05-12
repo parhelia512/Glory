@@ -5,6 +5,8 @@ namespace Glory
 {
 	size_t ThreadManager::m_HardwareThreads = std::thread::hardware_concurrency();
 
+	ThreadManager::ThreadManager(): m_DefaultThreadID(std::this_thread::get_id()) {}
+
 	ThreadManager::~ThreadManager()
 	{
 		Kill();

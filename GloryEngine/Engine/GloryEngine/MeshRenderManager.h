@@ -6,7 +6,7 @@
 namespace Glory
 {
     class SceneManager;
-    class AssetManager;
+    class Resources;
     class MaterialManager;
     class AssetDatabase;
     class LayerManager;
@@ -32,7 +32,7 @@ namespace Glory
     private:
         friend class SceneManager;
         SceneManager* m_pSceneManager;
-        AssetManager* m_pAssetManager;
+        Resources* m_pResources;
         MaterialManager* m_pMaterialManager;
         AssetDatabase* m_pAssetDatabase;
         LayerManager* m_pLayerManager;

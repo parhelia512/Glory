@@ -55,10 +55,20 @@ namespace Glory
 			return static_cast<Resource*>(&m_Resources[iter->second]);
 		}
 
+		/** @brief Find a resource in this manager, but return it directly instead of casting.
+		 * @param id ID of the resource to find.
+		 */
+		inline R* GetDirect(UUID id)
+		{
+			auto iter = m_IDToResourceIndex.find(id);
+			if (iter == m_IDToResourceIndex.end()) return nullptr;
+			return &m_Resources[iter->second];
+		}
+
 		/** @brief Remove a resource from this manager.
 		 * @param id ID of the resource to remove.
 		 */
-		virtual void Remove(UUID id) override
+		inline virtual void Remove(UUID id) override
 		{
 			auto iter = m_IDToResourceIndex.find(id);
 			if (iter == m_IDToResourceIndex.end()) return;
@@ -74,6 +84,8 @@ namespace Glory
 				if (indexIter->second < index) continue;
 				--indexIter->second;
 			}
+
+			m_Resources[m_Size] = R();
 		}
 
 		/** @overload */
@@ -86,6 +98,7 @@ namespace Glory
 
 			m_Resources[index] = std::move(resource);
 			m_IDToResourceIndex.emplace(m_Resources[index].GetUUID(), index);
+			static_cast<Resource*>(&m_Resources[index])->OnAddedToManager(m_pResources);
 			return m_Resources[index];
 		}
 

@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   build-editor-win64:
-    runs-on: windows-latest
+    runs-on: windows-2022
     environment: 'release'
 
     steps:
@@ -71,8 +71,8 @@ jobs:
     - if: ${{ steps.cache-dependencies-restore.outputs.cache-hit != 'true' }}
       name: Install dependencies
       working-directory: ${{env.SOLUTION_FILE_PATH}}
-      run: sh ./install-dependencies.sh Release
       shell: bash
+      run: ./install-dependencies.sh Release
 
     - if: ${{ steps.cache-dependencies-restore.outputs.cache-hit != 'true' }}
       name: Cache dependencies

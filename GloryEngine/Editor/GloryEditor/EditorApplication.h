@@ -30,7 +30,6 @@ namespace Editor
 		M_ExitingPlay,
 	};
 
-	class EditorAssetManager;
 	class EditorSceneManager;
 	class EditorResourceManager;
 	class EditorPipelineManager;
@@ -64,7 +63,7 @@ namespace Editor
 		GLORY_EDITOR_API void Quit();
 		GLORY_EDITOR_API void TryToQuit();
 		GLORY_EDITOR_API Glory::IEngine* GetEngine();
-		GLORY_EDITOR_API EditorAssetManager& GetAssetManager();
+		GLORY_EDITOR_API EditorResourceLoader& GetResourceLoader();
 		GLORY_EDITOR_API EditorSceneManager& GetSceneManager();
 		GLORY_EDITOR_API EditorResourceManager& GetResourceManager();
 		GLORY_EDITOR_API EditorPipelineManager& GetPipelineManager();
@@ -104,7 +103,6 @@ namespace Editor
 		EditorPlatform m_Platform;
 		MainEditor m_MainEditor;
 		EditorPlayer m_Player;
-		std::unique_ptr<EditorAssetManager> m_AssetManager;
 		std::unique_ptr<EditorSceneManager> m_SceneManager;
 		std::unique_ptr<EditorResourceManager> m_ResourceManager;
 		std::unique_ptr<EditorPipelineManager> m_PipelineManager;

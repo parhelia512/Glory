@@ -2,7 +2,7 @@
 #include "GloryMonoScipting.h"
 
 #include <Debug.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <AudioModule.h>
 #include <AudioData.h>
 
@@ -63,7 +63,7 @@ namespace Glory
 			return;
 		}
 
-		Resource* pResource = AudioManager_EngineInstance->GetAssetManager().FindResource(audioId);
+		Resource* pResource = AudioManager_EngineInstance->GetResources().GetResource(audioId);
 		if (!pResource) return;
 		AudioData* pAudio = static_cast<AudioData*>(pResource);
 		pAudioModule->PlayMusic(pAudio);

@@ -13,7 +13,7 @@
 #include <LocalizeModule.h>
 #include <AssetArchive.h>
 #include <BinaryStream.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <SceneManager.h>
 
 #include <ObjectMenu.h>
@@ -31,7 +31,6 @@
 #include <CreateObjectAction.h>
 #include <EditableEntity.h>
 #include <EntityEditor.h>
-#include <EditorAssetManager.h>
 
 #include <IconsFontAwesome6.h>
 
@@ -123,7 +122,7 @@ namespace Glory::Editor
 			const std::string name = EditorAssetDatabase::GetAssetName(stringTableID);
 			task.m_SubTaskName = name;
 
-			Resource* pResource = pEngine->GetAssetManager().FindResource(stringTableID);
+			Resource* pResource = pEngine->GetResources().GetResource(stringTableID);
 			if (!pResource)
 			{
 				++task.m_ProcessedSubTasks;
@@ -244,7 +243,7 @@ namespace Glory::Editor
 		[this, pApp](Utils::YAMLFileRef& file, const std::filesystem::path& path) {
 			const UUID tableID = EditorAssetDatabase::FindAssetUUID(file.Path().string());
 			if (!tableID) return;
-			Resource* pResource = pApp->GetAssetManager().FindResource(tableID);
+			Resource* pResource = pApp->GetEngine()->GetResources().GetResource(tableID);
 			if (!pResource) return;
 			StringTable* pTable = static_cast<StringTable*>(pResource);
 			auto item = file[path];
@@ -291,7 +290,7 @@ namespace Glory::Editor
 		[this, pApp](Utils::YAMLFileRef& file, const std::filesystem::path& path) {
 			const UUID tableID = EditorAssetDatabase::FindAssetUUID(file.Path().string());
 			if (!tableID) return;
-			Resource* pResource = pApp->GetAssetManager().FindResource(tableID);
+			Resource* pResource = pApp->GetEngine()->GetResources().GetResource(tableID);
 			if (!pResource) return;
 			StringsOverrideTable* pTable = static_cast<StringsOverrideTable*>(pResource);
 
@@ -337,7 +336,7 @@ namespace Glory::Editor
 		[this, pApp](Utils::YAMLFileRef& file, const std::filesystem::path& path) {
 			const UUID tableID = EditorAssetDatabase::FindAssetUUID(file.Path().string());
 			if (!tableID) return;
-			Resource* pResource = pApp->GetAssetManager().FindResource(tableID);
+			Resource* pResource = pApp->GetEngine()->GetResources().GetResource(tableID);
 			if (!pResource) return;
 			StringsOverrideTable* pTable = static_cast<StringsOverrideTable*>(pResource);
 			auto baseTable = file["BaseTable"];
@@ -348,7 +347,7 @@ namespace Glory::Editor
 		[this, pApp](Utils::YAMLFileRef& file, const std::filesystem::path& path) {
 			const UUID tableID = EditorAssetDatabase::FindAssetUUID(file.Path().string());
 			if (!tableID) return;
-			Resource* pResource = pApp->GetAssetManager().FindResource(tableID);
+			Resource* pResource = pApp->GetEngine()->GetResources().GetResource(tableID);
 			if (!pResource) return;
 			StringsOverrideTable* pTable = static_cast<StringsOverrideTable*>(pResource);
 			auto language = file["Language"];
@@ -373,7 +372,7 @@ namespace Glory::Editor
 
 		for (size_t i = 0; i < stringOverrideTableIDs.size(); ++i)
 		{
-			Resource* pResource = pLocalize->GetEngine()->GetAssetManager().FindResource(stringOverrideTableIDs[i]);
+			Resource* pResource = pLocalize->GetEngine()->GetResources().GetResource(stringOverrideTableIDs[i]);
 			if (!pResource)
 				continue;
 			StringsOverrideTable* pStringTable = static_cast<StringsOverrideTable*>(pResource);

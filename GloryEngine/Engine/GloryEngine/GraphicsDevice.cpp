@@ -134,7 +134,7 @@ namespace Glory
 		}
 
 		TextureHandle texture = iter->second;
-		ImageData* pImage = pTexture->GetImageData(&m_pModule->GetEngine()->GetAssetManager());
+		ImageData* pImage = pTexture->GetImageData(&m_pModule->GetEngine()->GetResources());
 
 		if (pTexture->IsDirty() || (pImage && pImage->IsDirty()))
 		{

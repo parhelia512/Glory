@@ -15,11 +15,11 @@ namespace Glory
 	class GameTime;
 	class CameraManager;
 	class AssetDatabase;
-	class AssetManager;
 	class ResourceTypes;
 	class LayerManager;
 	class MaterialManager;
 	class PipelineManager;
+	class ResourceLoader;
 	class ObjectManager;
 	class EngineProfiler;
 	class GraphicsDevice;
@@ -132,16 +132,15 @@ namespace Glory
 		virtual GameTime& Time() = 0;
 		virtual CameraManager& GetCameraManager() = 0;
 		virtual AssetDatabase& GetAssetDatabase() = 0;
-		virtual AssetManager& GetAssetManager() = 0;
 		virtual ResourceTypes& GetResourceTypes() = 0;
 		virtual LayerManager& GetLayerManager() = 0;
 		virtual MaterialManager& GetMaterialManager() = 0;
 		virtual PipelineManager& GetPipelineManager() = 0;
+		virtual ResourceLoader& GetResourceLoader() = 0;
 		virtual Utils::Reflect::Reflect& Reflection() = 0;
 		virtual ObjectManager& GetObjectManager() = 0;
 		virtual EngineProfiler& Profiler() = 0;
 
-		virtual void SetAssetManager(AssetManager* pManager) = 0;
 		virtual void SetSceneManager(SceneManager* pManager) = 0;
 		virtual void SetMaterialManager(MaterialManager* pManager) = 0;
 		virtual void SetPipelineManager(PipelineManager* pManager) = 0;

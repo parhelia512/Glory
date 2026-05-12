@@ -14,7 +14,7 @@
 #include "EditorApplication.h"
 #include "Package.h"
 
-#include <AssetManager.h>
+#include <Resources.h>
 #include <AssetDatabase.h>
 #include <IEngine.h>
 #include <SceneManager.h>
@@ -465,7 +465,7 @@ namespace Glory::Editor
 		std::filesystem::path file = FileBrowserItem::GetHighlightedPath();
 		const UUID uuid = EditorAssetDatabase::FindAssetUUID(file.string());
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
-		Resource* pLoadedResource = pEngine->GetAssetManager().FindResource(uuid);
+		Resource* pLoadedResource = pEngine->GetResources().GetResource(uuid);
 		//if (pLoadedResource) return;
 		EditorAssetDatabase::RemoveAsset(uuid);
 		EditorAssetDatabase::ImportAsset(file.string());

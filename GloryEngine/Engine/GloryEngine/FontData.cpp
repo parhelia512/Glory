@@ -1,5 +1,5 @@
 #include "FontData.h"
-#include "AssetManager.h"
+#include "Resources.h"
 #include "TextureData.h"
 #include "IEngine.h"
 
@@ -43,9 +43,9 @@ namespace Glory
 		return &m_Glyphs[index];
 	}
 
-	TextureData* FontData::GetGlyphTexture(AssetManager& assets) const
+	TextureData* FontData::GetGlyphTexture(Resources& resources) const
 	{
-		Resource* pResource = assets.FindResource(m_Texture);
+		Resource* pResource = resources.GetResource(m_Texture);
 		return pResource ? static_cast<TextureData*>(pResource) : nullptr;
 	}
 
@@ -89,13 +89,13 @@ namespace Glory
 		if (m_Texture)
 		{
 			references.push_back(m_Texture);
-			Resource* pTextureResource = pEngine->GetAssetManager().FindResource(m_Texture);
+			Resource* pTextureResource = pEngine->GetResources().GetResource(m_Texture);
 			if (pTextureResource) pTextureResource->References(pEngine, references);
 		}
 		if (m_Material)
 		{
 			references.push_back(m_Material);
-			Resource* pMaterialResource = pEngine->GetAssetManager().FindResource(m_Material);
+			Resource* pMaterialResource = pEngine->GetResources().GetResource(m_Material);
 			if (pMaterialResource) pMaterialResource->References(pEngine, references);
 		}
 	}

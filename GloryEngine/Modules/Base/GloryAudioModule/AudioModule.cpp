@@ -42,7 +42,7 @@ namespace Glory
 		m_pEngine->GetSceneManager()->RegisterComponentManager<AudioSourceManager, AudioSource>(
 			[this](Utils::ECS::EntityRegistry*, AudioSourceManager* manager) {
 				manager->m_pAudioModule = this;
-				manager->m_pAssetManager = &m_pEngine->GetAssetManager();
+				manager->m_pResources = &m_pEngine->GetResources();
 			});
 		m_pEngine->GetSceneManager()->RegisterComponentManager<AudioListenerManager, AudioListener>(
 			[this](Utils::ECS::EntityRegistry*, AudioListenerManager* manager) {

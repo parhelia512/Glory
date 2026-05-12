@@ -141,7 +141,7 @@ namespace Glory
 			case ST_Asset:
 			{
 				/* Asset reference from a dummy object will always be null */
-				prop.m_Size = sizeof(AssetReferenceBase);
+				prop.m_Size = sizeof(ResourceReferenceBase);
 				defaultValues.resize(defaultValues.size() + prop.m_Size);
 				break;
 			}
@@ -202,8 +202,8 @@ namespace Glory
 			{
 			case ST_Asset:
 			{
-				const AssetReferenceBase& assetReference = reinterpret_cast<const AssetReferenceBase&>(data[prop.m_RelativeOffset]);
-				MonoObject* pAssetObject = m_pCoreLibManager->CreateAssetObject(assetReference.AssetUUID(), pField->TypeName());
+				const ResourceReferenceBase& assetReference = reinterpret_cast<const ResourceReferenceBase&>(data[prop.m_RelativeOffset]);
+				MonoObject* pAssetObject = m_pCoreLibManager->CreateAssetObject(assetReference.GetUUID(), pField->TypeName());
 				pField->SetValue(pMonoObject, pAssetObject);
 				break;
 			}
@@ -258,12 +258,14 @@ namespace Glory
 			{
 			case ST_Asset:
 			{
-				AssetReferenceBase& assetReference = reinterpret_cast<AssetReferenceBase&>(data[prop.m_RelativeOffset]);
+				ResourceReferenceBase& assetReference = reinterpret_cast<ResourceReferenceBase&>(data[prop.m_RelativeOffset]);
 				MonoObject* pMonoResourceObject = nullptr;
 				pField->GetValue(pMonoObject, &pMonoResourceObject);
 
 				if (!pMonoResourceObject) break;
-				pObjectIDField->GetValue(pMonoResourceObject, assetReference.AssetUUIDMember());
+				UUID id;
+				pObjectIDField->GetValue(pMonoResourceObject, &id);
+				assetReference.SetUUID(id);
 				break;
 			}
 			case ST_Object:

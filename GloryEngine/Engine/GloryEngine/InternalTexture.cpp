@@ -23,7 +23,7 @@ namespace Glory
 		m_pImage = nullptr;
 	}
 
-	ImageData* InternalTexture::GetImageData(AssetManager* pAssetManager)
+	ImageData* InternalTexture::GetImageData(Resources* pAssetManager)
 	{
 		return m_pImage;
 	}

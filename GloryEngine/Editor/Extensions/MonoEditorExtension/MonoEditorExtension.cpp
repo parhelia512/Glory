@@ -2,7 +2,6 @@
 #include "MonoScriptThumbnail.h"
 #include "MonoScriptImporter.h"
 #include "MonoScriptComponentEditor.h"
-#include "EditorAssetManager.h"
 #include "ScriptTypeReferenceDrawer.h"
 #include "ScriptedComponentSerializer.h"
 
@@ -23,13 +22,13 @@
 #include <EditorAssetCallbacks.h>
 #include <ObjectMenuCallbacks.h>
 #include <FileBrowser.h>
-#include <AssetCompiler.h>
 #include <ThumbnailManager.h>
 #include <EntitySceneObjectEditor.h>
 #include <ScriptingExtender.h>
 #include <MainEditor.h>
 #include <CreateEntityObjectsCallbacks.h>
 #include <EditorApplication.h>
+#include <EditorResourceLoader.h>
 #include <MenuBar.h>
 #include <CreateObjectAction.h>
 #include <EditableEntity.h>
@@ -169,6 +168,7 @@ namespace Glory::Editor
 	{
 		EditorApplication* pEditorApp = EditorApplication::GetInstance();
 		IEngine* pEngine = pEditorApp->GetEngine();
+		pEditorApp->GetResourceLoader().AddTypeToLoadImmediately<MonoScript>();
 
 		m_pMonoScriptingModule = pEngine->GetOptionalModule<GloryMonoScipting>();
 		Reflect::SetReflectInstance(&pEngine->Reflection());
@@ -535,8 +535,8 @@ namespace Glory::Editor
 	{
 		ResourceMeta meta;
 		EditorAssetDatabase::GetAssetMetadata(callback.m_UUID, meta);
-		uint32_t typeHash = meta.Hash();
-		size_t scriptHash = ResourceTypes::GetHash<MonoScript>();
+		const uint32_t typeHash = meta.Hash();
+		static const size_t scriptHash = ResourceTypes::GetHash<MonoScript>();
 		ResourceTypes& types = EditorApplication::GetInstance()->GetEngine()->GetResourceTypes();
 		ResourceType* pResourcerType = types.GetResourceType(typeHash);
 
@@ -545,11 +545,7 @@ namespace Glory::Editor
 		{
 			size_t subHash = types.GetSubTypeHash(pResourcerType, i);
 			if (scriptHash != subHash) continue;
-			EditorApplication::GetInstance()->GetAssetManager().UnloadAsset(callback.m_UUID);
-			if (!AssetCompiler::IsCompilingAsset(callback.m_UUID))
-			{
-				AssetCompiler::CompileAssetsImmediately({ callback.m_UUID });
-			}
+			//EditorApplication::GetInstance()->GetResourceLoader().UnloadAsset(callback.m_UUID);
 			CompileProject(ProjectSpace::GetOpenProject());
 			return;
 		}

@@ -1,8 +1,8 @@
 #include "EditorSceneSerializer.h"
-#include "AssetCompiler.h"
 #include "EditorSceneManager.h"
 #include "EditorApplication.h"
-#include "EditorAssetManager.h"
+#include "EditorResourceLoader.h"
+#include "Resources.h"
 
 #include <Serializers.h>
 #include <PropertySerializer.h>
@@ -107,7 +107,7 @@ namespace Glory::Editor
 		Utils::ECS::EntityRegistry& registry = pScene->GetRegistry();
 		registry.Validate();
 
-		AssetCompiler::CompileSceneSettings(pScene, node);
+		EditorApplication::GetInstance()->GetResourceLoader().CompileSceneSettings(pScene, node);
 	}
 
 	void EditorSceneSerializer::SerializeEntity(EditorApplication* pApp, GScene* pScene, Utils::ECS::EntityID entity, Utils::NodeValueRef entityNode)
@@ -130,7 +130,7 @@ namespace Glory::Editor
 			entityNode["PrefabID"].Set(uint64_t(prefabID));
 		
 			/* Serialize ID remapping */
-			PrefabData* pPrefab = pApp->GetAssetManager().AssetManager::GetAssetImmediate<PrefabData>(prefabID);
+			PrefabData* pPrefab = pApp->GetEngine()->GetResources().GetResource<PrefabData>(prefabID);
 			const Utils::ECS::EntityID root = pPrefab->Child(0, 0);
 		
 			if (pPrefab->GetEntityUUID(root) != entityHandle.EntityUUID())
@@ -206,7 +206,7 @@ namespace Glory::Editor
 		if (!(flags & Flags::IgnorePrefabs) && prefabIDRef.Exists())
 		{
 			const UUID prefabID = prefabIDRef.As<uint64_t>();
-			PrefabData* pPrefab = pApp->GetAssetManager().AssetManager::GetAssetImmediate<PrefabData>(prefabID);
+			PrefabData* pPrefab = pApp->GetEngine()->GetResources().GetResource<PrefabData>(prefabID);
 			if (pPrefab)
 			{
 				Utils::NodeValueRef idsRemapValue = node["IDRemap"];

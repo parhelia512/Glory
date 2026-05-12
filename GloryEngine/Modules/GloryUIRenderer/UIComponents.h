@@ -90,7 +90,7 @@ namespace Glory
         UIImage() : m_Image(0ull), m_Color(1.0f, 1.0f, 1.0f, 1.0f) {}
 
         REFLECTABLE(UIImage,
-            (AssetReference<TextureData>)(m_Image),
+            (ResourceReference<TextureData>)(m_Image),
             (glm::vec4)(m_Color)
         );
     };
@@ -103,7 +103,7 @@ namespace Glory
             m_Dirty(true) {}
 
         REFLECTABLE(UIText,
-            (AssetReference<FontData>)(m_Font),
+            (ResourceReference<FontData>)(m_Font),
             (std::string)(m_Text),
             (std::string)(m_LocalizeTerm),
             (WidthConstraint)(m_Scale),
@@ -199,11 +199,11 @@ namespace Glory
         {}
 
         REFLECTABLE(UIRenderer,
-            (AssetReference<UIDocumentData>)(m_Document),
+            (ResourceReference<UIDocumentData>)(m_Document),
             (UITarget)(m_Target),
             (ResolutionMode)(m_ResolutionMode),
             (glm::vec2)(m_Resolution),
-            (AssetReference<MaterialData>)(m_WorldMaterial),
+            (ResourceReference<MaterialData>)(m_WorldMaterial),
             (glm::vec2)(m_WorldSize),
             (bool)(m_InputEnabled)
         );

@@ -20,7 +20,7 @@
 
 #include <AssetDatabase.h>
 #include <GameTime.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <StringUtils.h>
 
 #include <IconsFontAwesome6.h>

@@ -7,7 +7,7 @@ namespace Glory
 {
 	class UIRendererModule;
 	class LocalizeModuleBase;
-	class AssetManager;
+	class Resources;
 
 	class UITransformManager : public Utils::ECS::ComponentManager<UITransform>
 	{
@@ -57,7 +57,7 @@ namespace Glory
 		friend class UIRendererModule;
 		UIRendererModule* m_pRenderer;
 		LocalizeModuleBase* m_pLocalizeModule;
-		AssetManager* m_pAssetManager;
+		Resources* m_pResources;
 	};
 	
 	class UIBoxManager : public Utils::ECS::ComponentManager<UIBox>

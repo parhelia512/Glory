@@ -9,7 +9,7 @@
 #include <InternalTexture.h>
 #include <GraphicsDevice.h>
 #include <Components.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <GScene.h>
 #include <TextureData.h>
 #include <MeshData.h>
@@ -85,9 +85,9 @@ namespace Glory::Editor
 		ImportedResource materialSphere = Importer::Import("./EditorAssets/Models/MaterialSphere.obj");
 		ImportedResource* sphereMesh = materialSphere.Child("Sphere Material 0");
 
-		AssetManager& assets = m_pEngine->GetAssetManager();
+		Resources& assets = m_pEngine->GetResources();
 		MaterialSphereMesh = static_cast<MeshData*>(**sphereMesh);
-		assets.AddLoadedResource(MaterialSphereMesh);
+		assets.AddResource(&MaterialSphereMesh);
 
 		Renderer* pRenderer = m_pEngine->ActiveRenderer();
 		if (!pRenderer) return;
@@ -130,7 +130,7 @@ namespace Glory::Editor
 
 	void ThumbnailRenderer::CheckRenders()
 	{
-		AssetManager& assets = m_pEngine->GetAssetManager();
+		Resources& assets = m_pEngine->GetResources();
 		if (!GreyMaterial)
 		{
 			EditorMaterialManager& materials = EditorApplication::GetInstance()->GetMaterialManager();
@@ -139,11 +139,10 @@ namespace Glory::Editor
 			const UUID phongPipeline = pipelines.FindPipeline(PipelineType::PT_Phong, false);
 
 			GreyMaterial = new MaterialData();
-			assets.AddLoadedResource(GreyMaterial);
+			assets.AddResource(&GreyMaterial);
 			PipelineData* pPipeline = pipelines.GetPipelineData(phongPipeline);
 			GreyMaterial->SetPipeline(phongPipeline);
 			pPipeline->LoadIntoMaterial(GreyMaterial);
-			materials.LoadMaterial(GreyMaterial->GetUUID());
 			GreyMaterial->Set<glm::vec4>("Color", glm::vec4(0.75f, 0.75f, 0.75f, 1.0f));
 			GreyMaterial->Set<float>("Shininess", 0.5f);
 		}

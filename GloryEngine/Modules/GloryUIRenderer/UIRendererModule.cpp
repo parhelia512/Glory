@@ -7,7 +7,7 @@
 #include "Constraints.h"
 
 #include <GameTime.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <PipelineManager.h>
 #include <MaterialManager.h>
 #include <IEngine.h>
@@ -20,9 +20,9 @@
 #include <InternalTexture.h>
 #include <FontDataStructs.h>
 #include <MaterialData.h>
+#include <MeshData.h>
 #include <SceneManager.h>
 #include <LocalizeModuleBase.h>
-#include <Resources.h>
 
 #include <DistributedRandom.h>
 
@@ -73,7 +73,7 @@ namespace Glory
 		{
 			if (!newReferences[i]) continue;
 			references.push_back(newReferences[i]);
-			Resource* pPipelineResource = m_pEngine->GetAssetManager().GetAssetImmediate(newReferences[i]);
+			Resource* pPipelineResource = m_pEngine->GetResources().GetResource(newReferences[i]);
 			if (!pPipelineResource) continue;
 			PipelineData* pPipelineData = static_cast<PipelineData*>(pPipelineResource);
 			for (size_t i = 0; i < pPipelineData->ShaderCount(); ++i)
@@ -120,7 +120,7 @@ namespace Glory
 		pDocument->Draw();
 		pDocument->m_DrawIsDirty.Set(frameIndex, false);
 
-		AssetManager& assets = m_pEngine->GetAssetManager();
+		Resources& resources = m_pEngine->GetResources();
 
 		/* Prepare data */
 		auto iter = m_BatchDatas.find(pDocument->m_ObjectID);
@@ -215,7 +215,7 @@ namespace Glory
 		for (size_t i = 0; i < pDocument->m_UIBatch.m_Worlds.size(); ++i)
 		{
 			UUID textureID = pDocument->m_UIBatch.m_TextureIDs[i];
-			Resource* pTextureResource = textureID ? assets.FindResource(textureID) : nullptr;
+			Resource* pTextureResource = textureID ? resources.GetResource(textureID) : nullptr;
 			TextureData* pTexture = pTextureResource ? static_cast<TextureData*>(pTextureResource) : nullptr;
 			TextureHandle texture = pDevice->AcquireCachedTexture(pTexture);
 			if (!pTexture) textureID = 0;
@@ -388,7 +388,7 @@ namespace Glory
 		m_pEngine->GetSceneManager()->RegisterComponentManager<UIRenderManager, UIRenderer>(
 			[this](Utils::ECS::EntityRegistry*, UIRenderManager* manager) {
 				manager->m_pModule = this;
-				manager->m_pAssetManager = &m_pEngine->GetAssetManager();
+				manager->m_pResources = &m_pEngine->GetResources();
 				manager->m_pDebug = &m_pEngine->GetDebug();
 				manager->m_pInput = m_pEngine->GetModule<InputModule>();
 				manager->m_pLayers = &m_pEngine->GetLayerManager();
@@ -405,7 +405,7 @@ namespace Glory
 			[this](Utils::ECS::EntityRegistry*, UITextManager* manager) {
 				manager->m_pRenderer = this;
 				manager->m_pLocalizeModule = m_pEngine->GetOptionalModule<LocalizeModuleBase>();
-				manager->m_pAssetManager = &m_pEngine->GetAssetManager();
+				manager->m_pResources = &m_pEngine->GetResources();
 			});
 		m_RegistryFactory.RegisterComponentManager<UIBoxManager>();
 		m_RegistryFactory.RegisterComponentManager<UIInteractionManager>(
@@ -575,7 +575,7 @@ namespace Glory
 	{
 		for (auto& data : m_Frame)
 		{
-			Resource* pResource = m_pEngine->GetAssetManager().FindResource(data.m_DocumentID);
+			Resource* pResource = m_pEngine->GetResources().GetResource(data.m_DocumentID);
 			if (!pResource) continue;
 			UIDocumentData* pDocument = static_cast<UIDocumentData*>(pResource);
 
@@ -594,7 +594,7 @@ namespace Glory
 		CheckCachedPipelines(pDevice);
 
 		MaterialManager& materials = m_pEngine->GetMaterialManager();
-		AssetManager& assets = m_pEngine->GetAssetManager();
+		Resources& resources = m_pEngine->GetResources();
 
 		for (size_t i = 0; i < m_Frame.size(); ++i)
 		{
@@ -611,7 +611,7 @@ namespace Glory
 			if (!pMaterial) continue;
 
 			TextureData* pOldTexture = nullptr;
-			if (!pMaterial->GetTexture(data.m_MaterialTextureName, &pOldTexture, &assets))
+			if (!pMaterial->GetTexture(data.m_MaterialTextureName, &pOldTexture, &resources))
 				continue;
 
 			auto textures = GetDocumentTexture(pDevice, data, document, pRenderer->GetNumFramesInFlight());
@@ -748,7 +748,7 @@ namespace Glory
 					AttributeType::Float3, AttributeType::Float3, AttributeType::Float2, AttributeType::Float4 })
 			).first;
 
-			m_pEngine->GetAssetManager().AddLoadedResource(iter->second);
+			m_pEngine->GetResources().AddResource(&iter->second);
 
 			createMesh = true;
 		}
@@ -800,7 +800,7 @@ namespace Glory
 				pImage->SetDirty(false);
 				iter->second[i] = new InternalTexture(pImage);
 				iter->second[i]->GetSamplerSettings().MipmapMode = Filter::F_None;
-				m_pEngine->GetAssetManager().AddLoadedResource(iter->second[i]);
+				m_pEngine->GetResources().AddResource(&iter->second[i]);
 			}
 		}
 
@@ -813,7 +813,7 @@ namespace Glory
 				pImage->SetDirty(false);
 				iter->second[i] = new InternalTexture(pImage);
 				iter->second[i]->GetSamplerSettings().MipmapMode = Filter::F_None;
-				m_pEngine->GetAssetManager().AddLoadedResource(iter->second[i]);
+				m_pEngine->GetResources().AddResource(&iter->second[i]);
 			}
 			TextureHandle texture = pDevice->GetCachedTexture(iter->second[i]);
 			RenderPassHandle renderPass = document.m_UIPasses[i];

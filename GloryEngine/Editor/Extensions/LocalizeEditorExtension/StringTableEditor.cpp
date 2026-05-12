@@ -481,7 +481,6 @@ namespace Glory::Editor
 		ImGui::TableHeadersRow();
 
 		IEngine* pEngine = EditorApplication::GetInstance()->GetEngine();
-		EditorAssetManager& assetManager = EditorApplication::GetInstance()->GetAssetManager();
 		ResourceTypes& resourceTypes = pEngine->GetResourceTypes();
 		const std::string tableName = EditorAssetDatabase::GetAssetName(m_TableID);
 

@@ -1,10 +1,10 @@
 #include "EditorAssetDatabase.h"
-#include "AssetManager.h"
+#include "Resources.h"
 #include "EditorAssetCallbacks.h"
 #include "ProjectSpace.h"
 #include "FileBrowser.h"
 #include "EditorSceneManager.h"
-#include "AssetCompiler.h"
+#include "EditorResourceLoader.h"
 #include "Importer.h"
 #include "EditorApplication.h"
 #include "AssetDatabase.h"
@@ -79,8 +79,7 @@ namespace Glory::Editor
 	void EditorAssetDatabase::Reload()
 	{
 		DB_EngineInstance->GetAssetDatabase().Clear();
-		AssetCompiler::CompileAssetDatabase();
-
+		EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase();
 		DB_EngineInstance->GetDebug().LogInfo("Reloaded asset database");
 	}
 
@@ -148,7 +147,7 @@ namespace Glory::Editor
 		stream << "Moved asset from " << oldPath << " to " << fixedNewPath;
 		DB_EngineInstance->GetDebug().LogInfo(stream.str());
 
-		AssetCompiler::CompileAssetDatabase(uuid);
+		EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase(uuid);
 		EditorApplication::GetInstance()->GetResourceManager().ReloadEditableAsset(uuid);
 
 		SetDirty();
@@ -211,7 +210,7 @@ namespace Glory::Editor
 		stream << "Deleted asset: " << uuid;
 		DB_EngineInstance->GetDebug().LogInfo(stream.str());
 
-		if (compile) AssetCompiler::CompileAssetDatabase(uuid);
+		if (compile) EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase(uuid);
 
 		SetDirty();
 	}
@@ -249,7 +248,7 @@ namespace Glory::Editor
 			DeleteAsset(uuid, false);
 		}
 
-		AssetCompiler::CompileAssetDatabase(relevantAssets);
+		EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase(relevantAssets);
 	}
 
 	void EditorAssetDatabase::DeleteAssets(const std::string& path)
@@ -284,7 +283,7 @@ namespace Glory::Editor
 			DeleteAsset(uuid, false);
 		}
 
-		AssetCompiler::CompileAssetDatabase(relevantAssets);
+		EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase(relevantAssets);
 	}
 
 	void EditorAssetDatabase::IncrementAssetVersion(UUID uuid)
@@ -301,7 +300,7 @@ namespace Glory::Editor
 		const uint64_t version = metaNode["SerializedVersion"].AsUInt64() + 1;
 		metaNode["SerializedVersion"].SetUInt64(version);
 
-		AssetCompiler::CompileAssetDatabase(uuid);
+		EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase(uuid);
 
 		SetDirty();
 	}
@@ -372,7 +371,7 @@ namespace Glory::Editor
 
 		// Generate a meta file
 		AssetDatabase& assetDatabase = DB_EngineInstance->GetAssetDatabase();
-		AssetManager& assetManager = DB_EngineInstance->GetAssetManager();
+		Resources& resources = DB_EngineInstance->GetResources();
 		const std::string_view assetPath = assetDatabase.GetAssetPath();
 
 		std::filesystem::path namePath = fileName;
@@ -382,7 +381,7 @@ namespace Glory::Editor
 		Resource* pResource = *loadedResource;
 		assetDatabase.SetIDAndName(pResource, meta.ID(), meta.Name());
 		std::filesystem::path relativePath = filePath.lexically_relative(assetPath);
-		if (addToManager) assetManager.AddLoadedResource(pResource);
+		if (addToManager) resources.AddResource(&pResource);
 
 		AssetLocation location{ relativePath.empty() ? path : relativePath.string(), subPath.string() };
 		InsertAsset(location, meta);
@@ -399,7 +398,7 @@ namespace Glory::Editor
 		else stream << "Imported asset at " << path;
 		DB_EngineInstance->GetDebug().LogInfo(stream.str());
 
-		AssetCompiler::CompileAssetDatabase(meta.ID());
+		EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase(meta.ID());
 
 		/* Import sub resources */
 		for (size_t i = 0; i < loadedResource.ChildCount(); i++)
@@ -455,10 +454,10 @@ namespace Glory::Editor
 		ResourceMeta meta(extension.string(), fileName.string(), pScene->GetUUID(), pType->Hash());
 
 		AssetDatabase& assetDatabase = DB_EngineInstance->GetAssetDatabase();
-		AssetManager& assetManager = DB_EngineInstance->GetAssetManager();
 		assetDatabase.SetIDAndName(pScene, meta.ID(), fileName.string());
 		std::filesystem::path relativePath = filePath.lexically_relative(assetDatabase.GetAssetPath());
-		assetManager.AddLoadedResource(pScene);
+		//Resources& assetManager = DB_EngineInstance->GetResources();
+		//assetManager.AddResource(&pScene);
 		AssetLocation location{ relativePath.string() };
 		InsertAsset(location, meta);
 		m_PathToUUIDCache.Set(path, meta.ID());
@@ -467,7 +466,7 @@ namespace Glory::Editor
 		stream << "Imported new scene: " << pScene->Name();
 		DB_EngineInstance->GetDebug().LogInfo(stream.str());
 
-		AssetCompiler::CompileAssetDatabase(meta.ID());
+		EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase(meta.ID());
 	}
 
 	void EditorAssetDatabase::ImportScene(const std::string& path)
@@ -496,7 +495,7 @@ namespace Glory::Editor
 		stream << "Imported scene: " << GetAssetName(meta.ID());
 		DB_EngineInstance->GetDebug().LogInfo(stream.str());
 
-		AssetCompiler::CompileAssetDatabase(meta.ID());
+		EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase(meta.ID());
 	}
 
 	void EditorAssetDatabase::SaveAsset(Resource* pResource, bool markUndirty)
@@ -529,7 +528,7 @@ namespace Glory::Editor
 		stream << "Saved asset to " << location["Path"].AsString();
 		DB_EngineInstance->GetDebug().LogInfo(stream.str());
 
-		AssetCompiler::CompileAssetDatabase(pResource->GetUUID());
+		EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase(pResource->GetUUID());
 	}
 
 	void EditorAssetDatabase::RemoveAsset(UUID uuid, bool compile)
@@ -549,7 +548,7 @@ namespace Glory::Editor
 		stream << "Removed asset " << uuid;
 		DB_EngineInstance->GetDebug().LogInfo(stream.str());
 
-		if (compile) AssetCompiler::CompileAssetDatabase(uuid);
+		if (compile) EditorApplication::GetInstance()->GetResourceLoader().CompileAssetDatabase(uuid);
 	}
 
 	void EditorAssetDatabase::SetAssetDirty(Object* pResource)
@@ -669,25 +668,6 @@ namespace Glory::Editor
 
 		if (!m_PathToUUIDCache.Contains(absolutePath.string())) return 0;
 		return m_PathToUUIDCache[absolutePath.string()];
-
-		//for (YAML::const_iterator itor = m_Database.begin(); itor != m_Database.end(); ++itor)
-		//{
-		//	UUID uuid = itor->first.as<uint64_t>();
-		//	const std::string key = std::to_string(uuid);
-		//	YAML::Node assetNode = m_Database[key];
-		//
-		//	const AssetLocation location = assetNode["Location"].as<AssetLocation>();
-		//	std::filesystem::path absoluteAssetPath = location.Path;
-		//	if (!absoluteAssetPath.is_absolute() && location.Path[0] != '.')
-		//	{
-		//		absoluteAssetPath = DB_EngineInstance->GetAssetDatabase().GetAssetPath();
-		//		absoluteAssetPath.append(location.Path);
-		//	}
-		//	if (absoluteAssetPath.string().find(absolutePath.string()) == std::string::npos) continue;
-		//	return uuid;
-		//}
-
-		return 0;
 	}
 
 	UUID EditorAssetDatabase::FindAssetUUID(std::string& path, const std::filesystem::path& subPath)
@@ -801,6 +781,20 @@ namespace Glory::Editor
 		return absolutePath;
 	}
 
+	void EditorAssetDatabase::ForEachResource(std::function<void(UUID)> callback)
+	{
+		ProjectSpace* pProject = ProjectSpace::GetOpenProject();
+		if (!pProject) return;
+		JSONFileRef& projectFile = pProject->ProjectFile();
+		JSONValueRef assetsNode = projectFile["Assets"];
+
+		for (rapidjson::Value::ConstMemberIterator itor = assetsNode.begin(); itor != assetsNode.end(); ++itor)
+		{
+			const UUID id = std::stoull(itor->name.GetString());
+			callback(id);
+		}
+	}
+
 	void EditorAssetDatabase::Initialize()
 	{
 		DB_EngineInstance = EditorApplication::GetInstance()->GetEngine();
@@ -829,8 +823,8 @@ namespace Glory::Editor
 		});
 
 		EditorAssetCallbacks::RunCallbacks();
-		AssetCompiler::RemoveDeletedAssets();
-		AssetCompiler::Update();
+		EditorApplication::GetInstance()->GetResourceLoader().RemoveDeletedAssets();
+		//EditorApplication::GetInstance()->GetResourceLoader().Update();
 	}
 
 	bool EditorAssetDatabase::ImportJob(std::filesystem::path path)

@@ -1,5 +1,5 @@
 #include "AssetDatabase.h"
-#include "AssetManager.h"
+#include "Resources.h"
 #include "LayerManager.h"
 #include "IEngine.h"
 #include "GScene.h"

@@ -13,7 +13,7 @@
 
 #include <IEngine.h>
 #include <Debug.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <BinaryStream.h>
 #include <AssetArchive.h>
 #include <JobManager.h>
@@ -111,7 +111,7 @@ namespace Glory::Editor
 
 	void EditorPipelineManager::AddShaderToPipeline(UUID pipelineID, UUID shaderID)
 	{
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(pipelineID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(pipelineID);
 		if (!pResource) return;
 		PipelineData* pPipeline = static_cast<PipelineData*>(pResource);
 		pPipeline->AddShader(shaderID);
@@ -126,7 +126,7 @@ namespace Glory::Editor
 
 	void EditorPipelineManager::RemoveShaderFromPipeline(UUID pipelineID, size_t index)
 	{
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(pipelineID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(pipelineID);
 		if (!pResource) return;
 		PipelineData* pPipeline = static_cast<PipelineData*>(pResource);
 		pPipeline->RemoveShaderAt(index);
@@ -141,7 +141,7 @@ namespace Glory::Editor
 
 	void EditorPipelineManager::SetPipelineFeatureEnabled(UUID pipelineID, std::string_view feature, bool enable)
 	{
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(pipelineID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(pipelineID);
 		if (!pResource) return;
 		PipelineData* pPipeline = static_cast<PipelineData*>(pResource);
 		const size_t index = pPipeline->FeatureIndex(feature);
@@ -152,7 +152,7 @@ namespace Glory::Editor
 
 	PipelineData* EditorPipelineManager::GetPipelineData(UUID pipelineID) const
 	{
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(pipelineID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(pipelineID);
 		if (!pResource) return nullptr;
 		return static_cast<PipelineData*>(pResource);
 	}
@@ -188,7 +188,7 @@ namespace Glory::Editor
 	{
 		for (auto pipelineID: m_Pipelines)
 		{
-			Resource* pResource = m_pEngine->GetAssetManager().FindResource(pipelineID);
+			Resource* pResource = m_pEngine->GetResources().GetResource(pipelineID);
 			if (!pResource) continue;
 			PipelineData* pPipeline = static_cast<PipelineData*>(pResource);
 			if (pPipeline->Type() == type && pPipeline->UsesTextures() == useTextures)
@@ -204,7 +204,7 @@ namespace Glory::Editor
 
 		for (auto pipelineID : m_Pipelines)
 		{
-			Resource* pResource = m_pEngine->GetAssetManager().FindResource(pipelineID);
+			Resource* pResource = m_pEngine->GetResources().GetResource(pipelineID);
 			if (!pResource) continue;
 			PipelineData* pPipeline = static_cast<PipelineData*>(pResource);
 			if (pPipeline->Type() != type) continue;
@@ -232,7 +232,7 @@ namespace Glory::Editor
 
 		for (auto pipelineID : m_Pipelines)
 		{
-			Resource* pResource = m_pEngine->GetAssetManager().FindResource(pipelineID);
+			Resource* pResource = m_pEngine->GetResources().GetResource(pipelineID);
 			if (!pResource) continue;
 			PipelineData* pPipeline = static_cast<PipelineData*>(pResource);
 
@@ -421,21 +421,17 @@ namespace Glory::Editor
 		static const size_t pipelineDataHash = ResourceTypes::GetHash<PipelineData>();
 		if (typeHash == pipelineDataHash)
 		{
-			Resource* pResource = m_pEngine->GetAssetManager().FindResource(callback.m_UUID);
+			Resource* pResource = m_pEngine->GetResources().GetResource(callback.m_UUID);
 			if (!pResource)
 			{
-				PipelineData* pPipelineData = new PipelineData();
-				pResource = pPipelineData;
-				pResource->SetResourceUUID(callback.m_UUID);
 				YAMLResource<PipelineData>* pPipeline = static_cast<YAMLResource<PipelineData>*>(resourceManager.GetEditableResource(callback.m_UUID));
-				if (!pPipeline)
-				{
-					delete pPipelineData;
-					return;
-				}
+				if (!pPipeline) return;
 
+				PipelineData* pPipelineData = new PipelineData();
+				pPipelineData->SetResourceUUID(callback.m_UUID);
 				LoadIntoPipeline(**pPipeline, pPipelineData);
-				m_pEngine->GetAssetManager().AddLoadedResource(pResource);
+				m_pEngine->GetResources().AddResource<PipelineData>(&pPipelineData);
+				pResource = pPipelineData;
 			}
 
 			PipelineData* pPipeline = static_cast<PipelineData*>(pResource);
@@ -470,7 +466,7 @@ namespace Glory::Editor
 		/* Recompile pipelines that use this shader */
 		for (const UUID pipelineID : m_Pipelines)
 		{
-			Resource* pResource = m_pEngine->GetAssetManager().FindResource(pipelineID);
+			Resource* pResource = m_pEngine->GetResources().GetResource(pipelineID);
 			if (!pResource) continue;
 			PipelineData* pPipeline = static_cast<PipelineData*>(pResource);
 			if (!pPipeline->HasShader(callback.m_UUID)) continue;

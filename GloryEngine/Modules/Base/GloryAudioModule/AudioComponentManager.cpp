@@ -11,7 +11,7 @@
 namespace Glory
 {
 	AudioSourceManager::AudioSourceManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
-		ComponentManager(pRegistry, capacity), m_pAudioModule(nullptr), m_pAssetManager(nullptr)
+		ComponentManager(pRegistry, capacity), m_pAudioModule(nullptr), m_pResources(nullptr)
 	{
 	}
 
@@ -65,9 +65,9 @@ namespace Glory
 
 	void AudioSourceManager::Play(Utils::ECS::EntityID entity, AudioSource& pComponent)
 	{
-		if (!pComponent.m_Audio.AssetUUID()) return;
+		if (!pComponent.m_Audio.GetUUID()) return;
 
-		AudioData* pAudio = pComponent.m_Audio.Get(m_pAssetManager);
+		AudioData* pAudio = pComponent.m_Audio.Get(m_pResources);
 		if (!pAudio) return;
 
 		if (pComponent.m_AsMusic)
@@ -142,7 +142,7 @@ namespace Glory
 		for (size_t i = 0; i < Size(); ++i)
 		{
 			const AudioSource& audioSource = GetAt(i);
-			const UUID audio = audioSource.m_Audio.AssetUUID();
+			const UUID audio = audioSource.m_Audio.GetUUID();
 			if (audio) references.push_back(audio);
 		}
 	}

@@ -1,5 +1,5 @@
 #include "TextureThumbnailGenerator.h"
-#include "AssetManager.h"
+#include "Resources.h"
 #include "EditorApplication.h"
 
 namespace Glory::Editor
@@ -26,15 +26,15 @@ namespace Glory::Editor
 
 		m_AlreadyRequestedThumbnails.push_back(id);
 
-		EditorApplication::GetInstance()->GetEngine()->GetAssetManager().GetAsset(id, [&](Resource* pResource)
+		Resource* pResource = EditorApplication::GetInstance()->GetEngine()->GetResources().GetResource(id);
+		if (pResource)
 		{
-			if (!pResource) return;
 			UUID uuid = pResource->GetUUID();
 			auto it = std::find(m_AlreadyRequestedThumbnails.begin(), m_AlreadyRequestedThumbnails.end(), uuid);
 			m_pLoadedTextures[uuid] = (TextureData*)pResource;
-			if (it == m_AlreadyRequestedThumbnails.end()) return;
+			if (it == m_AlreadyRequestedThumbnails.end()) return nullptr;
 			m_AlreadyRequestedThumbnails.erase(it);
-		});
+		}
 		return nullptr;
 	}
 }

@@ -1,5 +1,5 @@
 #include "MaterialData.h"
-#include "AssetManager.h"
+#include "Resources.h"
 #include "PipelineData.h"
 #include "TextureData.h"
 #include "PipelineManager.h"
@@ -151,7 +151,7 @@ namespace Glory
 		return m_Resources.size();
 	}
 
-	AssetReference<TextureData>* MaterialData::GetResourceUUIDPointer(size_t index)
+	ResourceReference<TextureData>* MaterialData::GetResourceUUIDPointer(size_t index)
 	{
 		return &m_Resources[index];
 	}
@@ -220,7 +220,7 @@ namespace Glory
 		container.Write(m_Resources.size());
 		for (size_t i = 0; i < m_Resources.size(); ++i)
 		{
-			container.Write(m_Resources[i].AssetUUID());
+			container.Write(m_Resources[i].GetUUID());
 		}
 		container.Write(m_TextureSetBits);
 	}
@@ -266,7 +266,9 @@ namespace Glory
 		m_Resources.resize(numResources);
 		for (size_t i = 0; i < m_Resources.size(); ++i)
 		{
-			container.Read(*m_Resources[i].AssetUUIDMember());
+			UUID resourceID;
+			container.Read(resourceID);
+			m_Resources[i].SetUUID(resourceID);
 		}
 		container.Read(m_TextureSetBits);
 	}
@@ -276,9 +278,9 @@ namespace Glory
 		if (m_Pipeline) references.push_back(m_Pipeline);
 		for (auto& ref: m_Resources)
 		{
-			if (!ref.AssetUUID()) continue;
-			references.push_back(ref.AssetUUID());
-			TextureData* pTexture = pEngine->GetAssetManager().GetAssetImmediate<TextureData>(ref.AssetUUID());
+			if (!ref.GetUUID()) continue;
+			references.push_back(ref.GetUUID());
+			TextureData* pTexture = pEngine->GetResources().GetResource<TextureData>(ref.GetUUID());
 			if (!pTexture) continue;
 			pTexture->References(pEngine, references);
 		}
@@ -354,14 +356,14 @@ namespace Glory
 			m_TextureSetBits &= ~(1u << index);
 	}
 
-	bool MaterialData::GetTexture(const std::string& name, TextureData** value, AssetManager* pManager)
+	bool MaterialData::GetTexture(const std::string& name, TextureData** value, Resources* pResources)
 	{
 		size_t index;
 		if (!GetPropertyInfoIndex(name, index)) return false;
 		const MaterialPropertyInfo* pPropertyInfo = GetPropertyInfoAt(index);
 		if (!pPropertyInfo->IsResource()) return false;
 		const size_t resourceIndex = pPropertyInfo->Offset();
-		*value = m_Resources[resourceIndex].Get(pManager);
+		*value = m_Resources[resourceIndex].Get(pResources);
 		return true;
 	}
 
@@ -372,7 +374,7 @@ namespace Glory
 		const MaterialPropertyInfo* pPropertyInfo = GetPropertyInfoAt(index);
 		if (!pPropertyInfo->IsResource()) return false;
 		const size_t resourceIndex = pPropertyInfo->Offset();
-		*texID = m_Resources[resourceIndex].AssetUUID();
+		*texID = m_Resources[resourceIndex].GetUUID();
 		return true;
 	}
 }

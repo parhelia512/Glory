@@ -3,13 +3,18 @@
 
 #include "ResourceManager.h"
 
+#include <GloryAssert.h>
+
+#include <array>
 #include <set>
 #include <functional>
+#include <mutex>
 
 namespace Glory
 {
 	class Debug;
 	class AssetDatabase;
+	class ThreadManager;
 
 	/** @brief Global resource manager */
 	class Resources
@@ -20,7 +25,7 @@ namespace Glory
 		 * @param pResourceTypes Resource types manager
 		 * @param pDebug Debug logging instance
 		 */
-		Resources(AssetDatabase* pDatabase, ResourceTypes* pResourceTypes, Debug* pDebug);
+		Resources(AssetDatabase* pDatabase, ResourceTypes* pResourceTypes, Debug* pDebug, ThreadManager* pThreads);
 		/** @brief Destructor */
 		~Resources() = default;
 
@@ -51,14 +56,32 @@ namespace Glory
 		requires ResourceCompatible<R>
 		inline bool AddResource(R** pResource)
 		{
-			return static_cast<R*>(AddResource(static_cast<Resource**>(pResource)));
+			return AddResource((Resource**)(pResource));
+		}
+
+		/** @brief Find a resource by ID and return it.
+		 * @param id ID of the resource to find.
+		 * @returns Pointer to the resource if found, otherwise nullptr.
+		 *
+		 * Will throw if the asset is loaded under a different type.
+		 */
+		template<typename R>
+		requires ResourceCompatible<R>
+		inline R* GetResource(UUID id)
+		{
+			auto iter = m_ResourceIDToManagerIndex.find(id);
+			if (iter == m_ResourceIDToManagerIndex.end()) return nullptr;
+			const uint32_t hash = ResourceTypes::GetHash<R>();
+			auto& managerInterface = m_Managers.at(iter->second);
+			const uint32_t actualType = managerInterface->Type();
+			GLORY_ASSERT(hash == actualType, "Resource type hash mismatch.");
+			ResourceManager<R>* manager = static_cast<ResourceManager<R>*>(managerInterface.get());
+			return manager->GetDirect(id);
 		}
 
 		/** @overload */
 		GLORY_ENGINE_API bool AddResource(Resource** pResource);
-		/** @brief Find a resource by ID and return it
-		 * @param id ID of the resource to find
-		 * @returns Pointer to the resource if found, otherwise nullptr
+		/** @overload
 		 *
 		 * Uses a cache to speed up in which manager to find the resource.
 		 */
@@ -71,18 +94,25 @@ namespace Glory
 		 *
 		 * If the counter was 0, then this will queue the resource for loading.
 		 */
-		void AddReference(UUID id);
+		GLORY_ENGINE_API void AddReference(UUID id);
 		/** @brief Decrement the reference counter for a resource by ID
 		 * @param id ID of the resource
 		 *
 		 * If the counter becomes 0 after decrementing, then this will queue the resource for unloading.
 		 */
-		void RemoveReference(UUID id);
+		GLORY_ENGINE_API void RemoveReference(UUID id);
+
+		/** @brief Get the current reference count of a resource. */
+		GLORY_ENGINE_API uint64_t ReferenceCount(UUID resourceID);
 
 		/** @brief Run a callback on each queued for loading resource ID, then clear the queue.
 		 * @param callback Function to call on each resource ID.
 		 */
 		void HandleToLoad(std::function<void(UUID)> callback);
+		/** @brief Run a callback on each queued for immediate loading resource ID, then clear the queue.
+		 * @param callback Function to call on each resource ID.
+		 */
+		void HandleToLoadImmediately(std::function<void(UUID)> callback);
 		/** @brief Run a callback on each queued for unloading resource ID, then clear the queue.
 		 * @param callback Function to call on each resource ID.
 		 */
@@ -98,11 +128,23 @@ namespace Glory
 		 */
 		GLORY_ENGINE_API void UnloadResource(UUID id);
 
+		/** @brief Set whether reference counting should be blocked. */
+		GLORY_ENGINE_API void SetAllowReferenceCounting(bool allowed);
+
 	private:
 		std::vector<std::unique_ptr<IResourceManager>> m_Managers;
 		std::map<uint32_t, size_t> m_HashToManagerIndex;
 		std::map<UUID, size_t> m_ResourceIDToManagerIndex;
-		std::map<UUID, size_t> m_ReferenceCounter;
+
+		std::mutex m_ReferenceCounterLock;
+		std::map<UUID, std::atomic_uint64_t> m_ReferenceCounter;
+
+		uint32_t m_CurrentLoadImmediatelyReadIndex = 0;
+		std::atomic_uint64_t m_LoadImmediatelyWriteIndex = 0ull;
+		std::atomic_uint64_t m_CurrentLoadImmediatelyCount = 0ull;
+		static constexpr size_t LoadImmediatelyRingBufferSize = 1024;
+		std::array<UUID, LoadImmediatelyRingBufferSize> m_ToLoadImmediately;
+
 
 		std::set<UUID> m_ToLoadResources;
 		std::set<UUID> m_ToUnloadResources;
@@ -110,5 +152,9 @@ namespace Glory
 		AssetDatabase* m_pDatabase;
 		ResourceTypes* m_pResourceTypes;
 		Debug* m_pDebug;
+		ThreadManager* m_pThreads;
+
+		bool m_ReferenceCountingAllowed = true;
+		bool m_AlreadyLoading = true;
 	};
 }

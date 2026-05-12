@@ -37,6 +37,7 @@ namespace Glory
     public:
         /** @brief Constructor */
         GLORY_ENGINE_API PipelineData();
+        /** @overload */
         GLORY_ENGINE_API PipelineData(PipelineData&&) noexcept = default;
         GLORY_ENGINE_API PipelineData& operator=(PipelineData&&) noexcept = default;
         /** @brief Destructor */

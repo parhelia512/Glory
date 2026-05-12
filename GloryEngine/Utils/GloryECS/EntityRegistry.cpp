@@ -511,7 +511,11 @@ namespace Glory::Utils::ECS
 	void EntityRegistry::Serialize(BinaryStream& container) const
 	{
 		for (auto& manager : m_ComponentManagers)
+		{
 			manager->Serialize(container);
+		}
+		/* Write a 0 to indicate end of component data */
+		container.Write(0u);
 
 		container.Write(m_NextEntityID).Write(m_AliveCount).Write(m_EntityAlive).
 			Write(m_EntityActiveSelf).Write(m_EntityActiveHierarchy);
@@ -531,8 +535,30 @@ namespace Glory::Utils::ECS
 
 	void EntityRegistry::Deserialize(BinaryStream& container)
 	{
-		for (auto& manager : m_ComponentManagers)
-			manager->Deserialize(container);
+		uint32_t typeHash;
+		size_t blockSize;
+		container.Read(typeHash);
+		while (typeHash != 0u)
+		{
+			container.Read(blockSize);
+
+			IComponentManager* pManager = GetComponentManager(typeHash);
+			if (!pManager)
+			{
+				/* Skip block */
+				container.Seek(blockSize);
+
+				/* Read next block type hash */
+				container.Read(typeHash);
+				continue;
+			}
+
+			/* Read component manager */
+			pManager->Deserialize(container);
+
+			/* Read next block type hash */
+			container.Read(typeHash);
+		}
 
 		container.Read(m_NextEntityID).Read(m_AliveCount).Read(m_EntityAlive).
 			Read(m_EntityActiveSelf).Read(m_EntityActiveHierarchy);

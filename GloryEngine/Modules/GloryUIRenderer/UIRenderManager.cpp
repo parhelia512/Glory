@@ -10,7 +10,7 @@
 namespace Glory
 {
 	UIRenderManager::UIRenderManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
-		ComponentManager(pRegistry, capacity), m_pModule(nullptr), m_pAssetManager(nullptr),
+		ComponentManager(pRegistry, capacity), m_pModule(nullptr), m_pResources(nullptr),
 		m_pDebug(nullptr), m_pInput(nullptr), m_pLayers(nullptr)
 	{
 	}
@@ -30,12 +30,12 @@ namespace Glory
 	void UIRenderManager::OnValidateImpl(Utils::ECS::EntityID entity, UIRenderer& pComponent)
 	{
 		GScene* pScene = m_pRegistry->GetUserData<GScene>();
-		UIDocumentData* pDocument = pComponent.m_Document.Get(m_pAssetManager);
+		UIDocumentData* pDocument = pComponent.m_Document.Get(m_pResources);
 		if (!pDocument) return;
 
 		Transform& transform = m_pRegistry->GetComponent<Transform>(entity);
 		UIRenderData data;
-		data.m_DocumentID = pComponent.m_Document.AssetUUID();
+		data.m_DocumentID = pComponent.m_Document.GetUUID();
 		data.m_ObjectID = pScene->GetEntityUUID(entity);
 		data.m_SceneID = pScene->GetUUID();
 		data.m_TargetCamera = 0;
@@ -92,13 +92,13 @@ namespace Glory
 		GScene* pScene = m_pRegistry->GetUserData<GScene>();
 		Transform& transform = m_pRegistry->GetComponent<Transform>(entity);
 		UIRenderData data;
-		data.m_DocumentID = pComponent.m_Document.AssetUUID();
+		data.m_DocumentID = pComponent.m_Document.GetUUID();
 		data.m_ObjectID = pScene->GetEntityUUID(entity);
 		data.m_SceneID = pScene->GetUUID();
 		data.m_TargetCamera = 0;
 		data.m_WorldTransform = transform.MatTransform;
 		data.m_Target = pComponent.m_Target;
-		data.m_MaterialID = pComponent.m_WorldMaterial.AssetUUID();
+		data.m_MaterialID = pComponent.m_WorldMaterial.GetUUID();
 		data.m_WorldSize = pComponent.m_WorldSize;
 		data.m_WorldDirty = pComponent.m_IsDirty;
 		data.m_InputEnabled = pComponent.m_InputEnabled;
@@ -167,8 +167,8 @@ namespace Glory
 		for (size_t i = 0; i < Size(); ++i)
 		{
 			const UIRenderer& meshRenderer = GetAt(i);
-			const UUID document = meshRenderer.m_Document.AssetUUID();
-			const UUID material = meshRenderer.m_WorldMaterial.AssetUUID();
+			const UUID document = meshRenderer.m_Document.GetUUID();
+			const UUID material = meshRenderer.m_WorldMaterial.GetUUID();
 			if (document) references.push_back(document);
 			if (material) references.push_back(material);
 		}

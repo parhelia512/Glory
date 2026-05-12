@@ -109,7 +109,7 @@ namespace Glory::Editor
 				material = &occluder.m_Material;
 				if (occluder.m_MaterialAsset)
 				{
-					SoundMaterialData* pMaterial = occluder.m_MaterialAsset.GetImmediate(&pEngine->GetAssetManager());
+					SoundMaterialData* pMaterial = occluder.m_MaterialAsset.Get(&pEngine->GetResources());
 					if (pMaterial)
 						material = &pMaterial->Material();
 				}

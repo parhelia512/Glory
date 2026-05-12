@@ -2,7 +2,6 @@
 #include "ThumbnailRenderer.h"
 #include "EditorApplication.h"
 #include "EditorMaterialManager.h"
-#include "EditorAssetManager.h"
 #include "EditorAssetDatabase.h"
 
 #include <TransformManager.h>
@@ -10,6 +9,7 @@
 
 #include <GScene.h>
 #include <Components.h>
+#include <Resources.h>
 
 namespace Glory::Editor
 {
@@ -27,16 +27,16 @@ namespace Glory::Editor
 	bool CanRenderMaterial(UUID materialID)
 	{
 		EditorMaterialManager& materials = EditorApplication::GetInstance()->GetMaterialManager();
-		EditorAssetManager& assets = EditorApplication::GetInstance()->GetAssetManager();
+		Resources& resources = EditorApplication::GetInstance()->GetEngine()->GetResources();
 
 		MaterialData* pMaterial = materials.GetMaterial(materialID);
 		if (!pMaterial) return false;
 
 		for (size_t i = 0; i < pMaterial->ResourceCount(); ++i)
 		{
-			const UUID resourceID = pMaterial->GetResourceUUIDPointer(i)->AssetUUID();
+			const UUID resourceID = pMaterial->GetResourceUUIDPointer(i)->GetUUID();
 			if (resourceID && EditorAssetDatabase::AssetExists(resourceID) &&
-				!assets.FindResource(resourceID)) return false;
+				!resources.GetResource(resourceID)) return false;
 		}
 
 		return true;
@@ -59,7 +59,7 @@ namespace Glory::Editor
 	{
 		if (!GreyMaterial) return false;
 
-		EditorAssetManager& assets = EditorApplication::GetInstance()->GetAssetManager();
-		return assets.FindResource(meshID);
+		Resources& resources = EditorApplication::GetInstance()->GetEngine()->GetResources();
+		return resources.GetResource(meshID);
 	}
 }

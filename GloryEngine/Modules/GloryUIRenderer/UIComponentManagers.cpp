@@ -121,7 +121,7 @@ namespace Glory
 		UIDocument* pDocument = m_pRegistry->GetUserData<UIDocument>();
 		const UITransform& transform = m_pRegistry->GetComponent<UITransform>(entity);
 		glm::mat4 world = transform.m_Transform;
-		pDocument->AddRender(0ull, pComponent.m_Image.AssetUUID(), std::move(world), pComponent.m_Color);
+		pDocument->AddRender(0ull, pComponent.m_Image.GetUUID(), std::move(world), pComponent.m_Color);
 	}
 
 	void UIImageManager::GetReferencesImpl(std::vector<UUID>& references) const
@@ -129,7 +129,7 @@ namespace Glory
 		for (size_t i = 0; i < Size(); ++i)
 		{
 			const UIImage& uiImage = GetAt(i);
-			const UUID image = uiImage.m_Image.AssetUUID();
+			const UUID image = uiImage.m_Image.GetUUID();
 			if (image) references.push_back(image);
 		}
 	}
@@ -142,7 +142,7 @@ namespace Glory
 
 	UITextManager::UITextManager(Utils::ECS::EntityRegistry* pRegistry, size_t capacity):
 		ComponentManager(pRegistry, capacity), m_pRenderer(nullptr),
-		m_pLocalizeModule(nullptr), m_pAssetManager(nullptr)
+		m_pLocalizeModule(nullptr), m_pResources(nullptr)
 	{
 	}
 
@@ -194,7 +194,7 @@ namespace Glory
 		textData.m_Color = pComponent.m_Color;
 		pComponent.m_Dirty = false;
 
-		FontData* pFont = pComponent.m_Font.Get(m_pAssetManager);
+		FontData* pFont = pComponent.m_Font.Get(m_pResources);
 		if (!pFont) return;
 		const UUID meshID = pDocument->GetTextMesh(objectID, textData, pFont);
 
@@ -229,7 +229,7 @@ namespace Glory
 		for (size_t i = 0; i < Size(); ++i)
 		{
 			const UIText& uiText = GetAt(i);
-			const UUID font = uiText.m_Font.AssetUUID();
+			const UUID font = uiText.m_Font.GetUUID();
 			if (font) references.push_back(font);
 		}
 	}

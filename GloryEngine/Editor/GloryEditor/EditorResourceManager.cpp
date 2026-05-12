@@ -1,12 +1,11 @@
 #include "EditorResourceManager.h"
 #include "EditorAssetDatabase.h"
-#include "AssetCompiler.h"
 #include "EditableResource.h"
 #include "ProjectSpace.h"
 #include "Importer.h"
 
 #include <IEngine.h>
-#include <AssetManager.h>
+#include <Resources.h>
 
 namespace Glory::Editor
 {
@@ -37,7 +36,7 @@ namespace Glory::Editor
 	//		hash = meta.Hash();
 	//	}
 
-	//	Resource* pResource = m_pEngine->GetAssetManager().GetOrLoadAsset(hash);
+	//	Resource* pResource = m_pEngine->GetResources().GetOrLoadAsset(hash);
 	//	if (pResource)
 	//	{
 	//		callback(pResource);

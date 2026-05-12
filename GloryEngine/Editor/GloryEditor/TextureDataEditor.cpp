@@ -12,7 +12,7 @@
 #include <ResourceType.h>
 #include <ImageData.h>
 #include <TextureData.h>
-#include <AssetManager.h>
+#include <Resources.h>
 
 namespace Glory::Editor
 {
@@ -32,10 +32,13 @@ namespace Glory::Editor
 		auto sampler = node["Sampler"];
 
 		const uint64_t oldValue = image.As<uint64_t>();
-		AssetReference<ImageData> imageRef = oldValue;
-		if(AssetPicker::ResourceDropdown("Image", ResourceTypes::GetHash<ImageData>(), imageRef.AssetUUIDMember()))
+		ResourceReference<ImageData> imageRef = oldValue;
+
+		UUID assetID;
+		if(AssetPicker::ResourceDropdown("Image", ResourceTypes::GetHash<ImageData>(), &assetID))
 		{
-			Undo::ApplyYAMLEdit(file, image.Path(), oldValue, uint64_t(imageRef.AssetUUID()));
+			imageRef.SetUUID(assetID);
+			Undo::ApplyYAMLEdit(file, image.Path(), oldValue, uint64_t(imageRef.GetUUID()));
 			change = true;
 		}
 
@@ -67,8 +70,10 @@ namespace Glory::Editor
 		TextureData* pTextureData = (TextureData*)m_pTarget;
 
 		ImGui::BeginDisabled(true);
-		AssetReference<ImageData>& imageRef = pTextureData->Image();
-		AssetPicker::ResourceDropdown("Image", ResourceTypes::GetHash<ImageData>(), imageRef.AssetUUIDMember());
+		auto& imageRef = pTextureData->Image();
+		UUID assetID;
+		if (AssetPicker::ResourceDropdown("Image", ResourceTypes::GetHash<ImageData>(), &assetID))
+			imageRef.SetUUID(assetID);
 
 		SamplerSettings& sampler = pTextureData->GetSamplerSettings();
 		EditorUI::InputEnum<Filter>("MinFilter", &sampler.MinFilter);

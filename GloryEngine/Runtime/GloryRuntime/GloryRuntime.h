@@ -17,7 +17,7 @@ namespace std::filesystem
 namespace Glory
 {
 	class IEngine;
-	class RuntimeAssetManager;
+	class RuntimeResourceLoader;
 	class RuntimeSceneManager;
 	class RuntimePipelineManager;
 	class RuntimeMaterialManager;
@@ -63,7 +63,7 @@ namespace Glory
 		IEngine* m_pEngine;
 		Renderer* m_pRenderer;
 		WindowModule* m_pWindows;
-		std::unique_ptr<RuntimeAssetManager> m_AssetManager;
+		std::unique_ptr<RuntimeResourceLoader> m_ResourceLoader;
 		std::unique_ptr<RuntimeSceneManager> m_SceneManager;
 		std::unique_ptr<RuntimePipelineManager> m_PipelineManager;
 		std::unique_ptr<RuntimeMaterialManager> m_MaterialManager;

@@ -1,5 +1,5 @@
 #include "ImageThumbnailGenerator.h"
-#include "AssetManager.h"
+#include "Resources.h"
 #include "EditorApplication.h"
 #include "EditorAssets.h"
 #include "EditorAssetDatabase.h"
@@ -31,21 +31,22 @@ namespace Glory::Editor
 			subPath.append("Default");
 			const UUID defaultTextureID = EditorAssetDatabase::FindAssetUUID(location.Path, subPath);
 			if (!defaultTextureID) return nullptr;
-			Resource* pResource = EditorApplication::GetInstance()->GetEngine()->GetAssetManager().FindResource(defaultTextureID);
+			Resource* pResource = EditorApplication::GetInstance()->GetEngine()->GetResources().GetResource(defaultTextureID);
 			if (!pResource) return nullptr;
 			return static_cast<TextureData*>(pResource);
 		}
 
 		m_AlreadyRequestedThumbnails.push_back(id);
 
-		EditorApplication::GetInstance()->GetEngine()->GetAssetManager().GetAsset(id, [&](Resource* pResource)
+		Resource* pResource = EditorApplication::GetInstance()->GetEngine()->GetResources().GetResource(id);
+		if (pResource)
 		{
 			UUID uuid = pResource->GetUUID();
 			auto it = std::find(m_AlreadyRequestedThumbnails.begin(), m_AlreadyRequestedThumbnails.end(), uuid);
 			m_pLoadedImages[uuid] = (ImageData*)pResource;
-			if (it == m_AlreadyRequestedThumbnails.end()) return;
+			if (it == m_AlreadyRequestedThumbnails.end()) return nullptr;
 			m_AlreadyRequestedThumbnails.erase(it);
-		});
+		}
 		return nullptr;
 	}
 }

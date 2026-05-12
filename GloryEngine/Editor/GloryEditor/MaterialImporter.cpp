@@ -3,10 +3,12 @@
 #include "EditorApplication.h"
 #include "EditorMaterialManager.h"
 #include "EditorResourceManager.h"
+#include "EditorPipelineManager.h"
 
 #include <fstream>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <AssetDatabase.h>
+#include <PipelineData.h>
 #include <PropertySerializer.h>
 
 namespace Glory::Editor
@@ -31,10 +33,39 @@ namespace Glory::Editor
 
 	ImportedResource MaterialImporter::LoadResource(const std::filesystem::path& path, void*) const
 	{
-		MaterialData* pMaterialData = new MaterialData();
+		MaterialData* pNewMaterialData = new MaterialData();
+		EditorPipelineManager& pipelines = EditorApplication::GetInstance()->GetPipelineManager();
+		EditorMaterialManager& materials = EditorApplication::GetInstance()->GetMaterialManager();
+
+		const UUID materialID = EditorAssetDatabase::FindAssetUUID(path.string());
+		if (materialID)
+		{
+			YAMLResource<MaterialData>* pMaterialData = static_cast<YAMLResource<MaterialData>*>(
+				EditorApplication::GetInstance()->GetResourceManager().GetEditableResource(materialID));
+			Utils::NodeValueRef node = **pMaterialData;
+			const UUID pipelineID = node["Pipeline"].As<uint64_t>(0ull);
+			if(!pipelineID) return { path, pNewMaterialData };
+			pNewMaterialData->SetPipeline(pipelineID);
+			PipelineData* pPipeline = pipelines.GetPipelineData(pipelineID);
+			if (pPipeline)
+			{
+				pPipeline->LoadIntoMaterial(pNewMaterialData);
+				materials.ReadPropertiesInto(node["Properties"], pNewMaterialData);
+			}
+			return { path, pNewMaterialData };
+		}
+
 		Utils::YAMLFileRef file{ path };
-		EditorApplication::GetInstance()->GetMaterialManager().LoadIntoMaterial(file, pMaterialData);
-		return ImportedResource{ path, pMaterialData };
+		const UUID pipelineID = file["Pipeline"].As<uint64_t>(0ull);
+		if (!pipelineID) return { path, pNewMaterialData };
+		pNewMaterialData->SetPipeline(pipelineID);
+		PipelineData* pPipeline = pipelines.GetPipelineData(pipelineID);
+		if (pPipeline)
+		{
+			pPipeline->LoadIntoMaterial(pNewMaterialData);
+			materials.ReadPropertiesInto(file["Properties"], pNewMaterialData);
+		}
+		return ImportedResource{ path, pNewMaterialData };
 	}
 
 	bool MaterialImporter::SaveResource(const std::filesystem::path& path, MaterialData* pResource) const
@@ -54,7 +85,7 @@ namespace Glory::Editor
 
 	void MaterialImporter::WritePropertyData(Utils::NodeValueRef data, MaterialData* pMaterialData) const
 	{
-		MaterialManager& manager = EditorApplication::GetInstance()->GetEngine()->GetMaterialManager();
+		EditorMaterialManager& manager = EditorApplication::GetInstance()->GetMaterialManager();
 
 		auto properties = data["Properties"];
 
@@ -78,7 +109,7 @@ namespace Glory::Editor
 			{
 				size_t index = pMaterialData->GetPropertyIndexFromResourceIndex(resourceIndex);
 				++resourceIndex;
-				const uint64_t uuid = pMaterialData->GetResourceUUIDPointer(index)->AssetUUID();
+				const uint64_t uuid = pMaterialData->GetResourceUUIDPointer(index)->GetUUID();
 				property["Value"].Set(uuid);
 			}
 		}

@@ -1,9 +1,10 @@
 #pragma once
+#include "Thread.h"
+
 #include <vector>
 #include <functional>
 #include <queue>
 #include <mutex>
-#include "Thread.h"
 
 namespace Glory
 {
@@ -12,7 +13,7 @@ namespace Glory
 	{
 	public:
 		/** @brief Constructor */
-		ThreadManager() {};
+		ThreadManager();
 		/** @brief Destructor */
 		virtual ~ThreadManager();
 
@@ -26,8 +27,9 @@ namespace Glory
 		/** @brief Kill all running threads and wait for exit */
 		void Kill();
 
-	private:
+		inline const std::thread::id& DefaultThreadID() const { return m_DefaultThreadID; }
 
+	private:
 		Thread* CreateThread(std::function<void()> func);
 
 	private:
@@ -42,5 +44,6 @@ namespace Glory
 		std::mutex m_IdleQueueMutex;
 		std::queue<size_t> m_IdleThreads;
 		std::vector<Thread*> m_pThreads;
+		std::thread::id m_DefaultThreadID;
 	};
 }

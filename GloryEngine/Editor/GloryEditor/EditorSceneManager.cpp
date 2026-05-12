@@ -5,8 +5,8 @@
 #include "CreateObjectAction.h"
 #include "Undo.h"
 #include "EditorApplication.h"
+#include "EditorResourceLoader.h"
 #include "EntityEditor.h"
-#include "AssetCompiler.h"
 #include "TitleBar.h"
 #include "ProjectSpace.h"
 #include "Dispatcher.h"
@@ -403,7 +403,7 @@ namespace Glory::Editor
 				if (m_SceneFiles[i].Path() != file.Path()) continue;
 				GScene* pScene = GetOpenScene(i);
 				SetSceneDirty(pScene);
-				if (!AssetCompiler::CompileSceneSettings(pScene->GetUUID()))
+				if (!m_pApplication->GetResourceLoader().CompileSceneSettings(pScene->GetUUID()))
 					m_pEngine->GetDebug().LogError("Failed to re-compile scene settings");
 				break;
 			}

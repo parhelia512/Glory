@@ -30,7 +30,7 @@ namespace Utils::Reflect
 	class PropertySerializer;
 
 	class AssetDatabase;
-	class AssetManager;
+	class Resources;
 	class MaterialManager;
 	class PipelineManager;
 	class GraphicsDevice;
@@ -57,7 +57,7 @@ namespace Utils::Reflect
 	{
 		Debug* m_pDebug;
 		Console* m_pConsole;
-		AssetManager* pAssetManager = nullptr;
+		Resources* pAssetManager = nullptr;
 		SceneManager* pSceneManager = nullptr;
 		MaterialManager* pMaterialManager = nullptr;
 		PipelineManager* pPipelineManager = nullptr;
@@ -128,7 +128,6 @@ namespace Utils::Reflect
 		GLORY_ENGINE_API void Draw() override;
 
 		GLORY_ENGINE_API Resources& GetResources() override;
-
 		GLORY_ENGINE_API ThreadManager& Threads() override;
 		GLORY_ENGINE_API Jobs::JobManager& Jobs() override;
 		GLORY_ENGINE_API Console& GetConsole() override;
@@ -136,16 +135,15 @@ namespace Utils::Reflect
 		GLORY_ENGINE_API GameTime& Time() override;
 		GLORY_ENGINE_API CameraManager& GetCameraManager() override;
 		GLORY_ENGINE_API AssetDatabase& GetAssetDatabase() override;
-		GLORY_ENGINE_API AssetManager& GetAssetManager() override;
 		GLORY_ENGINE_API ResourceTypes& GetResourceTypes() override;
 		GLORY_ENGINE_API LayerManager& GetLayerManager() override;
 		GLORY_ENGINE_API MaterialManager& GetMaterialManager() override;
 		GLORY_ENGINE_API PipelineManager& GetPipelineManager() override;
+		GLORY_ENGINE_API ResourceLoader& GetResourceLoader() override;
 		GLORY_ENGINE_API Utils::Reflect::Reflect& Reflection() override;
 		GLORY_ENGINE_API ObjectManager& GetObjectManager() override;
 		GLORY_ENGINE_API EngineProfiler& Profiler() override;
 
-		GLORY_ENGINE_API void SetAssetManager(AssetManager* pManager) override;
 		GLORY_ENGINE_API void SetSceneManager(SceneManager* pManager) override;
 		GLORY_ENGINE_API void SetMaterialManager(MaterialManager* pManager) override;
 		GLORY_ENGINE_API void SetPipelineManager(PipelineManager* pManager) override;
@@ -245,7 +243,7 @@ namespace Utils::Reflect
 		/* External objects */
 		Console* m_Console;
 		Debug* m_Debug;
-		AssetManager* m_pAssetsManager;
+		Resources* m_pAssetsManager;
 		MaterialManager* m_pMaterialManager;
 		PipelineManager* m_pPipelineManager;
 		ResourceLoader* m_pResourceLoader;

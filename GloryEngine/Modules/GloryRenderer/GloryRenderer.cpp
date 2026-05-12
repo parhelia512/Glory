@@ -12,7 +12,7 @@
 #include <GPUTextureAtlas.h>
 #include <RenderHelpers.h>
 
-#include <AssetManager.h>
+#include <Resources.h>
 #include <PipelineManager.h>
 #include <MaterialManager.h>
 
@@ -1466,7 +1466,7 @@ namespace Glory
 		GraphicsDevice* pDevice = m_pModule->GetEngine()->ActiveGraphicsDevice();
 		MaterialManager& materialManager = m_pModule->GetEngine()->GetMaterialManager();
 		PipelineManager& pipelines = m_pModule->GetEngine()->GetPipelineManager();
-		AssetManager& assets = m_pModule->GetEngine()->GetAssetManager();
+		Resources& resources = m_pModule->GetEngine()->GetResources();
 
 		RenderConstants constants;
 		constants.m_CameraIndex = static_cast<uint32_t>(cameraIndex);
@@ -1514,7 +1514,7 @@ namespace Glory
 				for (UUID uniqueMeshID : pipelineRenderData.m_UniqueMeshOrder)
 				{
 					const PipelineMeshBatch& meshBatch = pipelineRenderData.m_Meshes.at(uniqueMeshID);
-					Resource* pMeshResource = assets.FindResource(meshBatch.m_Mesh);
+					Resource* pMeshResource = resources.GetResource(meshBatch.m_Mesh);
 					if (!pMeshResource) continue;
 					MeshData* pMeshData = static_cast<MeshData*>(pMeshResource);
 
@@ -1558,7 +1558,7 @@ namespace Glory
 					for (size_t i = 0; i < orderedObject.MeshIDs.size(); ++i)
 					{
 						const PipelineMeshBatch& meshBatch = pipelineRenderData.m_Meshes.at(orderedObject.MeshIDs[i]);
-						Resource* pMeshResource = assets.FindResource(meshBatch.m_Mesh);
+						Resource* pMeshResource = resources.GetResource(meshBatch.m_Mesh);
 						if (!pMeshResource) continue;
 						MeshData* pMeshData = static_cast<MeshData*>(pMeshResource);
 						MeshHandle mesh = pDevice->AcquireCachedMesh(pMeshData);
@@ -1587,7 +1587,7 @@ namespace Glory
 			for (UUID uniqueMeshID : pipelineRenderData.m_UniqueMeshOrder)
 			{
 				const PipelineMeshBatch& meshBatch = pipelineRenderData.m_Meshes.at(uniqueMeshID);
-				Resource* pMeshResource = assets.FindResource(meshBatch.m_Mesh);
+				Resource* pMeshResource = resources.GetResource(meshBatch.m_Mesh);
 				if (!pMeshResource) continue;
 				MeshData* pMeshData = static_cast<MeshData*>(pMeshResource);
 				MeshHandle mesh = pDevice->AcquireCachedMesh(pMeshData);
@@ -1757,7 +1757,7 @@ namespace Glory
 		GraphicsDevice* pDevice = m_pModule->GetEngine()->ActiveGraphicsDevice();
 		MaterialManager& materials = m_pModule->GetEngine()->GetMaterialManager();
 		PipelineManager& pipelines = m_pModule->GetEngine()->GetPipelineManager();
-		AssetManager& assets = m_pModule->GetEngine()->GetAssetManager();
+		Resources& resources = m_pModule->GetEngine()->GetResources();
 
 		/* Prepare dynamic data */
 		size_t batchIndex = 0;
@@ -1859,8 +1859,8 @@ namespace Glory
 					setInfo.m_Samplers.resize(textureCount);
 					for (size_t j = 0; j < textureCount; ++j)
 					{
-						const UUID textureID = pMaterialData->GetResourceUUIDPointer(j)->AssetUUID();
-						Resource* pResource = assets.FindResource(textureID);
+						const UUID textureID = pMaterialData->GetResourceUUIDPointer(j)->GetUUID();
+						Resource* pResource = resources.GetResource(textureID);
 						if (!pResource)
 						{
 							setInfo.m_Samplers[j].m_TextureHandle = NULL;
@@ -1878,15 +1878,15 @@ namespace Glory
 				bool texturesDirty = false;
 				for (size_t j = 0; j < textureCount; ++j)
 				{
-					const UUID textureID = pMaterialData->GetResourceUUIDPointer(j)->AssetUUID();
-					Resource* pResource = assets.FindResource(textureID);
+					const UUID textureID = pMaterialData->GetResourceUUIDPointer(j)->GetUUID();
+					Resource* pResource = resources.GetResource(textureID);
 					if (!pResource)
 					{
 						textures[j] = NULL;
 						continue;
 					}
 					textures[j] = static_cast<TextureData*>(pResource);
-					ImageData* pImage = textures[j]->GetImageData(&assets);
+					ImageData* pImage = textures[j]->GetImageData(&resources);
 					if (!pImage) continue;
 					texturesDirty |= textures[j]->IsDirty() || pImage ? pImage->IsDirty() : false;
 				}
@@ -2027,7 +2027,7 @@ namespace Glory
 
 				PipelineData* pPipelineData = pipelines.GetPipelineData(pipelineBatch.m_PipelineID);
 				if (!pPipelineData) continue;
-				Resource* pMeshResource = assets.FindResource(pipelineBatch.m_UniqueMeshOrder[0]);
+				Resource* pMeshResource = resources.GetResource(pipelineBatch.m_UniqueMeshOrder[0]);
 				if (!pMeshResource) continue;
 				MeshData* pMesh = static_cast<MeshData*>(pMeshResource);
 				batchData.m_Pipeline = pDevice->AcquireCachedPipeline(defaultRenderPass, pPipelineData,
@@ -2105,7 +2105,7 @@ namespace Glory
 		GScene* pActiveScene = m_pSceneManager->GetActiveScene();
 		if (!pActiveScene) return;
 		const UUID skyboxID = pActiveScene->Settings().m_LightingSettings.m_Skybox;
-		Resource* pResource = m_pModule->GetEngine()->GetAssetManager().FindResource(skyboxID);
+		Resource* pResource = m_pModule->GetEngine()->GetResources().GetResource(skyboxID);
 		if (!pResource)
 		{
 			m_SkyboxCubemap = 0;
@@ -2162,7 +2162,7 @@ namespace Glory
 		if (!pActiveScene) return;
 		const UUID skyboxID = pActiveScene->Settings().m_LightingSettings.m_Skybox;
 		if (!skyboxID) return;
-		Resource* pResource = m_pModule->GetEngine()->GetAssetManager().FindResource(skyboxID);
+		Resource* pResource = m_pModule->GetEngine()->GetResources().GetResource(skyboxID);
 		if (!pResource) return;
 
 		CameraRef camera = m_ActiveCameras[cameraIndex];
@@ -2294,7 +2294,7 @@ namespace Glory
 		GraphicsDevice* pDevice = m_pModule->GetEngine()->ActiveGraphicsDevice();
 		MaterialManager& materialManager = m_pModule->GetEngine()->GetMaterialManager();
 		PipelineManager& pipelines = m_pModule->GetEngine()->GetPipelineManager();
-		AssetManager& assets = m_pModule->GetEngine()->GetAssetManager();
+		Resources& resources = m_pModule->GetEngine()->GetResources();
 
 		RenderConstants constants;
 		constants.m_CameraIndex = static_cast<uint32_t>(lightIndex);
@@ -2322,7 +2322,7 @@ namespace Glory
 			for (UUID uniqueMeshID : pipelineRenderData.m_UniqueMeshOrder)
 			{
 				const PipelineMeshBatch& meshBatch = pipelineRenderData.m_Meshes.at(uniqueMeshID);
-				Resource* pMeshResource = assets.FindResource(meshBatch.m_Mesh);
+				Resource* pMeshResource = resources.GetResource(meshBatch.m_Mesh);
 				if (!pMeshResource) continue;
 				MeshData* pMeshData = static_cast<MeshData*>(pMeshResource);
 				MeshHandle mesh = pDevice->AcquireCachedMesh(pMeshData);

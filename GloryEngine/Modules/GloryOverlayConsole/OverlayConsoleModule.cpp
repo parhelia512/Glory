@@ -6,7 +6,7 @@
 #include <MaterialManager.h>
 #include <IEngine.h>
 #include <Window.h>
-#include <AssetManager.h>
+#include <Resources.h>
 #include <CameraManager.h>
 #include <PipelineManager.h>
 #include <PipelineData.h>
@@ -77,7 +77,7 @@ namespace Glory
 		{
 			if (!newReferences[i]) continue;
 			references.push_back(newReferences[i]);
-			Resource* pPipelineResource = m_pEngine->GetAssetManager().GetAssetImmediate(newReferences[i]);
+			Resource* pPipelineResource = m_pEngine->GetResources().GetResource(newReferences[i]);
 			if (!pPipelineResource) continue;
 			PipelineData* pPipelineData = static_cast<PipelineData*>(pPipelineResource);
 
@@ -90,7 +90,7 @@ namespace Glory
 		}
 		const UUID fontID = settings.Value<uint64_t>("Console Font");
 		references.push_back(fontID);
-		Resource* pFontResource = m_pEngine->GetAssetManager().GetAssetImmediate(fontID);
+		Resource* pFontResource = m_pEngine->GetResources().GetResource(fontID);
 		if (!pFontResource) return;
 		pFontResource->References(m_pEngine, references);
 	}
@@ -137,7 +137,7 @@ namespace Glory
 			if (e.KeyID != MouseAxis::MouseAxisScrollY) break;
 
 			const UUID consoleFont = Settings().Value<uint64_t>("Console Font");
-			Resource* pResource = m_pEngine->GetAssetManager().FindResource(consoleFont);
+			Resource* pResource = m_pEngine->GetResources().GetResource(consoleFont);
 			if (!pResource) return false;
 			FontData* pFont = static_cast<FontData*>(pResource);
 
@@ -261,12 +261,12 @@ namespace Glory
 		const ModuleSettings& settings = Settings();
 		const UUID consoleFontID = settings.Value<uint64_t>("Console Font");
 
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(consoleFontID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(consoleFontID);
 		if (!pResource) return;
 		FontData* pFont = static_cast<FontData*>(pResource);
 		WindowModule* pWindows = m_pEngine->GetMainModule<WindowModule>();
 		if (!pWindows) return;
-		TextureData* pTextureData = pFont->GetGlyphTexture(m_pEngine->GetAssetManager());
+		TextureData* pTextureData = pFont->GetGlyphTexture(m_pEngine->GetResources());
 		if (!pTextureData) return;
 
 		if (!m_TextRenderSet)
@@ -446,10 +446,10 @@ namespace Glory
 
 		const ModuleSettings& settings = Settings();
 		const UUID consoleFontID = settings.Value<uint64_t>("Console Font");
-		Resource* pResource = m_pEngine->GetAssetManager().FindResource(consoleFontID);
+		Resource* pResource = m_pEngine->GetResources().GetResource(consoleFontID);
 		if (!pResource) return;
 		FontData* pFont = static_cast<FontData*>(pResource);
-		TextureData* pTextureData = pFont->GetGlyphTexture(m_pEngine->GetAssetManager());
+		TextureData* pTextureData = pFont->GetGlyphTexture(m_pEngine->GetResources());
 		if (!pTextureData) return;
 		pDevice->AcquireCachedTexture(pTextureData);
 	}

@@ -13,7 +13,7 @@ namespace Glory::Editor
 		m_pImageData = nullptr;
 	}
 
-	ImageData* EditorTextureData::GetImageData(AssetManager*)
+	ImageData* EditorTextureData::GetImageData(Resources*)
 	{
 		return m_pImageData;
 	}

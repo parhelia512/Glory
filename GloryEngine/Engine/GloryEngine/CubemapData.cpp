@@ -35,13 +35,13 @@ namespace Glory
 	{
 	}
 
-	ImageData* CubemapData::GetImageData(AssetManager* pAssetManager, size_t face)
+	ImageData* CubemapData::GetImageData(Resources* pResources, size_t face)
 	{
 		auto& faceImage = Image(face);
-		return faceImage ? faceImage.Get(pAssetManager) : nullptr;
+		return faceImage ? faceImage.Get(pResources) : nullptr;
 	}
 
-	AssetReference<ImageData>& CubemapData::Image(size_t face)
+	ResourceReference<ImageData>& CubemapData::Image(size_t face)
 	{
 		return m_Faces[face];
 	}
@@ -55,7 +55,7 @@ namespace Glory
 	{
 		for (size_t i = 0; i < 6; ++i)
 		{
-			const UUID faceID = m_Faces[i].AssetUUID();
+			const UUID faceID = m_Faces[i].GetUUID();
 			container.Write(faceID);
 		}
 		container.Write(m_SamplerSettings);
@@ -65,8 +65,9 @@ namespace Glory
 	{
 		for (size_t i = 0; i < 6; ++i)
 		{
-			const UUID faceID = m_Faces[i].AssetUUID();
-			container.Read(*m_Faces[i].AssetUUIDMember());
+			UUID faceID;
+			container.Read(faceID);
+			m_Faces[i].SetUUID(faceID);
 		}
 		container.Read(m_SamplerSettings);
 	}
@@ -75,7 +76,7 @@ namespace Glory
 	{
 		for (size_t i = 0; i < 6; ++i)
 		{
-			const UUID faceID = m_Faces[i].AssetUUID();
+			const UUID faceID = m_Faces[i].GetUUID();
 			if (faceID) references.push_back(faceID);
 		}
 	}

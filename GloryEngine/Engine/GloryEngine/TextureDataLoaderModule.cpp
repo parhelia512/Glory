@@ -54,7 +54,7 @@ namespace Glory
     void TextureDataLoaderModule::SaveResource(const std::string& path, TextureData* pResource)
     {
         Utils::YAMLFileRef file{ path };
-        file["Image"].Set((uint64_t)pResource->Image().AssetUUID());
+        file["Image"].Set((uint64_t)pResource->Image().GetUUID());
         Utils::NodeValueRef sampler = file["Sampler"];
 
         sampler["MinFilter"].SetEnum<Filter>(pResource->m_SamplerSettings.MagFilter);

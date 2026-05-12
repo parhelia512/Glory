@@ -8,7 +8,7 @@
 #include <filesystem>
 #include <BinaryStream.h>
 #include <AssetArchive.h>
-#include <AssetManager.h>
+#include <Resources.h>
 
 namespace Glory
 {
@@ -103,8 +103,8 @@ namespace Glory
 
 			if (!claimed)
 			{
-				/* Send it to the asset manager instead */
-				m_pEngine->GetAssetManager().AddLoadedResource(pResource);
+				/* Send it to the resource manager instead */
+				m_pEngine->GetResources().AddResource(&pResource);
 			}
 		}
 

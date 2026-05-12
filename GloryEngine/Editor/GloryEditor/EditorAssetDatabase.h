@@ -61,6 +61,7 @@ namespace Glory::Editor
 
 		static GLORY_EDITOR_API void ImportModuleAssets();
 		static GLORY_EDITOR_API std::filesystem::path GetAbsoluteAssetPath(const std::string& path);
+		static GLORY_EDITOR_API void ForEachResource(std::function<void(UUID)> callback);
 
 	private:
 		static void Initialize();
