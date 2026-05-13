@@ -22,8 +22,9 @@ namespace Glory
 {
 	static uint32_t GetComponentHash(const std::string& name)
 	{
-		const std::string fixedName = name.find("Glory::") != std::string::npos ? name : "Glory::" + name;
-		return Hashing::Hash(fixedName.data());
+		const Utils::Reflect::TypeData* pType = Reflect::GetTyeData(name);
+		if (!pType) return 0u;
+		return pType->TypeHash();
 	}
 
 	static IEngine* Entity_EngineInstance;
@@ -47,7 +48,10 @@ namespace Glory
 
 	uint64_t SceneObject_GetComponentID(uint64_t sceneID, uint64_t objectID, MonoString* pComponentName)
 	{
-		const std::string componentName{ mono_string_to_utf8(pComponentName) };
+		char* utf8 = mono_string_to_utf8(pComponentName);
+		const std::string componentName{ utf8 };
+		mono_free(utf8);
+
 		if (objectID == 0 || sceneID == 0) return 0;
 		GScene* pScene = Entity_EngineInstance->GetSceneManager()->GetOpenScene((UUID)sceneID);
 		if (pScene == nullptr) return 0;
@@ -63,7 +67,10 @@ namespace Glory
 
 	uint64_t SceneObject_AddComponent(uint64_t sceneID, uint64_t objectID, MonoString* pComponentName)
 	{
-		const std::string componentName{ mono_string_to_utf8(pComponentName) };
+		char* utf8 = mono_string_to_utf8(pComponentName);
+		const std::string componentName{ utf8 };
+		mono_free(utf8);
+
 		if (objectID == 0 || sceneID == 0) return 0;
 		GScene* pScene = Entity_EngineInstance->GetSceneManager()->GetOpenScene((UUID)sceneID);
 		if (pScene == nullptr) return 0;
@@ -123,7 +130,10 @@ namespace Glory
 
 	uint64_t SceneObject_RemoveComponent(uint64_t sceneID, uint64_t objectID, MonoString* pComponentName)
 	{
-		const std::string componentName{ mono_string_to_utf8(pComponentName) };
+		char* utf8 = mono_string_to_utf8(pComponentName);
+		const std::string componentName{ utf8 };
+		mono_free(utf8);
+
 		if (objectID == 0 || sceneID == 0) return 0;
 		GScene* pScene = Entity_EngineInstance->GetSceneManager()->GetOpenScene((UUID)sceneID);
 		if (pScene == nullptr) return 0;
@@ -674,7 +684,12 @@ namespace Glory
 	void LayerComponent_SetLayer(uint64_t sceneID, uint64_t objectID, uint64_t componentID, LayerWrapper* layer)
 	{
 		LayerComponent& layerComp = GetComponent<LayerComponent>(sceneID, objectID, componentID);
-		const Layer* pLayer = Entity_EngineInstance->GetLayerManager().GetLayerByName(mono_string_to_utf8(layer->Name));
+
+		char* utf8 = mono_string_to_utf8(layer->Name);
+		const std::string layerName{ utf8 };
+		mono_free(utf8);
+
+		const Layer* pLayer = Entity_EngineInstance->GetLayerManager().GetLayerByName(layerName);
 		layerComp.m_Layer = pLayer ? Entity_EngineInstance->GetLayerManager().GetLayerIndex(pLayer) + 1 : 0;
 	}
 
@@ -982,7 +997,10 @@ namespace Glory
 	void TextComponent_SetText(uint64_t sceneID, uint64_t objectID, uint64_t componentID, MonoString* str)
 	{
 		TextComponent& text = GetComponent<TextComponent>(sceneID, objectID, componentID);
-		text.m_Text = mono_string_to_utf8(str);
+
+		char* utf8 = mono_string_to_utf8(str);
+		text.m_Text = utf8;
+		mono_free(utf8);
 		text.m_Dirty = true;
 	}
 

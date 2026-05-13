@@ -266,8 +266,9 @@ namespace Glory
 		 */
 		inline void Erase(GraphicsHandle<T::HandleType> handle)
 		{
-			m_Resources.erase(handle.m_ID);
 			auto itor = std::find(m_IDs.begin(), m_IDs.end(), handle.m_ID);
+			if (itor == m_IDs.end()) return;
+			m_Resources.erase(handle.m_ID);
 			m_IDs.erase(itor);
 		}
 
