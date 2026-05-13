@@ -188,6 +188,7 @@ namespace Glory
 		m_FreeCommandBuffers.clear();
 
 		m_CommandBufferAllocator.Cleanup();
+		m_DescriptorAllocator.Destroy();
 
 		for (auto fence : m_FreeFences)
 			m_LogicalDevice.destroyFence(fence);

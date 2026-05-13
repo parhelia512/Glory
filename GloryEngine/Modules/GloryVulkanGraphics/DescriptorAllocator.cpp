@@ -26,9 +26,6 @@ namespace Glory
 
 	DescriptorAllocator::~DescriptorAllocator()
 	{
-		for (auto pool : m_DescriptorPools)
-			m_pDevice->LogicalDevice().destroyDescriptorPool(pool);
-		m_DescriptorPools.clear();
 	}
 
 	void DescriptorAllocator::ResetPools()
@@ -100,5 +97,12 @@ namespace Glory
 		allocResult = m_pDevice->LogicalDevice().allocateDescriptorSets(&allocInfo, set);
 		if(allocResult != vk::Result::eSuccess)
 			m_pDevice->Debug().LogError("DescriptorAllocator::Allocate: Failed to allocate descriptor set.");
+	}
+
+	void DescriptorAllocator::Destroy()
+	{
+		for (auto pool : m_DescriptorPools)
+			m_pDevice->LogicalDevice().destroyDescriptorPool(pool);
+		m_DescriptorPools.clear();
 	}
 }

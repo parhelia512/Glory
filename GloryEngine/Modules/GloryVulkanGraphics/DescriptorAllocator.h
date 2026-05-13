@@ -15,6 +15,7 @@ namespace Glory
 
 		void ResetPools();
 		void Allocate(vk::DescriptorSet* set, vk::DescriptorPool* pool, vk::DescriptorSetLayout layout);
+		void Destroy();
 
 	private:
 		void CreatePool(size_t count, vk::DescriptorPoolCreateFlags createFlags=vk::DescriptorPoolCreateFlags(0));

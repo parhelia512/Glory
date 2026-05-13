@@ -65,6 +65,7 @@ namespace Glory
 	{
 		m_pMainModules.push_back(pModule);
 		m_pAllModules.push_back(pModule);
+		pModule->m_pEngine = this;
 		if (!initialize) return;
 		pModule->Initialize();
 		pModule->PostInitialize();
@@ -75,6 +76,7 @@ namespace Glory
 	{
 		m_pOptionalModules.push_back(pModule);
 		m_pAllModules.push_back(pModule);
+		pModule->m_pEngine = this;
 		if (!initialize) return;
 		pModule->Initialize();
 		pModule->PostInitialize();
@@ -85,6 +87,7 @@ namespace Glory
 	{
 		m_pInternalModules.push_back(pModule);
 		m_pAllModules.push_back(pModule);
+		pModule->m_pEngine = this;
 		if (!initialize) return;
 		pModule->Initialize();
 		pModule->PostInitialize();
@@ -95,6 +98,7 @@ namespace Glory
 	{
 		m_pLoaderModules.push_back(pModule);
 		m_pAllModules.push_back(pModule);
+		pModule->m_pEngine = this;
 		if (!initialize) return;
 		pModule->Initialize();
 		pModule->PostInitialize();
