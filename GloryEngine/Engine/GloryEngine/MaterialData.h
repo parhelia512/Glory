@@ -93,7 +93,7 @@ namespace Glory
     protected:
         friend class PipelineData;
 
-        UUID m_Pipeline;
+        ResourceReference<UUID> m_Pipeline;
         std::vector<MaterialPropertyInfo> m_PropertyInfos;
         std::vector<char> m_PropertyBuffer;
 

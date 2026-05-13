@@ -175,6 +175,9 @@ namespace Glory
             const UUID mesh = meshRenderer.m_Mesh.GetUUID();
             if (mesh) references.push_back(mesh);
             if (material) references.push_back(material);
+
+            Resource* pMaterial = m_pResources->GetResource(material);
+            if (pMaterial) pMaterial->References(m_pSceneManager->GetEngine(), references);
         }
     }
 

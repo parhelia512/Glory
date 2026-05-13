@@ -12,7 +12,7 @@
 namespace Glory
 {
 	MaterialData::MaterialData()
-		: m_Pipeline(0), m_CurrentOffset(0), m_TextureTypeIndices(TT_Count), m_TextureSetBits(0)
+		: m_Pipeline(0ull), m_CurrentOffset(0), m_TextureTypeIndices(TT_Count), m_TextureSetBits(0)
 	{
 		APPEND_TYPE(MaterialData);
 	}
@@ -92,22 +92,22 @@ namespace Glory
 
 	void MaterialData::SetPipeline(PipelineData* pPipeline)
 	{
-		m_Pipeline = pPipeline->GetUUID();
+		m_Pipeline.SetUUID(pPipeline->GetUUID());
 	}
 
 	void MaterialData::SetPipeline(UUID pipelineID)
 	{
-		m_Pipeline = pipelineID;
+		m_Pipeline.SetUUID(pipelineID);
 	}
 
 	PipelineData* MaterialData::GetPipeline(const PipelineManager& pipelineManager) const
 	{
-		return m_Pipeline ? pipelineManager.GetPipelineData(m_Pipeline) : nullptr;
+		return m_Pipeline ? pipelineManager.GetPipelineData(m_Pipeline.GetUUID()) : nullptr;
 	}
 
 	UUID MaterialData::GetPipelineID() const
 	{
-		return m_Pipeline;
+		return m_Pipeline.GetUUID();
 	}
 
 	size_t MaterialData::PropertyInfoCount() const
@@ -275,7 +275,7 @@ namespace Glory
 
 	void MaterialData::References(IEngine* pEngine, std::vector<UUID>& references) const
 	{
-		if (m_Pipeline) references.push_back(m_Pipeline);
+		if (m_Pipeline) references.push_back(m_Pipeline.GetUUID());
 		for (auto& ref: m_Resources)
 		{
 			if (!ref.GetUUID()) continue;

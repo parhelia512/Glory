@@ -8,6 +8,11 @@
 
 namespace Glory
 {
+    namespace Utils
+    {
+        class BinaryStream;
+    }
+
     struct UUIDRemapper;
     class GScene;
     class IEngine;
@@ -22,6 +27,12 @@ namespace Glory
         virtual ~MonoScriptedManager();
 
     public:
+        virtual void OnSerialize(Utils::BinaryStream& stream) const override;
+        virtual void OnDeserialize(Utils::BinaryStream& stream) override;
+
+        virtual void SerializeDense(Utils::BinaryStream& stream) const override;
+        virtual void DeserializeDense(Utils::BinaryStream& stream) override;
+
         void OnStartImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent);
         void OnStopImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent);
         void OnValidateImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent);
@@ -45,7 +56,7 @@ namespace Glory
 
     private:
         friend class GloryMonoScipting;
-        CoreLibManager* m_pCoreLibManager;
-        MonoScriptManager* m_pScriptManager;
+        CoreLibManager* m_pCoreLibManager = nullptr;
+        MonoScriptManager* m_pScriptManager = nullptr;
     };
 }

@@ -29,8 +29,6 @@ namespace Glory
 		GLORY_ENGINE_API const UUID GetUUID() const;
 		GLORY_ENGINE_API void SetUUID(UUID uuid);
 		GLORY_ENGINE_API Resource* GetResource(Resources* pResources) const;
-		GLORY_ENGINE_API virtual bool IsDelayed() const { return false; }
-		GLORY_ENGINE_API virtual void OnRegister() const { }
 
 		virtual const uint32_t TypeHash() { return 0; };
 
@@ -63,7 +61,7 @@ namespace Glory
 		REFLECTABLE(WeakResourceReference, (UUID)(m_AssetUUID));
 	};
 
-	template<class T, bool delayed=false>
+	template<class T>
 	class ResourceReference : public ResourceReferenceBase
 	{
 	public:
@@ -79,9 +77,6 @@ namespace Glory
 		ResourceReference& operator=(ResourceReference&&) = default;
 
 		virtual ~ResourceReference() {}
-
-		virtual bool IsDelayed() const override { return !m_DelayRegistered && delayed; }
-		virtual void OnRegister() const override { m_DelayRegistered = true; }
 
 		virtual const uint32_t TypeHash() override
 		{
@@ -99,8 +94,5 @@ namespace Glory
 			Resource* pResource = GetResource(pResources);
 			return pResource ? dynamic_cast<T*>(pResource) : nullptr;
 		}
-
-	private:
-		mutable bool m_DelayRegistered = false;
 	};
 }

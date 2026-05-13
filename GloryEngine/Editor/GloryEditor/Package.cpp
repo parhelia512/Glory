@@ -237,9 +237,11 @@ namespace Glory::Editor
 		return true;
 	}
 
-	bool CalculateAssetGroupsTask(IEngine* pEngine, const std::filesystem::path&, PackageTaskState& task)
+	bool CalculateAssetGroupsTask(IEngine* pEngine, const std::filesystem::path& path, PackageTaskState& task)
 	{
 		task.m_SubTaskName = "Calculating";
+
+		WaitForAssetLoading(pEngine, path, task);
 
 		AssetsPerScene.clear();
 		PipelinesPerScene.clear();
@@ -875,6 +877,13 @@ namespace Glory::Editor
 			return;
 		}
 
+		PackageTask assetLoadingTask;
+		assetLoadingTask.m_TaskID = "LoadAssets";
+		assetLoadingTask.m_TaskName = "Waiting for assets to load";
+		assetLoadingTask.m_TotalSubTasks = 1;
+		assetLoadingTask.m_Callback = WaitForAssetLoading;
+		PackagingTasks.push_back(std::move(assetLoadingTask));
+
 		PackageTask assetGroupsTask;
 		assetGroupsTask.m_TaskID = "CalculateAssetGroups";
 		assetGroupsTask.m_TaskName = "Calculating asset groups";
@@ -888,13 +897,6 @@ namespace Glory::Editor
 		//compileShadersTask.m_TotalSubTasks = Shaders.size();
 		//compileShadersTask.m_Callback = CompileShadersTask;
 		//PackagingTasks.push_back(std::move(compileShadersTask));
-
-		PackageTask assetLoadingTask;
-		assetLoadingTask.m_TaskID = "LoadAssets";
-		assetLoadingTask.m_TaskName = "Waiting for assets to load";
-		assetLoadingTask.m_TotalSubTasks = 1;
-		assetLoadingTask.m_Callback = WaitForAssetLoading;
-		PackagingTasks.push_back(std::move(assetLoadingTask));
 
 		PackageTask packageScenesTask;
 		packageScenesTask.m_TaskID = "PackageScenes";

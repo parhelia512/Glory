@@ -21,6 +21,32 @@ namespace Glory
 	{
 	}
 
+	void MonoScriptedManager::OnSerialize(Utils::BinaryStream& stream) const
+	{
+	}
+
+	void MonoScriptedManager::OnDeserialize(Utils::BinaryStream& stream)
+	{
+	}
+
+	void MonoScriptedManager::SerializeDense(Utils::BinaryStream& stream) const
+	{
+		for (size_t i = 0; i < Size(); ++i)
+		{
+			const MonoScriptComponent& component = GetAt(i);
+			stream.Write(component.m_ScriptData.m_Buffer).Write(component.m_ScriptType);
+		}
+	}
+
+	void MonoScriptedManager::DeserializeDense(Utils::BinaryStream& stream)
+	{
+		for (size_t i = 0; i < Size(); ++i)
+		{
+			MonoScriptComponent& component = GetAt(i);
+			stream.Read<char>(component.m_ScriptData.m_Buffer).Read(component.m_ScriptType);
+		}
+	}
+
 	void MonoScriptedManager::OnStartImpl(Utils::ECS::EntityID entity, MonoScriptComponent& pComponent)
 	{
 
