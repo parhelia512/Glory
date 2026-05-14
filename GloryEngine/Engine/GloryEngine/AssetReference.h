@@ -20,6 +20,7 @@ namespace Glory
 
 		GLORY_ENGINE_API ResourceReferenceBase(const ResourceReferenceBase& other);
 		GLORY_ENGINE_API ResourceReferenceBase& operator=(const ResourceReferenceBase& other);
+		GLORY_ENGINE_API ResourceReferenceBase& operator=(UUID uuid);
 
 		GLORY_ENGINE_API ResourceReferenceBase(ResourceReferenceBase&& other) noexcept;
 		GLORY_ENGINE_API ResourceReferenceBase& operator=(ResourceReferenceBase&& other) noexcept;
@@ -72,6 +73,12 @@ namespace Glory
 
 		ResourceReference(const ResourceReference&) = default;
 		ResourceReference& operator=(const ResourceReference&) = default;
+		ResourceReference& operator=(UUID uuid)
+		{
+			ResourceReferenceBase& base = static_cast<ResourceReferenceBase&>(*this);
+			base = uuid;
+			return *this;
+		}
 
 		ResourceReference(ResourceReference&&) = default;
 		ResourceReference& operator=(ResourceReference&&) = default;

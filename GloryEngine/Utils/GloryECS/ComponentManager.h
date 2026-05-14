@@ -151,7 +151,11 @@ namespace Glory::Utils::ECS
 			GrowableBinaryMemoryStream memoryStream;
 			BinaryStream* tempStream = &memoryStream;
 
-			tempStream->Write(static_cast<const SparseSet<EntityID, Component>&>(*this));
+			tempStream->Write(SparseSet<EntityID, Component>::Size());
+			SerializeDense(*tempStream);
+			tempStream->Write(SparseSet<EntityID, Component>::DenseIDData(), SparseSet<EntityID, Component>::Size()*sizeof(EntityID))
+				.Write(SparseSet<EntityID, Component>::SparseCapacity()).Write(SparseSet<EntityID, Component>::SparseData());
+
 			tempStream->Write(m_ComponentActive).Write(m_ActiveSize);
 			OnSerialize(*tempStream);
 
@@ -160,7 +164,20 @@ namespace Glory::Utils::ECS
 
 		virtual void Deserialize(BinaryStream& stream) override
 		{
-			stream.Read(static_cast<SparseSet<EntityID, Component>&>(*this));
+			size_t denseSize;
+			stream.Read(denseSize);
+			SparseSet<EntityID, Component>::ResizeDense(denseSize);
+
+			DeserializeDense(stream);
+
+			size_t sparseCapacity;
+			stream.Read(SparseSet<EntityID, Component>::DenseIDData(), SparseSet<EntityID, Component>::Size()*sizeof(EntityID))
+				.Read(sparseCapacity);
+			SparseSet<EntityID, Component>::ReserveSparse(sparseCapacity);
+
+			stream.Read(SparseSet<EntityID, Component>::SparseData());
+			SparseSet<EntityID, Component>::DoneReading();
+
 			stream.Read(m_ComponentActive).Read(m_ActiveSize);
 			OnDeserialize(stream);
 		}
@@ -205,6 +222,16 @@ namespace Glory::Utils::ECS
 		virtual void OnSwapComponents(size_t index1, size_t index2) {}
 		virtual void OnSerialize(BinaryStream&) const {}
 		virtual void OnDeserialize(BinaryStream&) {}
+
+		virtual void SerializeDense(BinaryStream& stream) const
+		{
+			stream.Write(SparseSet<EntityID, Component>::DenseData(), SparseSet<EntityID, Component>::Size()*sizeof(Component));
+		}
+
+		virtual void DeserializeDense(BinaryStream& stream)
+		{
+			stream.Read(SparseSet<EntityID, Component>::DenseData(), SparseSet<EntityID, Component>::Size()*sizeof(Component));
+		}
 
 	protected: /* Component callbacks */
 		typedef void (ComponentManager<Component>::*Function)(EntityID, Component&);

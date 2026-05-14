@@ -29,6 +29,16 @@ namespace Glory
 		return *this;
 	}
 
+	ResourceReferenceBase& ResourceReferenceBase::operator=(UUID uuid)
+	{
+		if (m_AssetUUID)
+			RemoveResourceReference(m_AssetUUID);
+		m_AssetUUID = uuid;
+		if (uuid)
+			AddResourceReference(uuid);
+		return *this;
+	}
+
 	ResourceReferenceBase::ResourceReferenceBase(ResourceReferenceBase&& other) noexcept: m_AssetUUID(other.m_AssetUUID)
 	{
 		other.m_AssetUUID = 0;

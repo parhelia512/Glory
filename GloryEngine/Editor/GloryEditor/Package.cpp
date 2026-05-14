@@ -983,6 +983,16 @@ namespace Glory::Editor
 			LoadedScenesToPackage.push_back(pScene);
 		}
 
+		/* Get global assets and make sure they are loaded */
+		std::vector<UUID> tempGlobalAssets;
+		for (size_t i = 0; i < pEngine->ModulesCount(); ++i)
+		{
+			Module* pModule = pEngine->GetModule(i);
+			pModule->CollectReferences(tempGlobalAssets);
+		}
+		for (size_t i = 0; i < tempGlobalAssets.size(); ++i)
+			AssetReferences.emplace_back(tempGlobalAssets[i]);
+
 		static auto pPackagingJob = pEngine->Jobs().Run<bool, IEngine*, std::filesystem::path>();
 		pPackagingJob->QueueSingleJob(PackageJob, pEngine, packageRoot);
 

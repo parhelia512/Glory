@@ -1,13 +1,16 @@
 #pragma once
 #include "FileData.h"
 #include "FontDataStructs.h"
+#include "AssetReference.h"
+
+#include "TextureData.h"
+#include "MaterialData.h"
 
 #include <engine_visibility.h>
 
 namespace Glory
 {
     class Resources;
-    class TextureData;
 
     class FontData : public Resource
     {
@@ -38,7 +41,7 @@ namespace Glory
         uint32_t m_FontHeight;
         std::vector<uint64_t> m_CharacterCodes;
         std::vector<GlyphData> m_Glyphs;
-        UUID m_Texture;
-        UUID m_Material;
+        ResourceReference<TextureData> m_Texture;
+        ResourceReference<MaterialData> m_Material;
     };
 }
