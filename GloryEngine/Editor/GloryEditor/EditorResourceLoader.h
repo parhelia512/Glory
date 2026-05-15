@@ -134,6 +134,7 @@ namespace Glory::Editor
          * Also checks if the cache is outdated by comparing its write time with that of the original asset.
          */
         bool ResourceHasValidCache(UUID id, std::filesystem::path& cachePath, std::filesystem::path& assetPath) const;
+        bool CheckCacheVersion(std::filesystem::path& cachePath) const;
 
         /** @brief Compilation job implementation.
          * @param assetPath Asset path to import.
