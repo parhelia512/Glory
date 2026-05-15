@@ -23,6 +23,7 @@
 #include <MaterialData.h>
 #include <PrefabData.h>
 
+#include <GloryVersion.h>
 #include <GloryAssert.h>
 
 namespace Glory::Editor
@@ -76,7 +77,7 @@ namespace Glory::Editor
 
 			std::filesystem::path cachePath;
 			std::filesystem::path assetPath;
-			if (ResourceHasValidCache(id, cachePath, assetPath)) return;
+			if (ResourceHasValidCache(id, cachePath, assetPath) && CheckCacheVersion(cachePath)) return;
 
 			m_ToCheckRemovedResources[assetPath].insert(id);
 
@@ -337,7 +338,7 @@ namespace Glory::Editor
 		const bool shouldLoadImmediately = immediate || std::this_thread::get_id() != defaultThread ||
 			(EditorAssetDatabase::GetAssetMetadata(id, meta) && ShouldLoadImmediately(meta.Hash()));
 
-		const bool hasValidCache = ResourceHasValidCache(id, cachePath, assetPath);
+		const bool hasValidCache = ResourceHasValidCache(id, cachePath, assetPath) && CheckCacheVersion(cachePath);
 		if (hasValidCache)
 		{
 			/* Queue a cache load job instead */
@@ -407,6 +408,18 @@ namespace Glory::Editor
 			time.time_since_epoch()).count();
 
 		return cacheWriteTime >= assetWriteTime;
+	}
+
+	bool EditorResourceLoader::CheckCacheVersion(std::filesystem::path& cachePath) const
+	{
+		Version version;
+		{
+			Utils::BinaryFileStream file{ cachePath, true, false };
+			Utils::BinaryStream& stream = static_cast<Utils::BinaryStream&>(file);
+			stream.Read(version);
+		}
+
+		return Version::Compare(CoreVersion, version) == 0;
 	}
 
 	bool EditorResourceLoader::CompileJob(const std::filesystem::path& assetPath)
